@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb83d24fafe427e837693d94644fe8a, type: 3}
+  m_Name: GameBalanceConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameBalanceConfig
+  activeProfile: 0
+  test:
+    hungerStartValue: 100
+    hungerDecreasePerSecond: 0.0069444445
+    hungerCriticalThreshold: 0.01
+    thirstStartValue: 100
+    thirstDecreasePerSecond: 0.0069444445
+    thirstCriticalThreshold: 0.01
+    energyStartValue: 100
+    awakeEnergyDecreasePerSecond: 0.0069444445
+    sleepingEnergyRecoveryPerSecond: 10
+    energyCriticalThreshold: 0.01
+    eatingDuration: 10
+    drinkingDuration: 10
+    satisfiedActionThreshold: 90
+    hungerThirstCriticalSpeedMultiplier: 0.45
+    energyCriticalSpeedMultiplier: 0.65
+    maximumOfflineProgressHours: 24
+  production:
+    hungerStartValue: 100
+    hungerDecreasePerSecond: 0.0069444445
+    hungerCriticalThreshold: 0.01
+    thirstStartValue: 100
+    thirstDecreasePerSecond: 0.0069444445
+    thirstCriticalThreshold: 0.01
+    energyStartValue: 100
+    awakeEnergyDecreasePerSecond: 0.0069444445
+    sleepingEnergyRecoveryPerSecond: 10
+    energyCriticalThreshold: 0.01
+    eatingDuration: 10
+    drinkingDuration: 10
+    satisfiedActionThreshold: 90
+    hungerThirstCriticalSpeedMultiplier: 0.45
+    energyCriticalSpeedMultiplier: 0.65
+    maximumOfflineProgressHours: 24

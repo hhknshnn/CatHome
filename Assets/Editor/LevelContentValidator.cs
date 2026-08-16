@@ -1,0 +1,958 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using CatHome.Economy;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public sealed class LevelValidationReport
+{
+    public readonly List<string> Errors = new List<string>();
+    public readonly List<string> Warnings = new List<string>();
+
+    public bool IsValid => Errors.Count == 0;
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        builder.Append(IsValid ? "Cat Home level validation passed." : "Cat Home level validation failed.");
+        builder.Append($" Errors: {Errors.Count}, warnings: {Warnings.Count}.");
+
+        for (int i = 0; i < Errors.Count; i++)
+            builder.Append("\nERROR: ").Append(Errors[i]);
+        for (int i = 0; i < Warnings.Count; i++)
+            builder.Append("\nWARNING: ").Append(Warnings[i]);
+
+        return builder.ToString();
+    }
+}
+
+public static class LevelContentValidator
+{
+    [MenuItem("Tools/Cat Home/Architecture/Validate Project Architecture")]
+    public static void ValidateFromMenu()
+    {
+        LevelValidationReport report = ValidateProject();
+        if (report.IsValid)
+            Debug.Log(report.ToString());
+        else
+            Debug.LogError(report.ToString());
+    }
+
+    public static LevelValidationReport ValidateProject()
+    {
+        var report = new LevelValidationReport();
+        ValidateBuildSettings(report);
+        ValidateProgressionConfig(report);
+        ValidateHomeStoreCatalog(report);
+        ValidateBootstrapScene(report);
+        ValidateUiScene(report);
+        ValidateLevelScenes(report);
+        ValidateHomeRoomScenes(report);
+        ValidateRunnerScene(report);
+        return report;
+    }
+
+    private static void ValidateHomeStoreCatalog(LevelValidationReport report)
+    {
+        Require(HomeStoreService.LivingRoomItemCount == 10,
+            "Living Room Level 1 must contain exactly ten products.", report);
+
+        long previousPrice = -1L;
+        int bookshelfIndex = -1;
+        int bookSetIndex = -1;
+        int tvUnitIndex = -1;
+        int televisionIndex = -1;
+        for (int i = 0; i < HomeStoreService.LivingRoomCollection.Count; i++)
+        {
+            string productId = HomeStoreService.LivingRoomCollection[i];
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Living Room Level 1 references missing product '" + productId + "'.");
+                continue;
+            }
+
+            Require(product.CoinPrice > previousPrice,
+                "Living Room Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Living Room product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+            if (productId == HomeStoreService.BookshelfId) bookshelfIndex = i;
+            if (productId == HomeStoreService.BookSetId) bookSetIndex = i;
+            if (productId == HomeStoreService.TvUnitId) tvUnitIndex = i;
+            if (productId == HomeStoreService.ModernTelevisionId) televisionIndex = i;
+        }
+
+        Require(bookshelfIndex >= 0 && bookSetIndex > bookshelfIndex,
+            "The colorful book set must be listed after the tall bookshelf.", report);
+        Require(HomeStoreService.GetRequiredProductId(HomeStoreService.BookSetId) ==
+                HomeStoreService.BookshelfId,
+            "The colorful book set must require the tall bookshelf.", report);
+        Require(!HomeStoreService.IsLivingRoomCollectionProduct(HomeStoreService.CarpetId),
+            "The existing living-room carpet must not be sold in Room Level 1.", report);
+        Require(!HomeStoreService.IsLivingRoomCollectionProduct(HomeStoreService.CoffeeTableId) &&
+                !HomeStoreService.IsLivingRoomCollectionProduct(HomeStoreService.SofaId),
+            "The already furnished coffee table and two-seat sofa must not be sold in Room Level 1.",
+            report);
+        Require(HomeStoreService.IsLivingRoomCollectionProduct(HomeStoreService.GameConsoleId) &&
+                HomeStoreService.IsLivingRoomCollectionProduct(HomeStoreService.StereoId),
+            "Room Level 1 must include the game console and speaker system.", report);
+        Require(tvUnitIndex >= 0 && televisionIndex > tvUnitIndex,
+            "The television must be listed after the TV unit.", report);
+        Require(HomeStoreService.GetRequiredProductId(HomeStoreService.ModernTelevisionId) ==
+                HomeStoreService.TvUnitId,
+            "The television must require the TV unit.", report);
+
+        Require(HomeStoreService.BathroomCollection.Count == 10,
+            "Bathroom Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var bathroomIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.BathroomCollection.Count; i++)
+        {
+            string productId = HomeStoreService.BathroomCollection[i];
+            Require(bathroomIds.Add(productId),
+                "Bathroom collection contains duplicate product '" + productId + "'.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Bathroom Level 1 references missing product '" + productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Bathroom product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Bathroom Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Bathroom product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        Require(HomeStoreService.KitchenCollection.Count == 10,
+            "Kitchen Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var kitchenIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.KitchenCollection.Count; i++)
+        {
+            string productId = HomeStoreService.KitchenCollection[i];
+            Require(kitchenIds.Add(productId),
+                "Kitchen collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBedroomCollectionProduct(productId),
+                "Kitchen product '" + productId + "' must be exclusive to Kitchen.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Kitchen Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Kitchen product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Kitchen Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Kitchen product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        Require(HomeStoreService.BedroomCollection.Count == 10,
+            "Bedroom Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var bedroomIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.BedroomCollection.Count; i++)
+        {
+            string productId = HomeStoreService.BedroomCollection[i];
+            Require(bedroomIds.Add(productId),
+                "Bedroom collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsKitchenCollectionProduct(productId),
+                "Bedroom product '" + productId + "' must be exclusive to Bedroom.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Bedroom Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Bedroom product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Bedroom Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Bedroom product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        for (int i = 0; i < HomeStoreService.Products.Count; i++)
+        {
+            HomeStoreProduct product = HomeStoreService.Products[i];
+            if (!product.IsAvailable || product.CoinPrice <= 0L)
+                continue;
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Purchasable product '" + product.Id +
+                "' must expose equivalent coin and diamond prices.", report);
+        }
+
+        long[] expectedDiamondPacks = { 10L, 20L, 50L, 100L, 500L, 1000L };
+        Require(DiamondPackCatalog.Packs.Count == expectedDiamondPacks.Length,
+            "The IAP preparation catalog must contain six diamond packs.", report);
+        for (int i = 0; i < expectedDiamondPacks.Length &&
+                        i < DiamondPackCatalog.Packs.Count; i++)
+        {
+            Require(DiamondPackCatalog.Packs[i].DiamondAmount == expectedDiamondPacks[i],
+                "Diamond pack order or amount is invalid at index " + i + ".", report);
+        }
+    }
+
+    private static void ValidateBuildSettings(LevelValidationReport report)
+    {
+        var enabledPaths = new HashSet<string>(StringComparer.Ordinal);
+        EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
+        for (int i = 0; i < scenes.Length; i++)
+            if (scenes[i].enabled)
+                enabledPaths.Add(scenes[i].path);
+
+        Require(enabledPaths.Contains(SceneArchitectureBuilder.BootstrapScenePath),
+            "Bootstrap scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(SceneArchitectureBuilder.UiScenePath),
+            "Shared UI scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.LivingRoomScenePath),
+            "Living Room scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.BathroomScenePath),
+            "Bathroom scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.KitchenScenePath),
+            "Kitchen scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.BedroomScenePath),
+            "Bedroom scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(CatRunnerContentBuilder.RunnerScenePath),
+            "Cat Runner scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(CatCatchContentBuilder.ScenePath),
+            "Cat Catch scene is not enabled in Build Settings.", report);
+    }
+
+    private static void ValidateProgressionConfig(LevelValidationReport report)
+    {
+        if (!ProgressionConfig.TryGetActive(out ProgressionConfig config))
+        {
+            report.Errors.Add("Resources/ProgressionConfig.asset is missing.");
+            return;
+        }
+
+        var levelIds = new HashSet<string>(StringComparer.Ordinal);
+        var questIds = new HashSet<string>(StringComparer.Ordinal);
+        var enabledScenePaths = new HashSet<string>(StringComparer.Ordinal);
+        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+            if (scene.enabled)
+                enabledScenePaths.Add(scene.path);
+
+        for (int i = 0; i < config.ChapterCount; i++)
+        {
+            LevelDefinition level = config.GetChapter(i + 1);
+            if (level == null)
+            {
+                report.Errors.Add($"Quest chapter slot {i + 1} is empty.");
+                continue;
+            }
+
+            Require(!string.IsNullOrWhiteSpace(level.LevelId),
+                $"Quest chapter {i + 1} has no stable id.", report);
+            Require(levelIds.Add(level.LevelId),
+                $"Duplicate quest chapter id '{level.LevelId}'.", report);
+            Require(level.ChapterNumber == i + 1,
+                $"Quest chapter '{level.LevelId}' must have chapter number {i + 1}.", report);
+            Require(!string.IsNullOrWhiteSpace(level.ScenePath) &&
+                    AssetDatabase.LoadAssetAtPath<SceneAsset>(level.ScenePath) != null,
+                $"Level '{level.LevelId}' references a missing scene '{level.ScenePath}'.", report);
+            Require(enabledScenePaths.Contains(level.ScenePath),
+                $"Level scene '{level.ScenePath}' is not enabled in Build Settings.", report);
+            Require(!string.IsNullOrWhiteSpace(level.SpawnPointId),
+                $"Level '{level.LevelId}' has no spawn point id.", report);
+            Require(level.Quests.Count > 0,
+                $"Level '{level.LevelId}' has no quests.", report);
+
+            for (int q = 0; q < level.Quests.Count; q++)
+            {
+                QuestDefinition quest = level.Quests[q];
+                if (quest == null)
+                {
+                    report.Errors.Add($"Level '{level.LevelId}' has an empty quest slot.");
+                    continue;
+                }
+
+                Require(!string.IsNullOrWhiteSpace(quest.QuestId),
+                    $"Level '{level.LevelId}' has a quest without an id.", report);
+                Require(questIds.Add(quest.QuestId),
+                    $"Duplicate quest id '{quest.QuestId}'.", report);
+                Require(quest.RequiredCount > 0,
+                    $"Quest '{quest.QuestId}' has an invalid target.", report);
+            }
+        }
+    }
+
+    private static void ValidateBootstrapScene(LevelValidationReport report)
+    {
+        ValidateScene(SceneArchitectureBuilder.BootstrapScenePath, scene =>
+        {
+            Require(FindInScene<LevelLoader>(scene) != null,
+                "Bootstrap scene has no LevelLoader.", report);
+            ValidateMissingScripts(scene, report);
+        }, report);
+    }
+
+    private static void ValidateUiScene(LevelValidationReport report)
+    {
+        ValidateScene(SceneArchitectureBuilder.UiScenePath, scene =>
+        {
+            Require(FindInScene<EventSystem>(scene) != null, "Shared UI has no EventSystem.", report);
+            Require(FindInScene<HungerSystem>(scene) != null, "Shared UI has no HungerSystem.", report);
+            Require(FindInScene<ThirstSystem>(scene) != null, "Shared UI has no ThirstSystem.", report);
+            Require(FindInScene<EnergySystem>(scene) != null, "Shared UI has no EnergySystem.", report);
+            Require(FindInScene<MainPanelController>(scene) != null,
+                "Shared UI has no MainPanelController.", report);
+            Require(FindInScene<QuestPanelController>(scene) != null,
+                "Shared UI has no QuestPanelController.", report);
+            Require(FindInScene<CurrencyHudController>(scene) != null,
+                "Shared UI has no CurrencyHudController.", report);
+            RoomSelectorPanel[] roomSelectors = FindAllInScene<RoomSelectorPanel>(scene);
+            Require(roomSelectors.Length == 1,
+                "Shared UI must contain exactly one persistent Room Selector.", report);
+            if (roomSelectors.Length == 1)
+            {
+                Require(roomSelectors[0].gameObject.name == RoomSelectorPanelBuilder.RootName,
+                    "Room Selector must use its named persistent canvas root.", report);
+                Require(roomSelectors[0].GetComponentInChildren<SafeAreaRect>(true) != null,
+                    "Room Selector needs safe-area fitting for notched displays.", report);
+            }
+            ShopPanelController shop = FindInScene<ShopPanelController>(scene);
+            Require(shop != null,
+                "Shared UI has no persistent Home Store panel.", report);
+            Require(FindInScene<ActivityPromptController>(scene) != null,
+                "Shared UI has no ActivityPromptController.", report);
+            Require(FindInScene<CatRunnerLauncher>(scene) != null,
+                "Shared UI has no Cat Runner PLAY launcher.", report);
+            Require(FindInScene<GamesHubPanel>(scene) != null,
+                "Shared UI has no Games hub for Cat Runner and Cat Catch.", report);
+            Require(FindInScene<CatCatchLauncher>(scene) != null,
+                "Shared UI has no Cat Catch launcher.", report);
+            Require(FindNamedInScene(scene, "RunnerEnergyLabel") != null,
+                "Shared UI has no Runner Energy indicator.", report);
+            Require(FindNamedInScene(scene, "RewardedEnergyButton") != null,
+                "Shared UI has no rewarded +2 Energy button.", report);
+            GameObject productScrollObject = FindNamedInScene(scene, "ProductScroll");
+            ScrollRect productScroll = productScrollObject != null
+                ? productScrollObject.GetComponent<ScrollRect>()
+                : null;
+            Require(productScroll != null && productScroll.verticalScrollbar != null,
+                "The CAT, ROOM and HOME catalog needs a visible vertical scrollbar.", report);
+            Require(productScroll == null ||
+                    productScroll.verticalScrollbarVisibility == ScrollRect.ScrollbarVisibility.Permanent,
+                "The store scrollbar must stay visible so scroll position is always clear.", report);
+            Require(FindNamedInScene(scene, "PurchaseDialog") != null &&
+                    FindNamedInScene(scene, "DialogProductIcon") != null &&
+                    FindNamedInScene(scene, "CoinPurchaseButton") != null &&
+                    FindNamedInScene(scene, "DiamondPurchaseButton") != null,
+                "The Home Store needs its product-photo purchase dialog with coin and diamond choices.",
+                report);
+            Require(FindNamedInScene(scene, "ShopButton") != null,
+                "The bottom dock must expose the general SHOP button.", report);
+            string[] premiumLauncherButtons =
+            {
+                "ShopButton",
+                "PlayCatRunnerButton",
+                "RewardedEnergyButton"
+            };
+            for (int i = 0; i < premiumLauncherButtons.Length; i++)
+            {
+                GameObject premiumButton = FindNamedInScene(scene, premiumLauncherButtons[i]);
+                Require(premiumButton != null &&
+                        premiumButton.GetComponent<Button>() != null &&
+                        premiumButton.GetComponent<PremiumButtonFx>() != null,
+                    premiumLauncherButtons[i] +
+                    " must retain PremiumButtonFx after the Runner launcher rebuild.",
+                    report);
+            }
+            Require(FindNamedInScene(scene, "HomeDockShadow") == null,
+                "The removed translucent HomeDockShadow must not be rebuilt.", report);
+
+            GameObject sharedCanvas = FindRootInScene(scene, "Canvas");
+            WhileYouWereAwayPopup[] offlinePopups =
+                FindAllInScene<WhileYouWereAwayPopup>(scene);
+            Require(offlinePopups.Length == 1,
+                "Shared UI must contain exactly one While You Were Away popup.", report);
+            if (offlinePopups.Length == 1)
+            {
+                Require(sharedCanvas != null &&
+                        offlinePopups[0].transform.parent == sharedCanvas.transform,
+                    "While You Were Away popup must be a direct child of the root Canvas.",
+                    report);
+            }
+
+            CatRunnerLauncher[] launchers = FindAllInScene<CatRunnerLauncher>(scene);
+            Require(launchers.Length == 1,
+                "Shared UI must contain exactly one Cat Runner launcher.", report);
+            if (launchers.Length == 1)
+            {
+                Require(sharedCanvas != null &&
+                        launchers[0].transform.parent == sharedCanvas.transform,
+                    "Cat Runner launcher must be a direct child of the root Canvas.",
+                    report);
+            }
+            ValidateMissingScripts(scene, report);
+        }, report);
+    }
+
+    private static void ValidateRunnerScene(LevelValidationReport report)
+    {
+        ValidateScene(CatRunnerContentBuilder.RunnerScenePath, scene =>
+        {
+            CatRunnerGameController game = FindInScene<CatRunnerGameController>(scene);
+            CatRunnerPlayer player = FindInScene<CatRunnerPlayer>(scene);
+            CatRunnerTrackManager track = FindInScene<CatRunnerTrackManager>(scene);
+            CatRunnerAudioController audio = FindInScene<CatRunnerAudioController>(scene);
+            CatRunnerResponsiveLayout responsive =
+                FindInScene<CatRunnerResponsiveLayout>(scene);
+            Canvas canvas = FindInScene<Canvas>(scene);
+            Camera camera = FindInScene<Camera>(scene);
+            EventSystem eventSystem = FindInScene<EventSystem>(scene);
+
+            Require(game != null, "Cat Runner scene has no game controller.", report);
+            Require(player != null, "Cat Runner scene has no player controller.", report);
+            Require(track != null, "Cat Runner scene has no track manager.", report);
+            Require(audio != null,
+                "Cat Runner scene has no music/SFX/haptic controller.", report);
+            Require(responsive != null,
+                "Cat Runner UI has no responsive safe-area layout.", report);
+            Require(track == null || track.ObjectApproachSpeedMultiplier > 1f,
+                "Cat Runner obstacles must approach faster than the visual floor scroll.", report);
+            Require(canvas != null, "Cat Runner scene has no HUD canvas.", report);
+            Require(camera != null, "Cat Runner scene has no camera.", report);
+            Require(FindAllInScene<AudioListener>(scene).Length == 1,
+                "Cat Runner scene must author exactly one AudioListener.", report);
+            Require(eventSystem == null,
+                "Cat Runner must reuse CatHome_UI's shared EventSystem; remove the duplicate Runner EventSystem.",
+                report);
+            Require(FindNamedInScene(scene, "ChancesLabel") != null,
+                "Cat Runner scene has no three-chance HUD indicator.", report);
+            Require(FindAllInScene<SafeAreaRect>(scene).Length >= 4,
+                "Cat Runner welcome, HUD, results and modal cards must respect SafeArea.",
+                report);
+
+            string[] requiredRunnerObjects =
+            {
+                "ScoreLabel",
+                "ComboLabel",
+                "PowerUpLabel",
+                "PauseButton",
+                "PausePanel",
+                "RunnerTutorialPanel",
+                "WelcomeRewardedEnergyButton",
+                "DailyMissions",
+                "ResultMissions",
+                "NewBestBadge",
+                "MagnetPowerUp_Template",
+                "ShieldPowerUp_Template",
+                "DoubleCoinsPowerUp_Template"
+            };
+            for (int i = 0; i < requiredRunnerObjects.Length; i++)
+                Require(FindNamedInScene(scene, requiredRunnerObjects[i]) != null,
+                    "Cat Runner is missing '" + requiredRunnerObjects[i] + "'.", report);
+
+            string[] runnerButtons =
+            {
+                "PauseButton",
+                "WelcomeStartButton",
+                "WelcomeExitButton",
+                "WelcomeRewardedEnergyButton",
+                "CollectButton",
+                "RetryButton",
+                "ResumeButton",
+                "PauseExitButton",
+                "ReducedMotionButton",
+                "SoundButton",
+                "HapticsButton",
+                "TutorialSkipButton"
+            };
+            for (int i = 0; i < runnerButtons.Length; i++)
+            {
+                GameObject button = FindNamedInScene(scene, runnerButtons[i]);
+                Require(button != null &&
+                        button.GetComponent<Button>() != null &&
+                        button.GetComponent<PremiumButtonFx>() != null,
+                    runnerButtons[i] +
+                    " must retain Button and PremiumButtonFx.", report);
+            }
+
+            CatRunnerTrackObject[] trackObjects =
+                FindAllInScene<CatRunnerTrackObject>(scene);
+            int powerUps = 0;
+            for (int i = 0; i < trackObjects.Length; i++)
+            {
+                CatRunnerTrackObject item = trackObjects[i];
+                if (item == null)
+                    continue;
+                if (item.Kind == CatRunnerTrackObjectKind.PowerUp)
+                    powerUps++;
+                if (item.IsHazard)
+                    Require(item.transform.Find("HazardWarningTelegraph") != null,
+                        item.name + " has no readable hazard telegraph.", report);
+            }
+            Require(powerUps == 3,
+                "Cat Runner must retain Magnet, Shield and Double Coins templates.",
+                report);
+
+            string[] instancedMaterials =
+            {
+                "RunnerRoadPeach",
+                "RunnerLaneMint",
+                "RunnerCoinGold",
+                "RunnerHazardWarning",
+                "RunnerPowerMagnet"
+            };
+            for (int i = 0; i < instancedMaterials.Length; i++)
+            {
+                Material material = AssetDatabase.LoadAssetAtPath<Material>(
+                    "Assets/Art/Runner/Materials/" + instancedMaterials[i] + ".mat");
+                Require(material != null && material.enableInstancing,
+                    instancedMaterials[i] +
+                    " must keep GPU instancing enabled.", report);
+            }
+
+            if (player != null)
+            {
+                Animator animator = player.GetComponentInChildren<Animator>(true);
+                Require(animator != null && animator.runtimeAnimatorController != null,
+                    "Cat Runner player does not use the current animated cat.", report);
+                if (animator != null && animator.runtimeAnimatorController != null)
+                    Require(animator.runtimeAnimatorController.name == "Controller_CartoonAnimal_Cat",
+                        "Cat Runner player is not using the current cat animator controller.", report);
+            }
+
+            GameObject[] roots = scene.GetRootGameObjects();
+            Require(roots.Length == 1 && roots[0].transform.position.y >= 900f,
+                "Cat Runner world must remain isolated from the additively loaded home.", report);
+            ValidateMissingScripts(scene, report);
+        }, report);
+    }
+
+    private static void ValidateLevelScenes(LevelValidationReport report)
+    {
+        if (!ProgressionConfig.TryGetActive(out ProgressionConfig config))
+            return;
+
+        var validatedPaths = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < config.ChapterCount; i++)
+        {
+            LevelDefinition level = config.GetChapter(i + 1);
+            if (level == null || string.IsNullOrWhiteSpace(level.ScenePath) ||
+                !validatedPaths.Add(level.ScenePath))
+            {
+                continue;
+            }
+
+            ValidateScene(level.ScenePath, scene =>
+            {
+                Require(FindInScene<LevelSceneMarker>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no LevelSceneMarker.", report);
+                Require(FindInScene<CatMovement>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no cat.", report);
+                Require(FindInScene<BowlInteraction>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no bowl interaction.", report);
+                Require(FindInScene<SleepInteraction>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no sleep interaction.", report);
+                Require(FindInScene<PetInteraction>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no pet interaction.", report);
+                Require(FindInScene<CatActivityReaction>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no cat activity reaction controller.", report);
+                Require(FindInScene<BallChaseActivity>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no ball chase activity.", report);
+                Require(FindInScene<ScratchPostActivity>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no scratching activity.", report);
+                Require(FindInScene<MouseHuntActivity>(scene) != null,
+                    $"Level scene '{level.ScenePath}' has no mouse hunt activity.", report);
+                StoreProductDisplay[] storeProducts = FindAllInScene<StoreProductDisplay>(scene);
+                Require(storeProducts.Length >= 6,
+                    $"Level scene '{level.ScenePath}' has fewer than six authored store products.",
+                    report);
+                var storeProductIds = new HashSet<string>(StringComparer.Ordinal);
+                for (int productIndex = 0; productIndex < storeProducts.Length; productIndex++)
+                {
+                    StoreProductDisplay product = storeProducts[productIndex];
+                    Require(product != null && !string.IsNullOrWhiteSpace(product.ProductId),
+                        $"Level scene '{level.ScenePath}' has a store product without an id.", report);
+                    if (product != null && !string.IsNullOrWhiteSpace(product.ProductId))
+                    {
+                        Require(storeProductIds.Add(product.ProductId),
+                            $"Duplicate store product '{product.ProductId}' in '{level.ScenePath}'.",
+                            report);
+                    }
+                    HomeProductPlacement placement = product != null
+                        ? product.GetComponent<HomeProductPlacement>()
+                        : null;
+                    Require(placement != null,
+                        $"Store product '{product?.ProductId}' has no placement controller.", report);
+                    Require(placement == null || placement.SupportsRotation,
+                        $"Store product '{product?.ProductId}' does not support rotation.", report);
+                }
+                HomeBookshelfBookSet bookSet = FindInScene<HomeBookshelfBookSet>(scene);
+                Require(bookSet != null && bookSet.BookCount == 10,
+                    "Living Room Level 1 needs one ten-book colorful bookshelf set.", report);
+                Require(bookSet != null && bookSet.ShelfRowCount == 3,
+                    "The colorful book set must fill all three bookshelf rows.", report);
+                Require(bookSet != null &&
+                        bookSet.GetComponent<HomeProductPlacement>() != null &&
+                        bookSet.GetComponent<HomeProductPlacement>().PlacementKind ==
+                            HomeProductPlacementKind.BookshelfOnly,
+                    "The colorful book set must only support bookshelf placement.", report);
+                HomeRequiredProductAttachment tvAttachment =
+                    FindAllInScene<HomeRequiredProductAttachment>(scene)
+                        .FirstOrDefault(component =>
+                            component.GetComponent<HomeProductPlacement>() != null &&
+                            component.GetComponent<HomeProductPlacement>().ProductId ==
+                                HomeStoreService.ModernTelevisionId);
+                Require(tvAttachment != null &&
+                        tvAttachment.RequiredProductId == HomeStoreService.TvUnitId,
+                    "The modern television must attach only to the TV unit.", report);
+                Require(tvAttachment == null ||
+                        tvAttachment.GetComponent<HomeProductPlacement>().PlacementKind ==
+                            HomeProductPlacementKind.ProductSurfaceOnly,
+                    "The modern television must use TV-unit-only placement.", report);
+                ValidateAuthoringHierarchy(scene, level.ScenePath, report);
+
+                LevelSpawnPoint[] spawnPoints = FindAllInScene<LevelSpawnPoint>(scene);
+                var spawnIds = new HashSet<string>(StringComparer.Ordinal);
+                for (int s = 0; s < spawnPoints.Length; s++)
+                    Require(spawnIds.Add(spawnPoints[s].SpawnPointId),
+                        $"Duplicate spawn point '{spawnPoints[s].SpawnPointId}' in '{level.ScenePath}'.",
+                        report);
+
+                for (int chapterIndex = 0; chapterIndex < config.ChapterCount; chapterIndex++)
+                {
+                    LevelDefinition referencedLevel = config.GetChapter(chapterIndex + 1);
+                    if (referencedLevel != null && referencedLevel.ScenePath == level.ScenePath)
+                        Require(spawnIds.Contains(referencedLevel.SpawnPointId),
+                            $"Level '{referencedLevel.LevelId}' references missing spawn " +
+                            $"'{referencedLevel.SpawnPointId}'.", report);
+                }
+
+                ValidateMissingScripts(scene, report);
+            }, report);
+        }
+    }
+
+    private static void ValidateHomeRoomScenes(LevelValidationReport report)
+    {
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        IReadOnlyList<HomeRoomDefinition> rooms = HomeRoomService.Rooms;
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            HomeRoomDefinition room = rooms[i];
+            Require(ids.Add(room.Id), "Duplicate home room id '" + room.Id + "'.", report);
+            ValidateScene(room.ScenePath, scene =>
+            {
+                HomeRoomSceneMarker explicitMarker = FindInScene<HomeRoomSceneMarker>(scene);
+                LevelSceneMarker legacyMarker = FindInScene<LevelSceneMarker>(scene);
+                string markerId = explicitMarker != null
+                    ? explicitMarker.RoomId
+                    : legacyMarker != null ? legacyMarker.SceneId : null;
+                Require(string.Equals(markerId, room.Id, StringComparison.Ordinal),
+                    $"Home room '{room.ScenePath}' has marker '{markerId}', expected '{room.Id}'.",
+                    report);
+
+                CatMovement cat = FindInScene<CatMovement>(scene);
+                Camera[] cameras = FindAllInScene<Camera>(scene);
+                int enabledCameras = cameras.Count(camera => camera.enabled);
+                AudioListener[] listeners = FindAllInScene<AudioListener>(scene);
+                int enabledListeners = listeners.Count(listener => listener.enabled);
+                Require(cat != null, $"Home room '{room.ScenePath}' has no cat.", report);
+                Require(FindAllInScene<GameTimeService>(scene).Length == 1,
+                    $"Home room '{room.ScenePath}' must author exactly one GameTimeService.",
+                    report);
+                Require(cameras.Length == 1 && enabledCameras == 1,
+                    $"Home room '{room.ScenePath}' must author exactly one enabled camera.", report);
+                Require(listeners.Length == 1 && enabledListeners == 1,
+                    $"Home room '{room.ScenePath}' must author exactly one enabled AudioListener.",
+                    report);
+
+                LevelSpawnPoint[] spawns = FindAllInScene<LevelSpawnPoint>(scene);
+                Require(spawns.Count(spawn => spawn.SpawnPointId == room.SpawnPointId) == 1,
+                    $"Home room '{room.ScenePath}' needs exactly one '{room.SpawnPointId}' spawn.",
+                    report);
+                ValidateAuthoringHierarchy(scene, room.ScenePath, report);
+
+                if (room.Id == HomeRoomService.BathroomId)
+                    ValidateBathroomRoom(scene, report);
+                if (room.Id == HomeRoomService.KitchenId)
+                    ValidateKitchenRoom(scene, report);
+                if (room.Id == HomeRoomService.BedroomId)
+                    ValidateBedroomRoom(scene, report);
+                ValidateMissingScripts(scene, report);
+            }, report);
+        }
+    }
+
+    private static void ValidateBathroomRoom(Scene scene, LevelValidationReport report)
+    {
+        Require(FindNamedInScene(scene, "BathroomTub") != null,
+            "Bathroom needs its tub fixture.", report);
+        Require(FindNamedInScene(scene, "BathroomVanitySink") != null,
+            "Bathroom needs its vanity and sink fixture.", report);
+        Require(FindNamedInScene(scene, "BathroomToilet") != null,
+            "Bathroom needs its toilet fixture.", report);
+        Require(FindNamedInScene(scene, "BathroomShower") != null,
+            "Bathroom needs its shower fixture.", report);
+        Require(FindNamedInScene(scene, "Glossy Floor Tiles") != null &&
+                FindNamedInScene(scene, "Coral Lilac Tile Ribbon") != null,
+            "Bathroom needs glossy tiles and its bright wall ribbon.", report);
+
+        StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
+        var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < products.Length; i++)
+        {
+            StoreProductDisplay display = products[i];
+            if (!HomeStoreService.IsBathroomCollectionProduct(display.ProductId))
+                continue;
+            Require(authoredProductIds.Add(display.ProductId),
+                "Bathroom scene contains duplicate store product '" + display.ProductId + "'.",
+                report);
+            Renderer[] renderers = display.GetComponentsInChildren<Renderer>(true);
+            Require(!renderers.Any(renderer => renderer.gameObject.activeInHierarchy),
+                "Bathroom store product '" + display.ProductId +
+                "' must stay hidden until acquired.", report);
+        }
+        Require(authoredProductIds.Count == HomeStoreService.BathroomCollection.Count,
+            "Bathroom must author all ten hidden ROOM products.", report);
+        for (int i = 0; i < HomeStoreService.BathroomCollection.Count; i++)
+        {
+            Require(authoredProductIds.Contains(HomeStoreService.BathroomCollection[i]),
+                "Bathroom scene is missing store product '" +
+                HomeStoreService.BathroomCollection[i] + "'.", report);
+        }
+
+        BathroomUsablePlaceholder[] usables =
+            FindAllInScene<BathroomUsablePlaceholder>(scene);
+        Require(usables.Length >= 4,
+            "Bathroom needs bath, sink, grooming and litter usable anchors.", report);
+        var usableIds = new HashSet<string>(StringComparer.Ordinal);
+        var kinds = new HashSet<BathroomUsableKind>();
+        for (int i = 0; i < usables.Length; i++)
+        {
+            Require(usables[i].IsConfigured,
+                "Bathroom usable '" + usables[i].name + "' is incomplete.", report);
+            Require(usableIds.Add(usables[i].UsableId),
+                "Duplicate Bathroom usable id '" + usables[i].UsableId + "'.", report);
+            kinds.Add(usables[i].Kind);
+        }
+        Require(kinds.Contains(BathroomUsableKind.Bath) &&
+                kinds.Contains(BathroomUsableKind.Sink) &&
+                kinds.Contains(BathroomUsableKind.Grooming) &&
+                kinds.Contains(BathroomUsableKind.LitterBox),
+            "Bathroom usable anchors do not cover all planned activities.", report);
+    }
+
+    private static void ValidateKitchenRoom(Scene scene, LevelValidationReport report)
+    {
+        Require(FindNamedInScene(scene, "Sunshine Checker Floor") != null &&
+                FindNamedInScene(scene, "Candy Backsplash Ribbon") != null,
+            "Kitchen needs its sunshine floor and candy backsplash ribbon.", report);
+        Require(FindNamedInScene(scene, "Kitchen Sunrise Window") != null &&
+                FindNamedInScene(scene, "Kitchen Paw Medallion") != null,
+            "Kitchen needs its sunrise window and paw wall medallion.", report);
+
+        StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
+        var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < products.Length; i++)
+        {
+            StoreProductDisplay display = products[i];
+            if (!HomeStoreService.IsKitchenCollectionProduct(display.ProductId))
+                continue;
+            Require(authoredProductIds.Add(display.ProductId),
+                "Kitchen scene contains duplicate store product '" + display.ProductId + "'.",
+                report);
+            Renderer[] renderers = display.GetComponentsInChildren<Renderer>(true);
+            Require(!renderers.Any(renderer => renderer.gameObject.activeInHierarchy),
+                "Kitchen store product '" + display.ProductId +
+                "' must stay hidden until acquired.", report);
+        }
+        Require(authoredProductIds.Count == HomeStoreService.KitchenCollection.Count,
+            "Kitchen must author all ten hidden ROOM products.", report);
+        for (int i = 0; i < HomeStoreService.KitchenCollection.Count; i++)
+        {
+            Require(authoredProductIds.Contains(HomeStoreService.KitchenCollection[i]),
+                "Kitchen scene is missing store product '" +
+                HomeStoreService.KitchenCollection[i] + "'.", report);
+        }
+    }
+
+    private static void ValidateBedroomRoom(Scene scene, LevelValidationReport report)
+    {
+        Require(FindNamedInScene(scene, "Dreamy Wood Floor") != null &&
+                FindNamedInScene(scene, "Moonlight Checker Floor") == null &&
+                FindNamedInScene(scene, "Starlight Wall Ribbon") != null,
+            "Bedroom needs its wood-plank floor and starlight wall ribbon.", report);
+        Require(FindNamedInScene(scene, "Bedroom Moon Window") != null &&
+                FindNamedInScene(scene, "Bedroom Paw Medallion") != null,
+            "Bedroom needs its moon window and paw wall medallion.", report);
+
+        StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
+        var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < products.Length; i++)
+        {
+            StoreProductDisplay display = products[i];
+            if (!HomeStoreService.IsBedroomCollectionProduct(display.ProductId))
+                continue;
+            Require(authoredProductIds.Add(display.ProductId),
+                "Bedroom scene contains duplicate store product '" + display.ProductId + "'.",
+                report);
+            Renderer[] renderers = display.GetComponentsInChildren<Renderer>(true);
+            Require(!renderers.Any(renderer => renderer.gameObject.activeInHierarchy),
+                "Bedroom store product '" + display.ProductId +
+                "' must stay hidden until acquired.", report);
+        }
+        Require(authoredProductIds.Count == HomeStoreService.BedroomCollection.Count,
+            "Bedroom must author all ten hidden ROOM products.", report);
+        for (int i = 0; i < HomeStoreService.BedroomCollection.Count; i++)
+        {
+            Require(authoredProductIds.Contains(HomeStoreService.BedroomCollection[i]),
+                "Bedroom scene is missing store product '" +
+                HomeStoreService.BedroomCollection[i] + "'.", report);
+        }
+    }
+
+    private static void ValidateScene(
+        string path,
+        Action<Scene> validate,
+        LevelValidationReport report)
+    {
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(path) == null)
+        {
+            report.Errors.Add($"Scene asset '{path}' is missing.");
+            return;
+        }
+
+        Scene scene = SceneManager.GetSceneByPath(path);
+        bool openedForValidation = !scene.IsValid() || !scene.isLoaded;
+        if (openedForValidation)
+            scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
+
+        try
+        {
+            validate(scene);
+        }
+        finally
+        {
+            if (openedForValidation && scene.IsValid())
+                EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
+    private static void ValidateMissingScripts(Scene scene, LevelValidationReport report)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+            {
+                int missing = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(
+                    transforms[i].gameObject);
+                if (missing > 0)
+                    report.Errors.Add(
+                        $"Scene '{scene.path}' object '{transforms[i].name}' has {missing} missing script(s)."
+                    );
+            }
+        }
+    }
+
+    private static void ValidateAuthoringHierarchy(
+        Scene scene,
+        string scenePath,
+        LevelValidationReport report)
+    {
+        string[] groupNames =
+        {
+            CatHomeAuthoringWorkspace.EnvironmentGroupName,
+            CatHomeAuthoringWorkspace.FurnitureGroupName,
+            CatHomeAuthoringWorkspace.CharacterGroupName,
+            CatHomeAuthoringWorkspace.GameplayGroupName,
+            CatHomeAuthoringWorkspace.PresentationGroupName,
+            CatHomeAuthoringWorkspace.LocalUiGroupName,
+            CatHomeAuthoringWorkspace.LevelSetupGroupName
+        };
+
+        var rootNames = new HashSet<string>(StringComparer.Ordinal);
+        foreach (GameObject root in scene.GetRootGameObjects())
+            rootNames.Add(root.name);
+
+        for (int i = 0; i < groupNames.Length; i++)
+        {
+            Require(
+                rootNames.Contains(groupNames[i]),
+                $"Level scene '{scenePath}' is missing hierarchy group '{groupNames[i]}'.",
+                report);
+        }
+    }
+
+    private static T FindInScene<T>(Scene scene) where T : Component
+    {
+        T[] components = FindAllInScene<T>(scene);
+        return components.Length > 0 ? components[0] : null;
+    }
+
+    private static GameObject FindNamedInScene(Scene scene, string objectName)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < transforms.Length; i++)
+                if (transforms[i].name == objectName)
+                    return transforms[i].gameObject;
+        }
+
+        return null;
+    }
+
+    private static GameObject FindRootInScene(Scene scene, string rootName)
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            if (root.name == rootName)
+                return root;
+        }
+
+        return null;
+    }
+
+    private static T[] FindAllInScene<T>(Scene scene) where T : Component
+    {
+        var components = new List<T>();
+        foreach (GameObject root in scene.GetRootGameObjects())
+            components.AddRange(root.GetComponentsInChildren<T>(true));
+        return components.ToArray();
+    }
+
+    private static void Require(bool condition, string message, LevelValidationReport report)
+    {
+        if (!condition)
+            report.Errors.Add(message);
+    }
+}

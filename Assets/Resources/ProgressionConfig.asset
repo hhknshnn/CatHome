@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5474792cd3e20f44a972650f59e5663, type: 3}
+  m_Name: ProgressionConfig
+  m_EditorClassIdentifier: Assembly-CSharp::ProgressionConfig
+  levels:
+  - levelId: first-meals
+    levelName: First Play
+    chapterNumber: 1
+    scenePath: Assets/Scenes/Levels/LivingRoom_Level01.unity
+    spawnPointId: default
+    quests:
+    - questId: level1_eat
+      type: 0
+      requiredCount: 1
+      title: First Bite
+      description: Eat food once
+      rewardCoins: 10
+      rewardBondXp: 5
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level1_drink
+      type: 1
+      requiredCount: 1
+      title: First Sip
+      description: Drink water once
+      rewardCoins: 10
+      rewardBondXp: 5
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level1_ball
+      type: 4
+      requiredCount: 1
+      title: Ball Champion
+      description: Catch the ball three times
+      rewardCoins: 15
+      rewardBondXp: 8
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+  - levelId: sweet-dreams
+    levelName: Cozy Claws
+    chapterNumber: 2
+    scenePath: Assets/Scenes/Levels/LivingRoom_Level01.unity
+    spawnPointId: default
+    quests:
+    - questId: level2_sleep
+      type: 2
+      requiredCount: 1
+      title: Nap Time
+      description: Sleep in the bed once
+      rewardCoins: 15
+      rewardBondXp: 8
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level2_scratch
+      type: 5
+      requiredCount: 1
+      title: Fresh Claws
+      description: Use the scratching post
+      rewardCoins: 20
+      rewardBondXp: 12
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+  - levelId: best-friends
+    levelName: Little Hunter
+    chapterNumber: 3
+    scenePath: Assets/Scenes/Levels/LivingRoom_Level01.unity
+    spawnPointId: default
+    quests:
+    - questId: level3_pet
+      type: 3
+      requiredCount: 1
+      title: First Cuddle
+      description: Pet the cat once
+      rewardCoins: 20
+      rewardBondXp: 10
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level3_mouse
+      type: 6
+      requiredCount: 1
+      title: Mighty Hunter
+      description: Catch the clockwork mouse three times
+      rewardCoins: 25
+      rewardBondXp: 15
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
