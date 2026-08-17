@@ -24,6 +24,8 @@ public sealed class CatCatchMouse : MonoBehaviour
     private Vector3 velocity;
     private float fleeStamina = CatchHuntRules.MouseFleeStaminaSeconds;
     private float winded;
+    private const float SpawnPopSeconds = 0.24f;
+    private float spawnRemaining;
 
     /// <summary>True while the mouse is out of breath — the cat's opening.</summary>
     public bool IsWinded => winded > 0f;
@@ -77,6 +79,7 @@ public sealed class CatCatchMouse : MonoBehaviour
         velocity = Vector3.zero;
         fleeStamina = CatchHuntRules.MouseFleeStaminaSeconds;
         winded = 0f;
+        spawnRemaining = SpawnPopSeconds;
         PickTarget();
     }
 
@@ -135,8 +138,15 @@ public sealed class CatCatchMouse : MonoBehaviour
         next.y = ArenaPoint(0f, localMin.y, 0f).y + bob;
         transform.position = next;
         float pulse = speed > 0f ? 0.06f : 0.03f;
-        transform.localScale = restScale *
-            (1f + Mathf.Sin(Time.time * 10f + GetInstanceID()) * pulse);
+        float scale = 1f + Mathf.Sin(Time.time * 10f + GetInstanceID()) * pulse;
+        if (spawnRemaining > 0f)
+        {
+            spawnRemaining = Mathf.Max(0f, spawnRemaining - delta);
+            // Ease-out pop so a fresh mouse springs up instead of blinking in.
+            float t = 1f - spawnRemaining / SpawnPopSeconds;
+            scale *= Mathf.Lerp(0.2f, 1f, Mathf.Clamp01(t * (2f - t)));
+        }
+        transform.localScale = restScale * scale;
 
         if (speed > 0f && (Flatten(next) - Flatten(target)).sqrMagnitude < 0.04f)
             BeginPause();

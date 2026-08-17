@@ -207,8 +207,7 @@ public static class PremiumWorldVisualBuilder
             new Vector3(7.72f, 2.02f, 0.04f), wallSky);
         CreateBox(liners, "LeftLiner", new Vector3(-3.788f, 1.92f, 0f),
             new Vector3(0.04f, 2.02f, 5.72f), wallMint);
-        CreateBox(liners, "RightLiner", new Vector3(3.788f, 1.92f, 0f),
-            new Vector3(0.04f, 2.02f, 5.72f), wallPeach);
+        CreateRightLinerWithWindowOpening(liners, scene, wallPeach);
 
         Transform wainscot = CreateGroup(architecture.transform, "RoundedWainscot");
         CreateBackWainscot(wainscot, softPeach, softMint, softLilac, cream, gold);
@@ -456,6 +455,117 @@ public static class PremiumWorldVisualBuilder
         GameObject group = new GameObject(name);
         group.transform.SetParent(parent, false);
         return group.transform;
+    }
+
+    // The right wall carries the WindowSystem. A solid RightLiner box would bury the
+    // glass/sky panels and kill the day/night light. Build the liner as a frame around the
+    // window opening instead so the pane stays visible and the sun beam still reaches the room.
+    // The hole is placed in the wooden frame ring (outside the glass, inside the frame edge)
+    // so the wall tucks behind the frame with no gap over the glass.
+    private static void CreateRightLinerWithWindowOpening(
+        Transform liners, Scene scene, Material wallPeach)
+    {
+        // Liner footprint (unchanged from the original solid box).
+        const float x = 3.788f;
+        const float thickness = 0.04f;
+        const float yMin = 0.91f, yMax = 2.93f;   // center 1.92, height 2.02
+        const float zMin = -2.86f, zMax = 2.86f;  // center 0,    length 5.72
+
+        if (!TryGetRightWallWindowOpening(scene, out float hzMin, out float hzMax,
+                out float hyMin, out float hyMax))
+        {
+            // No window found on the right wall: keep the original solid liner.
+            CreateBox(liners, "RightLiner", new Vector3(x, 1.92f, 0f),
+                new Vector3(thickness, 2.02f, 5.72f), wallPeach);
+            return;
+        }
+
+        // Front/back jambs run the full liner height on either side of the opening.
+        CreateBox(liners, "RightLiner_JambFront",
+            new Vector3(x, (yMin + yMax) * 0.5f, (zMin + hzMin) * 0.5f),
+            new Vector3(thickness, yMax - yMin, hzMin - zMin), wallPeach);
+        CreateBox(liners, "RightLiner_JambBack",
+            new Vector3(x, (yMin + yMax) * 0.5f, (hzMax + zMax) * 0.5f),
+            new Vector3(thickness, yMax - yMin, zMax - hzMax), wallPeach);
+        // Sill below and header above, spanning only the opening width.
+        CreateBox(liners, "RightLiner_Sill",
+            new Vector3(x, (yMin + hyMin) * 0.5f, (hzMin + hzMax) * 0.5f),
+            new Vector3(thickness, hyMin - yMin, hzMax - hzMin), wallPeach);
+        CreateBox(liners, "RightLiner_Header",
+            new Vector3(x, (hyMax + yMax) * 0.5f, (hzMin + hzMax) * 0.5f),
+            new Vector3(thickness, yMax - hyMax, hzMax - hzMin), wallPeach);
+    }
+
+    // Finds the WindowSystem on the right wall and returns an opening rect (z/y) that sits
+    // in the wooden frame ring: midway between the glass edge and the frame edge, so the wall
+    // never covers the glass yet leaves no visible gap.
+    private static bool TryGetRightWallWindowOpening(
+        Scene scene, out float hzMin, out float hzMax, out float hyMin, out float hyMax)
+    {
+        hzMin = hzMax = hyMin = hyMax = 0f;
+        Transform windowSystem = null;
+        foreach (GameObject sceneRoot in scene.GetRootGameObjects())
+        {
+            windowSystem = FindDeepChild(sceneRoot.transform, "WindowSystem");
+            if (windowSystem != null)
+                break;
+        }
+        if (windowSystem == null)
+            return false;
+
+        Transform window = windowSystem.Find("Window");
+        Transform glassPanel = windowSystem.Find("GlassPanel");
+        if (window == null || glassPanel == null)
+            return false;
+
+        if (!TryGetWorldBounds(window, out Bounds frame) ||
+            !TryGetWorldBounds(glassPanel, out Bounds glass))
+            return false;
+
+        // Only carve when the window is on the right wall (positive X face).
+        if (frame.center.x < 2.5f)
+            return false;
+
+        hzMin = (glass.min.z + frame.min.z) * 0.5f;
+        hzMax = (glass.max.z + frame.max.z) * 0.5f;
+        hyMin = (glass.min.y + frame.min.y) * 0.5f;
+        hyMax = (glass.max.y + frame.max.y) * 0.5f;
+        return true;
+    }
+
+    private static bool TryGetWorldBounds(Transform target, out Bounds bounds)
+    {
+        bounds = new Bounds();
+        Renderer[] renderers = target.GetComponentsInChildren<Renderer>(true);
+        bool initialized = false;
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer == null)
+                continue;
+            if (!initialized)
+            {
+                bounds = renderer.bounds;
+                initialized = true;
+            }
+            else
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+        }
+        return initialized;
+    }
+
+    private static Transform FindDeepChild(Transform parent, string name)
+    {
+        if (parent.name == name)
+            return parent;
+        foreach (Transform child in parent)
+        {
+            Transform found = FindDeepChild(child, name);
+            if (found != null)
+                return found;
+        }
+        return null;
     }
 
     private static GameObject CreateBox(

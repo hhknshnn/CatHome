@@ -65,6 +65,8 @@ public sealed class CatCatchGameController : MonoBehaviour
     private int tutorialStage;
     private float tutorialHold;
     private float tutorialElapsed;
+    private CatchBurstFx[] catchBursts = System.Array.Empty<CatchBurstFx>();
+    private int nextBurst;
 
     public static int BestScore => bestScore;
     public int Catches => catches;
@@ -79,6 +81,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         CatchLivesService.EnsureInitialized();
         if (mice == null || mice.Length == 0)
             mice = GetComponentsInChildren<CatCatchMouse>(true);
+        catchBursts = GetComponentsInChildren<CatchBurstFx>(true);
         if (player == null)
             player = GetComponentInChildren<CatCatchPlayer>(true);
         if (spawnRoot == null)
@@ -335,6 +338,7 @@ public sealed class CatCatchGameController : MonoBehaviour
             return;
         }
 
+        PlayCatchBurst(target.transform.position);
         target.Hide();
         catches++;
         combo = CatchScoring.ComboFor(combo, Time.time - lastCatchTime);
@@ -360,6 +364,22 @@ public sealed class CatCatchGameController : MonoBehaviour
         }
 
         return FindStrikeTarget(strikePoint, CatchHuntRules.StrikeRadius);
+    }
+
+    private void PlayCatchBurst(Vector3 worldPosition)
+    {
+        if (catchBursts == null || catchBursts.Length == 0)
+            return;
+        for (int i = 0; i < catchBursts.Length; i++)
+        {
+            CatchBurstFx fx = catchBursts[nextBurst % catchBursts.Length];
+            nextBurst++;
+            if (fx != null)
+            {
+                fx.Play(worldPosition + Vector3.up * 0.1f);
+                return;
+            }
+        }
     }
 
     /// <summary>A missed pounce scatters the mice it landed among.</summary>
@@ -424,12 +444,45 @@ public sealed class CatCatchGameController : MonoBehaviour
         return best;
     }
 
+    // Spread anchors across the whole arena — left/right, near/far — so the mice
+    // never start bunched in one corner. Each anchor is jittered per hunt.
+    private static readonly Vector3[] SpawnZones =
+    {
+        new Vector3(-2.1f, 0.12f, 1.35f),
+        new Vector3(2.1f, 0.12f, 1.15f),
+        new Vector3(-1.8f, 0.12f, -0.3f),
+        new Vector3(1.9f, 0.12f, -0.1f),
+        new Vector3(0f, 0.12f, 1.55f),
+        new Vector3(-2.3f, 0.12f, 0.5f),
+        new Vector3(2.3f, 0.12f, 0.4f)
+    };
+
     private void LaunchMice()
     {
         if (mice == null)
             return;
+        // A gentler clearance than the respawn value so the depth-varied zones
+        // (some sit nearer the cat's row) survive instead of all being kicked to
+        // the far half, which is what bunched the mice together at the start.
+        const float initialClearance = 1.15f;
+        Transform arena = ArenaRoot;
+        Vector3 catPos = player != null ? player.Position : (arena != null ? arena.position : Vector3.zero);
         for (int i = 0; i < mice.Length; i++)
-            LaunchOneMouse(i);
+        {
+            if (mice[i] == null)
+                continue;
+            Vector3 zone = SpawnZones[i % SpawnZones.Length];
+            Vector3 local = zone + new Vector3(
+                UnityEngine.Random.Range(-0.35f, 0.35f), 0f,
+                UnityEngine.Random.Range(-0.3f, 0.3f));
+            Vector3 world = arena != null ? arena.TransformPoint(local) : local;
+            Vector3 delta = world - catPos;
+            delta.y = 0f;
+            // If a jittered zone lands on the cat, fall back to a scattered point.
+            if (delta.sqrMagnitude < initialClearance * initialClearance)
+                world = RandomArenaPoint(initialClearance);
+            mice[i].Launch(world, MouseSpawnGrace);
+        }
     }
 
     private void KeepMiceOnTheFloor()
@@ -461,13 +514,14 @@ public sealed class CatCatchGameController : MonoBehaviour
 
     private Vector3 RandomArenaPoint(float minDistanceFromCat)
     {
+        const float minSeparation = 1.15f;
         Transform arena = ArenaRoot;
         Vector3 catPos = player != null ? player.Position : arena.position;
-        Vector3 farthest = arena != null
+        Vector3 best = arena != null
             ? arena.TransformPoint(new Vector3(2.15f, 0.12f, 1.35f))
             : new Vector3(2.15f, 0.12f, 1.35f);
-        float farthestDistance = -1f;
-        for (int attempt = 0; attempt < 16; attempt++)
+        float bestScore = -1f;
+        for (int attempt = 0; attempt < 24; attempt++)
         {
             Vector3 local = new Vector3(
                 UnityEngine.Random.Range(-2.4f, 2.4f),
@@ -476,16 +530,38 @@ public sealed class CatCatchGameController : MonoBehaviour
             Vector3 world = arena != null ? arena.TransformPoint(local) : local;
             Vector3 delta = world - catPos;
             delta.y = 0f;
-            float distance = delta.sqrMagnitude;
-            if (distance >= minDistanceFromCat * minDistanceFromCat)
+            float catDistance = delta.magnitude;
+            float mouseDistance = NearestActiveMouseDistance(world);
+            // Perfect spot: clear of the cat and not stacked on another mouse.
+            if (catDistance >= minDistanceFromCat && mouseDistance >= minSeparation)
                 return world;
-            if (distance <= farthestDistance)
-                continue;
-            farthestDistance = distance;
-            farthest = world;
+            // Otherwise remember the candidate that best balances both spacings.
+            float score = Mathf.Min(catDistance / Mathf.Max(0.01f, minDistanceFromCat), 1f) +
+                          Mathf.Min(mouseDistance / minSeparation, 1f);
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = world;
+            }
         }
 
-        return farthest;
+        return best;
+    }
+
+    private float NearestActiveMouseDistance(Vector3 world)
+    {
+        if (mice == null)
+            return float.PositiveInfinity;
+        float nearest = float.PositiveInfinity;
+        for (int i = 0; i < mice.Length; i++)
+        {
+            if (mice[i] == null || !mice[i].IsActive)
+                continue;
+            Vector3 delta = mice[i].transform.position - world;
+            delta.y = 0f;
+            nearest = Mathf.Min(nearest, delta.magnitude);
+        }
+        return nearest;
     }
 
     private CatCatchMouse FindIdleMouse()

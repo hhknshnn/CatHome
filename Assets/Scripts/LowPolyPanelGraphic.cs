@@ -399,10 +399,14 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         float travel = innerRect.width * 0.68f;
         float centerX = Mathf.Lerp(innerRect.center.x - travel * 0.5f,
             innerRect.center.x + travel * 0.5f, phase);
-        float halfWidth = Mathf.Clamp(innerRect.width * 0.055f, 3f, 30f);
-        float slant = innerRect.height * 0.14f;
-        Color soft = new Color(1f, 1f, 1f, strength * 0.22f);
-        Color bright = new Color(1f, 1f, 1f, strength);
+        // A premium sheen is a thin translucent glass streak, not a wide bright
+        // slash. The previous 30px half-width at full alpha cut straight through
+        // the centered label; keep it narrow and faint so it reads as a moving
+        // highlight the eye barely catches.
+        float halfWidth = Mathf.Clamp(innerRect.width * 0.024f, 2f, 11f);
+        float slant = innerRect.height * 0.16f;
+        Color soft = new Color(1f, 1f, 1f, strength * 0.05f);
+        Color bright = new Color(1f, 1f, 1f, strength * 0.4f);
         AddQuad(
             vh,
             new Vector2(Mathf.Clamp(centerX - halfWidth - slant, xMin, xMax), yMin),

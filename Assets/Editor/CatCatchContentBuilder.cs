@@ -29,6 +29,25 @@ public static class CatCatchContentBuilder
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Peach = new Color32(255, 177, 120, 255);
 
+    // Premium arena palette: soft, harmonious pastels that read as the same
+    // candy world as the home room, replacing the old clashing teal / orange /
+    // maroon blocks. Walls stay light so the cat and mice pop against them.
+    private static readonly Color WallPeach = new Color32(255, 219, 201, 255);
+    private static readonly Color WallMint = new Color32(202, 241, 223, 255);
+    private static readonly Color WallSky = new Color32(197, 233, 248, 255);
+    private static readonly Color TrimCream = new Color32(255, 244, 214, 255);
+    private static readonly Color TrimGold = new Color32(249, 190, 78, 255);
+    private static readonly Color TileMint = new Color32(208, 244, 227, 255);
+    private static readonly Color TileLilac = new Color32(228, 213, 248, 255);
+    private static readonly Color RugPink = new Color32(255, 190, 206, 255);
+    private static readonly Color RugCream = new Color32(255, 240, 222, 255);
+    // Cute premium mouse: soft lilac body, cream belly, pink ears/nose/tail and
+    // a dark eye. The old near-black Ink body read as a flat blob on the floor.
+    private static readonly Color MouseBody = new Color32(198, 156, 236, 255);
+    private static readonly Color MouseBelly = new Color32(255, 240, 224, 255);
+    private static readonly Color MousePink = new Color32(255, 150, 180, 255);
+    private static readonly Color EyeInk = new Color32(46, 35, 60, 255);
+
     // The welcome screen is deliberately built from the same tokens as the Cat
     // Runner welcome so the two mini-games read as one product: same card cream,
     // same gold hero frame, same grape best-score pill, same teal exit button.
@@ -69,6 +88,7 @@ public static class CatCatchContentBuilder
         Transform spawn = CreatePoint(root.transform, "CatSpawn", new Vector3(0f, 0f, -1.6f));
         CatCatchPlayer player = BuildPlayer(root.transform, spawn, camera);
         CatCatchMouse[] mice = BuildMice(root.transform, materials, player.transform);
+        BuildCatchBursts(root.transform, materials);
         // Keep hand-authored / AI premium hero art when present; only bake a
         // procedural arena still as a fallback so rebuilds never wipe the card.
         if (AssetDatabase.LoadAssetAtPath<Texture2D>(CatchHeroPath) == null)
@@ -125,7 +145,20 @@ public static class CatCatchContentBuilder
             ["Lilac"] = EnsureMaterial("Catch_Lilac", Lilac, .02f, .57f),
             ["Lemon"] = EnsureMaterial("Catch_Lemon", Lemon, .03f, .6f),
             ["Peach"] = EnsureMaterial("Catch_Peach", Peach, .02f, .56f),
-            ["Ink"] = EnsureMaterial("Catch_Ink", Ink, .05f, .36f)
+            ["Ink"] = EnsureMaterial("Catch_Ink", Ink, .05f, .36f),
+            ["WallPeach"] = EnsureMaterial("Catch_WallPeach", WallPeach, .0f, .34f),
+            ["WallMint"] = EnsureMaterial("Catch_WallMint", WallMint, .0f, .34f),
+            ["WallSky"] = EnsureMaterial("Catch_WallSky", WallSky, .0f, .34f),
+            ["TrimCream"] = EnsureMaterial("Catch_TrimCream", TrimCream, .0f, .5f),
+            ["TrimGold"] = EnsureMaterial("Catch_TrimGold", TrimGold, .08f, .62f),
+            ["TileMint"] = EnsureMaterial("Catch_TileMint", TileMint, .0f, .5f),
+            ["TileLilac"] = EnsureMaterial("Catch_TileLilac", TileLilac, .0f, .5f),
+            ["RugPink"] = EnsureMaterial("Catch_RugPink", RugPink, .0f, .46f),
+            ["RugCream"] = EnsureMaterial("Catch_RugCream", RugCream, .0f, .46f),
+            ["MouseBody"] = EnsureMaterial("Catch_MouseBody", MouseBody, .02f, .5f),
+            ["MouseBelly"] = EnsureMaterial("Catch_MouseBelly", MouseBelly, .0f, .5f),
+            ["MousePink"] = EnsureMaterial("Catch_MousePink", MousePink, .02f, .54f),
+            ["EyeInk"] = EnsureMaterial("Catch_EyeInk", EyeInk, .0f, .3f)
         };
     }
 
@@ -177,33 +210,133 @@ public static class CatCatchContentBuilder
         Light light = key.GetComponent<Light>();
         light.type = LightType.Directional;
         light.color = Cream;
-        light.intensity = 1.05f;
+        light.intensity = 1.0f;
         light.shadows = LightShadows.Soft;
+        light.shadowStrength = 0.55f;
+
+        // Soft cyan fill from the opposite side removes the flat, single-shade
+        // look and gives the pastel walls gentle dimension.
+        GameObject fill = new GameObject("Catch Fill Light", typeof(Light));
+        fill.transform.SetParent(parent, false);
+        fill.transform.rotation = Quaternion.Euler(38f, 150f, 0f);
+        Light fillLight = fill.GetComponent<Light>();
+        fillLight.type = LightType.Directional;
+        fillLight.color = new Color32(150, 226, 255, 255);
+        fillLight.intensity = 0.45f;
+        fillLight.shadows = LightShadows.None;
+
+        // Bright, slightly warm ambient so shadowed sides stay in the candy range.
+        RenderSettings.ambientMode = AmbientMode.Flat;
+        RenderSettings.ambientLight = new Color(0.82f, 0.85f, 0.9f, 1f);
     }
 
     private static void BuildArena(Transform parent, IReadOnlyDictionary<string, Material> materials)
     {
         Transform arena = CreatePoint(parent, "CatchArena", Vector3.zero);
+        // Floor keeps its collider and 8x6 footprint — the hunt clamps the cat to
+        // it and taps raycast against it, so geometry is locked; only the finish
+        // is lifted to the premium candy palette.
         CreateBlock(arena, "Floor", new Vector3(0f, -0.1f, 0f), new Vector3(8f, 0.2f, 6f),
             materials["Cream"]);
         for (int x = 0; x < 8; x++)
         {
             for (int z = 0; z < 6; z++)
             {
-                Material tile = ((x + z) & 1) == 0 ? materials["Mint"] : materials["Lilac"];
+                Material tile = ((x + z) & 1) == 0 ? materials["TileMint"] : materials["TileLilac"];
                 CreateBlock(arena, $"Tile_{x}_{z}",
                     new Vector3(-3.5f + x, 0.01f, -2.5f + z),
                     new Vector3(0.96f, 0.02f, 0.96f), tile);
             }
         }
+
+        // Soft round play rug in the middle so the arena reads as a cosy room,
+        // not a bare checker grid. Thin discs, no collider.
+        CreateDisc(arena, "PlayRugBase", new Vector3(0f, 0.02f, -0.1f),
+            new Vector3(4.6f, 0.02f, 3.5f), materials["RugPink"]);
+        CreateDisc(arena, "PlayRugInner", new Vector3(0f, 0.025f, -0.1f),
+            new Vector3(3.7f, 0.02f, 2.8f), materials["RugCream"]);
+
+        // Harmonious pastel walls with cream + gold trim and a wainscot line,
+        // matching the home room's premium finish.
         CreateBlock(arena, "BackWall", new Vector3(0f, 1.5f, 2.9f),
-            new Vector3(8f, 3f, 0.2f), materials["Peach"]);
+            new Vector3(8f, 3f, 0.2f), materials["WallPeach"]);
         CreateBlock(arena, "LeftWall", new Vector3(-3.9f, 1.5f, 0f),
-            new Vector3(0.2f, 3f, 6f), materials["Aqua"]);
+            new Vector3(0.2f, 3f, 6f), materials["WallMint"]);
         CreateBlock(arena, "RightWall", new Vector3(3.9f, 1.5f, 0f),
-            new Vector3(0.2f, 3f, 6f), materials["Coral"]);
-        CreateSphere(arena, "PawPad", new Vector3(0f, 2.15f, 2.78f),
-            new Vector3(0.42f, 0.32f, 0.08f), materials["Lemon"]);
+            new Vector3(0.2f, 3f, 6f), materials["WallSky"]);
+
+        BuildWallTrim(arena, materials);
+        BuildWallMotifs(arena, materials);
+    }
+
+    /// <summary>
+    /// Cream crown + baseboard + wainscot line on the three walls, plus a thin
+    /// gold inset, so the arena shell reads as finished trim like the home room.
+    /// All trim is inside the wall faces (x = +-3.79, z = 2.79) and collider-free.
+    /// </summary>
+    private static void BuildWallTrim(Transform arena, IReadOnlyDictionary<string, Material> materials)
+    {
+        Material cream = materials["TrimCream"];
+        Material gold = materials["TrimGold"];
+        const float inner = 3.79f;
+        const float backZ = 2.79f;
+
+        // Crown (top) trim.
+        CreateBlock(arena, "Crown_Back", new Vector3(0f, 2.82f, backZ),
+            new Vector3(7.9f, 0.16f, 0.12f), cream);
+        CreateBlock(arena, "Crown_Left", new Vector3(-inner, 2.82f, 0f),
+            new Vector3(0.12f, 0.16f, 5.9f), cream);
+        CreateBlock(arena, "Crown_Right", new Vector3(inner, 2.82f, 0f),
+            new Vector3(0.12f, 0.16f, 5.9f), cream);
+        // Baseboard (bottom) trim.
+        CreateBlock(arena, "Base_Back", new Vector3(0f, 0.16f, backZ),
+            new Vector3(7.9f, 0.3f, 0.14f), cream);
+        CreateBlock(arena, "Base_Left", new Vector3(-inner, 0.16f, 0f),
+            new Vector3(0.14f, 0.3f, 5.9f), cream);
+        CreateBlock(arena, "Base_Right", new Vector3(inner, 0.16f, 0f),
+            new Vector3(0.14f, 0.3f, 5.9f), cream);
+        // Gold wainscot line ~ home 0.57 band.
+        CreateBlock(arena, "Wainscot_Back", new Vector3(0f, 0.9f, backZ),
+            new Vector3(7.6f, 0.05f, 0.06f), gold);
+        CreateBlock(arena, "Wainscot_Left", new Vector3(-inner, 0.9f, 0f),
+            new Vector3(0.06f, 0.05f, 5.6f), gold);
+        CreateBlock(arena, "Wainscot_Right", new Vector3(inner, 0.9f, 0f),
+            new Vector3(0.06f, 0.05f, 5.6f), gold);
+    }
+
+    /// <summary>Flat candy paw pads on the walls, matching the home motifs.</summary>
+    private static void BuildWallMotifs(Transform arena, IReadOnlyDictionary<string, Material> materials)
+    {
+        CreatePawMotif(arena, "PawBackLeft", new Vector3(-2.2f, 2.0f, 2.77f),
+            Quaternion.identity, materials["MousePink"], materials["Lemon"], 1f);
+        CreatePawMotif(arena, "PawBackRight", new Vector3(2.2f, 1.85f, 2.77f),
+            Quaternion.identity, materials["Mint"], materials["MousePink"], 0.85f);
+        CreatePawMotif(arena, "PawLeft", new Vector3(-3.77f, 2.05f, -0.7f),
+            Quaternion.Euler(0f, 90f, 0f), materials["Lemon"], materials["Aqua"], 0.8f);
+        CreatePawMotif(arena, "PawRight", new Vector3(3.77f, 1.7f, 0.8f),
+            Quaternion.Euler(0f, -90f, 0f), materials["MousePink"], materials["Mint"], 0.8f);
+    }
+
+    /// <summary>A round paw: one pad plus four toe beans, flattened onto a wall.</summary>
+    private static void CreatePawMotif(
+        Transform parent, string name, Vector3 position, Quaternion rotation,
+        Material pad, Material toes, float scale)
+    {
+        GameObject paw = new GameObject(name);
+        paw.transform.SetParent(parent, false);
+        paw.transform.localPosition = position;
+        paw.transform.localRotation = rotation;
+        paw.transform.localScale = Vector3.one * scale;
+        CreateSphere(paw.transform, "Pad", new Vector3(0f, -0.05f, 0f),
+            new Vector3(0.34f, 0.28f, 0.06f), pad);
+        CreateSphere(paw.transform, "Toe0", new Vector3(-0.17f, 0.2f, 0f),
+            new Vector3(0.12f, 0.14f, 0.05f), toes);
+        CreateSphere(paw.transform, "Toe1", new Vector3(-0.055f, 0.27f, 0f),
+            new Vector3(0.12f, 0.15f, 0.05f), toes);
+        CreateSphere(paw.transform, "Toe2", new Vector3(0.065f, 0.27f, 0f),
+            new Vector3(0.12f, 0.15f, 0.05f), toes);
+        CreateSphere(paw.transform, "Toe3", new Vector3(0.18f, 0.2f, 0f),
+            new Vector3(0.12f, 0.14f, 0.05f), toes);
     }
 
     private static CatCatchPlayer BuildPlayer(Transform parent, Transform spawn, Camera camera)
@@ -257,23 +390,63 @@ public static class CatCatchContentBuilder
             Transform mouseRoot = CreatePoint(parent, "CatchMouse_" + (i + 1),
                 new Vector3(-2f + i, 0.12f, 0.4f));
             CreateSphere(mouseRoot, "Body", Vector3.zero, new Vector3(0.38f, 0.26f, 0.52f),
-                materials["Ink"]);
-            CreateSphere(mouseRoot, "Belly", new Vector3(0f, -0.02f, 0.04f),
-                new Vector3(0.28f, 0.16f, 0.34f), materials["Peach"]);
-            CreateSphere(mouseRoot, "EarL", new Vector3(-0.12f, 0.16f, -0.06f),
-                new Vector3(0.12f, 0.16f, 0.07f), materials["Coral"]);
-            CreateSphere(mouseRoot, "EarR", new Vector3(0.12f, 0.16f, -0.06f),
-                new Vector3(0.12f, 0.16f, 0.07f), materials["Coral"]);
-            CreateSphere(mouseRoot, "Nose", new Vector3(0f, 0.04f, 0.24f),
-                Vector3.one * 0.09f, materials["Lemon"]);
+                materials["MouseBody"]);
+            CreateSphere(mouseRoot, "Belly", new Vector3(0f, -0.04f, 0.05f),
+                new Vector3(0.3f, 0.17f, 0.36f), materials["MouseBelly"]);
+            CreateSphere(mouseRoot, "EarL", new Vector3(-0.13f, 0.17f, -0.04f),
+                new Vector3(0.15f, 0.18f, 0.08f), materials["MousePink"]);
+            CreateSphere(mouseRoot, "EarR", new Vector3(0.13f, 0.17f, -0.04f),
+                new Vector3(0.15f, 0.18f, 0.08f), materials["MousePink"]);
+            // Ear inner beans + eyes for a cute, readable face.
+            CreateSphere(mouseRoot, "EarInnerL", new Vector3(-0.13f, 0.18f, -0.005f),
+                new Vector3(0.08f, 0.1f, 0.05f), materials["MouseBelly"]);
+            CreateSphere(mouseRoot, "EarInnerR", new Vector3(0.13f, 0.18f, -0.005f),
+                new Vector3(0.08f, 0.1f, 0.05f), materials["MouseBelly"]);
+            CreateSphere(mouseRoot, "EyeL", new Vector3(-0.1f, 0.06f, 0.2f),
+                Vector3.one * 0.07f, materials["EyeInk"]);
+            CreateSphere(mouseRoot, "EyeR", new Vector3(0.1f, 0.06f, 0.2f),
+                Vector3.one * 0.07f, materials["EyeInk"]);
+            CreateSphere(mouseRoot, "Nose", new Vector3(0f, 0.02f, 0.26f),
+                Vector3.one * 0.08f, materials["MousePink"]);
             CreateSphere(mouseRoot, "Tail", new Vector3(0f, 0.06f, -0.28f),
-                new Vector3(0.08f, 0.08f, 0.28f), materials["Lilac"]);
+                new Vector3(0.08f, 0.08f, 0.28f), materials["MousePink"]);
             CatCatchMouse mouse = mouseRoot.gameObject.AddComponent<CatCatchMouse>();
             mouse.Configure(parent, minLocal, maxLocal, cat);
             mouse.Hide();
             mice[i] = mouse;
         }
         return mice;
+    }
+
+    /// <summary>
+    /// A small pool of scale-only catch celebrations. The controller finds these
+    /// via GetComponentsInChildren and round-robins one on every catch.
+    /// </summary>
+    private static void BuildCatchBursts(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform pool = CreatePoint(parent, "CatchBursts", Vector3.zero);
+        Material[] confettiMats =
+        {
+            materials["Lemon"], materials["MousePink"], materials["Aqua"],
+            materials["Mint"], materials["Coral"], materials["Lilac"]
+        };
+        for (int b = 0; b < 4; b++)
+        {
+            GameObject burst = new GameObject("CatchBurst_" + (b + 1));
+            burst.transform.SetParent(pool, false);
+            Transform ring = CreateDisc(burst.transform, "Ring", new Vector3(0f, 0.09f, 0f),
+                new Vector3(0.55f, 0.02f, 0.55f), materials["Cream"]).transform;
+            var confetti = new Transform[6];
+            for (int i = 0; i < confetti.Length; i++)
+            {
+                confetti[i] = CreateSphere(burst.transform, "Bit_" + i,
+                    new Vector3(0f, 0.15f, 0f), Vector3.one * 0.14f,
+                    confettiMats[i % confettiMats.Length]).transform;
+            }
+            CatchBurstFx fx = burst.AddComponent<CatchBurstFx>();
+            fx.EditorBind(ring, confetti);
+        }
     }
 
     private static void BuildUi(
@@ -331,20 +504,20 @@ public static class CatCatchContentBuilder
         pounceInput.EditorBind(game);
         score = CreateStatPill(
             hud.transform, "ScorePill", "SCORE", "0", Lemon, Ink,
-            new Vector2(0f, 1f), new Vector2(196f, -64f), new Vector2(300f, 96f), 38f);
+            new Vector2(0f, 1f), new Vector2(184f, -60f), new Vector2(292f, 74f), 36f);
         combo = CreateLabel(hud.transform, "ComboLabel", string.Empty, 24f, Coral);
         SetAnchored(combo.rectTransform, new Vector2(0f, 1f),
-            new Vector2(196f, -176f), new Vector2(300f, 34f));
+            new Vector2(184f, -128f), new Vector2(292f, 32f));
         combo.alignment = TextAlignmentOptions.Center;
         combo.raycastTarget = false;
 
         timer = CreateStatPill(
             hud.transform, "TimerPill", "TIME LEFT", "60", Coral, Color.white,
-            new Vector2(0.5f, 1f), new Vector2(0f, -64f), new Vector2(240f, 96f), 44f);
+            new Vector2(0.5f, 1f), new Vector2(0f, -60f), new Vector2(232f, 74f), 40f);
 
         caught = CreateStatPill(
             hud.transform, "CatchPill", "MICE  •  COINS", "0  •  0", Aqua, Ink,
-            new Vector2(1f, 1f), new Vector2(-306f, -64f), new Vector2(340f, 96f), 32f);
+            new Vector2(1f, 1f), new Vector2(-298f, -60f), new Vector2(332f, 74f), 32f);
 
         GameObject hintPill = CreatePremium(hud.transform, "HintPill", Cream, 20f);
         SetAnchored(hintPill.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
@@ -354,12 +527,12 @@ public static class CatCatchContentBuilder
         Stretch(hint.rectTransform);
         hint.alignment = TextAlignmentOptions.Center;
         hint.raycastTarget = false;
-        pause = CreateButton(hud.transform, "PauseButton", "II", Lilac, new Vector2(76f, 70f));
+        pause = CreateButton(hud.transform, "PauseButton", "II", Lilac, new Vector2(72f, 66f));
         SetAnchored(pause.GetComponent<RectTransform>(), new Vector2(1f, 1f),
-            new Vector2(-52f, -58f), new Vector2(76f, 70f));
+            new Vector2(-56f, -60f), new Vector2(72f, 66f));
         TMP_Text pauseLabel = pause.GetComponentInChildren<TMP_Text>(true);
         if (pauseLabel != null)
-            pauseLabel.fontSize = 28f;
+            pauseLabel.fontSize = 26f;
 
         // Deliberately the Cat Runner welcome geometry: same scrim, same candy
         // ribbons, same 1100x770 card, same left hero frame and right action
@@ -491,36 +664,36 @@ public static class CatCatchContentBuilder
         GameObject resultShadow = CreatePremium(
             results.transform, "ResultsCardShadow", new Color32(255, 221, 86, 220), 46f);
         SetAnchored(resultShadow.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(736f, 676f));
+            Vector2.zero, new Vector2(736f, 616f));
         GameObject resultCard = CreatePremium(results.transform, "ResultsCard", CardCream, 46f);
         SetAnchored(resultCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(720f, 660f));
+            Vector2.zero, new Vector2(720f, 600f));
 
         GameObject titleBanner = CreatePremium(resultCard.transform, "ResultBanner", Lemon, 28f);
         SetAnchored(titleBanner.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(0f, -70f), new Vector2(600f, 104f));
-        title = CreateLabel(titleBanner.transform, "ResultTitle", "MIGHTY HUNTER!", 44f, Ink);
+            new Vector2(0f, -58f), new Vector2(600f, 96f));
+        title = CreateLabel(titleBanner.transform, "ResultTitle", "MIGHTY HUNTER!", 42f, Ink);
         Stretch(title.rectTransform);
         title.alignment = TextAlignmentOptions.Center;
         title.fontStyle = FontStyles.Bold;
 
+        // Sits clear below the banner (no overlap) and centres its four rows.
         GameObject detailPanel = CreatePremium(resultCard.transform, "ResultDetailPanel", Aqua, 26f);
         SetAnchored(detailPanel.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(0f, -196f), new Vector2(600f, 232f));
+            new Vector2(0f, -232f), new Vector2(600f, 236f));
         details = CreateLabel(detailPanel.transform, "ResultDetails", string.Empty, 27f, Ink);
-        SetAnchored(details.rectTransform, new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(548f, 200f));
+        StretchWithOffsets(details.rectTransform, 26f, 18f, -26f, -18f);
         details.alignment = TextAlignmentOptions.Center;
-        details.lineSpacing = 22f;
+        details.lineSpacing = 26f;
 
         collect = CreateButton(resultCard.transform, "CollectButton", "COLLECT  •  HOME", Orange,
-            new Vector2(470f, 96f));
+            new Vector2(470f, 92f));
         SetAnchored(collect.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 124f), new Vector2(470f, 96f));
+            new Vector2(0f, 158f), new Vector2(470f, 92f));
         retry = CreateButton(resultCard.transform, "RetryButton", "HUNT AGAIN", Teal,
-            new Vector2(470f, 78f));
+            new Vector2(470f, 76f));
         SetAnchored(retry.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 32f), new Vector2(470f, 78f));
+            new Vector2(0f, 60f), new Vector2(470f, 76f));
 
         tutorial = CreateUi("CatchTutorialPanel", canvasObject.transform);
         Stretch(tutorial.GetComponent<RectTransform>());
@@ -555,20 +728,20 @@ public static class CatCatchContentBuilder
         pauseScrim.color = new Color32(52, 44, 137, 230);
         GameObject pauseCard = CreatePremium(pausePanel.transform, "PauseCard", CardCream, 42f);
         SetAnchored(pauseCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(680f, 520f));
-        TMP_Text pauseTitle = CreateLabel(pauseCard.transform, "PauseTitle", "HUNT PAUSED", 46f, Ink);
+            Vector2.zero, new Vector2(660f, 388f));
+        TMP_Text pauseTitle = CreateLabel(pauseCard.transform, "PauseTitle", "HUNT PAUSED", 44f, Ink);
         SetAnchored(pauseTitle.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -90f), new Vector2(560f, 70f));
+            new Vector2(0f, -74f), new Vector2(560f, 66f));
         pauseTitle.alignment = TextAlignmentOptions.Center;
         pauseTitle.fontStyle = FontStyles.Bold;
         resume = CreateButton(pauseCard.transform, "ResumeButton", "RESUME HUNT", Orange,
-            new Vector2(430f, 92f));
+            new Vector2(430f, 90f));
         SetAnchored(resume.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 168f), new Vector2(430f, 92f));
+            new Vector2(0f, 150f), new Vector2(430f, 90f));
         pauseExit = CreateButton(pauseCard.transform, "PauseExitButton", "EXIT TO MAIN MENU",
-            Teal, new Vector2(430f, 72f));
+            Teal, new Vector2(430f, 74f));
         SetAnchored(pauseExit.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 78f), new Vector2(430f, 72f));
+            new Vector2(0f, 52f), new Vector2(430f, 74f));
 
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
             PremiumUiStyle.PremiumFontAssetPath);
@@ -830,6 +1003,20 @@ public static class CatCatchContentBuilder
         return sphere;
     }
 
+    private static GameObject CreateDisc(
+        Transform parent, string name, Vector3 position, Vector3 scale, Material material)
+    {
+        GameObject disc = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        disc.name = name;
+        disc.transform.SetParent(parent, false);
+        disc.transform.localPosition = position;
+        // Unity's cylinder is 2 units tall; scale.y here is the full thickness.
+        disc.transform.localScale = new Vector3(scale.x, scale.y * 0.5f, scale.z);
+        disc.GetComponent<Renderer>().sharedMaterial = material;
+        UnityEngine.Object.DestroyImmediate(disc.GetComponent<Collider>());
+        return disc;
+    }
+
     private static Transform CreatePoint(Transform parent, string name, Vector3 localPosition)
     {
         GameObject point = new GameObject(name);
@@ -877,20 +1064,25 @@ public static class CatCatchContentBuilder
         GameObject pill = CreatePremium(parent, name, color, 22f);
         SetAnchored(pill.GetComponent<RectTransform>(), anchor, position, size);
 
-        // Both rows hang off the pill's top edge: anchoring the value to the
-        // bottom instead let a tall value climb back into the caption band, which
-        // is what printed "TIME LEFT" straight through the countdown digits.
-        TMP_Text captionLabel = CreateLabel(pill.transform, "Caption", caption, 17f, valueColor);
-        SetAnchored(captionLabel.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -14f), new Vector2(size.x - 24f, 20f));
+        // Caption + value are one tightly-stacked block centred on the pill so
+        // there is no top-heavy caption with a dead gap under the value. Both use
+        // the centre anchor and mirror each other around it.
+        const float captionHeight = 20f;
+        const float rowGap = 3f;
+        float captionCenterY = valueSize * 0.5f + rowGap * 0.5f;
+        float valueCenterY = -(captionHeight * 0.5f + rowGap * 0.5f);
+
+        TMP_Text captionLabel = CreateLabel(pill.transform, "Caption", caption, 16f, valueColor);
+        SetAnchored(captionLabel.rectTransform, new Vector2(0.5f, 0.5f),
+            new Vector2(0f, captionCenterY), new Vector2(size.x - 24f, captionHeight));
         captionLabel.alignment = TextAlignmentOptions.Center;
         captionLabel.alpha = 0.72f;
         captionLabel.characterSpacing = 5f;
         captionLabel.raycastTarget = false;
 
         TMP_Text valueLabel = CreateLabel(pill.transform, "Value", value, valueSize, valueColor);
-        SetAnchored(valueLabel.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -38f), new Vector2(size.x - 24f, size.y - 46f));
+        SetAnchored(valueLabel.rectTransform, new Vector2(0.5f, 0.5f),
+            new Vector2(0f, valueCenterY), new Vector2(size.x - 24f, valueSize + 8f));
         valueLabel.alignment = TextAlignmentOptions.Center;
         valueLabel.raycastTarget = false;
         return valueLabel;
