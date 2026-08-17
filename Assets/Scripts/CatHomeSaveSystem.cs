@@ -62,6 +62,12 @@ public sealed class CatHomeSaveData
     // Version 9: Cat Catch independent lives and best score.
     public CatchLivesSaveState catchLives;
     public int catchBestScore;
+
+    // Version 10: Home progression. Cumulative Home XP earned from home
+    // improvements; the Home Level is always derived from it, never stored.
+    // Older saves lack it and MigrateSaveData seeds a zero default, so no
+    // existing wallet, ownership or need value is touched.
+    public HomeProgressionSaveState homeProgression;
 }
 
 public static class CatHomeSaveSystem
@@ -104,7 +110,7 @@ public static class CatHomeSaveSystem
         public float EnergyAfter { get; }
     }
 
-    public const int CurrentSaveVersion = 9;
+    public const int CurrentSaveVersion = 10;
     public const string SaveFileName = "cat-home-save.json";
 
     private static HungerSystem hungerSystem;
@@ -376,6 +382,7 @@ public static class CatHomeSaveSystem
         long previousDiamonds = data.diamonds;
         long previousBondXp = data.bondXp;
         int previousChapter = data.playerLevel;
+        long previousHomeXp = data.homeProgression?.homeXp ?? 0L;
         int clearedQuestEntries = data.questProgress?.Length ?? 0;
 
         // Only the progression subset is touched; every other loaded field is
@@ -386,6 +393,7 @@ public static class CatHomeSaveSystem
         data.bondXp = 0;
         data.playerLevel = 1;
         data.questProgress = Array.Empty<QuestProgressEntry>();
+        data.homeProgression = HomeProgressionSaveState.CreateDefault();
 
         // Zeroed explicitly rather than left null: an empty economy section means
         // "keep what is loaded" on the load path, which would preserve exactly the
@@ -410,6 +418,7 @@ public static class CatHomeSaveSystem
             "Reset Progression Test Data complete. Progression cleared " +
             $"(quest chapter {previousChapter} -> 1, coins {previousCoins} -> 0, " +
             $"diamonds {previousDiamonds} -> 0, bond XP {previousBondXp} -> 0, " +
+            $"home XP {previousHomeXp} -> 0, " +
             $"{clearedQuestEntries} quest progress " +
             $"entr{(clearedQuestEntries == 1 ? "y" : "ies")} removed). " +
             "Hunger, thirst, energy, cat pose, sleep state, onboarding, pet tutorial " +
@@ -455,7 +464,8 @@ public static class CatHomeSaveSystem
             homeStore = HomeStoreService.CaptureState(),
             runnerProgress = CatRunnerProgressService.CaptureState(savedAtUtc),
             catchLives = CatchLivesService.CaptureState(savedAtUtc),
-            catchBestScore = CatCatchGameController.CaptureBestScore()
+            catchBestScore = CatCatchGameController.CaptureBestScore(),
+            homeProgression = HomeProgressionService.CaptureState()
         };
     }
 
@@ -581,6 +591,9 @@ public static class CatHomeSaveSystem
             data.catchBestScore = 0;
         }
 
+        if (loadedVersion < 10)
+            data.homeProgression = HomeProgressionSaveState.CreateDefault();
+
         data.version = CurrentSaveVersion;
         Debug.Log(
             $"CatHomeSaveSystem migrated the local save from version {loadedVersion} " +
@@ -683,6 +696,7 @@ public static class CatHomeSaveSystem
         CatRunnerProgressService.ApplySavedState(data.runnerProgress, DateTime.UtcNow);
         CatchLivesService.ApplySavedState(data.catchLives, DateTime.UtcNow);
         CatCatchGameController.ApplyBestScore(data.catchBestScore);
+        HomeProgressionService.ApplySavedState(data.homeProgression);
 
         // A completed run is recorded before payout. Clearing that record before
         // the idempotent economy grant means the grant's immediate save contains

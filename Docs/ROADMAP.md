@@ -1,6 +1,6 @@
 # Cat Home Roadmap
 
-Son güncelleme: 12 Ağustos 2026
+Son güncelleme: 17 Ağustos 2026
 
 ## Ürün yönü
 
@@ -10,7 +10,7 @@ Ana döngü:
 
 > Kediye bak → Cat Runner oyna → Coin kazan → Evi geliştir → Home XP kazan → Yeni alan ve içerik aç → Tekrar oyna
 
-İlk ve tek planlanan mini oyun Cat Runner'dır. Yeni mini oyunlar MVP kapsamına alınmayacaktır.
+İlk planlanan mini oyun Cat Runner'dır. MVP kapsamı sonradan ikinci bir mini oyunla (Cat Catch) genişletildi; ikisi de Games hub üzerinden açılır. Yeni mini oyunlar bundan sonra ayrıca değerlendirilecektir.
 
 ## Kalıcı progression kararları
 
@@ -59,7 +59,11 @@ Kedi kötü durumdayken Runner kilitlenmez. İyi bakım cezayı kaldırmak yerin
 - [x] Home Store eklendi; top sepeti (120 Coin) ve tırmalama tahtası (280 Coin) satın alındığında odada kalıcı olarak açılıyor.
 - [x] Satın alınan ev ürünleri odanın geçerli zemin alanında sürüklenebiliyor; duvar, koltuk, masa, mama alanı ve diğer eşyalarla çakışan konumlar engelleniyor; konum ve yön kaydediliyor.
 - [x] Top aktivitesi sevme animasyonu/kalplerden ayrıldı; top sekmesi ve hedefe bakış iyileştirildi; mevcut kedi iskeletine özel pati vurma, pounce ve döngülü tırmalama animasyonları eklendi.
-- [ ] Home XP ve Home Level eklenecek.
+- [x] Home Store dört tam odaya genişledi: Living Room, Bathroom, Kitchen, Bedroom (her biri 10 parçalık koleksiyon) ve `RoomSelectorPanel` oda navigasyonu.
+- [x] İkinci mini oyun Cat Catch ve iki oyunu barındıran Games hub eklendi.
+- [x] IAP elmas paket kataloğu (10/20/50/100/500/1000) ve doğrulanmış satın alma seam'i hazırlandı; gerçek tahsilat yalnız platform doğrulaması sonrası ödül verir.
+- [x] Living Room penceresi + gün/gece `WindowSystem`; premium pastel duvar/ışık geçişi.
+- [~] Home XP ve Home Level **sözleşme fazı** eklendi: Home XP ev geliştirmelerinden (Home Store satın alımı) kazanılır, Home Level XP'den türetilir, save şema v10. Şu an ek/görünür progression; oda kilidini henüz yönetmez (UI gösterimi ve gating bekliyor).
 
 ## Altı aylık geliştirme sırası
 
@@ -169,10 +173,10 @@ Hedef: Ana döngü kanıtlandıktan sonra uzun süreli kullanım ve yayın hazı
 
 ## Sıradaki çalışma paketi
 
-1. Cat Runner kontrol, hız ve engel okunabilirliği için oynanış ayarı.
-2. Koşu ve mağaza için ses, parçacık ve satın alma kutlaması.
-3. Runner parkur segmentlerinin görsel çeşitlendirilmesi.
-4. İlk Home XP kazanımı ve Home Level sözleşmesi.
+1. ~~İlk Home XP kazanımı ve Home Level sözleşmesi.~~ ✅ Tamam (17 Ağustos 2026): `HomeProgressionService`, save v10, Home Store satın alımından XP.
+2. Home Level'ı arayüzde göstermek (HUD/mağaza rozeti) — "ilk Home XP kazanımı"nın oyuncuya görünür ayağı.
+3. Home Level'ın içerik açılımlarını yönetmesi (Aşama 4): oda/ürün kilitlerini `ProgressionService` quest chapter yerine Home Level'a bağlamak.
+4. Runner parkur segmentlerinin görsel çeşitlendirilmesi.
 5. Yeni mağaza ürünleri için veri odaklı katalog genişletmesi.
 
-Home XP eklenmeden önce Runner → Coin → Home Store → odada kalıcı açılım döngüsü oyuncu testiyle doğrulanacaktır.
+Runner → Coin → Home Store → odada kalıcı açılım döngüsü çalışır durumda ve Home XP artık bu döngünün satın alma adımından besleniyor.

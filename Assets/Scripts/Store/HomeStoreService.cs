@@ -1142,6 +1142,9 @@ public static class HomeStoreService
         }
 
         OwnedProductIds.Add(productId);
+        // Home XP is earned before the save so the grant and the ownership change
+        // are captured in the same file write.
+        HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);
@@ -1177,6 +1180,7 @@ public static class HomeStoreService
         }
 
         OwnedProductIds.Add(productId);
+        HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);
