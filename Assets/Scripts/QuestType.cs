@@ -11,5 +11,10 @@ public enum QuestType
     PlayBall = 4,
     Scratch = 5,
     MouseHunt = 6,
-    TunnelPlay = 7
+    TunnelPlay = 7,
+    WindowWatch = 8,
+    FeatherPlay = 9,
+    BirdWatch = 10,
+    PlayRunner = 11,
+    BuyStoreItem = 12
 }

@@ -146,6 +146,37 @@ public static class StoreCatalogAssets
             new Vector2(2.32f, 1.42f), 1.05f, new Vector3(.2f, 0f, 1.42f),
             0f, HomeProductPlacementKind.Floor),
 
+        Generated(HomeStoreService.GardenYarnBallId, "GardenYarnBall",
+            new Vector2(.45f, .45f), .28f, new Vector3(1.85f, 0f, -2.05f),
+            0f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenFlowerPotsId, "GardenFlowerPots",
+            new Vector2(.85f, .7f), .62f, new Vector3(-2.85f, 0f, 1.55f),
+            12f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenDaisyBedId, "GardenDaisyBed",
+            new Vector2(1.1f, .7f), .42f, new Vector3(2.55f, 0f, 1.65f),
+            0f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenSaplingId, "GardenSapling",
+            new Vector2(.85f, .85f), 1.85f, new Vector3(-2.95f, 0f, -1.65f),
+            0f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenBirdBathId, "GardenBirdBath",
+            new Vector2(.7f, .7f), .82f, new Vector3(.15f, 0f, 1.95f),
+            0f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenSunLoungerId, "GardenSunLounger",
+            new Vector2(1.4f, .55f), .48f, new Vector3(2.55f, 0f, -.85f),
+            90f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenBistroSetId, "GardenBistroSet",
+            new Vector2(1.35f, 1.15f), .78f, new Vector3(-1.55f, 0f, 1.75f),
+            0f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenGrillId, "GardenGrill",
+            new Vector2(.85f, .7f), 1.05f, new Vector3(2.65f, 0f, .55f),
+            270f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenHammockId, "GardenHammock",
+            new Vector2(1.15f, .7f), .85f, new Vector3(-2.75f, 0f, .15f),
+            90f, HomeProductPlacementKind.Floor),
+        Generated(HomeStoreService.GardenPergolaId, "GardenPergola",
+            new Vector2(2f, 1.5f), 2.15f, new Vector3(.1f, 0f, -.15f),
+            0f, HomeProductPlacementKind.Floor),
+
         Pet(HomeStoreService.CeramicBowlId, "CeramicBowl", "Bowl1 V3.prefab",
             new Vector2(.65f, .55f), .18f, 1.4f),
         Pet(HomeStoreService.CloudBedId, "CloudBed", "Bed5 V3.prefab",
@@ -160,6 +191,16 @@ public static class StoreCatalogAssets
             new Vector2(.48f, .44f), .16f, 1.7f),
         Pet(HomeStoreService.LeashId, "WalkingLeash", "Leash2 V2.prefab",
             new Vector2(.8f, .62f), .15f, 1.7f),
+        PetAt(HomeStoreService.BellCollarId, "BellCollar", "Collar2 V2.prefab",
+            new Vector2(.48f, .44f), .16f, 1.7f, new Vector3(2.15f, 0f, -2.15f)),
+        PetAt(HomeStoreService.KibbleBagId, "KibbleBag", "Food2 V1.prefab",
+            new Vector2(.62f, .52f), .55f, 1.35f, new Vector3(-2.55f, 0f, -.35f)),
+        RoomAt(HomeStoreService.NapPillowId, "NapPillow", "Pillow_Square_2.prefab",
+            new Vector2(.72f, .58f), .18f, 1.6f, new Vector3(.2f, 0f, -2.18f)),
+        RoomAt(HomeStoreService.CatnipPlantId, "CatnipPlanter", "PottedPlant_Small_1.prefab",
+            new Vector2(.7f, .7f), .58f, 3.2f, new Vector3(1.72f, 0f, 1.88f)),
+        RoomAt(HomeStoreService.CardboardHideoutId, "CardboardHideout", "Box_Open.prefab",
+            new Vector2(.78f, .78f), .48f, 1.15f, new Vector3(2.38f, 0f, 1.72f)),
 
         Room(HomeStoreService.ArmchairId, "ClassicArmchair", "Armchair_Classic.prefab",
             new Vector2(1.4f, 1.05f), 1.12f, 4f),
@@ -209,6 +250,8 @@ public static class StoreCatalogAssets
                 return "Assets/Art/RoomPreviews/KitchenPreview.png";
             case HomeStoreService.HomeBedroomPreviewId:
                 return "Assets/Art/RoomPreviews/BedroomPreview.png";
+            case HomeStoreService.HomeGardenPreviewId:
+                return "Assets/Art/RoomPreviews/GardenPreview.png";
             default:
                 return null;
         }
@@ -228,6 +271,14 @@ public static class StoreCatalogAssets
     {
         return new StoreCatalogAsset(id, name, PetPrefabFolder + source, footprint, height,
             DefaultPosition(id), 0f, HomeProductPlacementKind.Floor, scale, Vector3.zero, true);
+    }
+
+    private static StoreCatalogAsset PetAt(
+        string id, string name, string source, Vector2 footprint, float height, float scale,
+        Vector3 position)
+    {
+        return new StoreCatalogAsset(id, name, PetPrefabFolder + source, footprint, height,
+            position, 0f, HomeProductPlacementKind.Floor, scale, Vector3.zero, true);
     }
 
     private static StoreCatalogAsset Room(

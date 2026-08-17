@@ -149,7 +149,8 @@ public static class LevelContentValidator
                 report);
             Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
                     !HomeStoreService.IsBathroomCollectionProduct(productId) &&
-                    !HomeStoreService.IsBedroomCollectionProduct(productId),
+                    !HomeStoreService.IsBedroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsGardenCollectionProduct(productId),
                 "Kitchen product '" + productId + "' must be exclusive to Kitchen.",
                 report);
             if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
@@ -182,7 +183,8 @@ public static class LevelContentValidator
                 report);
             Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
                     !HomeStoreService.IsBathroomCollectionProduct(productId) &&
-                    !HomeStoreService.IsKitchenCollectionProduct(productId),
+                    !HomeStoreService.IsKitchenCollectionProduct(productId) &&
+                    !HomeStoreService.IsGardenCollectionProduct(productId),
                 "Bedroom product '" + productId + "' must be exclusive to Bedroom.",
                 report);
             if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
@@ -199,6 +201,40 @@ public static class LevelContentValidator
             Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
                     product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
                 "Every Bedroom product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        Require(HomeStoreService.GardenCollection.Count == 10,
+            "Garden Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var gardenIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.GardenCollection.Count; i++)
+        {
+            string productId = HomeStoreService.GardenCollection[i];
+            Require(gardenIds.Add(productId),
+                "Garden collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsKitchenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBedroomCollectionProduct(productId),
+                "Garden product '" + productId + "' must be exclusive to Garden.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Garden Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Garden product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Garden Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Garden product must use the 100 coins = 1 diamond exchange rate.",
                 report);
             previousPrice = product.CoinPrice;
         }
@@ -245,6 +281,8 @@ public static class LevelContentValidator
             "Kitchen scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(HomeRoomService.BedroomScenePath),
             "Bedroom scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.GardenScenePath),
+            "Garden scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(CatRunnerContentBuilder.RunnerScenePath),
             "Cat Runner scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(CatCatchContentBuilder.ScenePath),
@@ -521,6 +559,31 @@ public static class LevelContentValidator
                 "Cat Runner must retain Magnet, Shield and Double Coins templates.",
                 report);
 
+            CatRunnerScenerySegment[] scenerySegments =
+                FindAllInScene<CatRunnerScenerySegment>(scene);
+            Require(scenerySegments.Length >= 8,
+                "Cat Runner must keep a recyclable scenery corridor.", report);
+            for (int i = 0; i < scenerySegments.Length; i++)
+            {
+                CatRunnerScenerySegment scenery = scenerySegments[i];
+                if (scenery == null)
+                    continue;
+                Require(
+                    scenery.VariantCount == CatRunnerContentBuilder.SceneryVariantCount,
+                    scenery.name + " must author " +
+                    CatRunnerContentBuilder.SceneryVariantCount +
+                    " exclusive scenery silhouettes.",
+                    report);
+                for (int v = 0; v < CatRunnerContentBuilder.SceneryVariantNames.Length; v++)
+                {
+                    string variantName = CatRunnerContentBuilder.SceneryVariantNames[v];
+                    Require(
+                        scenery.transform.Find(variantName) != null,
+                        scenery.name + " is missing " + variantName + ".",
+                        report);
+                }
+            }
+
             string[] instancedMaterials =
             {
                 "RunnerRoadPeach",
@@ -590,6 +653,8 @@ public static class LevelContentValidator
                     $"Level scene '{level.ScenePath}' has no scratching activity.", report);
                 Require(FindInScene<MouseHuntActivity>(scene) != null,
                     $"Level scene '{level.ScenePath}' has no mouse hunt activity.", report);
+                Require(FindSitLook(scene, CatActivityKind.WindowWatch) != null,
+                    $"Level scene '{level.ScenePath}' has no window-watch activity.", report);
                 StoreProductDisplay[] storeProducts = FindAllInScene<StoreProductDisplay>(scene);
                 Require(storeProducts.Length >= 6,
                     $"Level scene '{level.ScenePath}' has fewer than six authored store products.",
@@ -706,6 +771,8 @@ public static class LevelContentValidator
                     ValidateKitchenRoom(scene, report);
                 if (room.Id == HomeRoomService.BedroomId)
                     ValidateBedroomRoom(scene, report);
+                if (room.Id == HomeRoomService.GardenId)
+                    ValidateGardenRoom(scene, report);
                 ValidateMissingScripts(scene, report);
             }, report);
         }
@@ -839,6 +906,54 @@ public static class LevelContentValidator
         }
     }
 
+    private static void ValidateGardenRoom(Scene scene, LevelValidationReport report)
+    {
+        Require(FindNamedInScene(scene, "Sunny Lawn") != null &&
+                FindNamedInScene(scene, "GrassBlanket") != null &&
+                FindNamedInScene(scene, "LawnTile_0_0") == null,
+            "Garden lawn must be a continuous grass field, not checker tiles.", report);
+        Require(FindNamedInScene(scene, "Sunny Garden Fence") != null &&
+                FindNamedInScene(scene, "Garden Gate") != null &&
+                FindNamedInScene(scene, "Courtyard Tree") != null &&
+                FindNamedInScene(scene, "Open Sky") != null &&
+                FindNamedInScene(scene, "Distant Path") != null &&
+                FindNamedInScene(scene, "Garden Flower Border") != null,
+            "Garden needs an open courtyard: fence, gate, tree, sky, path and flower border.", report);
+        Require(FindInScene<GardenBirdFlock>(scene) != null &&
+                FindInScene<GardenBirdAttention>(scene) != null &&
+                FindInScene<GardenAmbientCritters>(scene) != null,
+            "Garden needs visiting birds plus tiny bees and butterflies.", report);
+        Require(FindSitLook(scene, CatActivityKind.BirdWatch) != null,
+            "Garden needs a Bond-gated bird-watch activity.", report);
+        GardenBirdFlock flock = FindInScene<GardenBirdFlock>(scene);
+        Require(flock == null || flock.BirdCount <= 2,
+            "Garden should keep only a couple of visiting birds.", report);
+
+        StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
+        var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < products.Length; i++)
+        {
+            StoreProductDisplay display = products[i];
+            if (!HomeStoreService.IsGardenCollectionProduct(display.ProductId))
+                continue;
+            Require(authoredProductIds.Add(display.ProductId),
+                "Garden scene contains duplicate store product '" + display.ProductId + "'.",
+                report);
+            Renderer[] renderers = display.GetComponentsInChildren<Renderer>(true);
+            Require(!renderers.Any(renderer => renderer.gameObject.activeInHierarchy),
+                "Garden store product '" + display.ProductId +
+                "' must stay hidden until acquired.", report);
+        }
+        Require(authoredProductIds.Count == HomeStoreService.GardenCollection.Count,
+            "Garden must author all ten hidden ROOM products.", report);
+        for (int i = 0; i < HomeStoreService.GardenCollection.Count; i++)
+        {
+            Require(authoredProductIds.Contains(HomeStoreService.GardenCollection[i]),
+                "Garden scene is missing store product '" +
+                HomeStoreService.GardenCollection[i] + "'.", report);
+        }
+    }
+
     private static void ValidateScene(
         string path,
         Action<Scene> validate,
@@ -910,6 +1025,18 @@ public static class LevelContentValidator
                 $"Level scene '{scenePath}' is missing hierarchy group '{groupNames[i]}'.",
                 report);
         }
+    }
+
+    private static SitLookActivity FindSitLook(Scene scene, CatActivityKind kind)
+    {
+        SitLookActivity[] activities = FindAllInScene<SitLookActivity>(scene);
+        for (int i = 0; i < activities.Length; i++)
+        {
+            if (activities[i] != null && activities[i].Kind == kind)
+                return activities[i];
+        }
+
+        return null;
     }
 
     private static T FindInScene<T>(Scene scene) where T : Component

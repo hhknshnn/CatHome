@@ -413,6 +413,7 @@ public static class ProgressionService
 
         bondXp = amount > long.MaxValue - bondXp ? long.MaxValue : bondXp + amount;
         RaiseStateChanged();
+        AchievementService.Evaluate();
     }
 
     // ----- Quest progress -----
@@ -434,6 +435,8 @@ public static class ProgressionService
     /// </summary>
     public static void RecordProgress(QuestType type)
     {
+        bool dailyChanged = DailyRetentionService.RecordProgress(type);
+
         if (config == null)
             return;
 
@@ -441,6 +444,11 @@ public static class ProgressionService
         if (level == null)
         {
             LogProgressionCompleteOnce();
+            if (dailyChanged)
+            {
+                RaiseStateChanged();
+                CatHomeSaveSystem.SaveNow();
+            }
             return;
         }
 
@@ -479,7 +487,7 @@ public static class ProgressionService
         }
 
         RaiseStateChanged();
-        if (!questCompletedNow)
+        if (!questCompletedNow && !dailyChanged)
             return;
 
         // Persist only on meaningful changes (quest completion / claim /
@@ -499,6 +507,9 @@ public static class ProgressionService
     {
         if (string.IsNullOrWhiteSpace(questId))
             return false;
+
+        if (DailyRetentionService.IsDailyQuestId(questId))
+            return DailyRetentionService.TryClaim(questId);
 
         EnsureEconomyBinding();
         EnsureConfigLoaded();

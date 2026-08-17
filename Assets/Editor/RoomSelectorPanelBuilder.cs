@@ -26,6 +26,8 @@ public static class RoomSelectorPanelBuilder
         "Assets/Art/RoomPreviews/KitchenPreview.png";
     private const string BedroomPreviewPath =
         "Assets/Art/RoomPreviews/BedroomPreview.png";
+    private const string GardenPreviewPath =
+        "Assets/Art/RoomPreviews/GardenPreview.png";
 
     private static readonly Color Scrim = new Color32(44, 27, 67, 174);
     private static readonly Color Ink = PremiumUiStyle.Ink;
@@ -44,6 +46,7 @@ public static class RoomSelectorPanelBuilder
         ConfigurePreviewImporter(BathroomPreviewPath);
         ConfigurePreviewImporter(KitchenPreviewPath);
         ConfigurePreviewImporter(BedroomPreviewPath);
+        ConfigurePreviewImporter(GardenPreviewPath);
 
         Scene uiScene = SceneManager.GetSceneByPath(UiScenePath);
         bool openedForBuild = !uiScene.IsValid() || !uiScene.isLoaded;
@@ -290,6 +293,15 @@ public static class RoomSelectorPanelBuilder
             previewPath = BedroomPreviewPath;
             accent = PremiumUiStyle.CandyPink;
             theme = "bedroom";
+            return;
+        }
+
+        if (string.Equals(roomId, HomeRoomService.GardenId, StringComparison.Ordinal))
+        {
+            subtitle = "SUN, BIRDS & GRASS";
+            previewPath = GardenPreviewPath;
+            accent = PremiumUiStyle.CandyMint;
+            theme = "garden";
             return;
         }
 

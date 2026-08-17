@@ -61,6 +61,12 @@ public static class StoreProductContentBuilder
                 HomeRoomService.BedroomScenePath,
                 HomeRoomService.BedroomId);
         }
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(HomeRoomService.GardenScenePath) != null)
+        {
+            BuildRoomSceneProducts(
+                HomeRoomService.GardenScenePath,
+                HomeRoomService.GardenId);
+        }
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         return StoreCatalogAssets.PlaceableProducts.Length +
@@ -141,6 +147,11 @@ public static class StoreProductContentBuilder
             BuildProceduralBedroomPrefab(definition, materials);
             return;
         }
+        if (HomeStoreService.IsGardenCollectionProduct(definition.ProductId))
+        {
+            BuildProceduralGardenPrefab(definition, materials);
+            return;
+        }
         if (definition.ProductId == HomeStoreService.BookSetId)
         {
             BuildBookshelfBookSetPrefab(definition);
@@ -185,6 +196,8 @@ public static class StoreProductContentBuilder
                 definition.Footprint.y);
 
             ConfigureProductComponents(root, visual, definition);
+            if (definition.ProductId == HomeStoreService.FeatherToyId)
+                AttachFeatherPlayActivity(root, visual.transform);
 
             string prefabPath = PrefabFolder + "/" + definition.PrefabName + ".prefab";
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
@@ -533,6 +546,71 @@ public static class StoreProductContentBuilder
             visual.gameObject);
         activity.EditorConfigureStoreProduct(HomeStoreService.PlayTunnelId);
         activity.EditorConfigureTunnel(entrance, exit, 1.28f);
+    }
+
+    public static string EnsureFeatherPlayActivity()
+    {
+        string prefabPath = PrefabFolder + "/FeatherToy.prefab";
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab == null)
+        {
+            BuildProductAssetsSilently();
+            prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        }
+
+        if (prefab == null)
+            return "feather-play-missing-prefab";
+
+        GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+        try
+        {
+            if (root.GetComponent<SitLookActivity>() == null)
+            {
+                Transform visual = root.transform.Find("VisualContent");
+                AttachFeatherPlayActivity(root, visual != null ? visual : root.transform);
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
+                return "feather-play-added";
+            }
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+
+        return "feather-play-present";
+    }
+
+    private static void AttachFeatherPlayActivity(GameObject root, Transform visual)
+    {
+        if (root.GetComponent<SitLookActivity>() != null)
+            return;
+
+        Transform look = new GameObject("FeatherLookPoint").transform;
+        look.SetParent(root.transform, false);
+        look.localPosition = new Vector3(0f, 0.45f, 0f);
+        Transform anchor = new GameObject("InteractionAnchor").transform;
+        anchor.SetParent(root.transform, false);
+        anchor.localPosition = new Vector3(0f, 0f, -0.45f);
+
+        SitLookActivity activity = root.AddComponent<SitLookActivity>();
+        activity.EditorConfigure(
+            "feather-play",
+            "FEATHER TOY",
+            CatActivityKind.FeatherPlay,
+            QuestType.FeatherPlay,
+            BondMilestoneService.FeatherPlayBond,
+            "PLAY",
+            1.05f,
+            7f,
+            anchor,
+            null,
+            null);
+        activity.EditorConfigureStoreProduct(HomeStoreService.FeatherToyId);
+        activity.EditorConfigureLook(
+            look,
+            SitLookReaction.PawSwat,
+            2.1f,
+            "BOING!");
     }
 
     private static void BuildProceduralBedroomPrefab(
@@ -1117,6 +1195,237 @@ public static class StoreProductContentBuilder
                 center + toes[i], Quaternion.identity,
                 new Vector3(.075f, .08f, .035f), material);
         }
+    }
+
+    private static void BuildProceduralGardenPrefab(
+        StoreCatalogAsset definition,
+        IReadOnlyDictionary<string, Material> materials)
+    {
+        var root = new GameObject("StoreProduct_" + definition.PrefabName);
+        try
+        {
+            var visual = new GameObject("VisualContent");
+            visual.transform.SetParent(root.transform, false);
+
+            if (definition.ProductId == HomeStoreService.GardenYarnBallId)
+                BuildGardenYarnBallVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenFlowerPotsId)
+                BuildGardenFlowerPotsVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenDaisyBedId)
+                BuildGardenDaisyBedVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenSaplingId)
+                BuildGardenSaplingVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenBirdBathId)
+                BuildGardenBirdBathVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenSunLoungerId)
+                BuildGardenSunLoungerVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenBistroSetId)
+                BuildGardenBistroSetVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenGrillId)
+                BuildGardenGrillVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenHammockId)
+                BuildGardenHammockVisual(visual.transform, materials);
+            else if (definition.ProductId == HomeStoreService.GardenPergolaId)
+                BuildGardenPergolaVisual(visual.transform, materials);
+            else
+                throw new InvalidOperationException(
+                    "No Garden procedural visual for " + definition.ProductId);
+
+            AddProductCollider(visual, definition);
+            ConfigureProductComponents(root, visual, definition);
+            PrefabUtility.SaveAsPrefabAsset(
+                root,
+                PrefabFolder + "/" + definition.PrefabName + ".prefab");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(root);
+        }
+    }
+
+    private static void BuildGardenYarnBallVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "YarnCore", PrimitiveType.Sphere,
+            new Vector3(0f, .14f, 0f), Quaternion.identity,
+            Vector3.one * .28f, materials["CH_CoralBright"]);
+        AddPrimitivePart(parent, "YarnBand", PrimitiveType.Cylinder,
+            new Vector3(0f, .14f, 0f), Quaternion.Euler(0f, 0f, 90f),
+            new Vector3(.3f, .04f, .3f), materials["CH_LemonBright"]);
+    }
+
+    private static void BuildGardenFlowerPotsVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "PotCoral", PrimitiveType.Cylinder,
+            new Vector3(-.22f, .14f, .04f), Quaternion.identity,
+            new Vector3(.22f, .28f, .22f), materials["CH_CoralBright"]);
+        AddPrimitivePart(parent, "BloomCoral", PrimitiveType.Sphere,
+            new Vector3(-.22f, .36f, .04f), Quaternion.identity,
+            Vector3.one * .2f, materials["CH_Pink"]);
+        AddPrimitivePart(parent, "PotLemon", PrimitiveType.Cylinder,
+            new Vector3(.18f, .12f, -.08f), Quaternion.identity,
+            new Vector3(.2f, .24f, .2f), materials["CH_LemonBright"]);
+        AddPrimitivePart(parent, "BloomLemon", PrimitiveType.Sphere,
+            new Vector3(.18f, .32f, -.08f), Quaternion.identity,
+            Vector3.one * .16f, materials["CH_MintBright"]);
+        AddPrimitivePart(parent, "PotLilac", PrimitiveType.Cylinder,
+            new Vector3(.04f, .1f, .18f), Quaternion.identity,
+            new Vector3(.18f, .2f, .18f), materials["CH_LilacBright"]);
+        AddPrimitivePart(parent, "BloomLilac", PrimitiveType.Sphere,
+            new Vector3(.04f, .28f, .18f), Quaternion.identity,
+            Vector3.one * .14f, materials["CH_White"]);
+    }
+
+    private static void BuildGardenDaisyBedVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "SoilBed", PrimitiveType.Cube,
+            new Vector3(0f, .08f, 0f), Quaternion.identity,
+            new Vector3(1.08f, .16f, .68f), materials["CH_Orange"]);
+        AddPrimitivePart(parent, "MintRim", PrimitiveType.Cube,
+            new Vector3(0f, .16f, 0f), Quaternion.identity,
+            new Vector3(1.12f, .05f, .72f), materials["CH_MintBright"]);
+        for (int i = 0; i < 5; i++)
+        {
+            float x = -0.36f + i * .18f;
+            AddPrimitivePart(parent, "Daisy_" + (i + 1), PrimitiveType.Sphere,
+                new Vector3(x, .28f, (i % 2 == 0 ? .08f : -.1f)),
+                Quaternion.identity,
+                Vector3.one * .14f,
+                i % 2 == 0 ? materials["CH_White"] : materials["CH_LemonBright"]);
+        }
+    }
+
+    private static void BuildGardenSaplingVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "Trunk", PrimitiveType.Cylinder,
+            new Vector3(0f, .55f, 0f), Quaternion.identity,
+            new Vector3(.16f, 1.1f, .16f), materials["CH_Orange"]);
+        AddPrimitivePart(parent, "Crown", PrimitiveType.Sphere,
+            new Vector3(0f, 1.35f, 0f), Quaternion.identity,
+            new Vector3(.9f, .72f, .9f), materials["CH_MintBright"]);
+        AddPrimitivePart(parent, "CrownHigh", PrimitiveType.Sphere,
+            new Vector3(.12f, 1.62f, -.08f), Quaternion.identity,
+            new Vector3(.55f, .42f, .55f), materials["CH_TealLight"]);
+    }
+
+    private static void BuildGardenBirdBathVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "Pedestal", PrimitiveType.Cylinder,
+            new Vector3(0f, .28f, 0f), Quaternion.identity,
+            new Vector3(.18f, .56f, .18f), materials["CH_OrangeLight"]);
+        AddPrimitivePart(parent, "Bowl", PrimitiveType.Cylinder,
+            new Vector3(0f, .62f, 0f), Quaternion.identity,
+            new Vector3(.62f, .08f, .62f), materials["CH_OrangeLight"]);
+        AddPrimitivePart(parent, "Water", PrimitiveType.Cylinder,
+            new Vector3(0f, .67f, 0f), Quaternion.identity,
+            new Vector3(.5f, .03f, .5f), materials["CH_AquaBright"]);
+    }
+
+    private static void BuildGardenSunLoungerVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "Frame", PrimitiveType.Cube,
+            new Vector3(0f, .16f, 0f), Quaternion.identity,
+            new Vector3(1.32f, .08f, .48f), materials["CH_Gold"]);
+        AddPrimitivePart(parent, "Cushion", PrimitiveType.Cube,
+            new Vector3(0f, .24f, 0f), Quaternion.identity,
+            new Vector3(1.22f, .1f, .42f), materials["CH_MintBright"]);
+        AddPrimitivePart(parent, "Backrest", PrimitiveType.Cube,
+            new Vector3(-.48f, .4f, 0f), Quaternion.Euler(0f, 0f, 28f),
+            new Vector3(.5f, .08f, .42f), materials["CH_CoralBright"]);
+    }
+
+    private static void BuildGardenBistroSetVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "TableTop", PrimitiveType.Cylinder,
+            new Vector3(0f, .48f, 0f), Quaternion.identity,
+            new Vector3(.72f, .06f, .72f), materials["CH_OrangeLight"]);
+        AddPrimitivePart(parent, "TableStem", PrimitiveType.Cylinder,
+            new Vector3(0f, .24f, 0f), Quaternion.identity,
+            new Vector3(.1f, .48f, .1f), materials["CH_Gold"]);
+        AddPrimitivePart(parent, "ChairSeatL", PrimitiveType.Cube,
+            new Vector3(-.48f, .28f, .18f), Quaternion.identity,
+            new Vector3(.32f, .08f, .32f), materials["CH_OrangeLight"]);
+        AddPrimitivePart(parent, "ChairBackL", PrimitiveType.Cube,
+            new Vector3(-.6f, .46f, .18f), Quaternion.identity,
+            new Vector3(.06f, .32f, .32f), materials["CH_LilacBright"]);
+        AddPrimitivePart(parent, "ChairSeatR", PrimitiveType.Cube,
+            new Vector3(.48f, .28f, -.16f), Quaternion.identity,
+            new Vector3(.32f, .08f, .32f), materials["CH_OrangeLight"]);
+        AddPrimitivePart(parent, "ChairBackR", PrimitiveType.Cube,
+            new Vector3(.6f, .46f, -.16f), Quaternion.identity,
+            new Vector3(.06f, .32f, .32f), materials["CH_AquaBright"]);
+    }
+
+    private static void BuildGardenGrillVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "Body", PrimitiveType.Cube,
+            new Vector3(0f, .42f, 0f), Quaternion.identity,
+            new Vector3(.72f, .52f, .48f), materials["CH_CoralBright"]);
+        AddPrimitivePart(parent, "Lid", PrimitiveType.Cube,
+            new Vector3(0f, .74f, 0f), Quaternion.identity,
+            new Vector3(.76f, .12f, .52f), materials["CH_Ink"]);
+        AddPrimitivePart(parent, "Knob", PrimitiveType.Sphere,
+            new Vector3(0f, .56f, -.26f), Quaternion.identity,
+            Vector3.one * .08f, materials["CH_Gold"]);
+        AddPrimitivePart(parent, "LegL", PrimitiveType.Cube,
+            new Vector3(-.26f, .12f, 0f), Quaternion.identity,
+            new Vector3(.08f, .24f, .08f), materials["CH_Gold"]);
+        AddPrimitivePart(parent, "LegR", PrimitiveType.Cube,
+            new Vector3(.26f, .12f, 0f), Quaternion.identity,
+            new Vector3(.08f, .24f, .08f), materials["CH_Gold"]);
+    }
+
+    private static void BuildGardenHammockVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "PostL", PrimitiveType.Cylinder,
+            new Vector3(-.48f, .42f, 0f), Quaternion.identity,
+            new Vector3(.1f, .84f, .1f), materials["CH_Gold"]);
+        AddPrimitivePart(parent, "PostR", PrimitiveType.Cylinder,
+            new Vector3(.48f, .42f, 0f), Quaternion.identity,
+            new Vector3(.1f, .84f, .1f), materials["CH_Gold"]);
+        AddPrimitivePart(parent, "Sling", PrimitiveType.Cube,
+            new Vector3(0f, .42f, 0f), Quaternion.identity,
+            new Vector3(.92f, .08f, .38f), materials["CH_LilacBright"]);
+        AddPrimitivePart(parent, "Pillow", PrimitiveType.Cube,
+            new Vector3(-.22f, .5f, 0f), Quaternion.identity,
+            new Vector3(.28f, .08f, .28f), materials["CH_White"]);
+    }
+
+    private static void BuildGardenPergolaVisual(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        AddPrimitivePart(parent, "PostFL", PrimitiveType.Cube,
+            new Vector3(-.85f, 1.05f, -.58f), Quaternion.identity,
+            new Vector3(.12f, 2.1f, .12f), materials["CH_White"]);
+        AddPrimitivePart(parent, "PostFR", PrimitiveType.Cube,
+            new Vector3(.85f, 1.05f, -.58f), Quaternion.identity,
+            new Vector3(.12f, 2.1f, .12f), materials["CH_White"]);
+        AddPrimitivePart(parent, "PostBL", PrimitiveType.Cube,
+            new Vector3(-.85f, 1.05f, .58f), Quaternion.identity,
+            new Vector3(.12f, 2.1f, .12f), materials["CH_White"]);
+        AddPrimitivePart(parent, "PostBR", PrimitiveType.Cube,
+            new Vector3(.85f, 1.05f, .58f), Quaternion.identity,
+            new Vector3(.12f, 2.1f, .12f), materials["CH_White"]);
+        AddPrimitivePart(parent, "BeamFront", PrimitiveType.Cube,
+            new Vector3(0f, 2.05f, -.58f), Quaternion.identity,
+            new Vector3(1.9f, .1f, .12f), materials["CH_MintBright"]);
+        AddPrimitivePart(parent, "BeamBack", PrimitiveType.Cube,
+            new Vector3(0f, 2.05f, .58f), Quaternion.identity,
+            new Vector3(1.9f, .1f, .12f), materials["CH_MintBright"]);
+        AddPrimitivePart(parent, "SlatA", PrimitiveType.Cube,
+            new Vector3(-.4f, 2.12f, 0f), Quaternion.identity,
+            new Vector3(.1f, .06f, 1.28f), materials["CH_LemonBright"]);
+        AddPrimitivePart(parent, "SlatB", PrimitiveType.Cube,
+            new Vector3(.4f, 2.12f, 0f), Quaternion.identity,
+            new Vector3(.1f, .06f, 1.28f), materials["CH_LemonBright"]);
     }
 
     private static GameObject AddPrimitivePart(

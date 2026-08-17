@@ -59,6 +59,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     [SerializeField] private Button retryButton;
     [SerializeField] private TMP_Text resultMissionsText;
     [SerializeField] private GameObject newBestBadge;
+    [SerializeField] private Button resultDoubleCoinsButton;
 
     [Header("Pause / Accessibility")]
     [SerializeField] private GameObject pausePanel;
@@ -104,6 +105,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private bool exiting;
     private bool paused;
     private CatRunnerResult latestResult;
+    private bool doubleCoinsGranted;
 
     public bool IsRunning { get; private set; }
     public bool IsPaused => paused;
@@ -224,6 +226,11 @@ public sealed class CatRunnerGameController : MonoBehaviour
         {
             welcomeRewardedEnergyButton.onClick.RemoveListener(RequestRewardedEnergy);
             welcomeRewardedEnergyButton.onClick.AddListener(RequestRewardedEnergy);
+        }
+        if (resultDoubleCoinsButton != null)
+        {
+            resultDoubleCoinsButton.onClick.RemoveListener(RequestDoubleCoinsAd);
+            resultDoubleCoinsButton.onClick.AddListener(RequestDoubleCoinsAd);
         }
         if (pauseButton != null)
         {
@@ -836,11 +843,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
         resultWasNewBest = score > previousBest;
         CatRunnerProgressService.SetPendingResult(latestResult, score);
         CatRunnerProgressService.RecordRunDistance(distance);
+        ProgressionService.RecordProgress(QuestType.PlayRunner);
         // Persist the recovery record before payout. Settlement happens on the
         // next frame, when EconomyService can atomically save both its processed
         // transaction id and the cleared recovery record.
         CatHomeSaveSystem.SaveNow();
         resultSettled = false;
+        doubleCoinsGranted = false;
+        RefreshDoubleCoinsButton();
 
         if (resultTitle != null)
             resultTitle.text = "RUN COMPLETE!";
@@ -877,6 +887,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         }
         CatHomeSaveSystem.SaveNow();
         RefreshRetryButton();
+        RefreshDoubleCoinsButton();
     }
 
     private IEnumerator AnimateResultRoutine(int score)
@@ -1133,6 +1144,47 @@ public sealed class CatRunnerGameController : MonoBehaviour
             collectButton.interactable = false;
         if (retryButton != null)
             retryButton.interactable = false;
+        if (resultDoubleCoinsButton != null)
+            resultDoubleCoinsButton.interactable = false;
+    }
+
+    private void RefreshDoubleCoinsButton()
+    {
+        if (resultDoubleCoinsButton == null)
+            return;
+        bool canOffer = resultSettled &&
+                        !doubleCoinsGranted &&
+                        latestResult.TotalCoins > 0 &&
+                        CatRunnerRewardedAdBridge.IsPlacementReady(
+                            CatRunnerRewardedAdBridge.DoubleCoinsPlacementId);
+        resultDoubleCoinsButton.gameObject.SetActive(canOffer);
+        resultDoubleCoinsButton.interactable = canOffer;
+    }
+
+    private void RequestDoubleCoinsAd()
+    {
+        if (!resultSettled || doubleCoinsGranted || latestResult.TotalCoins <= 0)
+            return;
+        if (!CatRunnerRewardedAdBridge.TryShow(
+                CatRunnerRewardedAdBridge.DoubleCoinsPlacementId,
+                HandleDoubleCoinsAdFinished))
+        {
+            RefreshDoubleCoinsButton();
+        }
+    }
+
+    private void HandleDoubleCoinsAdFinished(bool verified)
+    {
+        if (!verified || doubleCoinsGranted)
+        {
+            RefreshDoubleCoinsButton();
+            return;
+        }
+
+        EconomyTransactionResult grant = CatRunnerRewardService.GrantDouble(latestResult);
+        if (grant.IsSettled)
+            doubleCoinsGranted = true;
+        RefreshDoubleCoinsButton();
     }
 
     private void ApplyAccessibilityPreferences()
@@ -1338,6 +1390,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
             welcomeExitButton.onClick.RemoveListener(ExitFromWelcome);
         if (welcomeRewardedEnergyButton != null)
             welcomeRewardedEnergyButton.onClick.RemoveListener(RequestRewardedEnergy);
+        if (resultDoubleCoinsButton != null)
+            resultDoubleCoinsButton.onClick.RemoveListener(RequestDoubleCoinsAd);
         if (pauseButton != null)
             pauseButton.onClick.RemoveListener(PauseRun);
         if (resumeButton != null)

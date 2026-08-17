@@ -19,7 +19,8 @@ using UnityEngine.UI;
 /// <see cref="Refresh"/> reads straight through to the authoritative services
 /// every time it paints, so nothing here is a cached balance. Coins and diamonds
 /// come from <see cref="EconomyService"/>, bond XP from
-/// <see cref="ProgressionService"/>. It subscribes to their change events and
+/// <see cref="ProgressionService"/> and home level from
+/// <see cref="HomeProgressionService"/>. It subscribes to their change events and
 /// repaints; it never writes back, never touches save data, quests or rewards.
 ///
 /// The serialized amounts below exist only as an edit-mode layout preview and
@@ -82,6 +83,7 @@ public sealed class CurrencyHudController : MonoBehaviour
     [SerializeField] private TMP_Text bondXpText;
     [SerializeField] private TMP_Text coinText;
     [SerializeField] private TMP_Text diamondText;
+    [SerializeField] private TMP_Text homeLevelText;
 
     [Header("\"+\" buttons (isolated placeholders, see HandlePlusRequest)")]
     [SerializeField] private Button bondXpPlusButton;
@@ -224,6 +226,8 @@ public sealed class CurrencyHudController : MonoBehaviour
             coinText.text = Format(Coins);
         if (diamondText != null)
             diamondText.text = Format(Diamonds);
+        if (homeLevelText != null)
+            homeLevelText.text = FormatHomeLevel(HomeProgressionService.HomeLevel);
 
         RelayoutEntries();
     }
@@ -284,6 +288,7 @@ public sealed class CurrencyHudController : MonoBehaviour
         // never leave two handlers on either static event.
         EconomyService.BalanceChanged += OnBalanceChanged;
         ProgressionService.StateChanged += Refresh;
+        HomeProgressionService.Changed += Refresh;
         subscribedToServices = true;
     }
 
@@ -294,8 +299,12 @@ public sealed class CurrencyHudController : MonoBehaviour
 
         EconomyService.BalanceChanged -= OnBalanceChanged;
         ProgressionService.StateChanged -= Refresh;
+        HomeProgressionService.Changed -= Refresh;
         subscribedToServices = false;
     }
+
+    private static string FormatHomeLevel(int level) =>
+        "HOME LV. " + level.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>
     /// One currency moved. The whole group is repainted from the services rather
@@ -366,6 +375,9 @@ public sealed class CurrencyHudController : MonoBehaviour
             return true;
 
         if (OnboardingCelebrationView.IsAnyOpen)
+            return true;
+
+        if (HomeLevelUpCelebrationView.IsAnyOpen)
             return true;
 
         if (ShopPanelController.IsAnyOpen)

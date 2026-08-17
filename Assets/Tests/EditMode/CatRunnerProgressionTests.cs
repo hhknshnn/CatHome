@@ -26,7 +26,7 @@ public sealed class CatRunnerProgressionTests
     [Test]
     public void SaveSchema_IncludesRunnerProgressVersion()
     {
-        Assert.That(CatHomeSaveSystem.CurrentSaveVersion, Is.EqualTo(10));
+        Assert.That(CatHomeSaveSystem.CurrentSaveVersion, Is.EqualTo(11));
     }
 
     [Test]
@@ -46,7 +46,7 @@ public sealed class CatRunnerProgressionTests
 
         migrate.Invoke(null, new object[] { legacy });
 
-        Assert.That(legacy.version, Is.EqualTo(10));
+        Assert.That(legacy.version, Is.EqualTo(11));
         Assert.That(legacy.catchLives, Is.Not.Null);
         Assert.That(legacy.catchLives.lives, Is.EqualTo(CatchLivesService.MaximumLives));
         Assert.That(legacy.coins, Is.EqualTo(123));
@@ -57,6 +57,8 @@ public sealed class CatRunnerProgressionTests
         Assert.That(legacy.runnerProgress.hapticsEnabled, Is.True);
         Assert.That(legacy.homeProgression, Is.Not.Null);
         Assert.That(legacy.homeProgression.homeXp, Is.EqualTo(0L));
+        Assert.That(legacy.dailyRetention, Is.Not.Null);
+        Assert.That(legacy.achievements, Is.Not.Null);
     }
 
     [Test]

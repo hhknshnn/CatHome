@@ -25,6 +25,8 @@ public static class RoomPreviewCaptureBuilder
         PreviewFolder + "/KitchenPreview.png";
     private static readonly string BedroomPreviewPath =
         PreviewFolder + "/BedroomPreview.png";
+    private static readonly string GardenPreviewPath =
+        PreviewFolder + "/GardenPreview.png";
 
     [MenuItem("Tools/Cat Home/Rooms/Capture Room Previews")]
     public static void CaptureFromMenu()
@@ -49,21 +51,25 @@ public static class RoomPreviewCaptureBuilder
         CaptureRoom(HomeRoomService.BathroomScenePath, BathroomPreviewPath);
         CaptureRoom(HomeRoomService.KitchenScenePath, KitchenPreviewPath);
         CaptureRoom(HomeRoomService.BedroomScenePath, BedroomPreviewPath);
+        CaptureRoom(HomeRoomService.GardenScenePath, GardenPreviewPath);
 
         CopyShopIcon(LivingPreviewPath, StoreCatalogAssets.IconFolder + "/LivingRoomPreview.png");
         CopyShopIcon(BathroomPreviewPath, StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
         CopyShopIcon(KitchenPreviewPath, StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
         CopyShopIcon(BedroomPreviewPath, StoreCatalogAssets.IconFolder + "/BedroomRoomPreview.png");
+        CopyShopIcon(GardenPreviewPath, StoreCatalogAssets.IconFolder + "/GardenRoomPreview.png");
 
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         ConfigureImporter(LivingPreviewPath);
         ConfigureImporter(BathroomPreviewPath);
         ConfigureImporter(KitchenPreviewPath);
         ConfigureImporter(BedroomPreviewPath);
+        ConfigureImporter(GardenPreviewPath);
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/LivingRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/BedroomRoomPreview.png");
+        ConfigureImporter(StoreCatalogAssets.IconFolder + "/GardenRoomPreview.png");
 
         for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
         {
@@ -184,7 +190,8 @@ public static class RoomPreviewCaptureBuilder
         return string.Equals(path, HomeRoomService.LivingRoomScenePath, StringComparison.Ordinal) ||
                string.Equals(path, HomeRoomService.BathroomScenePath, StringComparison.Ordinal) ||
                string.Equals(path, HomeRoomService.KitchenScenePath, StringComparison.Ordinal) ||
-               string.Equals(path, HomeRoomService.BedroomScenePath, StringComparison.Ordinal);
+               string.Equals(path, HomeRoomService.BedroomScenePath, StringComparison.Ordinal) ||
+               string.Equals(path, HomeRoomService.GardenScenePath, StringComparison.Ordinal);
     }
 
     private static void RevealOwnedLooks(Scene scene, List<GameObject> revealed)

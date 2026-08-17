@@ -10,6 +10,7 @@ public sealed class HomeRoomNavigationTests
     [SetUp]
     public void SetUp()
     {
+        HomeProgressionService.ApplySavedState(HomeProgressionSaveState.CreateDefault());
         HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
         HomeRoomService.ApplySavedRoomId(HomeRoomService.LivingRoomId);
         CatRunnerSessionContext.CaptureFromHome();
@@ -18,6 +19,7 @@ public sealed class HomeRoomNavigationTests
     [TearDown]
     public void TearDown()
     {
+        HomeProgressionService.ApplySavedState(HomeProgressionSaveState.CreateDefault());
         HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
         HomeRoomService.ApplySavedRoomId(HomeRoomService.LivingRoomId);
         CatRunnerSessionContext.CaptureFromHome();
@@ -26,7 +28,7 @@ public sealed class HomeRoomNavigationTests
     [Test]
     public void Catalog_HasStableUniqueLivingBathroomAndKitchenRooms()
     {
-        Assert.That(HomeRoomService.Rooms.Count, Is.EqualTo(4));
+        Assert.That(HomeRoomService.Rooms.Count, Is.EqualTo(5));
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (HomeRoomDefinition room in HomeRoomService.Rooms)
         {
@@ -36,6 +38,47 @@ public sealed class HomeRoomNavigationTests
             Assert.That(room.SpawnPointId, Is.EqualTo("default"));
         }
 
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeRoomsPreviewId,
+                out HomeStoreProduct livingPreview),
+            Is.True);
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeBathroomPreviewId,
+                out HomeStoreProduct bathroomPreview),
+            Is.True);
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeKitchenPreviewId,
+                out HomeStoreProduct kitchenPreview),
+            Is.True);
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeBedroomPreviewId,
+                out HomeStoreProduct bedroomPreview),
+            Is.True);
+
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.LivingRoomId),
+            Is.EqualTo(1));
+        Assert.That(livingPreview.RequiredLevel, Is.EqualTo(1));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.BathroomId),
+            Is.EqualTo(2));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.KitchenId),
+            Is.EqualTo(3));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.BedroomId),
+            Is.EqualTo(4));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.GardenId),
+            Is.EqualTo(5));
+        Assert.That(bathroomPreview.RequiredLevel, Is.EqualTo(2));
+        Assert.That(kitchenPreview.RequiredLevel, Is.EqualTo(3));
+        Assert.That(bedroomPreview.RequiredLevel, Is.EqualTo(4));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeGardenPreviewId,
+                out HomeStoreProduct gardenPreview),
+            Is.True);
+        Assert.That(gardenPreview.RequiredLevel, Is.EqualTo(5));
         Assert.That(HomeRoomService.CurrentRoomSceneName,
             Is.EqualTo("LivingRoom_Level01"));
         Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.BathroomId).SceneName,
@@ -44,6 +87,81 @@ public sealed class HomeRoomNavigationTests
             Is.EqualTo("Kitchen_Level01"));
         Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.BedroomId).SceneName,
             Is.EqualTo("Bedroom_Level01"));
+        Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.GardenId).SceneName,
+            Is.EqualTo("Garden_Level01"));
+    }
+
+    [Test]
+    public void HomeLevelThresholds_FenceRoomProgression()
+    {
+        SetHomeLevel(1);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BathroomId), Is.False);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.KitchenId), Is.False);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BedroomId), Is.False);
+
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState
+        {
+            storeVersion = HomeStoreService.SaveVersion,
+            currentRoomId = HomeRoomService.BathroomId,
+            ownedProductIds = MergeDistinct(
+                HomeStoreService.LivingRoomCollection,
+                new[] { HomeStoreService.HomeBathroomPreviewId })
+        });
+
+        SetHomeLevel(2);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BathroomId), Is.True);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.KitchenId), Is.False);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BedroomId), Is.False);
+
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState
+        {
+            storeVersion = HomeStoreService.SaveVersion,
+            currentRoomId = HomeRoomService.KitchenId,
+            ownedProductIds = MergeDistinct(
+                HomeStoreService.LivingRoomCollection,
+                HomeStoreService.BathroomCollection,
+                HomeStoreService.HomeBathroomPreviewId,
+                HomeStoreService.HomeKitchenPreviewId)
+        });
+
+        SetHomeLevel(3);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.KitchenId), Is.True);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BedroomId), Is.False);
+
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState
+        {
+            storeVersion = HomeStoreService.SaveVersion,
+            currentRoomId = HomeRoomService.BedroomId,
+            ownedProductIds = MergeDistinct(
+                HomeStoreService.LivingRoomCollection,
+                HomeStoreService.BathroomCollection,
+                HomeStoreService.KitchenCollection,
+                HomeStoreService.HomeBathroomPreviewId,
+                HomeStoreService.HomeKitchenPreviewId,
+                HomeStoreService.HomeBedroomPreviewId)
+        });
+
+        SetHomeLevel(4);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.BedroomId), Is.True);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.GardenId), Is.False);
+
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState
+        {
+            storeVersion = HomeStoreService.SaveVersion,
+            currentRoomId = HomeRoomService.GardenId,
+            ownedProductIds = MergeDistinct(
+                HomeStoreService.LivingRoomCollection,
+                HomeStoreService.BathroomCollection,
+                HomeStoreService.KitchenCollection,
+                HomeStoreService.BedroomCollection,
+                HomeStoreService.HomeBathroomPreviewId,
+                HomeStoreService.HomeKitchenPreviewId,
+                HomeStoreService.HomeBedroomPreviewId,
+                HomeStoreService.HomeGardenPreviewId)
+        });
+
+        SetHomeLevel(5);
+        Assert.That(HomeRoomService.IsRoomUnlocked(HomeRoomService.GardenId), Is.True);
     }
 
     [Test]
@@ -349,7 +467,8 @@ public sealed class HomeRoomNavigationTests
             "Assets/Art/RoomPreviews/LivingRoomPreview.png",
             "Assets/Art/RoomPreviews/BathroomPreview.png",
             "Assets/Art/RoomPreviews/KitchenPreview.png",
-            "Assets/Art/RoomPreviews/BedroomPreview.png"
+            "Assets/Art/RoomPreviews/BedroomPreview.png",
+            "Assets/Art/RoomPreviews/GardenPreview.png"
         };
         for (int i = 0; i < paths.Length; i++)
         {
@@ -371,6 +490,22 @@ public sealed class HomeRoomNavigationTests
         Assert.That(
             StoreCatalogAssets.GetIconPath(HomeStoreService.HomeBedroomPreviewId),
             Is.EqualTo("Assets/Art/RoomPreviews/BedroomPreview.png"));
+        Assert.That(
+            StoreCatalogAssets.GetIconPath(HomeStoreService.HomeGardenPreviewId),
+            Is.EqualTo("Assets/Art/RoomPreviews/GardenPreview.png"));
+    }
+
+    [Test]
+    public void GardenCollection_HasProductPreviewIcons()
+    {
+        for (int i = 0; i < HomeStoreService.GardenCollection.Count; i++)
+        {
+            string id = HomeStoreService.GardenCollection[i];
+            Assert.That(StoreCatalogAssets.TryGet(id, out StoreCatalogAsset asset), Is.True, id);
+            Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(asset.IconPath);
+            Assert.That(icon, Is.Not.Null, asset.IconPath);
+            Assert.That(icon.width, Is.GreaterThan(64), asset.IconPath);
+        }
     }
 
     [Test]
@@ -450,6 +585,38 @@ public sealed class HomeRoomNavigationTests
                     cards[i].name + " overlaps " + cards[j].name);
             }
         }
+    }
+
+    private static void SetHomeLevel(int level)
+    {
+        HomeProgressionService.ApplySavedState(new HomeProgressionSaveState
+        {
+            homeProgressionVersion = HomeProgressionService.SaveVersion,
+            homeXp = HomeProgressionService.CumulativeXpForLevel(level)
+        });
+    }
+
+    private static string[] MergeDistinct(params object[] items)
+    {
+        var distinct = new HashSet<string>(StringComparer.Ordinal);
+        foreach (object item in items)
+        {
+            if (item is string id)
+            {
+                distinct.Add(id);
+                continue;
+            }
+
+            if (item is IEnumerable<string> ids)
+            {
+                foreach (string productId in ids)
+                    distinct.Add(productId);
+            }
+        }
+
+        string[] merged = new string[distinct.Count];
+        distinct.CopyTo(merged);
+        return merged;
     }
 
     private static Transform FindNamed(Transform root, string name)

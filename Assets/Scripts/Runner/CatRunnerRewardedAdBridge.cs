@@ -14,28 +14,31 @@ public interface ICatRunnerRewardedAdProvider
 public static class CatRunnerRewardedAdBridge
 {
     public const string EnergyPlacementId = "cat_runner_energy";
+    public const string DoubleCoinsPlacementId = "cat_runner_double_coins";
 
     private static ICatRunnerRewardedAdProvider provider;
     private static bool requestInFlight;
     private static long activeRequestId;
     private static float requestStartedAt;
 
-    public static bool HasReadyProvider
+    public static bool HasReadyProvider => IsPlacementReady(EnergyPlacementId);
+
+    public static bool IsPlacementReady(string placementId)
     {
-        get
+        RecoverTimedOutRequest();
+        if (provider == null || requestInFlight)
+            return false;
+        string safePlacement = string.IsNullOrWhiteSpace(placementId)
+            ? EnergyPlacementId
+            : placementId;
+        try
         {
-            RecoverTimedOutRequest();
-            if (provider == null || requestInFlight)
-                return false;
-            try
-            {
-                return provider.IsRewardedAdReady(EnergyPlacementId);
-            }
-            catch (Exception exception)
-            {
-                Debug.LogException(exception);
-                return false;
-            }
+            return provider.IsRewardedAdReady(safePlacement);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            return false;
         }
     }
 
@@ -57,9 +60,25 @@ public static class CatRunnerRewardedAdBridge
 
     public static bool TryShow(Action<bool> completed)
     {
+        return TryShow(EnergyPlacementId, completed);
+    }
+
+    public static bool TryShow(string placementId, Action<bool> completed)
+    {
         RecoverTimedOutRequest();
-        if (!HasReadyProvider)
+        string safePlacement = string.IsNullOrWhiteSpace(placementId)
+            ? EnergyPlacementId
+            : placementId;
+        if (provider == null || requestInFlight)
+            return false;
+        try
         {
+            if (!provider.IsRewardedAdReady(safePlacement))
+                return false;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
             return false;
         }
 
@@ -70,7 +89,7 @@ public static class CatRunnerRewardedAdBridge
         try
         {
             provider.ShowRewardedAd(
-                EnergyPlacementId,
+                safePlacement,
                 verified =>
                 {
                     if (callbackReceived || requestId != activeRequestId)

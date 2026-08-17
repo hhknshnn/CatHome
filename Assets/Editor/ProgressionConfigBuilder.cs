@@ -185,6 +185,84 @@ public static class ProgressionConfigBuilder
                     15,
                     AutoClaim
                 )
+            }),
+            new LevelDefinition(
+                "home-loop",
+                "Home Loop",
+                4,
+                LivingRoomScenePath,
+                DefaultSpawnPointId,
+                new[]
+            {
+                new QuestDefinition(
+                    "level4_runner",
+                    QuestType.PlayRunner,
+                    1,
+                    "First Dash",
+                    "Finish one Cat Runner run and earn coins for the house",
+                    30,
+                    10,
+                    AutoClaim
+                ),
+                new QuestDefinition(
+                    "level4_shop",
+                    QuestType.BuyStoreItem,
+                    1,
+                    "Home Makeover",
+                    "Buy something from the Home Store to earn Home XP",
+                    25,
+                    8,
+                    AutoClaim
+                ),
+                new QuestDefinition(
+                    "level4_tunnel",
+                    QuestType.TunnelPlay,
+                    1,
+                    "Tunnel Zoom",
+                    "Crawl through the play tunnel",
+                    30,
+                    12,
+                    AutoClaim
+                )
+            }),
+            new LevelDefinition(
+                "garden-bond",
+                "Garden Bond",
+                5,
+                LivingRoomScenePath,
+                DefaultSpawnPointId,
+                new[]
+            {
+                new QuestDefinition(
+                    "level5_window",
+                    QuestType.WindowWatch,
+                    1,
+                    "Window Watch",
+                    "Sit at the window after 80 Bond",
+                    25,
+                    15,
+                    AutoClaim
+                ),
+                new QuestDefinition(
+                    "level5_feather",
+                    QuestType.FeatherPlay,
+                    1,
+                    "Feather Frenzy",
+                    "Play with the bouncy feather toy after 150 Bond",
+                    35,
+                    18,
+                    AutoClaim
+                ),
+                new QuestDefinition(
+                    "level5_birds",
+                    QuestType.BirdWatch,
+                    1,
+                    "Bird Friends",
+                    "Watch the garden birds after 250 Bond",
+                    40,
+                    20,
+                    AutoClaim
+                )
             })
         };
     }

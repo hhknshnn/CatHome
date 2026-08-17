@@ -68,6 +68,11 @@ public sealed class CatHomeSaveData
     // Older saves lack it and MigrateSaveData seeds a zero default, so no
     // existing wallet, ownership or need value is touched.
     public HomeProgressionSaveState homeProgression;
+
+    // Version 11: daily login / rotating dailies and one-time achievements.
+    // Missing slices migrate to empty defaults; wallets and rooms are untouched.
+    public DailyRetentionSaveState dailyRetention;
+    public AchievementSaveState achievements;
 }
 
 public static class CatHomeSaveSystem
@@ -110,7 +115,7 @@ public static class CatHomeSaveSystem
         public float EnergyAfter { get; }
     }
 
-    public const int CurrentSaveVersion = 10;
+    public const int CurrentSaveVersion = 11;
     public const string SaveFileName = "cat-home-save.json";
 
     private static HungerSystem hungerSystem;
@@ -394,6 +399,8 @@ public static class CatHomeSaveSystem
         data.playerLevel = 1;
         data.questProgress = Array.Empty<QuestProgressEntry>();
         data.homeProgression = HomeProgressionSaveState.CreateDefault();
+        data.dailyRetention = DailyRetentionSaveState.CreateDefault();
+        data.achievements = AchievementSaveState.CreateDefault();
 
         // Zeroed explicitly rather than left null: an empty economy section means
         // "keep what is loaded" on the load path, which would preserve exactly the
@@ -465,7 +472,9 @@ public static class CatHomeSaveSystem
             runnerProgress = CatRunnerProgressService.CaptureState(savedAtUtc),
             catchLives = CatchLivesService.CaptureState(savedAtUtc),
             catchBestScore = CatCatchGameController.CaptureBestScore(),
-            homeProgression = HomeProgressionService.CaptureState()
+            homeProgression = HomeProgressionService.CaptureState(),
+            dailyRetention = DailyRetentionService.CaptureState(),
+            achievements = AchievementService.CaptureState()
         };
     }
 
@@ -594,6 +603,12 @@ public static class CatHomeSaveSystem
         if (loadedVersion < 10)
             data.homeProgression = HomeProgressionSaveState.CreateDefault();
 
+        if (loadedVersion < 11)
+        {
+            data.dailyRetention = DailyRetentionSaveState.CreateDefault();
+            data.achievements = AchievementSaveState.CreateDefault();
+        }
+
         data.version = CurrentSaveVersion;
         Debug.Log(
             $"CatHomeSaveSystem migrated the local save from version {loadedVersion} " +
@@ -697,6 +712,14 @@ public static class CatHomeSaveSystem
         CatchLivesService.ApplySavedState(data.catchLives, DateTime.UtcNow);
         CatCatchGameController.ApplyBestScore(data.catchBestScore);
         HomeProgressionService.ApplySavedState(data.homeProgression);
+        DailyRetentionService.ApplySavedState(data.dailyRetention);
+        AchievementService.ApplySavedState(data.achievements);
+        DailyRetentionService.NotifySessionStart();
+        AchievementService.Evaluate();
+        // Back-fill Home XP for products acquired before the Home XP slice existed
+        // (their purchase-time grant predates the save field). Ownership is already
+        // restored above, and this never lowers a saved value.
+        HomeProgressionService.EnsureFloor(HomeStoreService.SumOwnedHomeXp());
 
         // A completed run is recorded before payout. Clearing that record before
         // the idempotent economy grant means the grant's immediate save contains

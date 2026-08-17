@@ -64,6 +64,7 @@ public sealed class ShopPanelController : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private TMP_Text balanceText;
     [SerializeField] private TMP_Text ownedCountText;
+    [SerializeField] private TMP_Text homeLevelText;
     [SerializeField] private TMP_Text sectionTitleText;
     [SerializeField] private TMP_Text feedbackText;
     [SerializeField] private ScrollRect productScrollRect;
@@ -181,6 +182,7 @@ public sealed class ShopPanelController : MonoBehaviour
         EconomyService.AnyBalanceChanged += RefreshStore;
         HomeStoreService.OwnershipChanged += HandleOwnershipChanged;
         HomeRoomService.CurrentRoomChanged += HandleCurrentRoomChanged;
+        HomeProgressionService.Changed += RefreshStore;
         RefreshStore();
     }
 
@@ -370,6 +372,16 @@ public sealed class ShopPanelController : MonoBehaviour
                         (HomeStoreService.KitchenItemCount -
                          HomeStoreService.KitchenOwnedCount) +
                         " MORE KITCHEN ITEMS TO UNLOCK BEDROOM.");
+            return;
+        }
+
+        if (product.Id == HomeStoreService.HomeGardenPreviewId &&
+            !HomeStoreService.IsBedroomComplete)
+        {
+            SetFeedback("COMPLETE " +
+                        (HomeStoreService.BedroomItemCount -
+                         HomeStoreService.BedroomOwnedCount) +
+                        " MORE BEDROOM ITEMS TO UNLOCK GARDEN.");
             return;
         }
 
@@ -686,6 +698,14 @@ public sealed class ShopPanelController : MonoBehaviour
                     SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
                 }
                 else if (!HomeStoreService.FreePurchaseTestingEnabled &&
+                         product.Id == HomeStoreService.HomeGardenPreviewId &&
+                         !HomeStoreService.IsBedroomComplete)
+                {
+                    int remaining = HomeStoreService.BedroomItemCount -
+                                    HomeStoreService.BedroomOwnedCount;
+                    SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
+                }
+                else if (!HomeStoreService.FreePurchaseTestingEnabled &&
                          !HomeStoreService.IsProductDependencyMet(product.Id))
                 {
                     SetCardAction(
@@ -734,12 +754,16 @@ public sealed class ShopPanelController : MonoBehaviour
             ownedCount = 1 +
                          (HomeStoreService.IsOwned(HomeStoreService.HomeBathroomPreviewId) ? 1 : 0) +
                          (HomeStoreService.IsOwned(HomeStoreService.HomeKitchenPreviewId) ? 1 : 0) +
-                         (HomeStoreService.IsOwned(HomeStoreService.HomeBedroomPreviewId) ? 1 : 0);
+                         (HomeStoreService.IsOwned(HomeStoreService.HomeBedroomPreviewId) ? 1 : 0) +
+                         (HomeStoreService.IsOwned(HomeStoreService.HomeGardenPreviewId) ? 1 : 0);
             categoryCount = 4;
         }
 
         if (ownedCountText != null)
             ownedCountText.text = ownedCount + " OF " + categoryCount + "  •  COLLECTED";
+
+        if (homeLevelText != null)
+            homeLevelText.text = "HOME LV. " + HomeProgressionService.HomeLevel;
 
         if (sectionTitleText != null)
             sectionTitleText.text = GetSectionTitle(activeCategory);
@@ -821,7 +845,8 @@ public sealed class ShopPanelController : MonoBehaviour
             return product.Id == HomeStoreService.HomeRoomsPreviewId ||
                    product.Id == HomeStoreService.HomeBathroomPreviewId ||
                    product.Id == HomeStoreService.HomeKitchenPreviewId ||
-                   product.Id == HomeStoreService.HomeBedroomPreviewId;
+                   product.Id == HomeStoreService.HomeBedroomPreviewId ||
+                   product.Id == HomeStoreService.HomeGardenPreviewId;
         }
         return true;
     }
@@ -1309,6 +1334,7 @@ public sealed class ShopPanelController : MonoBehaviour
         EconomyService.AnyBalanceChanged -= RefreshStore;
         HomeStoreService.OwnershipChanged -= HandleOwnershipChanged;
         HomeRoomService.CurrentRoomChanged -= HandleCurrentRoomChanged;
+        HomeProgressionService.Changed -= RefreshStore;
         ForceHideImmediate();
     }
 

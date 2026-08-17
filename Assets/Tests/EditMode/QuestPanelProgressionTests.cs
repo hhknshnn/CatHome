@@ -104,9 +104,13 @@ public sealed class QuestPanelProgressionTests
     [Test]
     public void AllChaptersCompleted_ReportsCompletionAndNoQuests()
     {
-        // Level 4 with the three-level config is the verified "everything done"
+        if (!ProgressionConfig.TryGetActive(out ProgressionConfig config))
+            Assert.Ignore("Resources/ProgressionConfig.asset could not be loaded.");
+
+        // One past the last authored chapter is the verified "everything done"
         // save state; the panel must show a completion message and no rows.
-        ProgressionService.ApplySavedState(55, 0, 28, 4, new QuestProgressEntry[0]);
+        ProgressionService.ApplySavedState(
+            55, 0, 28, config.ChapterCount + 1, new QuestProgressEntry[0]);
 
         QuestBoardStatus status = ProgressionService.CaptureActiveChapterQuests(snapshots, out _);
         if (status == QuestBoardStatus.Unavailable)
@@ -122,7 +126,10 @@ public sealed class QuestPanelProgressionTests
     [Test]
     public void CapturingSnapshots_GrantsNothingAndChangesNoState()
     {
-        ProgressionService.ApplySavedState(55, 0, 28, 4, new[]
+        if (!ProgressionConfig.TryGetActive(out ProgressionConfig config))
+            Assert.Ignore("Resources/ProgressionConfig.asset could not be loaded.");
+
+        ProgressionService.ApplySavedState(55, 0, 28, config.ChapterCount + 1, new[]
         {
             Entry(EatQuestId, 1, QuestState.Claimed)
         });
@@ -133,7 +140,7 @@ public sealed class QuestPanelProgressionTests
         Assert.AreEqual(55, ProgressionService.Coins);
         Assert.AreEqual(28, ProgressionService.BondXp);
         Assert.AreEqual(0, ProgressionService.Diamonds);
-        Assert.AreEqual(4, ProgressionService.CurrentChapterNumber);
+        Assert.AreEqual(config.ChapterCount + 1, ProgressionService.CurrentChapterNumber);
 
         Assert.IsTrue(ProgressionService.TryGetQuestState(EatQuestId, out QuestState state));
         Assert.AreEqual(QuestState.Claimed, state);

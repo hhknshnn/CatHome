@@ -7,6 +7,10 @@ using UnityEngine;
 public sealed class CatRunnerTrackManager : MonoBehaviour
 {
     public const int MaximumHazardLanesPerRow = 2;
+    // Indoor silhouettes occupy 0..7. The Garden courtyard variant is authored
+    // at this index and is only selected after the Garden room is unlocked.
+    public const int IndoorSceneryVariantCount = 8;
+    public const int GardenCourtyardVariantIndex = IndoorSceneryVariantCount;
     [SerializeField] private CatRunnerGameController game;
     [SerializeField] private CatRunnerPlayer player;
     [SerializeField] private Transform[] trackSegments = Array.Empty<Transform>();
@@ -34,6 +38,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     private Vector3[] initialSegmentPositions = Array.Empty<Vector3>();
     private Quaternion[] initialSegmentRotations = Array.Empty<Quaternion>();
     private System.Random random;
+    private System.Random sceneryRandom;
     private float untilNextObstacle;
     private float untilNextElevation;
     private float untilNextPowerUp;
@@ -44,7 +49,8 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     private bool coinFormationHasJump;
     private int attemptNumber;
     private float travelledDistance;
-    private int recycledSegmentCount;
+    private int previousSceneryVariant = -1;
+    private int lastSceneryVariant = -1;
     private bool tutorialSafety;
 
     public float ObjectApproachSpeedMultiplier =>
@@ -191,6 +197,14 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
                 ReturnToPool(activeObjects[i]);
         }
         activeObjects.Clear();
+        random = new System.Random(7301 + attemptNumber * 97);
+        sceneryRandom = new System.Random(9119 + attemptNumber * 113);
+        attemptNumber++;
+        // History must be cleared before the opening corridor is painted.
+        // Resetting it afterwards threw away the anti-repeat window, so the
+        // first recycled horizon segment could match the last visible one.
+        previousSceneryVariant = -1;
+        lastSceneryVariant = -1;
 
         for (int i = 0; i < trackSegments.Length && i < initialSegmentPositions.Length; i++)
             if (trackSegments[i] != null)
@@ -206,11 +220,9 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
                 CatRunnerScenerySegment scenery = trackSegments[i]
                     .GetComponent<CatRunnerScenerySegment>();
                 if (scenery != null)
-                    scenery.ApplyVariant(i);
+                    ApplySceneryVariant(scenery);
             }
 
-        random = new System.Random(7301 + attemptNumber * 97);
-        attemptNumber++;
         spawnedCoins = 0;
         coinFormationRemaining = 0;
         coinFormationLane = 0;
@@ -220,7 +232,6 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         untilNextElevation = 5.4f;
         untilNextPowerUp = 15f;
         travelledDistance = 0f;
-        recycledSegmentCount = trackSegments.Length;
     }
 
     private void ScrollSegments(float distance)
@@ -257,11 +268,84 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
                         (game != null ? game.ElapsedSeconds : 0f) / 45f));
                 CatRunnerScenerySegment scenery = segment
                     .GetComponent<CatRunnerScenerySegment>();
-                if (scenery != null)
-                    scenery.ApplyVariant(recycledSegmentCount);
-                recycledSegmentCount++;
+                ApplySceneryVariant(scenery);
             }
         }
+    }
+
+    public static int GetAvailableSceneryVariantCount(
+        int authoredCount,
+        bool gardenUnlocked)
+    {
+        int count = Mathf.Max(0, authoredCount);
+        if (count <= IndoorSceneryVariantCount)
+            return count;
+        return gardenUnlocked ? count : IndoorSceneryVariantCount;
+    }
+
+    public static int GetSafeSceneryVariantIndex(
+        System.Random random,
+        int variantCount,
+        int lastVariant,
+        int previousVariant)
+    {
+        if (variantCount <= 0)
+            return 0;
+        if (variantCount == 1)
+            return 0;
+        if (random == null)
+            random = new System.Random(1);
+
+        int candidate = random.Next(variantCount);
+        if (lastVariant < 0)
+            return Mathf.Clamp(candidate, 0, variantCount - 1);
+
+        if (previousVariant < 0)
+        {
+            int attempts = 0;
+            while (candidate == lastVariant && attempts < variantCount * 4)
+            {
+                candidate = random.Next(variantCount);
+                attempts++;
+            }
+            return candidate;
+        }
+
+        int attemptsWithHistory = 0;
+        while ((candidate == lastVariant || candidate == previousVariant) &&
+               attemptsWithHistory < variantCount * 6)
+        {
+            candidate = random.Next(variantCount);
+            attemptsWithHistory++;
+        }
+
+        if (candidate != lastVariant && candidate != previousVariant)
+            return candidate;
+
+        for (int i = 0; i < variantCount; i++)
+        {
+            if (i != lastVariant && i != previousVariant)
+                return i;
+        }
+
+        return candidate;
+    }
+
+    private void ApplySceneryVariant(CatRunnerScenerySegment scenery)
+    {
+        if (scenery == null)
+            return;
+
+        int selectedVariant = GetSafeSceneryVariantIndex(
+            sceneryRandom,
+            GetAvailableSceneryVariantCount(
+                scenery.VariantCount,
+                HomeRoomService.IsRoomUnlocked(HomeRoomService.GardenId)),
+            lastSceneryVariant,
+            previousSceneryVariant);
+        previousSceneryVariant = lastSceneryVariant;
+        lastSceneryVariant = selectedVariant;
+        scenery.ApplyVariant(selectedVariant);
     }
 
     private void ScrollObjects(float distance)

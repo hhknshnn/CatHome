@@ -101,3 +101,75 @@ MonoBehaviour:
       rewardDiamonds: 0
       isDaily: 0
       autoClaim: 0
+  - levelId: home-loop
+    levelName: Home Loop
+    chapterNumber: 4
+    scenePath: Assets/Scenes/Levels/LivingRoom_Level01.unity
+    spawnPointId: default
+    quests:
+    - questId: level4_runner
+      type: 11
+      requiredCount: 1
+      title: First Dash
+      description: Finish one Cat Runner run and earn coins for the house
+      rewardCoins: 30
+      rewardBondXp: 10
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level4_shop
+      type: 12
+      requiredCount: 1
+      title: Home Makeover
+      description: Buy something from the Home Store to earn Home XP
+      rewardCoins: 25
+      rewardBondXp: 8
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level4_tunnel
+      type: 7
+      requiredCount: 1
+      title: Tunnel Zoom
+      description: Crawl through the play tunnel
+      rewardCoins: 30
+      rewardBondXp: 12
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+  - levelId: garden-bond
+    levelName: Garden Bond
+    chapterNumber: 5
+    scenePath: Assets/Scenes/Levels/LivingRoom_Level01.unity
+    spawnPointId: default
+    quests:
+    - questId: level5_window
+      type: 8
+      requiredCount: 1
+      title: Window Watch
+      description: Sit at the window after 80 Bond
+      rewardCoins: 25
+      rewardBondXp: 15
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level5_feather
+      type: 9
+      requiredCount: 1
+      title: Feather Frenzy
+      description: Play with the bouncy feather toy after 150 Bond
+      rewardCoins: 35
+      rewardBondXp: 18
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0
+    - questId: level5_birds
+      type: 10
+      requiredCount: 1
+      title: Bird Friends
+      description: Watch the garden birds after 250 Bond
+      rewardCoins: 40
+      rewardBondXp: 20
+      rewardDiamonds: 0
+      isDaily: 0
+      autoClaim: 0

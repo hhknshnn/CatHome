@@ -15,6 +15,22 @@ public static class CatRunnerRewardService
             EconomyPersistence.Immediate);
     }
 
+    /// <summary>
+    /// Optional rewarded-ad double of an already settled run. Uses a distinct
+    /// transaction id so the normal payout path is unchanged.
+    /// </summary>
+    public static EconomyTransactionResult GrantDouble(CatRunnerResult result)
+    {
+        return EconomyService.GrantReward(
+            RewardBundle.Coins(result.TotalCoins),
+            EconomySource.RewardedAd,
+            BuildDoubleTransactionId(result.RunId),
+            EconomyPersistence.Immediate);
+    }
+
     public static string BuildTransactionId(string runId) =>
         "cat-runner:" + (runId ?? string.Empty);
+
+    public static string BuildDoubleTransactionId(string runId) =>
+        BuildTransactionId(runId) + ":double";
 }

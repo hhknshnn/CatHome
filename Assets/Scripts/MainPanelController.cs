@@ -850,6 +850,9 @@ public sealed class MainPanelController : MonoBehaviour
         if (OnboardingCelebrationView.IsAnyOpen)
             return true;
 
+        if (HomeLevelUpCelebrationView.IsAnyOpen)
+            return true;
+
         // The shop covers this canvas entirely, so while it is open (including its
         // close animation) the top bar and the drop-down list stay out of the way
         // instead of floating underneath it.

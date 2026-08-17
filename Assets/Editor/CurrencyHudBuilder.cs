@@ -112,6 +112,11 @@ public static class CurrencyHudBuilder
     private const float ValueFontMax = 25f;
     private const float ValueFontMin = 11f;
 
+    private const float HomeLevelBadgeWidth = 190f;
+    private const float HomeLevelBadgeHeight = 54f;
+    private const float HomeLevelBadgeX = 44f;
+    private const float HomeLevelBadgeY = -126f;
+
     private static readonly Color FrameOrange = new Color32(255, 221, 79, 255);
     private static readonly Color FrameShadow = PremiumUiStyle.Shadow;
     private static readonly Color CreamBar = new Color32(255, 250, 231, 255);
@@ -213,6 +218,7 @@ public static class CurrencyHudBuilder
             CreateEntry(group.transform, "CoinEntry", 1, font, CoinFace, BuildCoinIcon);
         EntryParts diamondEntry =
             CreateEntry(group.transform, "DiamondEntry", 2, font, DiamondFace, BuildDiamondIcon);
+        TMP_Text homeLevelText = BuildHomeLevelBadge(safeArea.transform, font);
 
         // ----- Wire the controller -----
         SerializedObject serialized = new SerializedObject(controller);
@@ -221,6 +227,7 @@ public static class CurrencyHudBuilder
         Assign(serialized, "bondXpText", bondXpEntry.Value);
         Assign(serialized, "coinText", coinEntry.Value);
         Assign(serialized, "diamondText", diamondEntry.Value);
+        Assign(serialized, "homeLevelText", homeLevelText);
         Assign(serialized, "bondXpPlusButton", bondXpEntry.PlusButton);
         Assign(serialized, "coinPlusButton", coinEntry.PlusButton);
         Assign(serialized, "diamondPlusButton", diamondEntry.PlusButton);
@@ -385,6 +392,38 @@ public static class CurrencyHudBuilder
             ValueFontMax);
 
         return new EntryParts(value, plusButton);
+    }
+
+    private static TMP_Text BuildHomeLevelBadge(Transform parent, TMP_FontAsset font)
+    {
+        GameObject badgeRoot = CreateRect("HomeLevelBadge", parent);
+        RectTransform badgeRect = badgeRoot.GetComponent<RectTransform>();
+        badgeRect.anchorMin = badgeRect.anchorMax = new Vector2(0f, 1f);
+        badgeRect.pivot = new Vector2(0f, 1f);
+        badgeRect.anchoredPosition = new Vector2(HomeLevelBadgeX, HomeLevelBadgeY);
+        badgeRect.sizeDelta = new Vector2(HomeLevelBadgeWidth, HomeLevelBadgeHeight);
+
+        // Gold frame + teal face + dark text, the exact treatment of the currency
+        // value pills above it, so the badge reads as one of the same HUD family.
+        LowPolyPanelGraphic rim = CreatePanelGraphic(
+            "HomeLevelRim", badgeRoot.transform, FrameOrange, 17f, 2f, false);
+        Stretch(rim.rectTransform);
+
+        LowPolyPanelGraphic face = CreatePanelGraphic(
+            "HomeLevelFace", badgeRoot.transform, PlusGreen, 14f, 1.5f, false);
+        StretchWithOffsets(face.rectTransform, 2.5f, 2.5f, -2.5f, -2.5f);
+
+        // Child of the face (drawn after the rim) so the text renders on top of
+        // both panels instead of being hidden behind the inset face. Centered in
+        // the pill with symmetric margins.
+        TMP_Text levelText = CreateText(
+            face.transform, "HomeLevelText", font, 18f, DarkBrownText, TextAlignmentOptions.Center);
+        StretchWithOffsets(levelText.rectTransform, 8f, 2f, -8f, 2f);
+        levelText.text = "HOME LV. 1";
+        levelText.fontStyle = FontStyles.Bold;
+        levelText.characterSpacing = 0.5f;
+        levelText.gameObject.AddComponent<HomeLevelBadgeLabel>();
+        return levelText;
     }
 
     // ----- Small green "+" button (one per entry) -----

@@ -321,6 +321,14 @@ public sealed class QuestPanelController : MonoBehaviour
         switch (status)
         {
             case QuestBoardStatus.AllChaptersCompleted:
+                DailyRetentionService.CaptureDailyQuests(snapshots);
+                if (snapshots.Count > 0)
+                {
+                    SetLevelHeading("DAILY QUESTS");
+                    ShowRows();
+                    return;
+                }
+
                 SetLevelHeading("ALL CHAPTERS COMPLETE");
                 ShowMessage(AllChaptersCompletedText);
                 return;
@@ -331,6 +339,7 @@ public sealed class QuestPanelController : MonoBehaviour
                 return;
         }
 
+        DailyRetentionService.CaptureDailyQuests(snapshots);
         SetLevelHeading(FormatChapterHeading(
             ProgressionService.CurrentChapterNumber,
             levelName));
@@ -367,7 +376,8 @@ public sealed class QuestPanelController : MonoBehaviour
         walletLabel.text =
             "Coins: " + Format(ProgressionService.Coins) +
             "    Bond XP: " + Format(ProgressionService.BondXp) +
-            "    Diamonds: " + Format(ProgressionService.Diamonds);
+            "    Diamonds: " + Format(ProgressionService.Diamonds) +
+            "    " + BondMilestoneService.FormatNextGiftLabel(ProgressionService.BondXp);
     }
 
     // Grouped with an invariant separator so a large amount reads the same on

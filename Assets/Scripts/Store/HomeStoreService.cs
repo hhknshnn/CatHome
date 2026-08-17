@@ -174,6 +174,11 @@ public static class HomeStoreService
     public const string FeatherToyId = "cat.feather-toy";
     public const string CollarId = "cat.collar";
     public const string LeashId = "cat.leash";
+    public const string BellCollarId = "cat.bell-collar";
+    public const string KibbleBagId = "cat.kibble-bag";
+    public const string NapPillowId = "cat.nap-pillow";
+    public const string CatnipPlantId = "cat.catnip-plant";
+    public const string CardboardHideoutId = "cat.cardboard-hideout";
     public const string TvUnitId = "room.tv-unit";
     public const string ModernTelevisionId = "room.tv-console";
     // Kept as a save-compatible alias for older code and ownership records.
@@ -225,6 +230,16 @@ public static class HomeStoreService
     public const string BedroomWindowDaybedId = "bedroom.window-daybed";
     public const string BedroomStarCanopyId = "bedroom.star-canopy";
     public const string BedroomQueenBedId = "bedroom.queen-bed";
+    public const string GardenYarnBallId = "garden.yarn-ball";
+    public const string GardenFlowerPotsId = "garden.flower-pots";
+    public const string GardenDaisyBedId = "garden.daisy-bed";
+    public const string GardenSaplingId = "garden.sapling";
+    public const string GardenBirdBathId = "garden.bird-bath";
+    public const string GardenSunLoungerId = "garden.sun-lounger";
+    public const string GardenBistroSetId = "garden.bistro-set";
+    public const string GardenGrillId = "garden.grill";
+    public const string GardenHammockId = "garden.hammock";
+    public const string GardenPergolaId = "garden.pergola";
     public const string HomeRoomsPreviewId = "home.rooms-preview";
     public const string HomeGardenPreviewId = "home.garden-preview";
     public const string HomeKitchenPreviewId = "home.kitchen-preview";
@@ -243,6 +258,8 @@ public static class HomeStoreService
     public const long KitchenDiamondPrice = 40;
     public const long BedroomCoinPrice = 5000;
     public const long BedroomDiamondPrice = 50;
+    public const long GardenCoinPrice = 6000;
+    public const long GardenDiamondPrice = 60;
 
     private static readonly string[] LivingRoomCollectionInternal =
     {
@@ -298,6 +315,20 @@ public static class HomeStoreService
         BedroomWindowDaybedId,
         BedroomStarCanopyId,
         BedroomQueenBedId
+    };
+
+    private static readonly string[] GardenCollectionInternal =
+    {
+        GardenYarnBallId,
+        GardenFlowerPotsId,
+        GardenDaisyBedId,
+        GardenSaplingId,
+        GardenBirdBathId,
+        GardenSunLoungerId,
+        GardenBistroSetId,
+        GardenGrillId,
+        GardenHammockId,
+        GardenPergolaId
     };
 
     private static readonly HomeStoreProduct[] ProductsInternal =
@@ -406,6 +437,41 @@ public static class HomeStoreService
             "STYLE",
             "A coordinated leash ready for future garden and outdoor adventures.",
             1100L, 11L, 3, true, true),
+        new HomeStoreProduct(
+            BellCollarId,
+            "BELL COLLAR",
+            HomeStoreCategory.Cat,
+            "STYLE",
+            "A jingling pastel collar for showing off around the house.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            KibbleBagId,
+            "CAT FOOD TIN",
+            HomeStoreCategory.Cat,
+            "FEEDING",
+            "A colorful wet-food tin for the feeding corner.",
+            600L, 6L, 2, true, true),
+        new HomeStoreProduct(
+            NapPillowId,
+            "NAP PILLOW",
+            HomeStoreCategory.Cat,
+            "REST",
+            "A squashy floor pillow for short sunbeam naps.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            CatnipPlantId,
+            "CAT GRASS POT",
+            HomeStoreCategory.Cat,
+            "GREENERY",
+            "A small leafy pot for the play corner and curious nibbles.",
+            500L, 5L, 2, true, true),
+        new HomeStoreProduct(
+            CardboardHideoutId,
+            "CARDBOARD HIDEOUT",
+            HomeStoreCategory.Cat,
+            "TOY",
+            "An open box hideout. Sometimes the simplest toy is the favorite.",
+            800L, 8L, 2, true, true),
         new HomeStoreProduct(
             ModernTelevisionId,
             "MODERN TELEVISION",
@@ -770,6 +836,76 @@ public static class HomeStoreService
             "A big cream bed with coral pillows and a mint headboard.",
             2500L, 25L, 1, true, true),
         new HomeStoreProduct(
+            GardenYarnBallId,
+            "SUNNY YARN BALL",
+            HomeStoreCategory.Room,
+            "GARDEN TOY",
+            "A bright yarn ball for chasing across the lawn.",
+            200L, 2L, 1, true, true),
+        new HomeStoreProduct(
+            GardenFlowerPotsId,
+            "FLOWER POTS",
+            HomeStoreCategory.Room,
+            "GARDEN PLANTS",
+            "A cluster of coral, lemon and lilac blooms in sunny pots.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            GardenDaisyBedId,
+            "DAISY FLOWER BED",
+            HomeStoreCategory.Room,
+            "GARDEN PLANTS",
+            "A low mint bed packed with daisies for the courtyard edge.",
+            600L, 6L, 1, true, true),
+        new HomeStoreProduct(
+            GardenSaplingId,
+            "LITTLE GARDEN TREE",
+            HomeStoreCategory.Room,
+            "GARDEN PLANTS",
+            "A small shade tree just the right size for a courtyard.",
+            800L, 8L, 1, true, true),
+        new HomeStoreProduct(
+            GardenBirdBathId,
+            "BIRD BATH",
+            HomeStoreCategory.Room,
+            "GARDEN DECOR",
+            "A shallow peach bath where courtyard birds come to splash.",
+            1000L, 10L, 1, true, true),
+        new HomeStoreProduct(
+            GardenSunLoungerId,
+            "SUN LOUNGER",
+            HomeStoreCategory.Room,
+            "GARDEN FURNITURE",
+            "A mint balcony lounger for sleepy sun patches.",
+            1200L, 12L, 1, true, true),
+        new HomeStoreProduct(
+            GardenBistroSetId,
+            "BALCONY SET",
+            HomeStoreCategory.Room,
+            "GARDEN FURNITURE",
+            "A peach table and two chairs for sunny snacks outside.",
+            1500L, 15L, 1, true, true),
+        new HomeStoreProduct(
+            GardenGrillId,
+            "PAW GRILL",
+            HomeStoreCategory.Room,
+            "GARDEN FURNITURE",
+            "A compact coral barbecue with gold knobs for courtyard cookouts.",
+            1800L, 18L, 1, true, true),
+        new HomeStoreProduct(
+            GardenHammockId,
+            "GARDEN HAMMOCK",
+            HomeStoreCategory.Room,
+            "GARDEN FURNITURE",
+            "A lilac hammock strung between gold posts for long naps.",
+            2100L, 21L, 1, true, true),
+        new HomeStoreProduct(
+            GardenPergolaId,
+            "SUN PERGOLA",
+            HomeStoreCategory.Room,
+            "GARDEN FURNITURE",
+            "A cream pergola with mint beams that frames the whole courtyard.",
+            2500L, 25L, 1, true, true),
+        new HomeStoreProduct(
             HomeRoomsPreviewId,
             "LIVING ROOM",
             HomeStoreCategory.Home,
@@ -784,12 +920,12 @@ public static class HomeStoreService
             HomeGardenPreviewId,
             "GARDEN",
             HomeStoreCategory.Home,
-            "HOME EXPANSION",
-            "Outdoor areas and garden activities will be added here.",
-            0L,
-            0L,
+            "NEW ROOM",
+            "A sunny fenced courtyard with grass, birds and its own 10-piece garden collection.",
+            GardenCoinPrice,
+            GardenDiamondPrice,
             5,
-            false,
+            true,
             false),
         new HomeStoreProduct(
             HomeBedroomPreviewId,
@@ -797,21 +933,21 @@ public static class HomeStoreService
             HomeStoreCategory.Home,
             "NEW ROOM",
             "A calm pastel bedroom with its own completely new 10-piece collection.",
-            BedroomCoinPrice, BedroomDiamondPrice, 1, true, false),
+            BedroomCoinPrice, BedroomDiamondPrice, 4, true, false),
         new HomeStoreProduct(
             HomeBathroomPreviewId,
             "BATHROOM",
             HomeStoreCategory.Home,
             "NEW ROOM",
             "A warm cat-friendly bathroom with its own completely new 10-piece collection.",
-            BathroomCoinPrice, BathroomDiamondPrice, 1, true, false),
+            BathroomCoinPrice, BathroomDiamondPrice, 2, true, false),
         new HomeStoreProduct(
             HomeKitchenPreviewId,
             "KITCHEN",
             HomeStoreCategory.Home,
             "NEW ROOM",
             "A bright cat-friendly kitchen with its own completely new 10-piece collection.",
-            KitchenCoinPrice, KitchenDiamondPrice, 1, true, false),
+            KitchenCoinPrice, KitchenDiamondPrice, 3, true, false),
         new HomeStoreProduct(
             HomeBalconyPreviewId,
             "BALCONY",
@@ -853,6 +989,7 @@ public static class HomeStoreService
     public static IReadOnlyList<string> BathroomCollection => BathroomCollectionInternal;
     public static IReadOnlyList<string> KitchenCollection => KitchenCollectionInternal;
     public static IReadOnlyList<string> BedroomCollection => BedroomCollectionInternal;
+    public static IReadOnlyList<string> GardenCollection => GardenCollectionInternal;
     public static bool FreePurchaseTestingEnabled => !EconomyChecksEnabled;
     public static int LivingRoomItemCount => LivingRoomCollectionInternal.Length;
     public static int LivingRoomOwnedCount
@@ -882,6 +1019,10 @@ public static class HomeStoreService
     public static int BedroomOwnedCount => GetOwnedCount(BedroomCollectionInternal);
     public static bool IsBedroomComplete =>
         BedroomOwnedCount >= BedroomCollectionInternal.Length;
+    public static int GardenItemCount => GardenCollectionInternal.Length;
+    public static int GardenOwnedCount => GetOwnedCount(GardenCollectionInternal);
+    public static bool IsGardenComplete =>
+        GardenOwnedCount >= GardenCollectionInternal.Length;
     public static event Action<string> OwnershipChanged;
     public static event Action<string> PlacementChanged;
 
@@ -899,6 +1040,35 @@ public static class HomeStoreService
     public static bool IsOwned(string productId)
     {
         return !string.IsNullOrWhiteSpace(productId) && OwnedProductIds.Contains(productId);
+    }
+
+    /// <summary>
+    /// Total Home XP represented by the currently owned products: the sum of their
+    /// coin prices, matching the amount each one grants on purchase. Used to
+    /// back-fill Home progression at load for a home furnished before the Home XP
+    /// slice existed, so already-owned products still count toward Home Level.
+    /// </summary>
+    public static long SumOwnedHomeXp()
+    {
+        long total = 0L;
+        foreach (string id in OwnedProductIds)
+        {
+            if (ProductsById.TryGetValue(id, out HomeStoreProduct product))
+                total = product.CoinPrice > long.MaxValue - total
+                    ? long.MaxValue
+                    : total + product.CoinPrice;
+        }
+        return total;
+    }
+
+    public static bool MeetsHomeLevelRequirement(HomeStoreProduct product)
+    {
+        return HomeProgressionService.MeetsHomeLevelRequirement(product.RequiredLevel);
+    }
+
+    public static bool MeetsHomeLevelRequirement(int requiredLevel)
+    {
+        return HomeProgressionService.MeetsHomeLevelRequirement(requiredLevel);
     }
 
     public static bool IsLivingRoomCollectionProduct(string productId)
@@ -921,6 +1091,11 @@ public static class HomeStoreService
         return Array.IndexOf(BedroomCollectionInternal, productId) >= 0;
     }
 
+    public static bool IsGardenCollectionProduct(string productId)
+    {
+        return Array.IndexOf(GardenCollectionInternal, productId) >= 0;
+    }
+
     public static IReadOnlyList<string> GetRoomCollection(string roomId)
     {
         if (string.Equals(roomId, HomeRoomService.BathroomId, StringComparison.Ordinal))
@@ -929,6 +1104,8 @@ public static class HomeStoreService
             return KitchenCollectionInternal;
         if (string.Equals(roomId, HomeRoomService.BedroomId, StringComparison.Ordinal))
             return BedroomCollectionInternal;
+        if (string.Equals(roomId, HomeRoomService.GardenId, StringComparison.Ordinal))
+            return GardenCollectionInternal;
         return LivingRoomCollectionInternal;
     }
 
@@ -974,6 +1151,8 @@ public static class HomeStoreService
             return HomeBathroomPreviewId;
         if (string.Equals(productId, HomeBedroomPreviewId, StringComparison.Ordinal))
             return HomeKitchenPreviewId;
+        if (string.Equals(productId, HomeGardenPreviewId, StringComparison.Ordinal))
+            return HomeBedroomPreviewId;
         return null;
     }
 
@@ -1090,7 +1269,15 @@ public static class HomeStoreService
                 Math.Max(0, KitchenItemCount - KitchenOwnedCount));
         }
 
-        if (ProgressionService.CurrentChapterNumber < product.RequiredLevel)
+        if (product.Id == HomeGardenPreviewId && !IsBedroomComplete)
+        {
+            return new HomeStorePurchaseResult(
+                HomeStorePurchaseStatus.CollectionIncomplete,
+                product,
+                Math.Max(0, BedroomItemCount - BedroomOwnedCount));
+        }
+
+        if (!MeetsHomeLevelRequirement(product))
             return new HomeStorePurchaseResult(HomeStorePurchaseStatus.LevelLocked, product, 0L);
 
         if (!product.SupportsCoins && !product.SupportsDiamonds)
@@ -1145,6 +1332,7 @@ public static class HomeStoreService
         // Home XP is earned before the save so the grant and the ownership change
         // are captured in the same file write.
         HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
+        ProgressionService.RecordProgress(QuestType.BuyStoreItem);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);
@@ -1156,6 +1344,13 @@ public static class HomeStoreService
     /// a single catalog click can immediately enter placement mode.
     /// </summary>
     public static HomeStorePurchaseResult TryAcquireForTesting(string productId)
+    {
+        return TryAcquireForTesting(productId, true);
+    }
+
+    private static HomeStorePurchaseResult TryAcquireForTesting(
+        string productId,
+        bool recordQuest)
     {
         if (!TryGetProduct(productId, out HomeStoreProduct product))
             return new HomeStorePurchaseResult(HomeStorePurchaseStatus.UnknownProduct, default, 0L);
@@ -1169,7 +1364,7 @@ public static class HomeStoreService
         string requiredId = GetRequiredProductId(productId);
         if (!string.IsNullOrEmpty(requiredId) && !IsOwned(requiredId))
         {
-            HomeStorePurchaseResult required = TryAcquireForTesting(requiredId);
+            HomeStorePurchaseResult required = TryAcquireForTesting(requiredId, false);
             if (!required.Succeeded && required.Status != HomeStorePurchaseStatus.AlreadyOwned)
             {
                 return new HomeStorePurchaseResult(
@@ -1181,6 +1376,8 @@ public static class HomeStoreService
 
         OwnedProductIds.Add(productId);
         HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
+        if (recordQuest)
+            ProgressionService.RecordProgress(QuestType.BuyStoreItem);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);

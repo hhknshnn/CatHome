@@ -10,6 +10,7 @@ public sealed class ActivityUnlockTests
     private BallChaseActivity ball;
     private ScratchPostActivity scratch;
     private MouseHuntActivity mouse;
+    private SitLookActivity windowWatch;
 
     [SetUp]
     public void SetUp()
@@ -23,6 +24,7 @@ public sealed class ActivityUnlockTests
         ball = FindInScene<BallChaseActivity>();
         scratch = FindInScene<ScratchPostActivity>();
         mouse = FindInScene<MouseHuntActivity>();
+        windowWatch = FindWindowWatch();
     }
 
     [TearDown]
@@ -41,10 +43,13 @@ public sealed class ActivityUnlockTests
         Assert.That(ball, Is.Not.Null);
         Assert.That(scratch, Is.Not.Null);
         Assert.That(mouse, Is.Not.Null);
+        Assert.That(windowWatch, Is.Not.Null);
+        Assert.That(windowWatch.RequiredBondXp, Is.EqualTo(BondMilestoneService.WindowWatchBond));
 
         Assert.That(ball.IsUnlocked, Is.False);
         Assert.That(scratch.IsUnlocked, Is.False);
         Assert.That(mouse.IsUnlocked, Is.False);
+        Assert.That(windowWatch.IsUnlocked, Is.False);
         Assert.That(ball.IsContentVisible, Is.False);
         Assert.That(scratch.IsContentVisible, Is.False);
         Assert.That(mouse.IsContentVisible, Is.False);
@@ -57,6 +62,12 @@ public sealed class ActivityUnlockTests
         Assert.That(scratch.IsUnlocked, Is.False, "Bond must not bypass store ownership.");
         Assert.That(mouse.IsUnlocked, Is.True);
         Assert.That(mouse.IsContentVisible, Is.True);
+        windowWatch.RefreshUnlockPresentation();
+        Assert.That(windowWatch.IsUnlocked, Is.False, "Window watch waits for 80 Bond.");
+
+        ProgressionService.ApplySavedState(0, 0, BondMilestoneService.WindowWatchBond, 1, new QuestProgressEntry[0]);
+        windowWatch.RefreshUnlockPresentation();
+        Assert.That(windowWatch.IsUnlocked, Is.True);
 
         long totalPrice = HomeStoreService.BallBasketPrice + HomeStoreService.ScratchPostPrice;
         EconomyService.AddCurrency(CurrencyType.Coin, totalPrice, EconomySource.Debug);
@@ -96,6 +107,21 @@ public sealed class ActivityUnlockTests
             if (component != null)
                 return component;
         }
+        return null;
+    }
+
+    private SitLookActivity FindWindowWatch()
+    {
+        foreach (GameObject root in scene.GetRootGameObjects())
+        {
+            SitLookActivity[] activities = root.GetComponentsInChildren<SitLookActivity>(true);
+            for (int i = 0; i < activities.Length; i++)
+            {
+                if (activities[i] != null && activities[i].Kind == CatActivityKind.WindowWatch)
+                    return activities[i];
+            }
+        }
+
         return null;
     }
 }

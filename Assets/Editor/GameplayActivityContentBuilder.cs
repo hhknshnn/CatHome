@@ -188,6 +188,7 @@ public static class GameplayActivityContentBuilder
         BuildBallActivity(root.transform);
         BuildScratchActivity(root.transform);
         BuildMouseActivity(root.transform);
+        BuildWindowWatchActivity(root.transform);
 
         CatMovement cat = FindInScene<CatMovement>(scene);
         if (cat != null && cat.GetComponent<CatActivityReaction>() == null)
@@ -314,7 +315,10 @@ public static class GameplayActivityContentBuilder
         InstantiateModel(MouseModelPath, mouseObject.transform, "ClockworkMouse_Visual", 0.42f, -90f);
         mouseObject.transform.localPosition = Vector3.zero;
         RemoveColliders(mouseObject);
-        GameObject lockVisual = CreateLockVisual(station.transform, new Vector3(0f, 0.66f, 0f), "LV 3  •  35 BOND");
+        GameObject lockVisual = CreateLockVisual(
+            station.transform,
+            new Vector3(0f, 0.66f, 0f),
+            "BOND  " + BondMilestoneService.MouseHuntBond);
 
         Vector3[] worldPoints =
         {
@@ -332,7 +336,7 @@ public static class GameplayActivityContentBuilder
             "MOUSE HUNT",
             CatActivityKind.MouseHunt,
             QuestType.MouseHunt,
-            35,
+            BondMilestoneService.MouseHuntBond,
             "HUNT",
             1.25f,
             12f,
@@ -340,6 +344,78 @@ public static class GameplayActivityContentBuilder
             lockVisual,
             content);
         activity.EditorConfigureMouse(mouseObject.transform, home, points, 3);
+    }
+
+    public static string EnsureWindowWatchActivity()
+    {
+        Scene scene = SceneManager.GetSceneByPath(SceneArchitectureBuilder.LevelScenePath);
+        bool opened = !scene.IsValid() || !scene.isLoaded;
+        if (opened)
+            scene = EditorSceneManager.OpenScene(
+                SceneArchitectureBuilder.LevelScenePath,
+                OpenSceneMode.Additive);
+
+        GameObject existing = FindNamedInScene(scene, "WindowWatchActivity");
+        if (existing == null)
+        {
+            GameObject root = FindNamedInScene(scene, "GameplayActivities");
+            if (root == null)
+            {
+                root = new GameObject("GameplayActivities");
+                SceneManager.MoveGameObjectToScene(root, scene);
+            }
+
+            BuildWindowWatchActivity(root.transform);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        if (opened && scene.IsValid())
+            EditorSceneManager.CloseScene(scene, true);
+        return existing == null ? "window-watch-added" : "window-watch-present";
+    }
+
+    private static void BuildWindowWatchActivity(Transform parent)
+    {
+        if (parent.Find("WindowWatchActivity") != null)
+            return;
+
+        GameObject station = CreateStation(
+            "WindowWatchActivity",
+            parent,
+            new Vector3(2.85f, 0f, 0.15f));
+        GameObject content = CreateContentRoot(station.transform, false);
+        Transform look = CreatePoint(
+            station.transform,
+            "WindowLookPoint",
+            new Vector3(1.35f, 1.15f, 0f));
+        Transform anchor = CreatePoint(
+            station.transform,
+            "InteractionAnchor",
+            new Vector3(-0.45f, 0f, 0f));
+        GameObject lockVisual = CreateLockVisual(
+            station.transform,
+            new Vector3(0f, 1.05f, 0f),
+            "BOND  " + BondMilestoneService.WindowWatchBond);
+
+        SitLookActivity activity = station.AddComponent<SitLookActivity>();
+        activity.EditorConfigure(
+            "window-watch",
+            "WINDOW WATCH",
+            CatActivityKind.WindowWatch,
+            QuestType.WindowWatch,
+            BondMilestoneService.WindowWatchBond,
+            "WATCH",
+            1.2f,
+            6f,
+            anchor,
+            lockVisual,
+            content);
+        activity.EditorConfigureLook(
+            look,
+            SitLookReaction.Sit,
+            2.6f,
+            "WHAT A VIEW!");
     }
 
     private static GameObject CreateStation(string name, Transform parent, Vector3 position)

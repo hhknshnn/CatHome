@@ -42,6 +42,8 @@ public sealed class LevelCatalogTests
         Assert.That(config.GetChapter(1).LevelId, Is.EqualTo("first-meals"));
         Assert.That(config.GetChapter(2).LevelId, Is.EqualTo("sweet-dreams"));
         Assert.That(config.GetChapter(3).LevelId, Is.EqualTo("best-friends"));
-        Assert.That(config.GetChapter(4), Is.Null);
+        Assert.That(config.GetChapter(4).LevelId, Is.EqualTo("home-loop"));
+        Assert.That(config.GetChapter(5).LevelId, Is.EqualTo("garden-bond"));
+        Assert.That(config.GetChapter(6), Is.Null);
     }
 }

@@ -22,6 +22,7 @@ public sealed class CatRunnerScenerySegment : MonoBehaviour
     private bool reducedMotion;
 
     public int CurrentVariant { get; private set; }
+    public int VariantCount => variants?.Length ?? 0;
 
     private void Awake()
     {
@@ -114,6 +115,44 @@ public sealed class CatRunnerScenerySegment : MonoBehaviour
         spinSpeed = 24f;
         CacheAuthoredPose();
         ApplyVariant(initialVariant);
+    }
+
+    public void EditorAppendVariant(
+        GameObject variant,
+        Transform[] extraFloaters,
+        Transform[] extraSpinners)
+    {
+        if (variant == null)
+            return;
+
+        int existing = variants != null ? variants.Length : 0;
+        for (int i = 0; i < existing; i++)
+        {
+            if (variants[i] == variant)
+                return;
+        }
+
+        var nextVariants = new GameObject[existing + 1];
+        if (existing > 0)
+            Array.Copy(variants, nextVariants, existing);
+        nextVariants[existing] = variant;
+        variants = nextVariants;
+        floaters = ConcatTransforms(floaters, extraFloaters);
+        spinners = ConcatTransforms(spinners, extraSpinners);
+        CacheAuthoredPose();
+    }
+
+    private static Transform[] ConcatTransforms(Transform[] current, Transform[] extra)
+    {
+        if (extra == null || extra.Length == 0)
+            return current ?? Array.Empty<Transform>();
+        if (current == null || current.Length == 0)
+            return extra;
+
+        var merged = new Transform[current.Length + extra.Length];
+        Array.Copy(current, merged, current.Length);
+        Array.Copy(extra, 0, merged, current.Length, extra.Length);
+        return merged;
     }
 #endif
 }

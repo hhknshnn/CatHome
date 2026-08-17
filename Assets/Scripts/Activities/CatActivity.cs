@@ -7,7 +7,10 @@ public enum CatActivityKind
     BallChase = 0,
     ScratchPost = 1,
     MouseHunt = 2,
-    TunnelPlay = 3
+    TunnelPlay = 3,
+    WindowWatch = 4,
+    FeatherPlay = 5,
+    BirdWatch = 6
 }
 
 public abstract class CatActivity : MonoBehaviour
@@ -46,6 +49,7 @@ public abstract class CatActivity : MonoBehaviour
     public string ActionText => string.IsNullOrWhiteSpace(actionText) ? "PLAY" : actionText;
     public float InteractionRadius => Mathf.Max(0.2f, interactionRadius);
     public float EnergyCost => Mathf.Max(0f, energyCost);
+    protected Transform InteractionAnchor => interactionAnchor;
     public bool IsContentVisible => unlockedContent == null || unlockedContent.activeSelf;
     public bool IsRunning { get; private set; }
     public string StoreProductId => storeProductId;

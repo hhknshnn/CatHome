@@ -20,6 +20,14 @@ public static class ShopPanelBuilder
     private const int SortingOrder = 110;
     private const float PanelHeight = 840f;
     private const float PanelWidth = 1320f;
+    private const float HomeLevelBadgeWidth = 210f;
+    private const float HomeLevelBadgeHeight = 54f;
+    // Anchored to the panel's top-right corner, inside the pink header to the right
+    // of the title/subtitle. Clears the intro line and the wallet/collection row
+    // that share the body below.
+    private const float HomeLevelBadgeX = -108f;
+    // Vertically centered on the close button / title midline in the header.
+    private const float HomeLevelBadgeY = -39f;
 
     private static readonly Color Scrim = PremiumUiStyle.Night;
     private static readonly Color Ink = PremiumUiStyle.Night;
@@ -130,6 +138,7 @@ public static class ShopPanelBuilder
         Assign(serialized, "closeButton", panel.CloseButton);
         Assign(serialized, "balanceText", panel.BalanceText);
         Assign(serialized, "ownedCountText", panel.OwnedCountText);
+        Assign(serialized, "homeLevelText", panel.HomeLevelText);
         Assign(serialized, "sectionTitleText", panel.SectionTitleText);
         Assign(serialized, "feedbackText", panel.FeedbackText);
         Assign(serialized, "productScrollRect", panel.ProductScrollRect);
@@ -205,7 +214,12 @@ public static class ShopPanelBuilder
         StretchWithOffsets(innerFace.rectTransform, 10f, 10f, -10f, -10f);
 
         BuildHeader(panelObject.transform, font, out Button closeButton);
-        BuildSummary(panelObject.transform, font, out TMP_Text balanceText, out TMP_Text ownedCountText);
+        BuildSummary(
+            panelObject.transform,
+            font,
+            out TMP_Text balanceText,
+            out TMP_Text ownedCountText,
+            out TMP_Text homeLevelText);
 
         var tabs = new List<TabData>(3)
         {
@@ -265,6 +279,7 @@ public static class ShopPanelBuilder
             closeButton,
             balanceText,
             ownedCountText,
+            homeLevelText,
             section,
             feedback,
             productScroll,
@@ -1007,7 +1022,8 @@ public static class ShopPanelBuilder
         Transform parent,
         TMP_FontAsset font,
         out TMP_Text balanceText,
-        out TMP_Text ownedCountText)
+        out TMP_Text ownedCountText,
+        out TMP_Text homeLevelText)
     {
         TMP_Text intro = CreateText("Intro", parent, font, 20f, PremiumUiStyle.WarmIvory, TextAlignmentOptions.MidlineLeft);
         intro.text = "Build a happy cat, a personal room and a growing home.";
@@ -1053,6 +1069,42 @@ public static class ShopPanelBuilder
         ownedCountText.fontStyle = FontStyles.Normal;
         ownedCountText.fontWeight = FontWeight.Regular;
         CreateSparkle(collectionFace.transform, "CollectionGlint", new Vector2(145f, 13f), 8f, CoinHighlight);
+        homeLevelText = BuildHomeLevelBadge(parent, font);
+    }
+
+    private static TMP_Text BuildHomeLevelBadge(Transform parent, TMP_FontAsset font)
+    {
+        GameObject badgeRoot = CreateRect("HomeLevelBadge", parent);
+        RectTransform badgeRect = badgeRoot.GetComponent<RectTransform>();
+        SetRect(
+            badgeRect,
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(1f, 1f),
+            new Vector2(HomeLevelBadgeX, HomeLevelBadgeY),
+            new Vector2(HomeLevelBadgeWidth, HomeLevelBadgeHeight));
+
+        // Gold rim + navy face, echoing the store emblem on the left so the header
+        // is bookended by the same premium jewel treatment.
+        LowPolyPanelGraphic rim = CreatePanel(
+            "HomeLevelRim", badgeRoot.transform, Gold, 16f, 2f, false);
+        Stretch(rim.rectTransform);
+
+        LowPolyPanelGraphic face = CreatePanel(
+            "HomeLevelFace", badgeRoot.transform, PremiumUiStyle.Navy, 13f, 1.5f, false);
+        StretchWithOffsets(face.rectTransform, 2.5f, 2.5f, -2.5f, -2.5f);
+
+        // Child of the face (drawn after the rim) so the text renders on top of
+        // both panels instead of being hidden behind the inset face. Centered in
+        // the pill with symmetric margins.
+        TMP_Text homeLevelText = CreateText(
+            "HomeLevelText", face.transform, font, 18f, Cream, TextAlignmentOptions.Center);
+        StretchWithOffsets(homeLevelText.rectTransform, 10f, 2f, -10f, 2f);
+        homeLevelText.text = "HOME LV. 1";
+        homeLevelText.fontStyle = FontStyles.Bold;
+        homeLevelText.characterSpacing = 0.5f;
+        homeLevelText.gameObject.AddComponent<HomeLevelBadgeLabel>();
+        return homeLevelText;
     }
 
     private static ProductCardData BuildProductCard(
@@ -1839,6 +1891,7 @@ public static class ShopPanelBuilder
             Button closeButton,
             TMP_Text balanceText,
             TMP_Text ownedCountText,
+            TMP_Text homeLevelText,
             TMP_Text sectionTitleText,
             TMP_Text feedbackText,
             ScrollRect productScrollRect,
@@ -1850,6 +1903,7 @@ public static class ShopPanelBuilder
             CloseButton = closeButton;
             BalanceText = balanceText;
             OwnedCountText = ownedCountText;
+            HomeLevelText = homeLevelText;
             SectionTitleText = sectionTitleText;
             FeedbackText = feedbackText;
             ProductScrollRect = productScrollRect;
@@ -1862,6 +1916,7 @@ public static class ShopPanelBuilder
         public Button CloseButton { get; }
         public TMP_Text BalanceText { get; }
         public TMP_Text OwnedCountText { get; }
+        public TMP_Text HomeLevelText { get; }
         public TMP_Text SectionTitleText { get; }
         public TMP_Text FeedbackText { get; }
         public ScrollRect ProductScrollRect { get; }

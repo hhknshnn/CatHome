@@ -39,6 +39,22 @@ public static class CatRunnerContentBuilder
     }
 
     public const string RunnerScenePath = "Assets/Scenes/Runner/CatRunner.unity";
+    public const int SceneryVariantCount = 9;
+    public const int GardenCourtyardVariantIndex =
+        CatRunnerTrackManager.GardenCourtyardVariantIndex;
+    public const string GardenCourtyardVariantName = "Variant_GardenCourtyard";
+    public static readonly string[] SceneryVariantNames =
+    {
+        "Variant_PetShop",
+        "Variant_ToyCorner",
+        "Variant_CozyMarket",
+        "Variant_CatCafe",
+        "Variant_WindowGarden",
+        "Variant_ToyParade",
+        "Variant_CozyReading",
+        "Variant_PawPark",
+        GardenCourtyardVariantName
+    };
     private const string CatPrefabPath =
         "Assets/PolyOne/Cartoon Dog, Cat/Prefab/SM_CartoonAnimal_Cat.prefab";
     private const string RunnerMaterialFolder = "Assets/Art/Runner/Materials";
@@ -87,6 +103,72 @@ public static class CatRunnerContentBuilder
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(SceneArchitectureBuilder.BootstrapScenePath, OpenSceneMode.Single);
         return "cat-runner-prototype-built";
+    }
+
+    public static string EnsureGardenCourtyardVariants()
+    {
+        Scene scene = SceneManager.GetSceneByPath(RunnerScenePath);
+        bool opened = !scene.IsValid() || !scene.isLoaded;
+        if (opened)
+            scene = EditorSceneManager.OpenScene(RunnerScenePath, OpenSceneMode.Additive);
+
+        Material mint = GetOrCreateMaterial(
+            "RunnerSceneryMint", new Color32(125, 229, 196, 255));
+        Material peach = GetOrCreateMaterial(
+            "RunnerSceneryPeach", new Color32(255, 190, 126, 255));
+        Material pink = GetOrCreateMaterial(
+            "RunnerSceneryPink", new Color32(255, 151, 190, 255));
+        Material sky = GetOrCreateMaterial(
+            "RunnerScenerySky", new Color32(128, 211, 246, 255));
+        Material edge = GetOrCreateMaterial(
+            "RunnerAccentWood", new Color32(151, 91, 47, 255));
+        Material glow = GetOrCreateMaterial(
+            "RunnerScenerySun", new Color32(255, 222, 94, 255));
+
+        int updated = 0;
+        GameObject[] roots = scene.GetRootGameObjects();
+        for (int r = 0; r < roots.Length; r++)
+        {
+            CatRunnerScenerySegment[] segments =
+                roots[r].GetComponentsInChildren<CatRunnerScenerySegment>(true);
+            for (int i = 0; i < segments.Length; i++)
+            {
+                CatRunnerScenerySegment scenery = segments[i];
+                if (scenery == null)
+                    continue;
+
+                Transform existing = scenery.transform.Find(GardenCourtyardVariantName);
+                var extraFloaters = new List<Transform>();
+                var extraSpinners = new List<Transform>();
+                GameObject garden = existing != null
+                    ? existing.gameObject
+                    : BuildGardenCourtyardScenery(
+                        scenery.transform,
+                        i,
+                        i % 2 == 0 ? -1f : 1f,
+                        mint,
+                        peach,
+                        pink,
+                        sky,
+                        edge,
+                        glow,
+                        extraFloaters,
+                        extraSpinners,
+                        null,
+                        null);
+                scenery.EditorAppendVariant(
+                    garden,
+                    extraFloaters.ToArray(),
+                    extraSpinners.ToArray());
+                updated++;
+            }
+        }
+
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+        if (opened && scene.IsValid())
+            EditorSceneManager.CloseScene(scene, true);
+        return "garden-courtyard-variants:" + updated;
     }
 
     private static void BuildLaunchButton()
@@ -1670,6 +1752,66 @@ public static class CatRunnerContentBuilder
             Vector3.zero,
             .22f);
 
+        GameObject windowGarden = BuildWindowGardenScenery(
+            segment,
+            segmentIndex,
+            side,
+            accent,
+            edge,
+            glow,
+            sky,
+            window,
+            cloud,
+            accents,
+            edges,
+            glows,
+            floatingItems,
+            spinningItems);
+
+        GameObject toyParade = BuildToyParadeScenery(
+            segment,
+            segmentIndex,
+            side,
+            peach,
+            pink,
+            glow,
+            mint,
+            window,
+            floatingItems,
+            spinningItems,
+            accents,
+            glows,
+            edges);
+
+        GameObject cozyReading = BuildCozyReadingScenery(
+            segment,
+            segmentIndex,
+            side,
+            accent,
+            edge,
+            mint,
+            window,
+            floatingItems,
+            spinningItems,
+            accents,
+            edges,
+            glows);
+
+        GameObject gardenCourtyard = BuildGardenCourtyardScenery(
+            segment,
+            segmentIndex,
+            side,
+            mint,
+            peach,
+            pink,
+            sky,
+            edge,
+            glow,
+            floatingItems,
+            spinningItems,
+            edges,
+            glows);
+
         GameObject pawPark = CreateTemplateRoot("Variant_PawPark", segment);
         CreateDecorPrimitive(
             PrimitiveType.Cube,
@@ -1751,12 +1893,571 @@ public static class CatRunnerContentBuilder
             null);
         floatingItems.Add(balloonCluster.transform);
 
-        variants = new[] { petShop, toyCorner, market, catCafe, pawPark };
+        variants = new[]
+        {
+            petShop,
+            toyCorner,
+            market,
+            catCafe,
+            windowGarden,
+            toyParade,
+            cozyReading,
+            pawPark,
+            gardenCourtyard
+        };
         floaters = floatingItems.ToArray();
         spinners = spinningItems.ToArray();
         accentRenderers = accents.ToArray();
         edgeRenderers = edges.ToArray();
         glowRenderers = glows.ToArray();
+    }
+
+    private static GameObject BuildGardenCourtyardScenery(
+        Transform segment,
+        int segmentIndex,
+        float side,
+        Material mint,
+        Material peach,
+        Material pink,
+        Material sky,
+        Material edge,
+        Material glow,
+        List<Transform> floaters,
+        List<Transform> spinners,
+        List<Renderer> edges,
+        List<Renderer> glows)
+    {
+        GameObject root = CreateTemplateRoot(GardenCourtyardVariantName, segment);
+        CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "GardenLawn",
+            root.transform,
+            new Vector3(side * 5.7f, .04f, .2f),
+            new Vector3(3.15f, .08f, 5.1f),
+            mint,
+            null);
+        CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "GardenPath",
+            root.transform,
+            new Vector3(side * 4.85f, .07f, .15f),
+            new Vector3(.55f, .05f, 4.6f),
+            peach,
+            null);
+
+        for (int post = 0; post < 5; post++)
+        {
+            float z = -1.9f + post * 0.95f;
+            CreateDecorPrimitive(
+                PrimitiveType.Cube,
+                "GardenFencePost_" + (post + 1),
+                root.transform,
+                new Vector3(side * 6.55f, .55f, z),
+                new Vector3(.1f, 1.05f, .1f),
+                edge,
+                edges);
+            if (post < 4)
+            {
+                CreateDecorPrimitive(
+                    PrimitiveType.Cube,
+                    "GardenFenceRail_" + (post + 1),
+                    root.transform,
+                    new Vector3(side * 6.55f, .62f, z + .48f),
+                    new Vector3(.06f, .08f, .88f),
+                    peach,
+                    null);
+            }
+        }
+
+        CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "GardenTreeTrunk",
+            root.transform,
+            new Vector3(side * 5.85f, .95f, 1.35f),
+            new Vector3(.26f, .95f, .26f),
+            edge,
+            edges);
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenTreeCrownLow",
+            root.transform,
+            new Vector3(side * 5.8f, 2.05f, 1.32f),
+            new Vector3(1.25f, 1.05f, 1.15f),
+            mint,
+            null);
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenTreeCrownHigh",
+            root.transform,
+            new Vector3(side * 5.95f, 2.55f, 1.18f),
+            new Vector3(.85f, .7f, .8f),
+            sky,
+            null);
+
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenBloomPink",
+            root.transform,
+            new Vector3(side * 4.95f, .28f, -1.45f),
+            new Vector3(.32f, .22f, .32f),
+            pink,
+            null);
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenBloomPeach",
+            root.transform,
+            new Vector3(side * 5.25f, .26f, -1.05f),
+            new Vector3(.28f, .2f, .28f),
+            peach,
+            null);
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenBloomSky",
+            root.transform,
+            new Vector3(side * 4.72f, .24f, 1.85f),
+            new Vector3(.3f, .2f, .3f),
+            sky,
+            null);
+
+        GameObject sun = CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "GardenSun",
+            root.transform,
+            new Vector3(side * 5.15f, 3.35f, -1.55f),
+            new Vector3(.42f, .05f, .42f),
+            glow,
+            glows);
+        sun.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        if (spinners != null)
+            spinners.Add(sun.transform);
+
+        GameObject bird = CreateTemplateRoot("GardenBird", root.transform);
+        bird.transform.localPosition = new Vector3(side * 5.35f, 2.85f, .35f);
+        CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenBirdBody",
+            bird.transform,
+            Vector3.zero,
+            new Vector3(.18f, .12f, .22f),
+            peach,
+            null);
+        CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "GardenBirdWing",
+            bird.transform,
+            new Vector3(side * .12f, .02f, 0f),
+            new Vector3(.22f, .04f, .1f),
+            pink,
+            null);
+        if (floaters != null)
+            floaters.Add(bird.transform);
+
+        GameObject cloud = CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "GardenCloud",
+            root.transform,
+            new Vector3(side * 6.35f, 3.55f + segmentIndex * .02f, 1.65f),
+            new Vector3(.85f, .38f, .55f),
+            sky,
+            null);
+        if (floaters != null)
+            floaters.Add(cloud.transform);
+        return root;
+    }
+
+    private static GameObject BuildWindowGardenScenery(
+        Transform segment,
+        int segmentIndex,
+        float side,
+        Material accent,
+        Material edge,
+        Material glow,
+        Material sky,
+        Material window,
+        Material cloud,
+        List<Renderer> accents,
+        List<Renderer> edges,
+        List<Renderer> glows,
+        List<Transform> floaters,
+        List<Transform> spinners)
+    {
+        GameObject root = CreateTemplateRoot("Variant_WindowGarden", segment);
+        BuildTownhouse(
+            root.transform,
+            "WindowGardenFacade",
+            side,
+            0.88f + (segmentIndex % 3) * .12f,
+            2.05f,
+            glow,
+            sky,
+            window);
+        CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "GardenWindowSill",
+            root.transform,
+            new Vector3(side * 6.34f, .12f, .18f),
+            new Vector3(.84f, .12f, 1.6f),
+            edge,
+            edges);
+
+        GameObject plantSmall = InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "PottedPlant_Small_3.prefab",
+            root.transform,
+            "GardenWindowPlantSmall",
+            new Vector3(side * 4.66f, .06f, .98f),
+            Vector3.zero,
+            .28f);
+        if (plantSmall != null)
+            floaters.Add(plantSmall.transform);
+
+        GameObject plantTall = InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "PottedPlant_Tall_2.prefab",
+            root.transform,
+            "GardenWindowPlantTall",
+            new Vector3(side * 4.58f, .08f, -1.26f),
+            new Vector3(0f, side * 13f, 0f),
+            .9f);
+        if (plantTall != null)
+            floaters.Add(plantTall.transform);
+
+        GameObject vase = InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Vase_2.prefab",
+            root.transform,
+            "GardenWindowVase",
+            new Vector3(side * 5.08f, .06f, 0.24f),
+            Vector3.zero,
+            .18f);
+        if (vase != null)
+            floaters.Add(vase.transform);
+
+        GameObject catToy = InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Toy5 V3.prefab",
+            root.transform,
+            "WindowCatPlayToy",
+            new Vector3(side * 4.58f, .08f, -0.58f),
+            new Vector3(0f, side * 90f, 0f),
+            .20f);
+        if (catToy != null)
+            spinners.Add(catToy.transform);
+
+        GameObject bell = CreateDecorPrimitive(
+            PrimitiveType.Sphere,
+            "WindowGardenBell",
+            root.transform,
+            new Vector3(side * 4.62f, 2.45f, -.22f),
+            new Vector3(.12f, .1f, .16f),
+            accent,
+            accents);
+        bell.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+        spinners.Add(bell.transform);
+
+        if (segmentIndex % 3 == 1)
+        {
+            GameObject gardenSky = BuildCloudCluster(
+                root.transform,
+                "WindowGardenCloud",
+                new Vector3(side * 6.95f, 4.05f + segmentIndex * .032f, 1.35f),
+                cloud);
+            floaters.Add(gardenSky.transform);
+            CreateDecorPrimitive(
+                PrimitiveType.Cylinder,
+                "WindowLamp",
+                root.transform,
+                new Vector3(side * 6.26f, .92f, 1.58f),
+                new Vector3(.09f, .45f, .09f),
+                glow,
+                glows);
+        }
+
+        return root;
+    }
+
+    private static GameObject BuildToyParadeScenery(
+        Transform segment,
+        int segmentIndex,
+        float side,
+        Material accent,
+        Material edge,
+        Material glow,
+        Material mint,
+        Material window,
+        List<Transform> floaters,
+        List<Transform> spinners,
+        List<Renderer> accents,
+        List<Renderer> glows,
+        List<Renderer> edges)
+    {
+        GameObject root = CreateTemplateRoot("Variant_ToyParade", segment);
+        BuildCandyStorefront(
+            root.transform,
+            "ToyParadeBooth",
+            side,
+            .32f,
+            accent,
+            mint,
+            edge,
+            window);
+
+        InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Rack2 V1.prefab",
+            root.transform,
+            "ParadeRibbonRack",
+            new Vector3(side * 4.73f, .12f, 1.47f),
+            new Vector3(0f, -side * 90f, 0f),
+            1.08f);
+        InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Food3 V3.prefab",
+            root.transform,
+            "ParadeFoodBasket",
+            new Vector3(side * 4.67f, .08f, -1.12f),
+            Vector3.zero,
+            .2f);
+        InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Food2 V1.prefab",
+            root.transform,
+            "ParadeFoodTin",
+            new Vector3(side * 4.54f, .08f, -.64f),
+            new Vector3(0f, -side * 90f, 0f),
+            .62f);
+        InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Bowl1 V3.prefab",
+            root.transform,
+            "ParadeMilkBowl",
+            new Vector3(side * 4.42f, .08f, -.12f),
+            Vector3.zero,
+            .2f);
+
+        GameObject petCoat = InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Collar1 V3.prefab",
+            root.transform,
+            "ParadeCollar",
+            new Vector3(side * 4.45f, .08f, .78f),
+            Vector3.zero,
+            .06f);
+        if (petCoat != null)
+            floaters.Add(petCoat.transform);
+        GameObject leash = InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Leash2 V2.prefab",
+            root.transform,
+            "ParadeLeashCoil",
+            new Vector3(side * 4.5f, .08f, .52f),
+            new Vector3(0f, -side * 90f, 0f),
+            .17f);
+        if (leash != null)
+            floaters.Add(leash.transform);
+
+        GameObject paradeToyA = InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Toy5 V3.prefab",
+            root.transform,
+            "ParadeToyA",
+            new Vector3(side * 4.57f, .08f, -.94f),
+            Vector3.zero,
+            .22f);
+        if (paradeToyA != null)
+            floaters.Add(paradeToyA.transform);
+
+        GameObject paradeToyB = InstantiateDecorPrefabFitted(
+            PetshopPrefabFolder + "Bed5 V3.prefab",
+            root.transform,
+            "ParadeToyB",
+            new Vector3(side * 4.78f, .08f, -1.34f),
+            new Vector3(0f, -side * 90f, 0f),
+            .24f);
+        if (paradeToyB != null)
+            floaters.Add(paradeToyB.transform);
+
+        BuildYarnBasketDisplay(
+            root.transform,
+            new Vector3(side * 4.55f, .1f, .24f),
+            accent,
+            mint,
+            glow,
+            spinners);
+
+        GameObject paradeBell = CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "ParadeBell",
+            root.transform,
+            new Vector3(side * 4.66f, 2.55f, -1.02f),
+            new Vector3(.3f, .06f, .3f),
+            glow,
+            glows);
+        paradeBell.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+        spinners.Add(paradeBell.transform);
+        GameObject ribbon = CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "ParadeRibbon",
+            root.transform,
+            new Vector3(side * 4.53f, 2.16f, -.18f),
+            new Vector3(.08f, .04f, .22f),
+            edge,
+            edges);
+        spinners.Add(ribbon.transform);
+
+        GameObject paradeSeat = CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "ParadeSeat",
+            root.transform,
+            new Vector3(side * 4.72f, .14f, 1.47f),
+            new Vector3(.18f, .08f, .82f),
+            accent,
+            accents);
+        spinners.Add(paradeSeat.transform);
+
+        return root;
+    }
+
+    private static GameObject BuildCozyReadingScenery(
+        Transform segment,
+        int segmentIndex,
+        float side,
+        Material accent,
+        Material edge,
+        Material mint,
+        Material window,
+        List<Transform> floaters,
+        List<Transform> spinners,
+        List<Renderer> accents,
+        List<Renderer> edges,
+        List<Renderer> glows)
+    {
+        GameObject root = CreateTemplateRoot("Variant_CozyReading", segment);
+        GameObject bookshelf = InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Bookshelf_Tall.prefab",
+            root.transform,
+            "ReadingBookshelf",
+            new Vector3(side * 4.64f, .08f, .28f),
+            new Vector3(0f, -side * 90f, 0f),
+            .9f);
+        if (bookshelf == null)
+        {
+            BuildCandyStorefront(
+                root.transform,
+                "ReadingShelter",
+                side,
+                .45f,
+                accent,
+                mint,
+                edge,
+                window);
+        }
+
+        InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Pillow_Square_1.prefab",
+            root.transform,
+            "ReadingPillow",
+            new Vector3(side * 5f, .03f, 1.3f),
+            Vector3.zero,
+            .16f);
+
+        GameObject lamp = InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Lamp_Tall.prefab",
+            root.transform,
+            "ReadingLamp",
+            new Vector3(side * 5.03f, .06f, -1.24f),
+            Vector3.zero,
+            .48f,
+            true);
+        if (lamp != null)
+            floaters.Add(lamp.transform);
+
+        GameObject lampGlow = CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "ReadingLampGlow",
+            root.transform,
+            new Vector3(side * 5.03f, 1.25f, -1.24f),
+            new Vector3(.22f, .06f, .22f),
+            mint,
+            glows);
+        spinners.Add(lampGlow.transform);
+
+        CreateDecorPrimitive(
+            PrimitiveType.Cube,
+            "ReadingRug",
+            root.transform,
+            new Vector3(side * 4.78f, .02f, -.02f),
+            new Vector3(1.46f, .025f, 2.22f),
+            mint,
+            accents);
+
+        string[] readingBooks = new[]
+        {
+            "Book_1.prefab",
+            "Book_2.prefab",
+            "Book_3.prefab",
+            "Book_4.prefab",
+            "Book_5.prefab"
+        };
+        for (int i = 0; i < readingBooks.Length; i++)
+        {
+            GameObject book = InstantiateDecorPrefabFitted(
+                LivingRoomPrefabFolder + readingBooks[i],
+                root.transform,
+                "ReadingBook_" + (i + 1),
+                new Vector3(side * 4.56f, .08f, -1.17f + i * .43f),
+                new Vector3(0f, -side * 18f + (i * 5f), 0f),
+                .17f);
+            if (book != null)
+                floaters.Add(book.transform);
+        }
+
+        InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Newspaper.prefab",
+            root.transform,
+            "ReadingNewspaper",
+            new Vector3(side * 4.48f, .31f, -0.32f),
+            Vector3.zero,
+            .2f);
+        InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Clock_WallRound.prefab",
+            root.transform,
+            "ReadingClock",
+            new Vector3(side * 6.35f, 1.42f, -.45f),
+            Vector3.zero,
+            .1f,
+            true);
+        InstantiateDecorPrefabFitted(
+            LivingRoomPrefabFolder + "Mug.prefab",
+            root.transform,
+            "ReadingMug",
+            new Vector3(side * 4.95f, .09f, -0.18f),
+            Vector3.zero,
+            .08f);
+
+        GameObject readingLampStand = CreateDecorPrimitive(
+            PrimitiveType.Cylinder,
+            "ReadingGlanceLamp",
+            root.transform,
+            new Vector3(side * 5.31f, .96f, 1.17f),
+            new Vector3(.16f, .36f, .16f),
+            edge,
+            edges);
+        spinners.Add(readingLampStand.transform);
+
+        if (segmentIndex % 2 == 0)
+        {
+            CreateDecorPrimitive(
+                PrimitiveType.Cube,
+                "ReadingCushionTop",
+                root.transform,
+                new Vector3(side * 4.92f, .1f, -0.98f),
+                new Vector3(.32f, .08f, .48f),
+                accent,
+                accents);
+        }
+        else
+        {
+            CreateDecorPrimitive(
+                PrimitiveType.Cube,
+                "ReadingCushionBottom",
+                root.transform,
+                new Vector3(side * 4.92f, .09f, 0.84f),
+                new Vector3(.32f, .08f, .48f),
+                accent,
+                accents);
+        }
+
+        return root;
     }
 
     private static void BuildTownhouse(

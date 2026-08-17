@@ -14,13 +14,15 @@ public readonly struct HomeRoomDefinition
         string displayName,
         string scenePath,
         string spawnPointId,
-        string requiredOwnershipId)
+        string requiredOwnershipId,
+        int requiredHomeLevel)
     {
         Id = id;
         DisplayName = displayName;
         ScenePath = scenePath;
         SpawnPointId = string.IsNullOrWhiteSpace(spawnPointId) ? "default" : spawnPointId;
         RequiredOwnershipId = requiredOwnershipId;
+        RequiredHomeLevel = Math.Max(1, requiredHomeLevel);
     }
 
     public string Id { get; }
@@ -29,6 +31,7 @@ public readonly struct HomeRoomDefinition
     public string SceneName => Path.GetFileNameWithoutExtension(ScenePath);
     public string SpawnPointId { get; }
     public string RequiredOwnershipId { get; }
+    public int RequiredHomeLevel { get; }
     public bool IsAlwaysUnlocked => string.IsNullOrWhiteSpace(RequiredOwnershipId);
 }
 
@@ -43,6 +46,7 @@ public static class HomeRoomService
     public const string BathroomId = "bathroom-01";
     public const string KitchenId = "kitchen-01";
     public const string BedroomId = "bedroom-01";
+    public const string GardenId = "garden-01";
     public const string LivingRoomScenePath =
         "Assets/Scenes/Levels/LivingRoom_Level01.unity";
     public const string BathroomScenePath =
@@ -51,6 +55,8 @@ public static class HomeRoomService
         "Assets/Scenes/Levels/Kitchen_Level01.unity";
     public const string BedroomScenePath =
         "Assets/Scenes/Levels/Bedroom_Level01.unity";
+    public const string GardenScenePath =
+        "Assets/Scenes/Levels/Garden_Level01.unity";
 
     private static readonly HomeRoomDefinition[] RoomsInternal =
     {
@@ -59,25 +65,36 @@ public static class HomeRoomService
             "LIVING ROOM",
             LivingRoomScenePath,
             "default",
-            null),
+            null,
+            1),
         new HomeRoomDefinition(
             BathroomId,
             "BATHROOM",
             BathroomScenePath,
             "default",
-            HomeStoreService.HomeBathroomPreviewId),
+            HomeStoreService.HomeBathroomPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeBathroomPreviewId)),
         new HomeRoomDefinition(
             KitchenId,
             "KITCHEN",
             KitchenScenePath,
             "default",
-            HomeStoreService.HomeKitchenPreviewId),
+            HomeStoreService.HomeKitchenPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeKitchenPreviewId)),
         new HomeRoomDefinition(
             BedroomId,
             "BEDROOM",
             BedroomScenePath,
             "default",
-            HomeStoreService.HomeBedroomPreviewId)
+            HomeStoreService.HomeBedroomPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeBedroomPreviewId)),
+        new HomeRoomDefinition(
+            GardenId,
+            "GARDEN",
+            GardenScenePath,
+            "default",
+            HomeStoreService.HomeGardenPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeGardenPreviewId))
     };
 
     private static readonly Dictionary<string, HomeRoomDefinition> RoomsById =
@@ -121,9 +138,22 @@ public static class HomeRoomService
         if (!TryGetRoom(roomId, out HomeRoomDefinition room))
             return false;
 
+        // Room access is ownership + dependency only. The Home Level gate is
+        // enforced once, when the preview product is purchased (HomeStoreService),
+        // and Home Level never regresses, so owning the preview already proves the
+        // requirement was met. Re-checking it here would wrongly re-lock a room the
+        // player owns after the save migration seeds a default (zero) Home XP for
+        // the progression slice added in save version 10.
         return room.IsAlwaysUnlocked ||
                (HomeStoreService.IsOwned(room.RequiredOwnershipId) &&
                 HomeStoreService.IsProductDependencyMet(room.RequiredOwnershipId));
+    }
+
+    public static int GetRequiredHomeLevel(string roomId)
+    {
+        return TryGetRoom(roomId, out HomeRoomDefinition room)
+            ? room.RequiredHomeLevel
+            : 1;
     }
 
     /// <summary>
@@ -186,6 +216,13 @@ public static class HomeRoomService
         currentRoomId = roomId;
         if (notify)
             CurrentRoomChanged?.Invoke(currentRoomId);
+    }
+
+    private static int GetHomeLevelRequirement(string previewProductId)
+    {
+        return HomeStoreService.TryGetProduct(previewProductId, out HomeStoreProduct product)
+            ? product.RequiredLevel
+            : 1;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

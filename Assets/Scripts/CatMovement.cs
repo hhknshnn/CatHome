@@ -86,6 +86,30 @@ public class CatMovement : MonoBehaviour
     public bool IsJoystickInputActive =>
         mobileJoystick != null && mobileJoystick.Direction.sqrMagnitude > 0.001f;
     public bool IsMovementInputActive => movementInputMagnitude > 0.15f;
+    public bool IsIdle => !IsMovementLocked && !IsMovementInputActive;
+
+    /// <summary>
+    /// Soft-turns the cat toward a world point while it is standing still.
+    /// Used by courtyard birds so they can steal attention without stealing
+    /// the movement lock from care or activities.
+    /// </summary>
+    public void SuggestLookDirection(Vector3 worldPoint)
+    {
+        if (!IsIdle)
+            return;
+
+        Vector3 flat = worldPoint - transform.position;
+        flat.y = 0f;
+        if (flat.sqrMagnitude < 0.04f)
+            return;
+
+        Quaternion look = Quaternion.LookRotation(flat.normalized, Vector3.up) *
+                          Quaternion.Euler(0f, modelForwardOffset, 0f);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            look,
+            Time.deltaTime * 4f);
+    }
 
     private void Awake()
     {

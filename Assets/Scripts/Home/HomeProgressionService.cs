@@ -34,10 +34,8 @@ public sealed class HomeProgressionSaveState
 /// <see cref="HomeStoreService"/>), which is the canonical "improve your home"
 /// action from the roadmap.
 ///
-/// This phase deliberately keeps Home Level additive: it is a surfaced
-/// progression resource and does NOT yet gate rooms or products. Room access
-/// stays owned by <see cref="HomeStoreService"/> ownership and collection
-/// completion, exactly as before, so no existing gating behaviour changes.
+/// This phase keeps Home Level additive, and Home Level is now the progression
+/// source used when room and product features apply lock requirements.
 /// </summary>
 public static class HomeProgressionService
 {
@@ -80,8 +78,27 @@ public static class HomeProgressionService
         }
     }
 
+    /// <summary>
+    /// Checks if the current Home Level satisfies the requested minimum.
+    /// Minimum level is clamped to 1 so Level 1 is never treated as a lock.
+    /// </summary>
+    public static bool MeetsHomeLevelRequirement(int requiredLevel)
+    {
+        int minimum = requiredLevel < 1 ? 1 : requiredLevel;
+        return HomeLevel >= minimum;
+    }
+
     /// <summary>Raised after any Home XP or Home Level change. UI/debug only.</summary>
     public static event Action Changed;
+
+    /// <summary>
+    /// Raised once per level gained, with the new Home Level, when a
+    /// <see cref="GrantHomeXp"/> crosses one or more thresholds. Only real
+    /// gameplay grants fire it; <see cref="ApplySavedState"/> and
+    /// <see cref="EnsureFloor"/> restore state silently so a load never pops the
+    /// celebration.
+    /// </summary>
+    public static event Action<int> LeveledUp;
 
     /// <summary>
     /// Adds Home XP earned from a home improvement. Ignores non-positive amounts
@@ -107,8 +124,25 @@ public static class HomeProgressionService
                 $"HomeProgressionService: Home Level {previousLevel} -> {newLevel} " +
                 $"(Home XP {homeXp})" +
                 (string.IsNullOrEmpty(reasonId) ? "." : $" from '{reasonId}'."));
+            RaiseLeveledUp(newLevel);
         }
 
+        RaiseChanged();
+    }
+
+    /// <summary>
+    /// Raises Home XP to at least <paramref name="minXp"/>, never lowering it.
+    /// Used at load to back-fill progression for products acquired before the Home
+    /// XP save slice existed: their purchase-time grant predates the field, so the
+    /// value is recovered from current ownership. A no-op once the saved XP already
+    /// covers what is owned.
+    /// </summary>
+    public static void EnsureFloor(long minXp)
+    {
+        if (minXp <= homeXp)
+            return;
+
+        homeXp = minXp;
         RaiseChanged();
     }
 
@@ -184,10 +218,30 @@ public static class HomeProgressionService
         }
     }
 
+    private static void RaiseLeveledUp(int newLevel)
+    {
+        Action<int> handlers = LeveledUp;
+        if (handlers == null)
+            return;
+
+        foreach (Action<int> handler in handlers.GetInvocationList())
+        {
+            try
+            {
+                handler(newLevel);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+        }
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetRuntimeState()
     {
         homeXp = 0L;
         Changed = null;
+        LeveledUp = null;
     }
 }

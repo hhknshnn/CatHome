@@ -143,7 +143,8 @@ public static class SceneArchitectureBuilder
             LevelScenePath,
             HomeRoomService.BathroomScenePath,
             HomeRoomService.KitchenScenePath,
-            HomeRoomService.BedroomScenePath
+            HomeRoomService.BedroomScenePath,
+            HomeRoomService.GardenScenePath
         };
 
         var result = new List<EditorBuildSettingsScene>();
