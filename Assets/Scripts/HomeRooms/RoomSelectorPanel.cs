@@ -220,7 +220,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         SetCardsInteractive(false);
         if (closeButton != null)
             closeButton.interactable = false;
-        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  ✦  ✦  ✦");
+        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  •  •");
     }
 
     private void OpenHomeStore()
@@ -242,7 +242,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         SetCardsInteractive(false);
         if (closeButton != null)
             closeButton.interactable = false;
-        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  ✦  ✦  ✦");
+        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  •  •");
     }
 
     private void HandleRoomLoaded(HomeRoomDefinition room)
@@ -424,6 +424,10 @@ public sealed class RoomSelectorPanel : MonoBehaviour
             return;
         rootGroup.interactable = value;
         rootGroup.blocksRaycasts = value;
+        if (scrimButton != null)
+            scrimButton.interactable = value;
+        if (closeButton != null)
+            closeButton.interactable = value;
     }
 
     private void SetCardsInteractive(bool value)

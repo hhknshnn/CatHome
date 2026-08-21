@@ -151,6 +151,47 @@ public sealed class HomeLevelUiBadgeTests
         }
     }
 
+    [Test]
+    public void BottomDockRoomName_AutoFitsEveryCanonicalRoomOnOneCenteredLine()
+    {
+        bool openedUiScene = false;
+        Scene uiScene = SceneManager.GetSceneByPath(UiScenePath);
+        if (!uiScene.IsValid() || !uiScene.isLoaded)
+        {
+            openedUiScene = true;
+            uiScene = EditorSceneManager.OpenScene(UiScenePath, OpenSceneMode.Single);
+        }
+
+        try
+        {
+            GameObject launchUi = GameObject.Find("RunnerLaunchUI");
+            Assert.That(launchUi, Is.Not.Null);
+            TMP_Text roomLabel = FindComponent<TMP_Text>(
+                launchUi.transform, "RoomProgressLabel");
+            Assert.That(roomLabel, Is.Not.Null);
+            Assert.That(roomLabel.enableAutoSizing, Is.True);
+            Assert.That(roomLabel.textWrappingMode, Is.EqualTo(TextWrappingModes.NoWrap));
+            Assert.That(roomLabel.alignment, Is.EqualTo(TextAlignmentOptions.Center));
+            Assert.That(roomLabel.fontSizeMin, Is.LessThanOrEqualTo(11f));
+            Assert.That(roomLabel.fontSizeMax, Is.EqualTo(19f).Within(0.01f));
+
+            foreach (HomeRoomDefinition room in HomeRoomService.Rooms)
+            {
+                roomLabel.text = room.DisplayName + "  •  LEVEL 1";
+                roomLabel.ForceMeshUpdate();
+                Assert.That(roomLabel.isTextOverflowing, Is.False,
+                    room.DisplayName + " must fit inside the middle dock capsule.");
+                Assert.That(roomLabel.textInfo.lineCount, Is.EqualTo(1),
+                    room.DisplayName + " must stay on one line.");
+            }
+        }
+        finally
+        {
+            if (openedUiScene && uiScene.IsValid())
+                EditorSceneManager.CloseScene(uiScene, true);
+        }
+    }
+
     private static RectTransform FindNeedRect(string primary, string fallback = null)
     {
         GameObject found = GameObject.Find(primary) ??

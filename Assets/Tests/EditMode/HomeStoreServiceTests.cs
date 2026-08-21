@@ -25,7 +25,7 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.BallBasketPrice, Is.EqualTo(300));
         Assert.That(HomeStoreService.ScratchPostPrice, Is.EqualTo(400));
-        Assert.That(HomeStoreService.Products.Count, Is.EqualTo(84));
+        Assert.That(HomeStoreService.Products.Count, Is.EqualTo(114));
 
         Assert.That(
             HomeStoreService.TryGetProduct(
@@ -336,6 +336,120 @@ public sealed class HomeStoreServiceTests
         Assert.That(gardenPreview.IsAvailable, Is.True);
         Assert.That(gardenPreview.RequiredLevel, Is.EqualTo(5));
         Assert.That(gardenPreview.CoinPrice, Is.EqualTo(HomeStoreService.GardenCoinPrice));
+    }
+
+    [Test]
+    public void BalconyLevelOne_IsTenUniqueExclusivePlaceableRoomProductsOrderedByPrice()
+    {
+        Assert.That(HomeStoreService.BalconyCollection.Count, Is.EqualTo(10));
+        long previousPrice = -1L;
+        var ids = new System.Collections.Generic.HashSet<string>();
+        for (int i = 0; i < HomeStoreService.BalconyCollection.Count; i++)
+        {
+            string id = HomeStoreService.BalconyCollection[i];
+            Assert.That(ids.Add(id), Is.True, id);
+            Assert.That(HomeStoreService.IsLivingRoomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBathroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsKitchenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBedroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsGardenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.TryGetProduct(id, out HomeStoreProduct product), Is.True);
+            Assert.That(product.StoreCategory, Is.EqualTo(HomeStoreCategory.Room));
+            Assert.That(product.IsPlaceable, Is.True);
+            Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
+            Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
+                Is.EqualTo(product.CoinPrice));
+            previousPrice = product.CoinPrice;
+        }
+
+        Assert.That(
+            HomeStoreService.GetRequiredProductId(HomeStoreService.HomeBalconyPreviewId),
+            Is.EqualTo(HomeStoreService.HomeGardenPreviewId));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeBalconyPreviewId,
+                out HomeStoreProduct balconyPreview),
+            Is.True);
+        Assert.That(balconyPreview.IsAvailable, Is.True);
+        Assert.That(balconyPreview.RequiredLevel, Is.EqualTo(9));
+        Assert.That(balconyPreview.CoinPrice, Is.EqualTo(HomeStoreService.BalconyCoinPrice));
+    }
+
+    [Test]
+    public void PatioLevelOne_IsTenUniqueExclusivePlaceableRoomProductsOrderedByPrice()
+    {
+        Assert.That(HomeStoreService.PatioCollection.Count, Is.EqualTo(10));
+        long previousPrice = -1L;
+        var ids = new System.Collections.Generic.HashSet<string>();
+        for (int i = 0; i < HomeStoreService.PatioCollection.Count; i++)
+        {
+            string id = HomeStoreService.PatioCollection[i];
+            Assert.That(ids.Add(id), Is.True, id);
+            Assert.That(HomeStoreService.IsLivingRoomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBathroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsKitchenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBedroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsGardenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBalconyCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.TryGetProduct(id, out HomeStoreProduct product), Is.True);
+            Assert.That(product.StoreCategory, Is.EqualTo(HomeStoreCategory.Room));
+            Assert.That(product.IsPlaceable, Is.True);
+            Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
+            Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
+                Is.EqualTo(product.CoinPrice));
+            previousPrice = product.CoinPrice;
+        }
+
+        Assert.That(
+            HomeStoreService.GetRequiredProductId(HomeStoreService.HomePatioPreviewId),
+            Is.EqualTo(HomeStoreService.HomeBalconyPreviewId));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomePatioPreviewId,
+                out HomeStoreProduct patioPreview),
+            Is.True);
+        Assert.That(patioPreview.IsAvailable, Is.True);
+        Assert.That(patioPreview.RequiredLevel, Is.EqualTo(10));
+        Assert.That(patioPreview.CoinPrice, Is.EqualTo(HomeStoreService.PatioCoinPrice));
+    }
+
+    [Test]
+    public void SecondFloorLevelOne_IsTenUniqueExclusivePlaceableRoomProductsOrderedByPrice()
+    {
+        Assert.That(HomeStoreService.SecondFloorCollection.Count, Is.EqualTo(10));
+        long previousPrice = -1L;
+        var ids = new System.Collections.Generic.HashSet<string>();
+        for (int i = 0; i < HomeStoreService.SecondFloorCollection.Count; i++)
+        {
+            string id = HomeStoreService.SecondFloorCollection[i];
+            Assert.That(ids.Add(id), Is.True, id);
+            Assert.That(HomeStoreService.IsLivingRoomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBathroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsKitchenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBedroomCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsGardenCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsBalconyCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.IsPatioCollectionProduct(id), Is.False, id);
+            Assert.That(HomeStoreService.TryGetProduct(id, out HomeStoreProduct product), Is.True);
+            Assert.That(product.StoreCategory, Is.EqualTo(HomeStoreCategory.Room));
+            Assert.That(product.IsPlaceable, Is.True);
+            Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
+            Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
+                Is.EqualTo(product.CoinPrice));
+            previousPrice = product.CoinPrice;
+        }
+
+        Assert.That(
+            HomeStoreService.GetRequiredProductId(HomeStoreService.HomeSecondFloorPreviewId),
+            Is.EqualTo(HomeStoreService.HomePatioPreviewId));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeSecondFloorPreviewId,
+                out HomeStoreProduct secondFloorPreview),
+            Is.True);
+        Assert.That(secondFloorPreview.IsAvailable, Is.True);
+        Assert.That(secondFloorPreview.RequiredLevel, Is.EqualTo(12));
+        Assert.That(secondFloorPreview.CoinPrice, Is.EqualTo(HomeStoreService.SecondFloorCoinPrice));
     }
 
     [Test]

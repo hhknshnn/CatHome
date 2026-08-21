@@ -117,6 +117,8 @@ public static class CatHomeSaveSystem
 
     public const int CurrentSaveVersion = 11;
     public const string SaveFileName = "cat-home-save.json";
+    public const string RecoveryFileSuffix = ".recovery";
+    public const string NewGameBackupMarker = ".before-new-game-";
 
     private static HungerSystem hungerSystem;
     private static ThirstSystem thirstSystem;
@@ -136,6 +138,8 @@ public static class CatHomeSaveSystem
 
     public static string SaveFilePath =>
         Path.Combine(Application.persistentDataPath, SaveFileName);
+
+    public static string RecoveryFilePath => SaveFilePath + RecoveryFileSuffix;
 
     public static int PeekLegacyChapterNumber()
     {
@@ -301,22 +305,226 @@ public static class CatHomeSaveSystem
     }
 
     /// <summary>
+    /// Starts a confirmed fresh journey while preserving settings, diamonds,
+    /// verified unlimited-pass windows and settled purchase transaction ids.
+    /// The existing file is copied to a timestamped support backup first.
+    /// </summary>
+    public static bool TryStartNewGame(out string report)
+    {
+        if (!CanCaptureData())
+        {
+            report = "The home is still loading. NEW GAME did not change the save.";
+            return false;
+        }
+
+        DateTime utcNow = DateTime.UtcNow;
+        if (!TryCreateNewGameBackup(SaveFilePath, utcNow, out string backupPath,
+                out string backupFailure))
+        {
+            report = "The safety backup could not be created. NEW GAME was cancelled. " +
+                     backupFailure;
+            return false;
+        }
+
+        CatHomeSaveData reset = CreateNewGameData(
+            utcNow,
+            EconomyService.CaptureState(),
+            RunnerEnergyService.CaptureState(utcNow),
+            CatRunnerProgressService.CaptureState(utcNow),
+            CatchLivesService.CaptureState(utcNow));
+
+        if (!TryWriteSaveData(reset))
+        {
+            report = "The fresh save could not be written. Your current journey is safe.";
+            return false;
+        }
+
+        ApplyNewGameRuntime(reset, utcNow);
+        lastSuccessfulSaveUtc = utcNow;
+        lastSaveFrame = Time.frameCount;
+        report = string.IsNullOrEmpty(backupPath)
+            ? "NEW GAME started."
+            : "NEW GAME started. Safety backup: " + backupPath;
+        return true;
+    }
+
+    private static CatHomeSaveData CreateNewGameData(
+        DateTime utcNow,
+        EconomySaveState currentEconomy,
+        RunnerEnergySaveState currentRunnerEnergy,
+        CatRunnerProgressSaveState currentRunnerProgress,
+        CatchLivesSaveState currentCatchLives)
+    {
+        long preservedDiamonds = GetSavedBalance(
+            currentEconomy,
+            CurrencyCatalog.GetSaveKey(CurrencyType.Diamond),
+            EconomyService.GetBalance(CurrencyType.Diamond));
+        var runnerEnergy = RunnerEnergySaveState.CreateDefault(utcNow);
+        if (currentRunnerEnergy != null)
+            runnerEnergy.unlimitedUntilUtc = currentRunnerEnergy.unlimitedUntilUtc;
+
+        var runnerProgress = CatRunnerProgressSaveState.CreateDefault(utcNow);
+        runnerProgress.bestScore = 0;
+        if (currentRunnerProgress != null)
+        {
+            runnerProgress.reducedMotion = currentRunnerProgress.reducedMotion;
+            runnerProgress.soundEnabled = currentRunnerProgress.soundEnabled;
+            runnerProgress.hapticsEnabled = currentRunnerProgress.hapticsEnabled;
+        }
+
+        var catchLives = CatchLivesSaveState.CreateDefault(utcNow);
+        if (currentCatchLives != null)
+            catchLives.unlimitedUntilUtc = currentCatchLives.unlimitedUntilUtc;
+
+        string[] settledTransactions = currentEconomy?.processedTransactionIds == null
+            ? Array.Empty<string>()
+            : (string[])currentEconomy.processedTransactionIds.Clone();
+
+        return new CatHomeSaveData
+        {
+            version = CurrentSaveVersion,
+            hunger = 100f,
+            thirst = 100f,
+            energy = 100f,
+            wasSleeping = false,
+            lastSaveUtc = utcNow.ToString("O", CultureInfo.InvariantCulture),
+            hasCatPose = false,
+            coins = 0L,
+            diamonds = preservedDiamonds,
+            bondXp = 0L,
+            playerLevel = 1,
+            questProgress = Array.Empty<QuestProgressEntry>(),
+            economy = new EconomySaveState
+            {
+                economyVersion = EconomyService.SaveVersion,
+                balances = BuildResetBalances(preservedDiamonds),
+                processedTransactionIds = settledTransactions
+            },
+            runnerEnergy = runnerEnergy,
+            homeStore = HomeStoreSaveState.CreateDefault(),
+            runnerProgress = runnerProgress,
+            catchLives = catchLives,
+            catchBestScore = 0,
+            homeProgression = HomeProgressionSaveState.CreateDefault(),
+            dailyRetention = DailyRetentionSaveState.CreateDefault(),
+            achievements = AchievementSaveState.CreateDefault()
+        };
+    }
+
+    private static void ApplyNewGameRuntime(CatHomeSaveData data, DateTime utcNow)
+    {
+        sleepInteraction?.ForceAwakeForNewGame();
+        hungerSystem.ApplySavedValue(100f);
+        thirstSystem.ApplySavedValue(100f);
+        energySystem.ApplySavedValue(100f);
+        catMovement.ApplySavedWorldPose(new Vector3(0f, 0f, -2f), Quaternion.identity);
+
+        ProgressionService.ApplySavedState(
+            data.coins, data.diamonds, data.bondXp, data.playerLevel, data.questProgress);
+        EconomyService.ApplySavedState(data.economy);
+        RunnerEnergyService.ApplySavedState(data.runnerEnergy, utcNow);
+        HomeStoreService.ApplySavedState(data.homeStore);
+        CatRunnerProgressService.ApplySavedState(data.runnerProgress, utcNow);
+        CatchLivesService.ApplySavedState(data.catchLives, utcNow);
+        CatCatchGameController.ApplyBestScore(0);
+        HomeProgressionService.ApplySavedState(data.homeProgression);
+        DailyRetentionService.ApplySavedState(data.dailyRetention);
+        AchievementService.ApplySavedState(data.achievements);
+
+        PetTutorialHint tutorial = UnityEngine.Object.FindAnyObjectByType<PetTutorialHint>(
+            FindObjectsInactive.Include);
+        if (tutorial != null)
+            tutorial.ResetTutorialProgress();
+        else
+            PetTutorialHint.ClearProgressKeys();
+        CatIdentityService.ResetForNewGame();
+        CollectionMilestoneService.ClearAll();
+        LocalNotificationService.Clear();
+        PlayerPrefs.DeleteKey(CatRunnerProgressService.LegacyBestScoreKey);
+        PlayerPrefs.Save();
+
+        LevelLoader loader = UnityEngine.Object.FindAnyObjectByType<LevelLoader>(
+            FindObjectsInactive.Include);
+        if (loader != null)
+            loader.LoadRoom(HomeRoomService.LivingRoomId);
+    }
+
+    private static CurrencyBalanceEntry[] BuildResetBalances(long preservedDiamonds)
+    {
+        IReadOnlyList<CurrencyDefinition> definitions = CurrencyCatalog.All;
+        var entries = new CurrencyBalanceEntry[definitions.Count];
+        for (int i = 0; i < definitions.Count; i++)
+        {
+            long amount = definitions[i].Type == CurrencyType.Diamond
+                ? Math.Max(0L, preservedDiamonds)
+                : 0L;
+            entries[i] = new CurrencyBalanceEntry(definitions[i].SaveKey, amount);
+        }
+        return entries;
+    }
+
+    private static long GetSavedBalance(
+        EconomySaveState state, string currencyKey, long fallback)
+    {
+        if (state?.balances == null || string.IsNullOrEmpty(currencyKey))
+            return Math.Max(0L, fallback);
+        for (int i = 0; i < state.balances.Length; i++)
+        {
+            CurrencyBalanceEntry entry = state.balances[i];
+            if (entry != null && string.Equals(
+                    entry.currencyKey, currencyKey, StringComparison.Ordinal))
+                return Math.Max(0L, entry.amount);
+        }
+        return Math.Max(0L, fallback);
+    }
+
+    private static bool TryCreateNewGameBackup(
+        string savePath, DateTime utcNow, out string backupPath, out string failure)
+    {
+        backupPath = string.Empty;
+        failure = string.Empty;
+        if (!File.Exists(savePath))
+            return true;
+        try
+        {
+            string stamp = utcNow.ToUniversalTime().ToString(
+                "yyyyMMdd-HHmmss-fffffff", CultureInfo.InvariantCulture);
+            backupPath = savePath + NewGameBackupMarker + stamp;
+            File.Copy(savePath, backupPath, false);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            backupPath = string.Empty;
+            failure = exception.Message;
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Atomically writes the given save data through the temporary-file and
     /// replace path shared by every writer. Returns false (and logs) if the
     /// write failed, leaving any existing save untouched.
     /// </summary>
     private static bool TryWriteSaveData(CatHomeSaveData data)
     {
+        return TryWriteSaveDataAtPath(data, SaveFilePath);
+    }
+
+    private static bool TryWriteSaveDataAtPath(CatHomeSaveData data, string savePath)
+    {
         try
         {
-            string directory = Application.persistentDataPath;
+            string directory = Path.GetDirectoryName(savePath);
+            if (string.IsNullOrWhiteSpace(directory))
+                throw new InvalidOperationException("The save path has no parent directory.");
             Directory.CreateDirectory(directory);
 
-            string savePath = SaveFilePath;
             string temporaryPath = savePath + ".tmp";
             string previousPath = savePath + ".previous";
             File.WriteAllText(temporaryPath, JsonUtility.ToJson(data, true));
             ReplaceFileSafely(temporaryPath, savePath, previousPath);
+            TryRefreshRecoveryCopy(savePath, savePath + RecoveryFileSuffix);
             return true;
         }
         catch (Exception exception)
@@ -401,6 +609,8 @@ public static class CatHomeSaveSystem
         data.homeProgression = HomeProgressionSaveState.CreateDefault();
         data.dailyRetention = DailyRetentionSaveState.CreateDefault();
         data.achievements = AchievementSaveState.CreateDefault();
+        CollectionMilestoneService.ClearAll();
+        LocalNotificationService.Clear();
 
         // Zeroed explicitly rather than left null: an empty economy section means
         // "keep what is loaded" on the load path, which would preserve exactly the
@@ -436,12 +646,7 @@ public static class CatHomeSaveSystem
     /// <summary>Every registered currency at zero, for the editor reset above.</summary>
     private static CurrencyBalanceEntry[] BuildZeroedBalances()
     {
-        IReadOnlyList<CurrencyDefinition> definitions = CurrencyCatalog.All;
-        var entries = new CurrencyBalanceEntry[definitions.Count];
-        for (int i = 0; i < definitions.Count; i++)
-            entries[i] = new CurrencyBalanceEntry(definitions[i].SaveKey, 0L);
-
-        return entries;
+        return BuildResetBalances(0L);
     }
 #endif
 
@@ -499,57 +704,130 @@ public static class CatHomeSaveSystem
 
     private static bool TryReadSave(out CatHomeSaveData data)
     {
+        return TryReadSaveAtPath(SaveFilePath, out data);
+    }
+
+    private enum SaveReadFailure
+    {
+        None,
+        Unreadable,
+        Incompatible
+    }
+
+    private static bool TryReadSaveAtPath(string savePath, out CatHomeSaveData data)
+    {
         data = null;
-        string savePath = SaveFilePath;
+        string recoveryPath = savePath + RecoveryFileSuffix;
 
         if (!File.Exists(savePath))
         {
             string previousPath = savePath + ".previous";
-            if (!File.Exists(previousPath))
-                return false;
-
-            try
+            if (File.Exists(previousPath))
             {
-                File.Move(previousPath, savePath);
+                try
+                {
+                    File.Move(previousPath, savePath);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning(
+                        $"CatHomeSaveSystem could not recover the previous save: {exception.Message}"
+                    );
+                    return false;
+                }
             }
-            catch (Exception exception)
+            else if (TryReadSaveFile(recoveryPath, out data, out SaveReadFailure recoveryFailure,
+                         out string recoveryReason) &&
+                     TryRestoreRecoveryCopy(recoveryPath, savePath))
             {
                 Debug.LogWarning(
-                    $"CatHomeSaveSystem could not recover the previous save: {exception.Message}"
+                    "CatHomeSaveSystem restored the missing local save from its recovery copy."
                 );
+                return true;
+            }
+            else
+            {
+                if (File.Exists(recoveryPath) && recoveryFailure != SaveReadFailure.None)
+                    Debug.LogWarning(
+                        $"CatHomeSaveSystem could not use the recovery copy: {recoveryReason}"
+                    );
                 return false;
             }
         }
 
+        if (TryReadSaveFile(savePath, out data, out SaveReadFailure failure,
+                out string failureReason))
+            return true;
+
+        if (failure == SaveReadFailure.Incompatible)
+        {
+            Debug.LogWarning(failureReason);
+            BackupRejectedSave(savePath, "incompatible");
+            return false;
+        }
+
+        Debug.LogWarning(
+            $"CatHomeSaveSystem ignored an unreadable local save: {failureReason}"
+        );
+        BackupCorruptSave(savePath);
+
+        if (!TryReadSaveFile(recoveryPath, out CatHomeSaveData recovered,
+                out _, out string recoveryReadReason))
+        {
+            if (File.Exists(recoveryPath))
+                Debug.LogWarning(
+                    $"CatHomeSaveSystem could not use the recovery copy: {recoveryReadReason}"
+                );
+            return false;
+        }
+
+        if (!TryRestoreRecoveryCopy(recoveryPath, savePath))
+            return false;
+
+        data = recovered;
+        Debug.LogWarning(
+            "CatHomeSaveSystem restored the last successful local save from its recovery copy."
+        );
+        return true;
+    }
+
+    private static bool TryReadSaveFile(
+        string path,
+        out CatHomeSaveData data,
+        out SaveReadFailure failure,
+        out string failureReason)
+    {
+        data = null;
+        failure = SaveReadFailure.None;
+        failureReason = string.Empty;
+        if (!File.Exists(path))
+            return false;
+
         try
         {
-            data = JsonUtility.FromJson<CatHomeSaveData>(File.ReadAllText(savePath));
+            data = JsonUtility.FromJson<CatHomeSaveData>(File.ReadAllText(path));
             if (data == null)
                 throw new InvalidDataException("The JSON did not contain save data.");
 
             if (data.version > CurrentSaveVersion)
             {
-                Debug.LogWarning(
+                failure = SaveReadFailure.Incompatible;
+                failureReason =
                     $"CatHomeSaveSystem cannot load save version {data.version} because it is " +
                     $"newer than the supported version {CurrentSaveVersion}. The file was backed " +
-                    "up and profile defaults are used."
-                );
-                BackupRejectedSave(savePath, "incompatible");
+                    "up and profile defaults are used.";
                 data = null;
                 return false;
             }
 
             if (data.version < CurrentSaveVersion)
                 MigrateSaveData(data);
-
             return true;
         }
         catch (Exception exception)
         {
-            Debug.LogWarning(
-                $"CatHomeSaveSystem ignored an unreadable local save: {exception.Message}"
-            );
-            BackupCorruptSave(savePath);
+            failure = SaveReadFailure.Unreadable;
+            failureReason = exception.Message;
             data = null;
             return false;
         }
@@ -720,6 +998,7 @@ public static class CatHomeSaveSystem
         // (their purchase-time grant predates the save field). Ownership is already
         // restored above, and this never lowers a saved value.
         HomeProgressionService.EnsureFloor(HomeStoreService.SumOwnedHomeXp());
+        CollectionMilestoneService.ScanOwned();
 
         // A completed run is recorded before payout. Clearing that record before
         // the idempotent economy grant means the grant's immediate save contains
@@ -889,6 +1168,67 @@ public static class CatHomeSaveSystem
         File.Move(savePath, previousPath);
         File.Move(temporaryPath, savePath);
         File.Delete(previousPath);
+    }
+
+    private static void TryRefreshRecoveryCopy(string savePath, string recoveryPath)
+    {
+        string temporaryPath = recoveryPath + ".tmp";
+        string previousPath = recoveryPath + ".previous";
+        try
+        {
+            if (File.Exists(temporaryPath))
+                File.Delete(temporaryPath);
+            File.Copy(savePath, temporaryPath);
+            ReplaceFileSafely(temporaryPath, recoveryPath, previousPath);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning(
+                $"CatHomeSaveSystem saved locally but could not refresh its recovery copy: " +
+                exception.Message
+            );
+            try
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
+            catch
+            {
+                // The primary save is already safe. A stale temp recovery file
+                // can be replaced on the next successful save.
+            }
+        }
+    }
+
+    private static bool TryRestoreRecoveryCopy(string recoveryPath, string savePath)
+    {
+        string temporaryPath = savePath + ".recovery-restore.tmp";
+        try
+        {
+            if (File.Exists(temporaryPath))
+                File.Delete(temporaryPath);
+            File.Copy(recoveryPath, temporaryPath);
+            if (File.Exists(savePath))
+                File.Delete(savePath);
+            File.Move(temporaryPath, savePath);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning(
+                $"CatHomeSaveSystem could not restore the recovery copy: {exception.Message}"
+            );
+            try
+            {
+                if (File.Exists(temporaryPath))
+                    File.Delete(temporaryPath);
+            }
+            catch
+            {
+                // Preserve the original exception as the useful diagnostic.
+            }
+            return false;
+        }
     }
 
     private static void BackupCorruptSave(string savePath)

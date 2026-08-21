@@ -47,6 +47,9 @@ public static class HomeRoomService
     public const string KitchenId = "kitchen-01";
     public const string BedroomId = "bedroom-01";
     public const string GardenId = "garden-01";
+    public const string BalconyId = "balcony-01";
+    public const string PatioId = "patio-01";
+    public const string SecondFloorId = "second-floor-01";
     public const string LivingRoomScenePath =
         "Assets/Scenes/Levels/LivingRoom_Level01.unity";
     public const string BathroomScenePath =
@@ -57,6 +60,12 @@ public static class HomeRoomService
         "Assets/Scenes/Levels/Bedroom_Level01.unity";
     public const string GardenScenePath =
         "Assets/Scenes/Levels/Garden_Level01.unity";
+    public const string BalconyScenePath =
+        "Assets/Scenes/Levels/Balcony_Level01.unity";
+    public const string PatioScenePath =
+        "Assets/Scenes/Levels/Patio_Level01.unity";
+    public const string SecondFloorScenePath =
+        "Assets/Scenes/Levels/SecondFloor_Level01.unity";
 
     private static readonly HomeRoomDefinition[] RoomsInternal =
     {
@@ -94,7 +103,28 @@ public static class HomeRoomService
             GardenScenePath,
             "default",
             HomeStoreService.HomeGardenPreviewId,
-            GetHomeLevelRequirement(HomeStoreService.HomeGardenPreviewId))
+            GetHomeLevelRequirement(HomeStoreService.HomeGardenPreviewId)),
+        new HomeRoomDefinition(
+            BalconyId,
+            "BALCONY",
+            BalconyScenePath,
+            "default",
+            HomeStoreService.HomeBalconyPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeBalconyPreviewId)),
+        new HomeRoomDefinition(
+            PatioId,
+            "GARDEN PATIO",
+            PatioScenePath,
+            "default",
+            HomeStoreService.HomePatioPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomePatioPreviewId)),
+        new HomeRoomDefinition(
+            SecondFloorId,
+            "SECOND FLOOR",
+            SecondFloorScenePath,
+            "default",
+            HomeStoreService.HomeSecondFloorPreviewId,
+            GetHomeLevelRequirement(HomeStoreService.HomeSecondFloorPreviewId))
     };
 
     private static readonly Dictionary<string, HomeRoomDefinition> RoomsById =

@@ -103,10 +103,10 @@ public static class QuestPanelBuilder
     // Close button (a compact twin of the top-bar buttons), same as the shop's.
     private const float CloseButtonSize = 56f;
 
-    private static readonly Color ScrimColor = new Color32(9, 18, 27, 205);
-    private static readonly Color FrameOrange = PremiumUiStyle.Champagne;
+    private static readonly Color ScrimColor = new Color32(50, 42, 96, 178);
+    private static readonly Color FrameOrange = PremiumUiStyle.CoralLift;
     private static readonly Color FrameShadow = PremiumUiStyle.Shadow;
-    private static readonly Color PanelCream = new Color32(244, 250, 255, 255);
+    private static readonly Color PanelCream = new Color32(255, 247, 226, 255);
     private static readonly Color CreamBar = PremiumUiStyle.Ivory;
     private static readonly Color DarkBrownText = PremiumUiStyle.Ink;
     private static readonly Color TitleShadowColor = PremiumUiStyle.Shadow;
@@ -322,7 +322,7 @@ public static class QuestPanelBuilder
         emblemRect.pivot = new Vector2(0f, 0.5f);
         emblemRect.sizeDelta = new Vector2(78f, 78f);
         emblemRect.anchoredPosition = new Vector2(18f, 0f);
-        LowPolyPanelGraphic emblemFace = CreatePanelGraphic("EmblemFace", emblemRim.transform, PremiumUiStyle.NavyLift, 32f, 2f, false);
+        LowPolyPanelGraphic emblemFace = CreatePanelGraphic("EmblemFace", emblemRim.transform, PremiumUiStyle.CandyAqua, 32f, 2f, false);
         StretchWithOffsets(emblemFace.rectTransform, 5f, 5f, -5f, -5f);
         BuildQuestsEmblem(emblemFace.transform);
 
@@ -364,12 +364,13 @@ public static class QuestPanelBuilder
         Stretch(face.GetComponent<RectTransform>());
         EnsureCanvasRenderer(face);
         LowPolyPanelGraphic faceGraphic = face.AddComponent<LowPolyPanelGraphic>();
-        PremiumUiStyle.ConfigureDarkSurface(faceGraphic, 24f, 4f);
+        PremiumUiStyle.ConfigureAccentSurface(faceGraphic,
+            PremiumUiStyle.CoralLift, PremiumUiStyle.CandyPink, 24f, 4f);
         faceGraphic.raycastTarget = true;
         ConfigurePanel(faceGraphic, 12f, 4f);
 
-        IconRect(face.transform, "CrossA", PremiumUiStyle.Champagne, 30f, 5f, 0f, 0f, 45f);
-        IconRect(face.transform, "CrossB", PremiumUiStyle.Champagne, 30f, 5f, 0f, 0f, -45f);
+        IconRect(face.transform, "CrossA", Color.white, 28f, 5f, 0f, 0f, 45f);
+        IconRect(face.transform, "CrossB", Color.white, 28f, 5f, 0f, 0f, -45f);
 
         return MakeButton(buttonRoot, faceGraphic, face.GetComponent<RectTransform>());
     }
@@ -391,8 +392,14 @@ public static class QuestPanelBuilder
         GameObject labelRoot = CreateRect("LevelLabel", parent);
         AnchorTop(labelRoot.GetComponent<RectTransform>(), LevelLabelTop, LevelLabelHeight, PanelSidePadding);
 
-        TMP_Text label = AddWrappingText(
-            labelRoot, font, 22f, 17f, PremiumUiStyle.Muted, TextAlignmentOptions.MidlineLeft);
+        LowPolyPanelGraphic capsule = CreatePanelGraphic("ChapterCapsule", labelRoot.transform,
+            new Color32(225, 211, 249, 255), 18f, 3f, false);
+        Stretch(capsule.rectTransform);
+
+        TMP_Text label = CreateText(labelRoot.transform, "ChapterLabel", font, 22f,
+            PremiumUiStyle.Ink, TextAlignmentOptions.MidlineLeft);
+        ConfigureAutoSize(label, 22f, 17f);
+        StretchWithOffsets(label.rectTransform, 22f, 0f, -22f, 0f);
         label.fontStyle = FontStyles.Bold;
         label.characterSpacing = 0.8f;
         // Authored placeholder only; the controller replaces it on every refresh.
@@ -501,9 +508,20 @@ public static class QuestPanelBuilder
         Stretch(frame.rectTransform);
 
         // Warm ivory content cards mirror the product cards in Home Store.
-        Color cream = index % 2 == 0 ? PremiumUiStyle.Ivory : PremiumUiStyle.WarmIvory;
+        Color cream = RowCreams[index % RowCreams.Length];
         LowPolyPanelGraphic face = CreatePanelGraphic("Face", rowRoot.transform, cream, 13f, 1.5f, false);
         StretchWithOffsets(face.rectTransform, 3f, 3f, -3f, -3f);
+
+        LowPolyPanelGraphic accent = CreatePanelGraphic("AccentRail", rowRoot.transform,
+            index % 3 == 0 ? PremiumUiStyle.CandyAqua :
+            index % 3 == 1 ? PremiumUiStyle.CandyGrape : PremiumUiStyle.CandyPeach,
+            7f, 1f, false);
+        RectTransform accentRect = accent.rectTransform;
+        accentRect.anchorMin = new Vector2(0f, 0.5f);
+        accentRect.anchorMax = new Vector2(0f, 0.5f);
+        accentRect.pivot = new Vector2(0f, 0.5f);
+        accentRect.sizeDelta = new Vector2(13f, RowHeight - 26f);
+        accentRect.anchoredPosition = new Vector2(10f, 0f);
 
         // Two columns: a flexible info column and a fixed-width action column, so
         // the state label and the Claim button always sit at the same x on every

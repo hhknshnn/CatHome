@@ -20,6 +20,9 @@ public static class PremiumUiSystemRebuild
         StoreCatalogPreviewBuilder.BuildMissingAndBedroomPreviews();
         ShopPanelBuilder.BuildSilently();
         RoomSelectorPanelBuilder.BuildSilently();
+        CatJournalPanelBuilder.BuildSilently();
+        SettingsPanelBuilder.BuildSilently();
+        TitleScreenBuilder.BuildSilently();
         PremiumUiRefreshBuilder.Build();
         PremiumWorldVisualBuilder.BuildSilently();
         EditorSceneManager.SaveOpenScenes();

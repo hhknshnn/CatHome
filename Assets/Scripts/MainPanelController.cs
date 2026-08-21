@@ -120,6 +120,8 @@ public sealed class MainPanelController : MonoBehaviour
     // wired reference.
     private ShopPanelController shopPanel;
     private QuestPanelController questPanel;
+    private CatJournalPanel catJournalPanel;
+    private SettingsPanel settingsPanel;
     private RoomSelectorPanel roomSelectorPanel;
     private BrightnessPanelView brightnessView;
 
@@ -128,6 +130,8 @@ public sealed class MainPanelController : MonoBehaviour
     private const string StoreRowId = "HOME STORE";
     private const string RoomsRowId = "ROOMS";
     private const string LegacyRoomsRowId = "INVENTORY";
+    private const string JournalRowId = "CAT JOURNAL";
+    private const string SettingsRowId = "SETTINGS";
 
     // Deterministic animation clock in [0, openCloseDuration]. Every visual is a
     // pure function of this value, so reversing direction mid-animation simply
@@ -390,6 +394,18 @@ public sealed class MainPanelController : MonoBehaviour
             return;
         }
 
+        if (string.Equals(id, JournalRowId, System.StringComparison.Ordinal))
+        {
+            OnJournalSelected();
+            return;
+        }
+
+        if (string.Equals(id, SettingsRowId, System.StringComparison.Ordinal))
+        {
+            OnSettingsSelected();
+            return;
+        }
+
         // A tap is a discrete event (not per-frame), so this single log is safe
         // and never spams the console. No navigation, no system is touched.
         Debug.Log($"MainPanelController: menu row '{id}' selected (CP1 prototype; navigation not implemented).");
@@ -439,6 +455,40 @@ public sealed class MainPanelController : MonoBehaviour
         }
 
         roomSelectorPanel.RequestOpen();
+    }
+
+    private void OnJournalSelected()
+    {
+        CloseBrightnessPanel();
+        if (catJournalPanel == null)
+            catJournalPanel = FindAnyObjectByType<CatJournalPanel>(FindObjectsInactive.Include);
+        if (catJournalPanel == null)
+        {
+            Debug.LogWarning(
+                "MainPanelController: CAT JOURNAL needs CatJournalPanelCanvas. " +
+                "Build it via Tools > Cat Home > UI > Build Cat Journal Panel.",
+                this);
+            return;
+        }
+
+        catJournalPanel.RequestOpen();
+    }
+
+    private void OnSettingsSelected()
+    {
+        CloseBrightnessPanel();
+        if (settingsPanel == null)
+            settingsPanel = FindAnyObjectByType<SettingsPanel>(FindObjectsInactive.Include);
+        if (settingsPanel == null)
+        {
+            Debug.LogWarning(
+                "MainPanelController: SETTINGS needs SettingsPanelCanvas. " +
+                "Build it via Tools > Cat Home > UI > Build Settings Panel.",
+                this);
+            return;
+        }
+
+        settingsPanel.RequestOpen();
     }
 
     // ----- Shop button callback -----
@@ -851,6 +901,9 @@ public sealed class MainPanelController : MonoBehaviour
             return true;
 
         if (HomeLevelUpCelebrationView.IsAnyOpen)
+            return true;
+
+        if (CollectionCompleteCelebrationView.IsAnyOpen)
             return true;
 
         // The shop covers this canvas entirely, so while it is open (including its

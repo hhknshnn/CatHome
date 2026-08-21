@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -28,7 +29,7 @@ public sealed class HomeRoomNavigationTests
     [Test]
     public void Catalog_HasStableUniqueLivingBathroomAndKitchenRooms()
     {
-        Assert.That(HomeRoomService.Rooms.Count, Is.EqualTo(5));
+        Assert.That(HomeRoomService.Rooms.Count, Is.EqualTo(8));
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (HomeRoomDefinition room in HomeRoomService.Rooms)
         {
@@ -89,6 +90,36 @@ public sealed class HomeRoomNavigationTests
             Is.EqualTo("Bedroom_Level01"));
         Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.GardenId).SceneName,
             Is.EqualTo("Garden_Level01"));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.BalconyId),
+            Is.EqualTo(9));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeBalconyPreviewId,
+                out HomeStoreProduct balconyPreview),
+            Is.True);
+        Assert.That(balconyPreview.RequiredLevel, Is.EqualTo(9));
+        Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.BalconyId).SceneName,
+            Is.EqualTo("Balcony_Level01"));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.PatioId),
+            Is.EqualTo(10));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomePatioPreviewId,
+                out HomeStoreProduct patioPreview),
+            Is.True);
+        Assert.That(patioPreview.RequiredLevel, Is.EqualTo(10));
+        Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.PatioId).SceneName,
+            Is.EqualTo("Patio_Level01"));
+        Assert.That(HomeRoomService.GetRequiredHomeLevel(HomeRoomService.SecondFloorId),
+            Is.EqualTo(12));
+        Assert.That(
+            HomeStoreService.TryGetProduct(
+                HomeStoreService.HomeSecondFloorPreviewId,
+                out HomeStoreProduct secondFloorPreview),
+            Is.True);
+        Assert.That(secondFloorPreview.RequiredLevel, Is.EqualTo(12));
+        Assert.That(HomeRoomService.GetOrLivingRoom(HomeRoomService.SecondFloorId).SceneName,
+            Is.EqualTo("SecondFloor_Level01"));
     }
 
     [Test]
@@ -386,6 +417,69 @@ public sealed class HomeRoomNavigationTests
         Assert.That(serialized.FindProperty("cards").arraySize,
             Is.EqualTo(HomeRoomService.Rooms.Count));
         Assert.That(serialized.FindProperty("roomScroll").objectReferenceValue, Is.Not.Null);
+        Assert.That(serialized.FindProperty("scrimButton").objectReferenceValue, Is.Not.Null);
+        Assert.That(serialized.FindProperty("closeButton").objectReferenceValue, Is.Not.Null);
+    }
+
+    [Test]
+    public void RoomSelectorDismissControls_ReenableWithTheCanvas()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            RoomSelectorPanelBuilder.PrefabPath);
+        GameObject instance = UnityEngine.Object.Instantiate(prefab);
+        try
+        {
+            RoomSelectorPanel controller = instance.GetComponent<RoomSelectorPanel>();
+            var serialized = new SerializedObject(controller);
+            Button scrim = serialized.FindProperty("scrimButton").objectReferenceValue as Button;
+            Button close = serialized.FindProperty("closeButton").objectReferenceValue as Button;
+            Assert.That(scrim, Is.Not.Null);
+            Assert.That(close, Is.Not.Null);
+
+            scrim.interactable = false;
+            close.interactable = false;
+            MethodInfo setCanvasInteractive = typeof(RoomSelectorPanel).GetMethod(
+                "SetCanvasInteractive", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(setCanvasInteractive, Is.Not.Null);
+
+            setCanvasInteractive.Invoke(controller, new object[] { true });
+            Assert.That(scrim.interactable, Is.True);
+            Assert.That(close.interactable, Is.True,
+                "A room arrival must not leave the close control disabled on the next open.");
+
+            setCanvasInteractive.Invoke(controller, new object[] { false });
+            Assert.That(scrim.interactable, Is.False);
+            Assert.That(close.interactable, Is.False);
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(instance);
+        }
+    }
+
+    [Test]
+    public void RoomSelectorCloseMark_IsGeometricallyCenteredAndSymmetric()
+    {
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            RoomSelectorPanelBuilder.PrefabPath);
+        Assert.That(prefab, Is.Not.Null);
+
+        RectTransform button = FindNamed(prefab.transform, "CloseButton") as RectTransform;
+        RectTransform mark = FindNamed(prefab.transform, "CloseMark") as RectTransform;
+        RectTransform slashA = FindNamed(prefab.transform, "SlashA") as RectTransform;
+        RectTransform slashB = FindNamed(prefab.transform, "SlashB") as RectTransform;
+        Assert.That(button, Is.Not.Null);
+        Assert.That(mark, Is.Not.Null);
+        Assert.That(slashA, Is.Not.Null);
+        Assert.That(slashB, Is.Not.Null);
+        Assert.That(mark.anchoredPosition, Is.EqualTo(Vector2.zero));
+        Assert.That(slashA.anchoredPosition, Is.EqualTo(Vector2.zero));
+        Assert.That(slashB.anchoredPosition, Is.EqualTo(Vector2.zero));
+        Assert.That(slashA.sizeDelta, Is.EqualTo(slashB.sizeDelta));
+        Assert.That(Mathf.DeltaAngle(slashA.localEulerAngles.z, 45f),
+            Is.EqualTo(0f).Within(0.01f));
+        Assert.That(Mathf.DeltaAngle(slashB.localEulerAngles.z, -45f),
+            Is.EqualTo(0f).Within(0.01f));
     }
 
     [Test]
@@ -468,7 +562,10 @@ public sealed class HomeRoomNavigationTests
             "Assets/Art/RoomPreviews/BathroomPreview.png",
             "Assets/Art/RoomPreviews/KitchenPreview.png",
             "Assets/Art/RoomPreviews/BedroomPreview.png",
-            "Assets/Art/RoomPreviews/GardenPreview.png"
+            "Assets/Art/RoomPreviews/GardenPreview.png",
+            "Assets/Art/RoomPreviews/BalconyPreview.png",
+            "Assets/Art/RoomPreviews/PatioPreview.png",
+            "Assets/Art/RoomPreviews/SecondFloorPreview.png"
         };
         for (int i = 0; i < paths.Length; i++)
         {
@@ -493,6 +590,15 @@ public sealed class HomeRoomNavigationTests
         Assert.That(
             StoreCatalogAssets.GetIconPath(HomeStoreService.HomeGardenPreviewId),
             Is.EqualTo("Assets/Art/RoomPreviews/GardenPreview.png"));
+        Assert.That(
+            StoreCatalogAssets.GetIconPath(HomeStoreService.HomeBalconyPreviewId),
+            Is.EqualTo("Assets/Art/RoomPreviews/BalconyPreview.png"));
+        Assert.That(
+            StoreCatalogAssets.GetIconPath(HomeStoreService.HomePatioPreviewId),
+            Is.EqualTo("Assets/Art/RoomPreviews/PatioPreview.png"));
+        Assert.That(
+            StoreCatalogAssets.GetIconPath(HomeStoreService.HomeSecondFloorPreviewId),
+            Is.EqualTo("Assets/Art/RoomPreviews/SecondFloorPreview.png"));
     }
 
     [Test]
@@ -518,6 +624,32 @@ public sealed class HomeRoomNavigationTests
             Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(asset.IconPath);
             Assert.That(icon, Is.Not.Null, asset.IconPath);
             Assert.That(icon.width, Is.GreaterThan(64), asset.IconPath);
+        }
+    }
+
+    [Test]
+    public void SecondFloorCollection_HasRenderedProductPreviewIconsBoundToShopCards()
+    {
+        GameObject shop = AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/UI/ShopPanel.prefab");
+        Assert.That(shop, Is.Not.Null);
+
+        for (int i = 0; i < HomeStoreService.SecondFloorCollection.Count; i++)
+        {
+            string id = HomeStoreService.SecondFloorCollection[i];
+            Assert.That(StoreCatalogAssets.TryGet(id, out StoreCatalogAsset asset),
+                Is.True, id);
+            Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(asset.IconPath);
+            Assert.That(icon, Is.Not.Null, asset.IconPath);
+            Assert.That(icon.width, Is.EqualTo(512), asset.IconPath);
+            Assert.That(icon.height, Is.EqualTo(512), asset.IconPath);
+
+            Transform card = FindNamed(shop.transform, "Product_" + id);
+            Assert.That(card, Is.Not.Null, id + " must have a SHOP card.");
+            RawImage photo = card.GetComponentInChildren<RawImage>(true);
+            Assert.That(photo, Is.Not.Null, id);
+            Assert.That(photo.texture, Is.EqualTo(icon),
+                id + " must use its rendered furniture preview, not the fallback glyph.");
         }
     }
 

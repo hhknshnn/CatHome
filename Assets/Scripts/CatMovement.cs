@@ -135,6 +135,7 @@ public class CatMovement : MonoBehaviour
         // Loading can therefore never trigger quest progress or rewards.
         CatHomeSaveSystem.Initialize(this);
         ProgressionService.Initialize(this);
+        CatIdleBehavior.EnsureOn(this);
     }
 
     private void Update()

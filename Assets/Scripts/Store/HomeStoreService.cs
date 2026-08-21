@@ -240,6 +240,36 @@ public static class HomeStoreService
     public const string GardenGrillId = "garden.grill";
     public const string GardenHammockId = "garden.hammock";
     public const string GardenPergolaId = "garden.pergola";
+    public const string BalconySunMatId = "balcony.sun-mat";
+    public const string BalconyPlanterBoxId = "balcony.planter-box";
+    public const string BalconyHerbShelfId = "balcony.herb-shelf";
+    public const string BalconyRailingFlowersId = "balcony.railing-flowers";
+    public const string BalconyBirdFeederId = "balcony.bird-feeder";
+    public const string BalconyLanternStringId = "balcony.lantern-string";
+    public const string BalconyCushionBenchId = "balcony.cushion-bench";
+    public const string BalconySideTableId = "balcony.side-table";
+    public const string BalconyHangingChairId = "balcony.hanging-chair";
+    public const string BalconySunAwningId = "balcony.sun-awning";
+    public const string PatioStoneRugId = "patio.stone-rug";
+    public const string PatioPottedFernsId = "patio.potted-ferns";
+    public const string PatioHerbTroughId = "patio.herb-trough";
+    public const string PatioStringLightsId = "patio.string-lights";
+    public const string PatioWaterFountainId = "patio.water-fountain";
+    public const string PatioFirePitId = "patio.fire-pit";
+    public const string PatioDiningSetId = "patio.dining-set";
+    public const string PatioParasolId = "patio.parasol";
+    public const string PatioPorchSwingId = "patio.porch-swing";
+    public const string PatioPergolaArchId = "patio.pergola-arch";
+    public const string LoftFloorRunnerId = "loft.floor-runner";
+    public const string LoftFloorCushionsId = "loft.floor-cushions";
+    public const string LoftBookStackId = "loft.book-stack";
+    public const string LoftArcLampId = "loft.arc-lamp";
+    public const string LoftBeanBagId = "loft.bean-bag";
+    public const string LoftRecordPlayerId = "loft.record-player";
+    public const string LoftStudyDeskId = "loft.study-desk";
+    public const string LoftWallGalleryId = "loft.wall-gallery";
+    public const string LoftTallBookcaseId = "loft.tall-bookcase";
+    public const string LoftChaiseLoungeId = "loft.chaise-lounge";
     public const string HomeRoomsPreviewId = "home.rooms-preview";
     public const string HomeGardenPreviewId = "home.garden-preview";
     public const string HomeKitchenPreviewId = "home.kitchen-preview";
@@ -260,6 +290,12 @@ public static class HomeStoreService
     public const long BedroomDiamondPrice = 50;
     public const long GardenCoinPrice = 6000;
     public const long GardenDiamondPrice = 60;
+    public const long BalconyCoinPrice = 7000;
+    public const long BalconyDiamondPrice = 70;
+    public const long PatioCoinPrice = 8000;
+    public const long PatioDiamondPrice = 80;
+    public const long SecondFloorCoinPrice = 9000;
+    public const long SecondFloorDiamondPrice = 90;
 
     private static readonly string[] LivingRoomCollectionInternal =
     {
@@ -329,6 +365,48 @@ public static class HomeStoreService
         GardenGrillId,
         GardenHammockId,
         GardenPergolaId
+    };
+
+    private static readonly string[] BalconyCollectionInternal =
+    {
+        BalconySunMatId,
+        BalconyPlanterBoxId,
+        BalconyHerbShelfId,
+        BalconyRailingFlowersId,
+        BalconyBirdFeederId,
+        BalconyLanternStringId,
+        BalconyCushionBenchId,
+        BalconySideTableId,
+        BalconyHangingChairId,
+        BalconySunAwningId
+    };
+
+    private static readonly string[] PatioCollectionInternal =
+    {
+        PatioStoneRugId,
+        PatioPottedFernsId,
+        PatioHerbTroughId,
+        PatioStringLightsId,
+        PatioWaterFountainId,
+        PatioFirePitId,
+        PatioDiningSetId,
+        PatioParasolId,
+        PatioPorchSwingId,
+        PatioPergolaArchId
+    };
+
+    private static readonly string[] SecondFloorCollectionInternal =
+    {
+        LoftFloorRunnerId,
+        LoftFloorCushionsId,
+        LoftBookStackId,
+        LoftArcLampId,
+        LoftBeanBagId,
+        LoftRecordPlayerId,
+        LoftStudyDeskId,
+        LoftWallGalleryId,
+        LoftTallBookcaseId,
+        LoftChaiseLoungeId
     };
 
     private static readonly HomeStoreProduct[] ProductsInternal =
@@ -906,6 +984,216 @@ public static class HomeStoreService
             "A cream pergola with mint beams that frames the whole courtyard.",
             2500L, 25L, 1, true, true),
         new HomeStoreProduct(
+            BalconySunMatId,
+            "SUN MAT",
+            HomeStoreCategory.Room,
+            "BALCONY DECOR",
+            "A soft striped mat for warm sun patches on the balcony floor.",
+            200L, 2L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyPlanterBoxId,
+            "PLANTER BOX",
+            HomeStoreCategory.Room,
+            "BALCONY PLANTS",
+            "A cheerful wooden box of coral and lemon blooms.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyHerbShelfId,
+            "HERB SHELF",
+            HomeStoreCategory.Room,
+            "BALCONY PLANTS",
+            "A little shelf of mint and basil pots for the sunny corner.",
+            600L, 6L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyRailingFlowersId,
+            "RAILING FLOWERS",
+            HomeStoreCategory.Room,
+            "BALCONY PLANTS",
+            "Flower boxes clipped along the railing over the city view.",
+            800L, 8L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyBirdFeederId,
+            "BIRD FEEDER",
+            HomeStoreCategory.Room,
+            "BALCONY DECOR",
+            "A hanging feeder where little birds visit the railing.",
+            1000L, 10L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyLanternStringId,
+            "LANTERN STRING",
+            HomeStoreCategory.Room,
+            "BALCONY DECOR",
+            "A string of warm gold lanterns for cozy evening light.",
+            1200L, 12L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyCushionBenchId,
+            "CUSHION BENCH",
+            HomeStoreCategory.Room,
+            "BALCONY FURNITURE",
+            "A low bench piled with mint and peach cushions.",
+            1500L, 15L, 1, true, true),
+        new HomeStoreProduct(
+            BalconySideTableId,
+            "SIDE TABLE",
+            HomeStoreCategory.Room,
+            "BALCONY FURNITURE",
+            "A round peach table just right for a cup and a nap.",
+            1800L, 18L, 1, true, true),
+        new HomeStoreProduct(
+            BalconyHangingChairId,
+            "HANGING CHAIR",
+            HomeStoreCategory.Room,
+            "BALCONY FURNITURE",
+            "A lilac egg chair swinging gently from a gold hook.",
+            2100L, 21L, 1, true, true),
+        new HomeStoreProduct(
+            BalconySunAwningId,
+            "SUN AWNING",
+            HomeStoreCategory.Room,
+            "BALCONY FURNITURE",
+            "A striped awning that shades the whole balcony from above.",
+            2500L, 25L, 1, true, true),
+        new HomeStoreProduct(
+            PatioStoneRugId,
+            "STONE PATIO RUG",
+            HomeStoreCategory.Room,
+            "PATIO DECOR",
+            "A soft outdoor rug that warms the paved stone floor.",
+            200L, 2L, 1, true, true),
+        new HomeStoreProduct(
+            PatioPottedFernsId,
+            "POTTED FERNS",
+            HomeStoreCategory.Room,
+            "PATIO PLANTS",
+            "A pair of leafy ferns in tall stone planters.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            PatioHerbTroughId,
+            "HERB TROUGH",
+            HomeStoreCategory.Room,
+            "PATIO PLANTS",
+            "A long trough of mint and lavender along the patio edge.",
+            600L, 6L, 1, true, true),
+        new HomeStoreProduct(
+            PatioStringLightsId,
+            "PATIO STRING LIGHTS",
+            HomeStoreCategory.Room,
+            "PATIO DECOR",
+            "Warm bulbs strung overhead for cozy evenings outside.",
+            800L, 8L, 1, true, true),
+        new HomeStoreProduct(
+            PatioWaterFountainId,
+            "WATER FOUNTAIN",
+            HomeStoreCategory.Room,
+            "PATIO DECOR",
+            "A little tiered stone fountain with trickling aqua water.",
+            1000L, 10L, 1, true, true),
+        new HomeStoreProduct(
+            PatioFirePitId,
+            "FIRE PIT",
+            HomeStoreCategory.Room,
+            "PATIO FURNITURE",
+            "A round stone fire pit with a warm coral glow.",
+            1200L, 12L, 1, true, true),
+        new HomeStoreProduct(
+            PatioDiningSetId,
+            "PATIO DINING SET",
+            HomeStoreCategory.Room,
+            "PATIO FURNITURE",
+            "A cream table and four chairs for sunny outdoor meals.",
+            1500L, 15L, 1, true, true),
+        new HomeStoreProduct(
+            PatioParasolId,
+            "GARDEN PARASOL",
+            HomeStoreCategory.Room,
+            "PATIO FURNITURE",
+            "A big mint parasol that shades the whole dining set.",
+            1800L, 18L, 1, true, true),
+        new HomeStoreProduct(
+            PatioPorchSwingId,
+            "PORCH SWING",
+            HomeStoreCategory.Room,
+            "PATIO FURNITURE",
+            "A cushioned swing bench hung from a sturdy gold frame.",
+            2100L, 21L, 1, true, true),
+        new HomeStoreProduct(
+            PatioPergolaArchId,
+            "PERGOLA ARCH",
+            HomeStoreCategory.Room,
+            "PATIO FURNITURE",
+            "A grand cream arch with climbing vines over the patio.",
+            2500L, 25L, 1, true, true),
+        new HomeStoreProduct(
+            LoftFloorRunnerId,
+            "LOFT FLOOR RUNNER",
+            HomeStoreCategory.Room,
+            "LOFT DECOR",
+            "A long woven runner that warms the loft's wooden floor.",
+            200L, 2L, 1, true, true),
+        new HomeStoreProduct(
+            LoftFloorCushionsId,
+            "FLOOR CUSHIONS",
+            HomeStoreCategory.Room,
+            "LOFT DECOR",
+            "A cozy pile of oversized floor cushions for lounging.",
+            400L, 4L, 1, true, true),
+        new HomeStoreProduct(
+            LoftBookStackId,
+            "BOOK STACKS",
+            HomeStoreCategory.Room,
+            "LOFT DECOR",
+            "Neat stacks of colorful books for the reading loft.",
+            600L, 6L, 1, true, true),
+        new HomeStoreProduct(
+            LoftArcLampId,
+            "ARC FLOOR LAMP",
+            HomeStoreCategory.Room,
+            "LOFT LIGHTING",
+            "A tall arc lamp that curves warm light over the nook.",
+            800L, 8L, 1, true, true),
+        new HomeStoreProduct(
+            LoftBeanBagId,
+            "BEAN BAG CHAIR",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A squishy coral bean bag that molds to a napping cat.",
+            1000L, 10L, 1, true, true),
+        new HomeStoreProduct(
+            LoftRecordPlayerId,
+            "RECORD PLAYER",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A retro turntable on a slim stand for lazy afternoons.",
+            1200L, 12L, 1, true, true),
+        new HomeStoreProduct(
+            LoftStudyDeskId,
+            "STUDY DESK",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A tidy wooden desk with a lamp and a comfy chair.",
+            1500L, 15L, 1, true, true),
+        new HomeStoreProduct(
+            LoftWallGalleryId,
+            "WALL GALLERY",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A framed gallery wall of bright little art prints.",
+            1800L, 18L, 1, true, true),
+        new HomeStoreProduct(
+            LoftTallBookcaseId,
+            "TALL BOOKCASE",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A floor-to-ceiling bookcase packed with books and plants.",
+            2100L, 21L, 1, true, true),
+        new HomeStoreProduct(
+            LoftChaiseLoungeId,
+            "CHAISE LOUNGE",
+            HomeStoreCategory.Room,
+            "LOFT FURNITURE",
+            "A velvet chaise by the window for sunny afternoon naps.",
+            2500L, 25L, 1, true, true),
+        new HomeStoreProduct(
             HomeRoomsPreviewId,
             "LIVING ROOM",
             HomeStoreCategory.Home,
@@ -952,23 +1240,23 @@ public static class HomeStoreService
             HomeBalconyPreviewId,
             "BALCONY",
             HomeStoreCategory.Home,
-            "OUTDOOR AREA",
-            "A sunny balcony with plants, cushions and a city view.",
-            0L, 0L, 9, false, false),
+            "NEW ROOM",
+            "A sunny balcony with plants, cushions and its own 10-piece balcony collection over a city view.",
+            BalconyCoinPrice, BalconyDiamondPrice, 9, true, false),
         new HomeStoreProduct(
             HomePatioPreviewId,
             "GARDEN PATIO",
             HomeStoreCategory.Home,
-            "OUTDOOR AREA",
-            "A paved garden patio for furniture and outdoor cat moments.",
-            0L, 0L, 10, false, false),
+            "NEW ROOM",
+            "A paved garden patio with a fountain, fire pit and its own 10-piece patio collection.",
+            PatioCoinPrice, PatioDiamondPrice, 10, true, false),
         new HomeStoreProduct(
             HomeSecondFloorPreviewId,
             "SECOND FLOOR",
             HomeStoreCategory.Home,
-            "HOME EXPANSION",
-            "A major home expansion reserved for late Home Level progression.",
-            0L, 0L, 12, false, false)
+            "NEW ROOM",
+            "A cozy upstairs loft with a big window and its own 10-piece loft collection.",
+            SecondFloorCoinPrice, SecondFloorDiamondPrice, 12, true, false)
     };
 
     private static readonly Dictionary<string, HomeStoreProduct> ProductsById =
@@ -990,6 +1278,9 @@ public static class HomeStoreService
     public static IReadOnlyList<string> KitchenCollection => KitchenCollectionInternal;
     public static IReadOnlyList<string> BedroomCollection => BedroomCollectionInternal;
     public static IReadOnlyList<string> GardenCollection => GardenCollectionInternal;
+    public static IReadOnlyList<string> BalconyCollection => BalconyCollectionInternal;
+    public static IReadOnlyList<string> PatioCollection => PatioCollectionInternal;
+    public static IReadOnlyList<string> SecondFloorCollection => SecondFloorCollectionInternal;
     public static bool FreePurchaseTestingEnabled => !EconomyChecksEnabled;
     public static int LivingRoomItemCount => LivingRoomCollectionInternal.Length;
     public static int LivingRoomOwnedCount
@@ -1023,6 +1314,32 @@ public static class HomeStoreService
     public static int GardenOwnedCount => GetOwnedCount(GardenCollectionInternal);
     public static bool IsGardenComplete =>
         GardenOwnedCount >= GardenCollectionInternal.Length;
+    public static int BalconyItemCount => BalconyCollectionInternal.Length;
+    public static int BalconyOwnedCount => GetOwnedCount(BalconyCollectionInternal);
+    public static bool IsBalconyComplete =>
+        BalconyOwnedCount >= BalconyCollectionInternal.Length;
+    public static int PatioItemCount => PatioCollectionInternal.Length;
+    public static int PatioOwnedCount => GetOwnedCount(PatioCollectionInternal);
+    public static bool IsPatioComplete =>
+        PatioOwnedCount >= PatioCollectionInternal.Length;
+    public static int SecondFloorItemCount => SecondFloorCollectionInternal.Length;
+    public static int SecondFloorOwnedCount => GetOwnedCount(SecondFloorCollectionInternal);
+    public static bool IsSecondFloorComplete =>
+        SecondFloorOwnedCount >= SecondFloorCollectionInternal.Length;
+    public static int CatalogCount => ProductsInternal.Length;
+    public static int OwnedCatalogCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < ProductsInternal.Length; i++)
+            {
+                if (IsOwned(ProductsInternal[i].Id))
+                    count++;
+            }
+            return count;
+        }
+    }
     public static event Action<string> OwnershipChanged;
     public static event Action<string> PlacementChanged;
 
@@ -1096,6 +1413,21 @@ public static class HomeStoreService
         return Array.IndexOf(GardenCollectionInternal, productId) >= 0;
     }
 
+    public static bool IsBalconyCollectionProduct(string productId)
+    {
+        return Array.IndexOf(BalconyCollectionInternal, productId) >= 0;
+    }
+
+    public static bool IsPatioCollectionProduct(string productId)
+    {
+        return Array.IndexOf(PatioCollectionInternal, productId) >= 0;
+    }
+
+    public static bool IsSecondFloorCollectionProduct(string productId)
+    {
+        return Array.IndexOf(SecondFloorCollectionInternal, productId) >= 0;
+    }
+
     public static IReadOnlyList<string> GetRoomCollection(string roomId)
     {
         if (string.Equals(roomId, HomeRoomService.BathroomId, StringComparison.Ordinal))
@@ -1106,6 +1438,12 @@ public static class HomeStoreService
             return BedroomCollectionInternal;
         if (string.Equals(roomId, HomeRoomService.GardenId, StringComparison.Ordinal))
             return GardenCollectionInternal;
+        if (string.Equals(roomId, HomeRoomService.BalconyId, StringComparison.Ordinal))
+            return BalconyCollectionInternal;
+        if (string.Equals(roomId, HomeRoomService.PatioId, StringComparison.Ordinal))
+            return PatioCollectionInternal;
+        if (string.Equals(roomId, HomeRoomService.SecondFloorId, StringComparison.Ordinal))
+            return SecondFloorCollectionInternal;
         return LivingRoomCollectionInternal;
     }
 
@@ -1153,6 +1491,12 @@ public static class HomeStoreService
             return HomeKitchenPreviewId;
         if (string.Equals(productId, HomeGardenPreviewId, StringComparison.Ordinal))
             return HomeBedroomPreviewId;
+        if (string.Equals(productId, HomeBalconyPreviewId, StringComparison.Ordinal))
+            return HomeGardenPreviewId;
+        if (string.Equals(productId, HomePatioPreviewId, StringComparison.Ordinal))
+            return HomeBalconyPreviewId;
+        if (string.Equals(productId, HomeSecondFloorPreviewId, StringComparison.Ordinal))
+            return HomePatioPreviewId;
         return null;
     }
 
@@ -1277,6 +1621,30 @@ public static class HomeStoreService
                 Math.Max(0, BedroomItemCount - BedroomOwnedCount));
         }
 
+        if (product.Id == HomeBalconyPreviewId && !IsGardenComplete)
+        {
+            return new HomeStorePurchaseResult(
+                HomeStorePurchaseStatus.CollectionIncomplete,
+                product,
+                Math.Max(0, GardenItemCount - GardenOwnedCount));
+        }
+
+        if (product.Id == HomePatioPreviewId && !IsBalconyComplete)
+        {
+            return new HomeStorePurchaseResult(
+                HomeStorePurchaseStatus.CollectionIncomplete,
+                product,
+                Math.Max(0, BalconyItemCount - BalconyOwnedCount));
+        }
+
+        if (product.Id == HomeSecondFloorPreviewId && !IsPatioComplete)
+        {
+            return new HomeStorePurchaseResult(
+                HomeStorePurchaseStatus.CollectionIncomplete,
+                product,
+                Math.Max(0, PatioItemCount - PatioOwnedCount));
+        }
+
         if (!MeetsHomeLevelRequirement(product))
             return new HomeStorePurchaseResult(HomeStorePurchaseStatus.LevelLocked, product, 0L);
 
@@ -1335,6 +1703,7 @@ public static class HomeStoreService
         ProgressionService.RecordProgress(QuestType.BuyStoreItem);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
+        CollectionMilestoneService.HandleOwned(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);
     }
 
@@ -1380,6 +1749,7 @@ public static class HomeStoreService
             ProgressionService.RecordProgress(QuestType.BuyStoreItem);
         CatHomeSaveSystem.SaveNow();
         OwnershipChanged?.Invoke(productId);
+        CollectionMilestoneService.HandleOwned(productId);
         return new HomeStorePurchaseResult(HomeStorePurchaseStatus.Purchased, product, 0L);
     }
 

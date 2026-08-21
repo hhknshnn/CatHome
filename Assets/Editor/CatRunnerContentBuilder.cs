@@ -238,10 +238,18 @@ public static class CatRunnerContentBuilder
             PremiumUiStyle.ChampagneLight);
         roomProgress.rectTransform.anchorMin = new Vector2(0f, .48f);
         roomProgress.rectTransform.anchorMax = new Vector2(1f, 1f);
-        roomProgress.rectTransform.offsetMin = Vector2.zero;
-        roomProgress.rectTransform.offsetMax = Vector2.zero;
+        roomProgress.rectTransform.offsetMin = new Vector2(10f, 0f);
+        roomProgress.rectTransform.offsetMax = new Vector2(-10f, 0f);
         roomProgress.alignment = TextAlignmentOptions.Center;
         roomProgress.fontStyle = FontStyles.Bold;
+        // Room names are data-driven and vary from GARDEN to SECOND FLOOR.
+        // Keep every label on one centered line and let TMP reduce only as much
+        // as the fixed middle capsule requires.
+        roomProgress.textWrappingMode = TextWrappingModes.NoWrap;
+        roomProgress.overflowMode = TextOverflowModes.Truncate;
+        roomProgress.enableAutoSizing = true;
+        roomProgress.fontSizeMin = 11f;
+        roomProgress.fontSizeMax = 19f;
         TMP_Text energy = CreateLabel(
             statusPanel.transform,
             "RunnerEnergyLabel",
@@ -356,10 +364,12 @@ public static class CatRunnerContentBuilder
 
         Button runnerCard = BuildGameCard(
             card.transform, "HubCatRunnerButton", "CAT RUNNER", "ENDLESS DASH",
-            "RUN", Orange, new Vector2(-214f, -30f), out TMP_Text runnerLives);
+            "RUN", Orange, "Assets/Art/Runner/UI/CatRunnerHero_v1.png",
+            new Vector2(-214f, -30f), out TMP_Text runnerLives);
         Button catchCard = BuildGameCard(
             card.transform, "HubCatCatchButton", "CAT CATCH", "60s MOUSE HUNT",
-            "HUNT", Teal, new Vector2(214f, -30f), out TMP_Text catchLives);
+            "HUNT", Teal, "Assets/Art/Catch/UI/CatCatchHero_v1.png",
+            new Vector2(214f, -30f), out TMP_Text catchLives);
 
         TMP_Text hubHint = CreateLabel(card.transform, "GamesHubHint",
             "TAP A GAME TO START PLAYING", 16f, TealDark);
@@ -404,6 +414,7 @@ public static class CatRunnerContentBuilder
         string descriptor,
         string badge,
         Color color,
+        string heroPath,
         Vector2 position,
         out TMP_Text livesLabel)
     {
@@ -430,15 +441,34 @@ public static class CatRunnerContentBuilder
         badgeLabel.alignment = TextAlignmentOptions.Center;
         badgeLabel.fontStyle = FontStyles.Bold;
 
-        TMP_Text nameLabel = CreateLabel(card.transform, "Name", title, 38f, Cream);
+        TMP_Text nameLabel = CreateLabel(card.transform, "Name", title, 30f, Cream);
         SetAnchored(nameLabel.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -112f), new Vector2(360f, 52f));
+            new Vector2(0f, -170f), new Vector2(360f, 38f));
         nameLabel.alignment = TextAlignmentOptions.Center;
         nameLabel.fontStyle = FontStyles.Bold;
 
+        GameObject previewWell = CreatePremiumPanel(
+            card.transform, "HeroPreviewWell", new Color32(255, 247, 224, 255), 18f);
+        SetAnchored(previewWell.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
+            new Vector2(0f, 35f), new Vector2(344f, 90f));
+        previewWell.AddComponent<RectMask2D>();
+        Texture2D heroTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(heroPath);
+        if (heroTexture != null)
+        {
+            GameObject artObject = CreateUiObject("HeroArt", previewWell.transform);
+            RectTransform artRect = artObject.GetComponent<RectTransform>();
+            Stretch(artRect);
+            RawImage art = artObject.AddComponent<RawImage>();
+            art.texture = heroTexture;
+            art.color = Color.white;
+            art.raycastTarget = false;
+            art.uvRect = RoomPreviewFit.CoverUv(
+                heroTexture.width, heroTexture.height, 344f, 90f);
+        }
+
         TMP_Text descriptorLabel = CreateLabel(card.transform, "Descriptor", descriptor, 19f, Cream);
         SetAnchored(descriptorLabel.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -164f), new Vector2(360f, 30f));
+            new Vector2(0f, -210f), new Vector2(360f, 26f));
         descriptorLabel.alignment = TextAlignmentOptions.Center;
         descriptorLabel.alpha = 0.86f;
         descriptorLabel.fontStyle = FontStyles.Bold;
@@ -598,13 +628,13 @@ public static class CatRunnerContentBuilder
         Light sun = sunObject.GetComponent<Light>();
         sun.type = LightType.Directional;
         sun.color = new Color32(255, 228, 190, 255);
-        sun.intensity = 1.25f;
+        sun.intensity = 0.92f;
         sun.shadows = LightShadows.Soft;
 
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color32(190, 225, 242, 255);
-        RenderSettings.ambientEquatorColor = new Color32(140, 184, 207, 255);
-        RenderSettings.ambientGroundColor = new Color32(91, 71, 118, 255);
+        RenderSettings.ambientSkyColor = new Color32(148, 194, 218, 255);
+        RenderSettings.ambientEquatorColor = new Color32(103, 148, 173, 255);
+        RenderSettings.ambientGroundColor = new Color32(67, 52, 88, 255);
         return sun;
     }
 
@@ -632,17 +662,17 @@ public static class CatRunnerContentBuilder
 
         Bloom bloom = GetOrAddVolumeComponent<Bloom>(profile);
         bloom.active = true;
-        bloom.threshold.Override(0.82f);
-        bloom.intensity.Override(0.38f);
-        bloom.scatter.Override(0.68f);
+        bloom.threshold.Override(0.98f);
+        bloom.intensity.Override(0.22f);
+        bloom.scatter.Override(0.58f);
         bloom.highQualityFiltering.Override(false);
         bloom.maxIterations.Override(4);
 
         ColorAdjustments color = GetOrAddVolumeComponent<ColorAdjustments>(profile);
         color.active = true;
-        color.postExposure.Override(0.06f);
-        color.contrast.Override(12f);
-        color.saturation.Override(20f);
+        color.postExposure.Override(-0.18f);
+        color.contrast.Override(22f);
+        color.saturation.Override(24f);
 
         Vignette vignette = GetOrAddVolumeComponent<Vignette>(profile);
         vignette.active = true;

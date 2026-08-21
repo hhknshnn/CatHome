@@ -4,6 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -27,12 +28,43 @@ public static class RoomPreviewCaptureBuilder
         PreviewFolder + "/BedroomPreview.png";
     private static readonly string GardenPreviewPath =
         PreviewFolder + "/GardenPreview.png";
+    private static readonly string BalconyPreviewPath =
+        PreviewFolder + "/BalconyPreview.png";
+    private static readonly string PatioPreviewPath =
+        PreviewFolder + "/PatioPreview.png";
+    private static readonly string SecondFloorPreviewPath =
+        PreviewFolder + "/SecondFloorPreview.png";
 
     [MenuItem("Tools/Cat Home/Rooms/Capture Room Previews")]
     public static void CaptureFromMenu()
     {
         string result = CaptureSilently();
         EditorUtility.DisplayDialog("Cat Home Room Previews", result, "OK");
+    }
+
+    [MenuItem("Tools/Cat Home/Rooms/Capture Second Floor Preview (Silent)")]
+    public static void CaptureSecondFloorFromMenu()
+    {
+        Debug.Log(CaptureSecondFloorSilently());
+    }
+
+    public static string CaptureSecondFloorSilently()
+    {
+        EnsureFolder(PreviewFolder);
+        Scene previousActive = SceneManager.GetActiveScene();
+
+        CaptureRoom(HomeRoomService.SecondFloorScenePath, SecondFloorPreviewPath);
+        CopyShopIcon(SecondFloorPreviewPath,
+            StoreCatalogAssets.IconFolder + "/SecondFloorRoomPreview.png");
+
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        ConfigureImporter(SecondFloorPreviewPath);
+        ConfigureImporter(StoreCatalogAssets.IconFolder + "/SecondFloorRoomPreview.png");
+
+        if (previousActive.IsValid() && previousActive.isLoaded)
+            EditorSceneManager.SetActiveScene(previousActive);
+
+        return "Second Floor room selector and HOME shop previews were captured.";
     }
 
     public static string CaptureSilently()
@@ -52,12 +84,24 @@ public static class RoomPreviewCaptureBuilder
         CaptureRoom(HomeRoomService.KitchenScenePath, KitchenPreviewPath);
         CaptureRoom(HomeRoomService.BedroomScenePath, BedroomPreviewPath);
         CaptureRoom(HomeRoomService.GardenScenePath, GardenPreviewPath);
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(HomeRoomService.BalconyScenePath) != null)
+            CaptureRoom(HomeRoomService.BalconyScenePath, BalconyPreviewPath);
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(HomeRoomService.PatioScenePath) != null)
+            CaptureRoom(HomeRoomService.PatioScenePath, PatioPreviewPath);
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(HomeRoomService.SecondFloorScenePath) != null)
+            CaptureRoom(HomeRoomService.SecondFloorScenePath, SecondFloorPreviewPath);
 
         CopyShopIcon(LivingPreviewPath, StoreCatalogAssets.IconFolder + "/LivingRoomPreview.png");
         CopyShopIcon(BathroomPreviewPath, StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
         CopyShopIcon(KitchenPreviewPath, StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
         CopyShopIcon(BedroomPreviewPath, StoreCatalogAssets.IconFolder + "/BedroomRoomPreview.png");
         CopyShopIcon(GardenPreviewPath, StoreCatalogAssets.IconFolder + "/GardenRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(BalconyPreviewPath)))
+            CopyShopIcon(BalconyPreviewPath, StoreCatalogAssets.IconFolder + "/BalconyRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(PatioPreviewPath)))
+            CopyShopIcon(PatioPreviewPath, StoreCatalogAssets.IconFolder + "/PatioRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(SecondFloorPreviewPath)))
+            CopyShopIcon(SecondFloorPreviewPath, StoreCatalogAssets.IconFolder + "/SecondFloorRoomPreview.png");
 
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         ConfigureImporter(LivingPreviewPath);
@@ -65,11 +109,26 @@ public static class RoomPreviewCaptureBuilder
         ConfigureImporter(KitchenPreviewPath);
         ConfigureImporter(BedroomPreviewPath);
         ConfigureImporter(GardenPreviewPath);
+        if (File.Exists(Path.GetFullPath(BalconyPreviewPath)))
+            ConfigureImporter(BalconyPreviewPath);
+        if (File.Exists(Path.GetFullPath(PatioPreviewPath)))
+            ConfigureImporter(PatioPreviewPath);
+        if (File.Exists(Path.GetFullPath(SecondFloorPreviewPath)))
+            ConfigureImporter(SecondFloorPreviewPath);
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/LivingRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/BedroomRoomPreview.png");
         ConfigureImporter(StoreCatalogAssets.IconFolder + "/GardenRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(
+                StoreCatalogAssets.IconFolder + "/BalconyRoomPreview.png")))
+            ConfigureImporter(StoreCatalogAssets.IconFolder + "/BalconyRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(
+                StoreCatalogAssets.IconFolder + "/PatioRoomPreview.png")))
+            ConfigureImporter(StoreCatalogAssets.IconFolder + "/PatioRoomPreview.png");
+        if (File.Exists(Path.GetFullPath(
+                StoreCatalogAssets.IconFolder + "/SecondFloorRoomPreview.png")))
+            ConfigureImporter(StoreCatalogAssets.IconFolder + "/SecondFloorRoomPreview.png");
 
         for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
         {
@@ -101,9 +160,68 @@ public static class RoomPreviewCaptureBuilder
 
         var revealed = new List<GameObject>();
         var hiddenForeign = HideForeignRoomScenes(scene);
+        AmbientMode previousAmbientMode = RenderSettings.ambientMode;
+        float previousAmbientIntensity = RenderSettings.ambientIntensity;
+        Color previousAmbientSky = RenderSettings.ambientSkyColor;
+        Color previousAmbientEquator = RenderSettings.ambientEquatorColor;
+        Color previousAmbientGround = RenderSettings.ambientGroundColor;
+        var sceneLights = new List<Light>();
+        foreach (GameObject root in scene.GetRootGameObjects())
+            sceneLights.AddRange(root.GetComponentsInChildren<Light>(true));
+        var previousLightIntensities = new float[sceneLights.Count];
+        var previousLightColors = new Color[sceneLights.Count];
+        GameObject previewKeyObject = null;
+        GameObject previewFillObject = null;
+        bool outdoorShowroom =
+            string.Equals(scenePath, HomeRoomService.GardenScenePath, StringComparison.Ordinal) ||
+            string.Equals(scenePath, HomeRoomService.BalconyScenePath, StringComparison.Ordinal) ||
+            string.Equals(scenePath, HomeRoomService.PatioScenePath, StringComparison.Ordinal);
+        for (int i = 0; i < sceneLights.Count; i++)
+        {
+            previousLightIntensities[i] = sceneLights[i].intensity;
+            previousLightColors[i] = sceneLights[i].color;
+        }
         try
         {
             RevealOwnedLooks(scene, revealed);
+            // Room cards are showroom photography, not a snapshot of the
+            // developer machine's current evening hour.  Keep the runtime
+            // day/night system intact while baking every card at the same warm
+            // late-morning exposure so outdoor rooms remain inviting and the
+            // catalogue never alternates between bright indoor and dark outdoor.
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientIntensity = 1.08f;
+            RenderSettings.ambientSkyColor = new Color32(206, 232, 244, 255);
+            RenderSettings.ambientEquatorColor = new Color32(164, 199, 214, 255);
+            RenderSettings.ambientGroundColor = new Color32(112, 106, 130, 255);
+            for (int i = 0; i < sceneLights.Count; i++)
+            {
+                Light light = sceneLights[i];
+                if (light != null && light.type == LightType.Directional)
+                {
+                    light.intensity = outdoorShowroom ? 1.85f : 1.24f;
+                    light.color = new Color32(255, 246, 216, 255);
+                }
+            }
+            previewKeyObject = new GameObject("Room Preview Studio Key", typeof(Light));
+            SceneManager.MoveGameObjectToScene(previewKeyObject, scene);
+            previewKeyObject.transform.position = new Vector3(-1.6f, 4.8f, -2.6f);
+            Light previewKey = previewKeyObject.GetComponent<Light>();
+            previewKey.type = LightType.Point;
+            previewKey.color = new Color32(255, 238, 201, 255);
+            previewKey.intensity = outdoorShowroom ? 5.5f : 3.2f;
+            previewKey.range = 11f;
+            previewKey.shadows = LightShadows.None;
+
+            previewFillObject = new GameObject("Room Preview Studio Fill", typeof(Light));
+            SceneManager.MoveGameObjectToScene(previewFillObject, scene);
+            previewFillObject.transform.position = new Vector3(3.2f, 3.2f, -0.5f);
+            Light previewFill = previewFillObject.GetComponent<Light>();
+            previewFill.type = LightType.Point;
+            previewFill.color = new Color32(151, 226, 255, 255);
+            previewFill.intensity = outdoorShowroom ? 2.5f : 1.45f;
+            previewFill.range = 9f;
+            previewFill.shadows = LightShadows.None;
             Camera camera = FindCamera(scene);
             if (camera == null)
                 throw new InvalidOperationException("No camera in " + scenePath);
@@ -125,6 +243,8 @@ public static class RoomPreviewCaptureBuilder
                 texture = new Texture2D(PreviewWidth, PreviewHeight, TextureFormat.RGB24, false);
                 texture.ReadPixels(new Rect(0f, 0f, PreviewWidth, PreviewHeight), 0, 0);
                 texture.Apply(false, false);
+                if (outdoorShowroom)
+                    ApplyOutdoorShowroomLift(texture);
                 RenderTexture.active = previousActive;
                 File.WriteAllBytes(outputPath, texture.EncodeToPNG());
             }
@@ -148,9 +268,53 @@ public static class RoomPreviewCaptureBuilder
 
             RestoreForeignRoomScenes(hiddenForeign);
 
+            if (previewKeyObject != null)
+                UnityEngine.Object.DestroyImmediate(previewKeyObject);
+            if (previewFillObject != null)
+                UnityEngine.Object.DestroyImmediate(previewFillObject);
+
+            RenderSettings.ambientMode = previousAmbientMode;
+            RenderSettings.ambientIntensity = previousAmbientIntensity;
+            RenderSettings.ambientSkyColor = previousAmbientSky;
+            RenderSettings.ambientEquatorColor = previousAmbientEquator;
+            RenderSettings.ambientGroundColor = previousAmbientGround;
+            for (int i = 0; i < sceneLights.Count; i++)
+            {
+                if (sceneLights[i] == null)
+                    continue;
+                sceneLights[i].intensity = previousLightIntensities[i];
+                sceneLights[i].color = previousLightColors[i];
+            }
+
             if (opened)
                 EditorSceneManager.CloseScene(scene, true);
         }
+    }
+
+    private static void ApplyOutdoorShowroomLift(Texture2D texture)
+    {
+        // Outdoor rooms inherit the real clock-driven presentation and can be
+        // captured during an evening editor session.  The selector card is
+        // merchandising art, so apply a restrained photographic lift without
+        // changing runtime materials, shadows or the day/night system.
+        Color32[] pixels = texture.GetPixels32();
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            Color32 pixel = pixels[i];
+            pixel.r = LiftPreviewChannel(pixel.r);
+            pixel.g = LiftPreviewChannel(pixel.g);
+            pixel.b = LiftPreviewChannel(pixel.b);
+            pixels[i] = pixel;
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(false, false);
+    }
+
+    private static byte LiftPreviewChannel(byte value)
+    {
+        float normalized = value / 255f;
+        float lifted = Mathf.Pow(normalized, .62f) * 1.06f + .025f;
+        return (byte)Mathf.RoundToInt(Mathf.Clamp01(lifted) * 255f);
     }
 
     private static List<GameObject> HideForeignRoomScenes(Scene keep)
@@ -191,7 +355,10 @@ public static class RoomPreviewCaptureBuilder
                string.Equals(path, HomeRoomService.BathroomScenePath, StringComparison.Ordinal) ||
                string.Equals(path, HomeRoomService.KitchenScenePath, StringComparison.Ordinal) ||
                string.Equals(path, HomeRoomService.BedroomScenePath, StringComparison.Ordinal) ||
-               string.Equals(path, HomeRoomService.GardenScenePath, StringComparison.Ordinal);
+               string.Equals(path, HomeRoomService.GardenScenePath, StringComparison.Ordinal) ||
+               string.Equals(path, HomeRoomService.BalconyScenePath, StringComparison.Ordinal) ||
+               string.Equals(path, HomeRoomService.PatioScenePath, StringComparison.Ordinal) ||
+               string.Equals(path, HomeRoomService.SecondFloorScenePath, StringComparison.Ordinal);
     }
 
     private static void RevealOwnedLooks(Scene scene, List<GameObject> revealed)

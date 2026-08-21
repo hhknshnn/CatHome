@@ -38,6 +38,7 @@ public abstract class CatActivity : MonoBehaviour
     protected CatMovement Cat { get; private set; }
     protected EnergySystem Energy { get; private set; }
 
+    public static event System.Action<CatActivity> Completed;
     public static IReadOnlyList<CatActivity> Registered => registered;
     public static CatActivity Active { get; private set; }
 
@@ -166,6 +167,7 @@ public abstract class CatActivity : MonoBehaviour
         ShowSpeech(string.IsNullOrWhiteSpace(message) ? "GREAT PLAY!" : message);
         RefreshUnlockPresentation();
         NotifyChanged();
+        Completed?.Invoke(this);
     }
 
     protected virtual void CancelActivity()
@@ -257,5 +259,6 @@ public abstract class CatActivity : MonoBehaviour
     {
         registered.Clear();
         Active = null;
+        Completed = null;
     }
 }

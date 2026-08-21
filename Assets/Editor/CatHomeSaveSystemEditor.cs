@@ -137,6 +137,10 @@ public static class CatHomeSaveSystemEditor
                 candidateName == fileName ||
                 candidateName == fileName + ".tmp" ||
                 candidateName == fileName + ".previous" ||
+                candidateName == fileName + CatHomeSaveSystem.RecoveryFileSuffix ||
+                candidateName.StartsWith(
+                    fileName + CatHomeSaveSystem.NewGameBackupMarker,
+                    StringComparison.Ordinal) ||
                 candidateName.StartsWith(fileName + ".corrupt-", StringComparison.Ordinal) ||
                 candidateName.StartsWith(fileName + ".incompatible-", StringComparison.Ordinal);
             if (!belongsToSaveFamily)

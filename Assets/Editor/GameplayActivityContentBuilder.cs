@@ -193,6 +193,7 @@ public static class GameplayActivityContentBuilder
         CatMovement cat = FindInScene<CatMovement>(scene);
         if (cat != null && cat.GetComponent<CatActivityReaction>() == null)
             cat.gameObject.AddComponent<CatActivityReaction>();
+        CatIdleBehavior.EnsureOn(cat);
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);

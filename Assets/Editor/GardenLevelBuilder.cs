@@ -112,6 +112,7 @@ public static class GardenLevelBuilder
         GardenBirdFlock flock = BuildBirdFlock(environment, materials, treeRoost);
         BuildBirdAttention(setup, cat, flock);
         BuildBirdWatchActivity(gameplay, treeRoost);
+        BuildChaseToys(gameplay, materials);
         BuildAmbientCritters(environment, materials, flowerAnchors);
         BuildGameTimeService(setup);
         BuildArchitecture(setup, camera, cat);
@@ -312,42 +313,97 @@ public static class GardenLevelBuilder
         Transform parent, IReadOnlyDictionary<string, Material> materials)
     {
         Transform sky = CreateChild(parent, "Open Sky");
+
+        // Sky shell — large enough to read as open air and hide the world void.
         CreateBlock("SkyBack", sky,
-            new Vector3(0f, 10f, 24f), new Vector3(56f, 28f, 1f),
+            new Vector3(0f, 11f, 27f), new Vector3(70f, 40f, 1f),
             materials["Sky"], false);
         CreateBlock("SkyTop", sky,
-            new Vector3(0f, 18f, 4f), new Vector3(56f, 1f, 48f),
+            new Vector3(0f, 22f, 6f), new Vector3(70f, 1f, 58f),
             materials["Sky"], false);
         CreateBlock("SkyOverhead", sky,
-            new Vector3(0f, 14f, -4f), new Vector3(48f, 1f, 20f),
-            materials["Sky"], false);
-        CreateBlock("SkyHighFill", sky,
-            new Vector3(6f, 17f, 12f), new Vector3(40f, 1f, 28f),
+            new Vector3(0f, 16f, -4f), new Vector3(56f, 1f, 22f),
             materials["Sky"], false);
         CreateBlock("SkyLeft", sky,
-            new Vector3(-24f, 10f, 6f), new Vector3(1f, 28f, 48f),
+            new Vector3(-28f, 11f, 8f), new Vector3(1f, 40f, 60f),
             materials["Sky"], false);
         CreateBlock("SkyRight", sky,
-            new Vector3(24f, 10f, 6f), new Vector3(1f, 28f, 48f),
+            new Vector3(28f, 11f, 8f), new Vector3(1f, 40f, 60f),
             materials["Sky"], false);
+
+        // Warm morning sun with a soft pale halo.
+        CreateSphere("SunGlow", sky,
+            new Vector3(7.2f, 11.4f, 19f), new Vector3(4.4f, 4.4f, .6f),
+            materials["Cream"], false);
         CreateSphere("SunDisc", sky,
-            new Vector3(6.4f, 10.5f, 16.5f), Vector3.one * 1.8f,
+            new Vector3(7.2f, 11.4f, 18.4f), Vector3.one * 2f,
             materials["Lemon"], false);
-        CreateSphere("CloudFarA", sky,
-            new Vector3(-6.2f, 8.4f, 15.5f), new Vector3(3.2f, 1.1f, 1.4f),
-            materials["Cream"], false);
-        CreateSphere("CloudFarB", sky,
-            new Vector3(1.8f, 9.2f, 17.2f), new Vector3(2.4f, .85f, 1.1f),
-            materials["Cream"], false);
-        CreateSphere("CloudFarC", sky,
-            new Vector3(7.1f, 7.6f, 14.2f), new Vector3(2.8f, .9f, 1.2f),
-            materials["Cream"], false);
-        CreateSphere("HillLeft", sky,
-            new Vector3(-7.5f, .6f, 16f), new Vector3(6.5f, 2.4f, 3.2f),
-            materials["Mint"], false);
-        CreateSphere("HillRight", sky,
-            new Vector3(8.2f, .45f, 17.5f), new Vector3(5.8f, 1.9f, 2.8f),
+
+        // Fluffy clustered clouds read far more natural than single ovals.
+        BuildCloud(sky, "CloudA", new Vector3(-7.5f, 9.2f, 16.5f), 1.15f, materials);
+        BuildCloud(sky, "CloudB", new Vector3(2.5f, 10.4f, 18f), .85f, materials);
+        BuildCloud(sky, "CloudC", new Vector3(10f, 8.4f, 15f), 1f, materials);
+        BuildCloud(sky, "CloudD", new Vector3(-2f, 11.8f, 20f), .7f, materials);
+
+        // Layered rolling hills — darker/taller behind, lighter/lower in front —
+        // give the horizon real depth instead of two flat bumps.
+        CreateSphere("HillFarA", sky,
+            new Vector3(-10f, .2f, 20f), new Vector3(11f, 3.4f, 5f),
             materials["GrassDeep"], false);
+        CreateSphere("HillFarB", sky,
+            new Vector3(7f, .1f, 21f), new Vector3(13f, 3.8f, 5.4f),
+            materials["Mint"], false);
+        CreateSphere("HillMidA", sky,
+            new Vector3(-5.5f, .3f, 15.5f), new Vector3(8f, 2.6f, 3.6f),
+            materials["Grass"], false);
+        CreateSphere("HillMidB", sky,
+            new Vector3(9.5f, .25f, 16f), new Vector3(7.5f, 2.4f, 3.4f),
+            materials["GrassDeep"], false);
+
+        BuildDistantTreeLine(sky, materials);
+    }
+
+    private static void BuildCloud(
+        Transform parent, string name, Vector3 center, float scale,
+        IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform cloud = CreateChild(parent, name);
+        cloud.localPosition = center;
+        CreateSphere("Puff_1", cloud, Vector3.zero,
+            new Vector3(2.6f * scale, 1.2f * scale, 1.1f * scale),
+            materials["Cream"], false);
+        CreateSphere("Puff_2", cloud, new Vector3(-1.3f * scale, -.25f * scale, .1f),
+            new Vector3(1.9f * scale, .95f * scale, 1f * scale),
+            materials["Cream"], false);
+        CreateSphere("Puff_3", cloud, new Vector3(1.35f * scale, -.2f * scale, -.1f),
+            new Vector3(2f * scale, 1f * scale, 1f * scale),
+            materials["Cream"], false);
+    }
+
+    private static void BuildDistantTreeLine(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform line = CreateChild(parent, "Distant Tree Line");
+        float[] xs = { -11.5f, -8f, -4.5f, 4f, 7.5f, 11f };
+        float[] zs = { 14.5f, 13.5f, 15f, 13.5f, 14.5f, 13.8f };
+        for (int i = 0; i < xs.Length; i++)
+        {
+            Transform tree = CreateChild(line, "FarTree_" + (i + 1).ToString("00"));
+            tree.localPosition = new Vector3(xs[i], 0f, zs[i]);
+            float height = 2.4f + (i % 3) * .7f;
+            CreateBlock("FarTrunk", tree,
+                new Vector3(0f, height * .35f, 0f),
+                new Vector3(.35f, height * .7f, .35f),
+                materials["Wood"], false);
+            CreateSphere("FarCrownLow", tree,
+                new Vector3(0f, height * .85f, 0f),
+                new Vector3(2f, 1.7f, 2f),
+                i % 2 == 0 ? materials["GrassDeep"] : materials["Mint"], false);
+            CreateSphere("FarCrownHigh", tree,
+                new Vector3(.15f, height * 1.15f, -.1f),
+                new Vector3(1.4f, 1.3f, 1.4f),
+                i % 2 == 0 ? materials["Mint"] : materials["GrassDeep"], false);
+        }
     }
 
     private static void BuildDistantPath(
@@ -355,21 +411,86 @@ public static class GardenLevelBuilder
     {
         Transform vista = CreateChild(parent, "Distant Path");
         CreateBlock("FarLawn", vista,
-            new Vector3(0f, .01f, 11f), new Vector3(22f, .03f, 18f),
+            new Vector3(0f, .01f, 12f), new Vector3(28f, .03f, 22f),
             materials["GrassLight"], false);
-        CreateBlock("PathBed", vista,
-            new Vector3(0f, .03f, 9.4f), new Vector3(1.35f, .04f, 14f),
-            materials["Peach"], false);
-        CreateBlock("PathCenter", vista,
-            new Vector3(0f, .045f, 9.4f), new Vector3(.72f, .03f, 14f),
-            materials["Cream"], false);
+        // A second, deeper meadow tone so the ground fades toward the hills.
+        CreateBlock("FarMeadow", vista,
+            new Vector3(0f, .008f, 18f), new Vector3(28f, .02f, 12f),
+            materials["Grass"], false);
+
+        // Winding path: short segments stepped in X trace a gentle curve toward
+        // the gate instead of a dead-straight strip.
+        float[] curve = { .0f, -.35f, -.75f, -.55f, .0f, .55f, .8f, .55f };
+        for (int i = 0; i < curve.Length; i++)
+        {
+            float z = 3.6f + i * 1.9f;
+            CreateBlock("PathBed_" + (i + 1).ToString("00"), vista,
+                new Vector3(curve[i], .03f, z), new Vector3(1.3f, .04f, 2.05f),
+                materials["Peach"], false);
+            CreateBlock("PathCenter_" + (i + 1).ToString("00"), vista,
+                new Vector3(curve[i], .045f, z), new Vector3(.66f, .03f, 2.05f),
+                materials["Cream"], false);
+        }
         for (int i = 0; i < 5; i++)
         {
             CreateBlock("PathStone_" + (i + 1), vista,
-                new Vector3((i % 2 == 0 ? -.18f : .16f), .055f, 4.2f + i * 2.1f),
+                new Vector3((i % 2 == 0 ? -.2f : .18f), .055f, 4.2f + i * 2.0f),
                 new Vector3(.42f, .03f, .38f),
                 i % 2 == 0 ? materials["Peach"] : materials["Lemon"],
                 false);
+        }
+
+        BuildDistantPond(vista, materials);
+        BuildMeadowBlooms(vista, materials);
+    }
+
+    private static void BuildDistantPond(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform pond = CreateChild(parent, "Garden Pond");
+        pond.localPosition = new Vector3(-6.2f, 0f, 9.5f);
+        // Grassy bank ring, then the water, then a couple of lily pads.
+        CreateSphere("PondBank", pond,
+            new Vector3(0f, .02f, 0f), new Vector3(4f, .12f, 3.1f),
+            materials["GrassDeep"], false);
+        CreateSphere("PondWater", pond,
+            new Vector3(0f, .06f, 0f), new Vector3(3.4f, .12f, 2.5f),
+            materials["Aqua"], false);
+        CreateSphere("PondShine", pond,
+            new Vector3(-.6f, .09f, .35f), new Vector3(1.1f, .06f, .55f),
+            materials["Sky"], false);
+        CreateSphere("LilyPad_1", pond,
+            new Vector3(.7f, .1f, -.3f), new Vector3(.55f, .05f, .55f),
+            materials["Mint"], false);
+        CreateSphere("LilyPad_2", pond,
+            new Vector3(-.4f, .1f, -.5f), new Vector3(.4f, .05f, .4f),
+            materials["GrassLight"], false);
+        CreateSphere("LilyBloom", pond,
+            new Vector3(.7f, .16f, -.3f), Vector3.one * .16f,
+            materials["Coral"], false);
+    }
+
+    private static void BuildMeadowBlooms(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform meadow = CreateChild(parent, "Meadow Blooms");
+        Material[] blooms =
+        {
+            materials["Coral"], materials["Lemon"], materials["Lilac"],
+            materials["Cream"], materials["Peach"]
+        };
+        for (int i = 0; i < 22; i++)
+        {
+            float u = Frac(i * 0.6180339f);
+            float v = Frac(i * 0.4142135f + .21f);
+            float x = (u - .5f) * 22f;
+            float z = 6.5f + v * 12f;
+            // Keep the wildflowers off the pale walking path.
+            if (Mathf.Abs(x) < 1.6f)
+                x += x >= 0f ? 2.2f : -2.2f;
+            CreateSphere("Bloom_" + (i + 1).ToString("00"), meadow,
+                new Vector3(x, .12f + (i % 3) * .04f, z), Vector3.one * .18f,
+                blooms[i % blooms.Length], false);
         }
     }
 
@@ -778,6 +899,134 @@ public static class GardenLevelBuilder
             SitLookReaction.Sit,
             2.8f,
             "HELLO BIRDS!");
+    }
+
+    private static void BuildChaseToys(
+        Transform gameplay, IReadOnlyDictionary<string, Material> materials)
+    {
+        // PLAY YARN: always free, self-driven lawn yarn toy (a purple yarn ball).
+        BuildChaseToy(
+            gameplay, materials,
+            stationName: "YarnChaseActivity",
+            activityId: "garden-yarn-chase",
+            displayName: "YARN CHASE",
+            actionText: "PLAY YARN",
+            storeProductId: null,
+            stationPosition: new Vector3(0.7f, 0f, -0.35f),
+            nestColor: "Lilac",
+            ballColor: "Lilac",
+            bandColor: "Cream",
+            ballBand: false,
+            hops: new[]
+            {
+                new Vector3(1.65f, .15f, -0.85f),
+                new Vector3(0.15f, .15f, -1.3f),
+                new Vector3(1.2f, .15f, 1.05f),
+                new Vector3(2.05f, .15f, 0.2f),
+                new Vector3(0.9f, .15f, -0.1f)
+            });
+
+        // PLAY BALL: separate toy for the purchasable Sunny Yarn Ball (coral +
+        // lemon band, matching the store product). Unlocks only once owned.
+        BuildChaseToy(
+            gameplay, materials,
+            stationName: "BallChaseActivity",
+            activityId: "garden-ball-chase",
+            displayName: "BALL CHASE",
+            actionText: "PLAY BALL",
+            storeProductId: HomeStoreService.GardenYarnBallId,
+            stationPosition: new Vector3(-1.25f, 0f, 1.1f),
+            nestColor: "Cream",
+            ballColor: "Coral",
+            bandColor: "Lemon",
+            ballBand: true,
+            hops: new[]
+            {
+                new Vector3(-1.9f, .15f, 0.1f),
+                new Vector3(-0.4f, .15f, 1.35f),
+                new Vector3(-2.0f, .15f, 1.6f),
+                new Vector3(-0.7f, .15f, 0.2f),
+                new Vector3(-1.5f, .15f, 2.0f)
+            });
+    }
+
+    private static void BuildChaseToy(
+        Transform gameplay,
+        IReadOnlyDictionary<string, Material> materials,
+        string stationName,
+        string activityId,
+        string displayName,
+        string actionText,
+        string storeProductId,
+        Vector3 stationPosition,
+        string nestColor,
+        string ballColor,
+        string bandColor,
+        bool ballBand,
+        Vector3[] hops)
+    {
+        Transform station = CreateChild(gameplay, stationName);
+        station.localPosition = stationPosition;
+
+        GameObject content = new GameObject("UnlockedContent");
+        content.transform.SetParent(station, false);
+
+        // A cozy nest stays on the lawn as the play spot.
+        CreateSphere("Nest", content.transform,
+            new Vector3(0f, .07f, 0f), new Vector3(.34f, .18f, .34f),
+            materials[nestColor], false);
+        CreateSphere("NestCoil", content.transform,
+            new Vector3(.02f, .13f, 0f), new Vector3(.24f, .12f, .24f),
+            materials["Peach"], false);
+
+        // The chase target hops around the lawn; it is hidden until play starts.
+        Transform ball = CreateChild(content.transform, "Ball_Target");
+        ball.localPosition = new Vector3(0f, .15f, 0f);
+        CreateSphere("Ball", ball, Vector3.zero, Vector3.one * .15f,
+            materials[ballColor], false);
+        if (ballBand)
+        {
+            // A single wound band reads as the store Sunny Yarn Ball.
+            CreateBlock("Band", ball, Vector3.zero, new Vector3(.32f, .05f, .05f),
+                materials[bandColor], false);
+        }
+        else
+        {
+            CreateBlock("Band1", ball, Vector3.zero, new Vector3(.32f, .03f, .03f),
+                materials[bandColor], false);
+            CreateBlock("Band2", ball, Vector3.zero, new Vector3(.03f, .03f, .32f),
+                materials[bandColor], false);
+        }
+
+        Transform hopRoot = CreateChild(station, "Hops");
+        var points = new Transform[hops.Length];
+        for (int i = 0; i < hops.Length; i++)
+        {
+            Transform hop = CreateChild(hopRoot, "Hop_" + (i + 1).ToString("00"));
+            hop.position = hops[i];
+            points[i] = hop;
+        }
+
+        Transform anchor = CreateChild(station, "InteractionAnchor");
+        anchor.localPosition = new Vector3(0f, 0f, -0.45f);
+
+        GardenYarnChaseActivity activity =
+            station.gameObject.AddComponent<GardenYarnChaseActivity>();
+        activity.EditorConfigure(
+            activityId,
+            displayName,
+            CatActivityKind.BallChase,
+            QuestType.PlayBall,
+            0,
+            actionText,
+            1.7f,
+            0f,
+            anchor,
+            null,
+            content);
+        activity.EditorConfigureYarn(ball, points, 4);
+        if (!string.IsNullOrEmpty(storeProductId))
+            activity.EditorConfigureStoreProduct(storeProductId);
     }
 
     private static GameObject FindNamed(Scene scene, string name)

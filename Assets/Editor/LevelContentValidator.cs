@@ -239,6 +239,114 @@ public static class LevelContentValidator
             previousPrice = product.CoinPrice;
         }
 
+        Require(HomeStoreService.BalconyCollection.Count == 10,
+            "Balcony Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var balconyIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.BalconyCollection.Count; i++)
+        {
+            string productId = HomeStoreService.BalconyCollection[i];
+            Require(balconyIds.Add(productId),
+                "Balcony collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsKitchenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBedroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsGardenCollectionProduct(productId),
+                "Balcony product '" + productId + "' must be exclusive to Balcony.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Balcony Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Balcony product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Balcony Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Balcony product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        Require(HomeStoreService.PatioCollection.Count == 10,
+            "Patio Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var patioIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.PatioCollection.Count; i++)
+        {
+            string productId = HomeStoreService.PatioCollection[i];
+            Require(patioIds.Add(productId),
+                "Patio collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsKitchenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBedroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsGardenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBalconyCollectionProduct(productId),
+                "Patio product '" + productId + "' must be exclusive to Patio.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Patio Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Patio product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Patio Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Patio product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
+        Require(HomeStoreService.SecondFloorCollection.Count == 10,
+            "Second Floor Level 1 must contain exactly ten products.", report);
+        previousPrice = -1L;
+        var secondFloorIds = new HashSet<string>(StringComparer.Ordinal);
+        for (int i = 0; i < HomeStoreService.SecondFloorCollection.Count; i++)
+        {
+            string productId = HomeStoreService.SecondFloorCollection[i];
+            Require(secondFloorIds.Add(productId),
+                "Second Floor collection contains duplicate product '" + productId + "'.",
+                report);
+            Require(!HomeStoreService.IsLivingRoomCollectionProduct(productId) &&
+                    !HomeStoreService.IsBathroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsKitchenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBedroomCollectionProduct(productId) &&
+                    !HomeStoreService.IsGardenCollectionProduct(productId) &&
+                    !HomeStoreService.IsBalconyCollectionProduct(productId) &&
+                    !HomeStoreService.IsPatioCollectionProduct(productId),
+                "Second Floor product '" + productId + "' must be exclusive to Second Floor.",
+                report);
+            if (!HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
+            {
+                report.Errors.Add("Second Floor Level 1 references missing product '" +
+                                  productId + "'.");
+                continue;
+            }
+            Require(product.StoreCategory == HomeStoreCategory.Room && product.IsPlaceable,
+                "Second Floor product '" + productId + "' must be a placeable ROOM item.",
+                report);
+            Require(product.CoinPrice > previousPrice,
+                "Second Floor Level 1 prices must increase from top to bottom.", report);
+            Require(product.CoinPrice % HomeStoreService.CoinsPerDiamond == 0L &&
+                    product.DiamondPrice * HomeStoreService.CoinsPerDiamond == product.CoinPrice,
+                "Every Second Floor product must use the 100 coins = 1 diamond exchange rate.",
+                report);
+            previousPrice = product.CoinPrice;
+        }
+
         for (int i = 0; i < HomeStoreService.Products.Count; i++)
         {
             HomeStoreProduct product = HomeStoreService.Products[i];
@@ -283,6 +391,12 @@ public static class LevelContentValidator
             "Bedroom scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(HomeRoomService.GardenScenePath),
             "Garden scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.BalconyScenePath),
+            "Balcony scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.PatioScenePath),
+            "Patio scene is not enabled in Build Settings.", report);
+        Require(enabledPaths.Contains(HomeRoomService.SecondFloorScenePath),
+            "Second Floor scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(CatRunnerContentBuilder.RunnerScenePath),
             "Cat Runner scene is not enabled in Build Settings.", report);
         Require(enabledPaths.Contains(CatCatchContentBuilder.ScenePath),

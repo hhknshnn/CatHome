@@ -61,8 +61,10 @@ public static class StoreCatalogPreviewBuilder
             instance.transform.localPosition = definition.VisualOffset;
             bool generated = definition.SourceAssetPath.StartsWith(
                 "Assets/Art/StoreProducts/Prefabs/", StringComparison.Ordinal);
+            bool reverseWallPreview =
+                definition.ProductId == HomeStoreService.LoftTallBookcaseId;
             instance.transform.localRotation = generated
-                ? Quaternion.Euler(0f, 28f, 0f)
+                ? Quaternion.Euler(0f, reverseWallPreview ? 208f : 28f, 0f)
                 : Quaternion.Euler(0f, 156f, 0f);
 
             Renderer[] renderers = instance.GetComponentsInChildren<Renderer>(true);

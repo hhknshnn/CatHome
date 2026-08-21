@@ -271,6 +271,6 @@ public static class PremiumUiFactory
                upper.Contains("RUNNER") || upper.Contains("CATCH") ||
                upper.Contains("HUNT") || upper.Contains("GAMES") ||
                upper.Contains("SHOP") || upper.Contains("WELCOME") ||
-               upper.Contains("HUB");
+               upper.Contains("HUB") || upper.Contains("CONTINUE");
     }
 }

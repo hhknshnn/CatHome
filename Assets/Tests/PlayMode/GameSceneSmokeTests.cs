@@ -130,8 +130,7 @@ public sealed class GameSceneSmokeTests
         Assert.That(SceneManager.GetSceneByName("CatHome_UI").isLoaded, Is.True);
         Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("Kitchen_Level01"));
         Assert.That(HomeRoomService.CurrentRoomId, Is.EqualTo(HomeRoomService.KitchenId));
-        Assert.That(Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude),
-            Has.Length.EqualTo(1));
+        Assert.That(CountScreenCameras(), Is.EqualTo(1));
         Assert.That(Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude),
             Has.Length.EqualTo(1));
         Assert.That(Object.FindObjectsByType<UnityEngine.EventSystems.EventSystem>(
@@ -181,6 +180,7 @@ public sealed class GameSceneSmokeTests
         Assert.That(Object.FindAnyObjectByType<ActivityPromptController>(FindObjectsInactive.Include), Is.Not.Null);
         Assert.That(Object.FindAnyObjectByType<CatRunnerLauncher>(FindObjectsInactive.Include), Is.Not.Null);
         Assert.That(Object.FindAnyObjectByType<CatActivityReaction>(FindObjectsInactive.Include), Is.Not.Null);
+        Assert.That(cat.GetComponent<CatIdleBehavior>(), Is.Not.Null);
         if (expectedRoom.Id == HomeRoomService.LivingRoomId)
         {
             Assert.That(Object.FindAnyObjectByType<BallChaseActivity>(
@@ -304,6 +304,19 @@ public sealed class GameSceneSmokeTests
         Assert.That(game.ChancesRemaining, Is.Zero);
         Assert.That(game.IsRunning, Is.False,
             "The third accepted collision must end the run.");
+    }
+
+    private static int CountScreenCameras()
+    {
+        int count = 0;
+        Camera[] cameras = Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude);
+        for (int i = 0; i < cameras.Length; i++)
+        {
+            if (cameras[i] != null && cameras[i].enabled && cameras[i].targetTexture == null)
+                count++;
+        }
+
+        return count;
     }
 
     private static void AssertBound<T>(object owner, string fieldName) where T : Object

@@ -13,30 +13,30 @@ public static class PremiumUiStyle
     // available for copy, masks and deliberately recessed wells; they are no
     // longer the colour that a generic panel recipe paints across the screen.
     public static readonly Color32 Night = new Color32(35, 27, 72, 255);
-    public static readonly Color32 Navy = new Color32(55, 157, 226, 255);
-    public static readonly Color32 NavyLift = new Color32(48, 213, 211, 255);
+    public static readonly Color32 Navy = new Color32(48, 119, 181, 255);
+    public static readonly Color32 NavyLift = new Color32(43, 195, 191, 255);
     public static readonly Color32 Ink = new Color32(50, 35, 68, 255);
-    public static readonly Color32 Ivory = new Color32(255, 252, 244, 255);
-    public static readonly Color32 WarmIvory = new Color32(255, 239, 211, 255);
+    public static readonly Color32 Ivory = new Color32(255, 250, 235, 255);
+    public static readonly Color32 WarmIvory = new Color32(255, 236, 207, 255);
     public static readonly Color32 Champagne = new Color32(255, 187, 43, 255);
     public static readonly Color32 ChampagneLight = new Color32(255, 235, 119, 255);
-    public static readonly Color32 Coral = new Color32(255, 82, 143, 255);
-    public static readonly Color32 CoralLift = new Color32(255, 133, 105, 255);
-    public static readonly Color32 Teal = new Color32(29, 200, 188, 255);
-    public static readonly Color32 TealLift = new Color32(89, 238, 207, 255);
-    public static readonly Color32 Plum = new Color32(178, 76, 216, 255);
+    public static readonly Color32 Coral = new Color32(246, 82, 132, 255);
+    public static readonly Color32 CoralLift = new Color32(255, 126, 91, 255);
+    public static readonly Color32 Teal = new Color32(39, 190, 180, 255);
+    public static readonly Color32 TealLift = new Color32(83, 224, 195, 255);
+    public static readonly Color32 Plum = new Color32(169, 75, 206, 255);
     public static readonly Color32 Muted = new Color32(105, 86, 116, 255);
     public static readonly Color32 Disabled = new Color32(148, 139, 159, 255);
 
-    public static readonly Color32 CandySky = new Color32(81, 196, 247, 255);
-    public static readonly Color32 CandyAqua = new Color32(46, 221, 214, 255);
-    public static readonly Color32 CandyMint = new Color32(99, 235, 178, 255);
-    public static readonly Color32 CandyPink = new Color32(255, 91, 164, 255);
-    public static readonly Color32 CandyPeach = new Color32(255, 145, 92, 255);
-    public static readonly Color32 CandyBerry = new Color32(198, 74, 204, 255);
-    public static readonly Color32 CandyGrape = new Color32(124, 75, 210, 255);
-    public static readonly Color32 CandyLemon = new Color32(255, 222, 70, 255);
-    public static readonly Color32 CandyCloud = new Color32(255, 250, 235, 255);
+    public static readonly Color32 CandySky = new Color32(83, 184, 238, 255);
+    public static readonly Color32 CandyAqua = new Color32(41, 202, 194, 255);
+    public static readonly Color32 CandyMint = new Color32(84, 216, 161, 255);
+    public static readonly Color32 CandyPink = new Color32(246, 83, 143, 255);
+    public static readonly Color32 CandyPeach = new Color32(255, 132, 82, 255);
+    public static readonly Color32 CandyBerry = new Color32(187, 75, 196, 255);
+    public static readonly Color32 CandyGrape = new Color32(126, 86, 204, 255);
+    public static readonly Color32 CandyLemon = new Color32(255, 207, 61, 255);
+    public static readonly Color32 CandyCloud = new Color32(255, 246, 226, 255);
     public static readonly Color32 DeepInset = new Color32(43, 31, 84, 255);
     public static readonly Color32 DeepInsetLift = new Color32(70, 66, 137, 255);
 
@@ -57,14 +57,14 @@ public static class PremiumUiStyle
         // for their default shell. That default is now a glossy sky/aqua candy
         // recipe. Truly recessed areas should call ConfigureDeepInsetSurface.
         graphic.ConfigurePremiumStyle(
-            new Color32(105, 225, 250, 255),
-            new Color32(54, 157, 226, 255),
+            new Color32(91, 214, 228, 255),
+            new Color32(42, 151, 207, 255),
             cornerCut,
             bevelWidth,
             new Color32(255, 255, 255, 190),
             new Color32(55, 35, 112, 120),
             new Color32(255, 206, 234, 76));
-        graphic.ConfigureCandyPolish(0.3f, 0.13f);
+        graphic.ConfigureCandyPolish(0.25f, 0.1f);
     }
 
     public static void ConfigureDeepInsetSurface(
@@ -89,14 +89,14 @@ public static class PremiumUiStyle
         float bevelWidth)
     {
         graphic.ConfigurePremiumStyle(
-            Color.white,
-            WarmIvory,
+            new Color32(255, 253, 246, 255),
+            new Color32(255, 236, 210, 255),
             cornerCut,
             bevelWidth,
             new Color32(255, 255, 255, 220),
             new Color32(130, 72, 117, 78),
             new Color32(255, 184, 214, 58));
-        graphic.ConfigureCandyPolish(0.27f, 0.1f);
+        graphic.ConfigureCandyPolish(0.22f, 0.075f);
     }
 
     public static void ConfigureAccentSurface(
@@ -106,8 +106,8 @@ public static class PremiumUiStyle
         float cornerCut,
         float bevelWidth)
     {
-        Color candyTop = Color.Lerp(top, Color.white, 0.14f);
-        Color candyBottom = Color.Lerp(bottom, DeepInset, 0.06f);
+        Color candyTop = Color.Lerp(top, Color.white, 0.08f);
+        Color candyBottom = Color.Lerp(bottom, DeepInset, 0.025f);
         graphic.ConfigurePremiumStyle(
             candyTop,
             candyBottom,
@@ -116,7 +116,7 @@ public static class PremiumUiStyle
             new Color32(255, 255, 255, 210),
             DarkEdge,
             WarmFacet);
-        graphic.ConfigureCandyPolish(0.32f, 0.12f);
+        graphic.ConfigureCandyPolish(0.28f, 0.1f);
     }
 
     public static void ConfigureMetalSurface(

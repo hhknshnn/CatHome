@@ -230,6 +230,15 @@ public sealed class SleepInteraction : MonoBehaviour
         ownsMovementLock = false;
     }
 
+    public void ForceAwakeForNewGame()
+    {
+        ResolveCatReferences();
+        if (IsSleeping)
+            WakeUp();
+        else
+            EnsureAwakeFallback();
+    }
+
     private void MoveCatToBedInteractionPoint()
     {
         if (catTransform == null || bedInteractionPoint == null)

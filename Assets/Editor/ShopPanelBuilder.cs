@@ -210,7 +210,7 @@ public static class ShopPanelBuilder
         LowPolyPanelGraphic innerRim = CreatePanel("InnerRim", panelObject.transform, Gold, 35f, 1.5f, false);
         StretchWithOffsets(innerRim.rectTransform, 8f, 8f, -8f, -8f);
         LowPolyPanelGraphic innerFace = CreatePanel(
-            "InnerFace", panelObject.transform, CandySky, 32f, 2f, false);
+            "InnerFace", panelObject.transform, CandyCream, 32f, 2f, false);
         StretchWithOffsets(innerFace.rectTransform, 10f, 10f, -10f, -10f);
 
         BuildHeader(panelObject.transform, font, out Button closeButton);
@@ -262,7 +262,7 @@ public static class ShopPanelBuilder
                 cards[i].Group.gameObject.SetActive(product.StoreCategory == HomeStoreCategory.Cat);
         }
 
-        LowPolyPanelGraphic footer = CreatePanel("Footer", panelObject.transform, CandyLilac, 10f, 2f, false);
+        LowPolyPanelGraphic footer = CreatePanel("Footer", panelObject.transform, CandyPink, 10f, 2f, false);
         SetRect(footer.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f),
             new Vector2(0.5f, 0.5f), new Vector2(0f, -374f), new Vector2(-150f, 40f));
         TMP_Text feedback = CreateText("Feedback", footer.transform, font, 16f, WarmCream, TextAlignmentOptions.Center);
@@ -932,14 +932,14 @@ public static class ShopPanelBuilder
         StretchWithOffsets(emblemFace.rectTransform, 5f, 5f, -5f, -5f);
         BuildStoreBagIcon(emblemFace.transform);
 
-        TMP_Text title = CreateText("Title", header.transform, font, 48f, CandyLemon, TextAlignmentOptions.MidlineLeft);
+        TMP_Text title = CreateText("Title", header.transform, font, 48f, Cream, TextAlignmentOptions.MidlineLeft);
         title.text = "HOME STORE";
         title.fontStyle = FontStyles.Bold;
         title.characterSpacing = 2f;
         SetRect(title.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
             new Vector2(0f, 0.5f), new Vector2(142f, 18f), new Vector2(770f, 56f));
 
-        TMP_Text subtitle = CreateText("Subtitle", header.transform, font, 16f, Cream, TextAlignmentOptions.MidlineLeft);
+        TMP_Text subtitle = CreateText("Subtitle", header.transform, font, 16f, PremiumUiStyle.Ink, TextAlignmentOptions.MidlineLeft);
         subtitle.text = "MAKE EVERY ROOM YOUR CAT'S FAVORITE PLACE";
         subtitle.characterSpacing = 1f;
         SetRect(subtitle.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
@@ -1025,7 +1025,7 @@ public static class ShopPanelBuilder
         out TMP_Text ownedCountText,
         out TMP_Text homeLevelText)
     {
-        TMP_Text intro = CreateText("Intro", parent, font, 20f, PremiumUiStyle.WarmIvory, TextAlignmentOptions.MidlineLeft);
+        TMP_Text intro = CreateText("Intro", parent, font, 20f, PremiumUiStyle.Ink, TextAlignmentOptions.MidlineLeft);
         intro.text = "Build a happy cat, a personal room and a growing home.";
         SetRect(intro.rectTransform, new Vector2(0f, 0.5f), new Vector2(0.58f, 0.5f),
             new Vector2(0f, 0.5f), new Vector2(58f, 223f), new Vector2(-20f, 52f));

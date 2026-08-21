@@ -32,18 +32,18 @@ public static class CatCatchContentBuilder
     // Premium arena palette: soft, harmonious pastels that read as the same
     // candy world as the home room, replacing the old clashing teal / orange /
     // maroon blocks. Walls stay light so the cat and mice pop against them.
-    private static readonly Color WallPeach = new Color32(255, 219, 201, 255);
-    private static readonly Color WallMint = new Color32(202, 241, 223, 255);
-    private static readonly Color WallSky = new Color32(197, 233, 248, 255);
+    private static readonly Color WallPeach = new Color32(250, 195, 173, 255);
+    private static readonly Color WallMint = new Color32(166, 224, 198, 255);
+    private static readonly Color WallSky = new Color32(159, 211, 235, 255);
     private static readonly Color TrimCream = new Color32(255, 244, 214, 255);
     private static readonly Color TrimGold = new Color32(249, 190, 78, 255);
-    private static readonly Color TileMint = new Color32(208, 244, 227, 255);
-    private static readonly Color TileLilac = new Color32(228, 213, 248, 255);
-    private static readonly Color RugPink = new Color32(255, 190, 206, 255);
-    private static readonly Color RugCream = new Color32(255, 240, 222, 255);
+    private static readonly Color TileMint = new Color32(183, 232, 208, 255);
+    private static readonly Color TileLilac = new Color32(215, 193, 239, 255);
+    private static readonly Color RugPink = new Color32(250, 159, 190, 255);
+    private static readonly Color RugCream = new Color32(255, 221, 190, 255);
     // Cute premium mouse: soft lilac body, cream belly, pink ears/nose/tail and
     // a dark eye. The old near-black Ink body read as a flat blob on the floor.
-    private static readonly Color MouseBody = new Color32(198, 156, 236, 255);
+    private static readonly Color MouseBody = new Color32(183, 124, 227, 255);
     private static readonly Color MouseBelly = new Color32(255, 240, 224, 255);
     private static readonly Color MousePink = new Color32(255, 150, 180, 255);
     private static readonly Color EyeInk = new Color32(46, 35, 60, 255);
@@ -210,7 +210,7 @@ public static class CatCatchContentBuilder
         Light light = key.GetComponent<Light>();
         light.type = LightType.Directional;
         light.color = Cream;
-        light.intensity = 1.0f;
+        light.intensity = 0.72f;
         light.shadows = LightShadows.Soft;
         light.shadowStrength = 0.55f;
 
@@ -222,12 +222,13 @@ public static class CatCatchContentBuilder
         Light fillLight = fill.GetComponent<Light>();
         fillLight.type = LightType.Directional;
         fillLight.color = new Color32(150, 226, 255, 255);
-        fillLight.intensity = 0.45f;
+        fillLight.intensity = 0.18f;
         fillLight.shadows = LightShadows.None;
 
-        // Bright, slightly warm ambient so shadowed sides stay in the candy range.
+        // Keep the shadow side colourful without bleaching the tile, rug and
+        // mouse silhouettes into one nearly-white value range.
         RenderSettings.ambientMode = AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(0.82f, 0.85f, 0.9f, 1f);
+        RenderSettings.ambientLight = new Color(0.52f, 0.57f, 0.65f, 1f);
     }
 
     private static void BuildArena(Transform parent, IReadOnlyDictionary<string, Material> materials)

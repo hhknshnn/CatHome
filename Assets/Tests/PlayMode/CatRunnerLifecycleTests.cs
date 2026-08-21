@@ -173,7 +173,7 @@ public sealed class CatRunnerLifecycleTests
         int cameras = 0;
         foreach (Camera camera in
                  Object.FindObjectsByType<Camera>(FindObjectsInactive.Exclude))
-            if (camera.enabled)
+            if (camera.enabled && camera.targetTexture == null)
                 cameras++;
         int listeners = 0;
         foreach (AudioListener listener in

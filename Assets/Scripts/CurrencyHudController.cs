@@ -380,6 +380,9 @@ public sealed class CurrencyHudController : MonoBehaviour
         if (HomeLevelUpCelebrationView.IsAnyOpen)
             return true;
 
+        if (CollectionCompleteCelebrationView.IsAnyOpen)
+            return true;
+
         if (ShopPanelController.IsAnyOpen)
             return true;
 

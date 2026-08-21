@@ -385,6 +385,36 @@ public sealed class ShopPanelController : MonoBehaviour
             return;
         }
 
+        if (product.Id == HomeStoreService.HomeBalconyPreviewId &&
+            !HomeStoreService.IsGardenComplete)
+        {
+            SetFeedback("COMPLETE " +
+                        (HomeStoreService.GardenItemCount -
+                         HomeStoreService.GardenOwnedCount) +
+                        " MORE GARDEN ITEMS TO UNLOCK BALCONY.");
+            return;
+        }
+
+        if (product.Id == HomeStoreService.HomePatioPreviewId &&
+            !HomeStoreService.IsBalconyComplete)
+        {
+            SetFeedback("COMPLETE " +
+                        (HomeStoreService.BalconyItemCount -
+                         HomeStoreService.BalconyOwnedCount) +
+                        " MORE BALCONY ITEMS TO UNLOCK GARDEN PATIO.");
+            return;
+        }
+
+        if (product.Id == HomeStoreService.HomeSecondFloorPreviewId &&
+            !HomeStoreService.IsPatioComplete)
+        {
+            SetFeedback("COMPLETE " +
+                        (HomeStoreService.PatioItemCount -
+                         HomeStoreService.PatioOwnedCount) +
+                        " MORE PATIO ITEMS TO UNLOCK SECOND FLOOR.");
+            return;
+        }
+
         string requiredId = HomeStoreService.GetRequiredProductId(product.Id);
         if (!string.IsNullOrEmpty(requiredId) && !HomeStoreService.IsOwned(requiredId))
         {
@@ -706,6 +736,30 @@ public sealed class ShopPanelController : MonoBehaviour
                     SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
                 }
                 else if (!HomeStoreService.FreePurchaseTestingEnabled &&
+                         product.Id == HomeStoreService.HomeBalconyPreviewId &&
+                         !HomeStoreService.IsGardenComplete)
+                {
+                    int remaining = HomeStoreService.GardenItemCount -
+                                    HomeStoreService.GardenOwnedCount;
+                    SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
+                }
+                else if (!HomeStoreService.FreePurchaseTestingEnabled &&
+                         product.Id == HomeStoreService.HomePatioPreviewId &&
+                         !HomeStoreService.IsBalconyComplete)
+                {
+                    int remaining = HomeStoreService.BalconyItemCount -
+                                    HomeStoreService.BalconyOwnedCount;
+                    SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
+                }
+                else if (!HomeStoreService.FreePurchaseTestingEnabled &&
+                         product.Id == HomeStoreService.HomeSecondFloorPreviewId &&
+                         !HomeStoreService.IsPatioComplete)
+                {
+                    int remaining = HomeStoreService.PatioItemCount -
+                                    HomeStoreService.PatioOwnedCount;
+                    SetCardAction(card, remaining + " ITEMS LEFT", NeedColor);
+                }
+                else if (!HomeStoreService.FreePurchaseTestingEnabled &&
                          !HomeStoreService.IsProductDependencyMet(product.Id))
                 {
                     SetCardAction(
@@ -755,8 +809,11 @@ public sealed class ShopPanelController : MonoBehaviour
                          (HomeStoreService.IsOwned(HomeStoreService.HomeBathroomPreviewId) ? 1 : 0) +
                          (HomeStoreService.IsOwned(HomeStoreService.HomeKitchenPreviewId) ? 1 : 0) +
                          (HomeStoreService.IsOwned(HomeStoreService.HomeBedroomPreviewId) ? 1 : 0) +
-                         (HomeStoreService.IsOwned(HomeStoreService.HomeGardenPreviewId) ? 1 : 0);
-            categoryCount = 4;
+                         (HomeStoreService.IsOwned(HomeStoreService.HomeGardenPreviewId) ? 1 : 0) +
+                         (HomeStoreService.IsOwned(HomeStoreService.HomeBalconyPreviewId) ? 1 : 0) +
+                         (HomeStoreService.IsOwned(HomeStoreService.HomePatioPreviewId) ? 1 : 0) +
+                         (HomeStoreService.IsOwned(HomeStoreService.HomeSecondFloorPreviewId) ? 1 : 0);
+            categoryCount = 7;
         }
 
         if (ownedCountText != null)
@@ -846,7 +903,10 @@ public sealed class ShopPanelController : MonoBehaviour
                    product.Id == HomeStoreService.HomeBathroomPreviewId ||
                    product.Id == HomeStoreService.HomeKitchenPreviewId ||
                    product.Id == HomeStoreService.HomeBedroomPreviewId ||
-                   product.Id == HomeStoreService.HomeGardenPreviewId;
+                   product.Id == HomeStoreService.HomeGardenPreviewId ||
+                   product.Id == HomeStoreService.HomeBalconyPreviewId ||
+                   product.Id == HomeStoreService.HomePatioPreviewId ||
+                   product.Id == HomeStoreService.HomeSecondFloorPreviewId;
         }
         return true;
     }

@@ -13,7 +13,7 @@ public sealed class PetTutorialHint : MonoBehaviour
     public const string IntroductionStepKey = "CatHome_IntroductionStep";
     public const string OnboardingStepKey = "CatHome_OnboardingStep";
     public const string OnboardingCompletedKey = "CatHome_OnboardingCompleted";
-    private const int CurrentVisualVersion = 11;
+    private const int CurrentVisualVersion = 12;
     private const float NeedsGroupLift = 22f;
     private const int CelebrationStepIndex = 5;
     private const int CompleteStepIndex = 6;
@@ -223,7 +223,35 @@ public sealed class PetTutorialHint : MonoBehaviour
         instructionLabel.alignment=TextAlignmentOptions.Center; instructionLabel.color=PremiumUiStyle.Ivory; instructionLabel.raycastTarget=false;
         Image tapSurface=cardRoot.gameObject.GetComponent<Image>()??cardRoot.gameObject.AddComponent<Image>(); tapSurface.color=Color.clear; tapSurface.raycastTarget=false;
         Button cardButton=cardRoot.gameObject.GetComponent<Button>()??cardRoot.gameObject.AddComponent<Button>(); cardButton.targetGraphic=tapSurface; cardButton.transition=Selectable.Transition.None; cardButton.onClick.RemoveAllListeners(); cardButton.onClick.AddListener(HandleContinue);
-        visualVersion=CurrentVisualVersion; pawRestPosition=pawIcon.anchoredPosition; cardRestPosition=cardRoot.anchoredPosition;
+        cardRestPosition=cardRoot.anchoredPosition;
+        RectTransform skipRect=CreateRect(hintRoot,"SkipTour",new Vector2(240f,52f),new Vector2(0f,-cardSize.y*.5f-40f));
+        skipRect.gameObject.AddComponent<CanvasRenderer>();
+        LowPolyPanelGraphic skipFace=skipRect.gameObject.AddComponent<LowPolyPanelGraphic>();
+        skipFace.ConfigureTutorialStyle(new Color32(255,255,255,40),16f,4f);
+        skipFace.raycastTarget=true;
+        RectTransform skipLabelRect=CreateRect(skipRect,"Label",new Vector2(220f,44f),Vector2.zero);
+        skipLabelRect.gameObject.AddComponent<CanvasRenderer>();
+        TMP_Text skipLabel=skipLabelRect.gameObject.AddComponent<TextMeshProUGUI>();
+        skipLabel.font=font; skipLabel.fontSize=20f; skipLabel.fontStyle=FontStyles.Bold;
+        skipLabel.alignment=TextAlignmentOptions.Center; skipLabel.color=PremiumUiStyle.Ivory;
+        skipLabel.text="SKIP TOUR"; skipLabel.raycastTarget=false; skipLabel.characterSpacing=1.2f;
+        Button skipButton=skipRect.gameObject.AddComponent<Button>();
+        skipButton.targetGraphic=skipFace; skipButton.transition=Selectable.Transition.None;
+        skipButton.onClick.AddListener(SkipRemainingTour);
+        visualVersion=CurrentVisualVersion; pawRestPosition=pawIcon.anchoredPosition;
+    }
+
+    public void SkipRemainingTour()
+    {
+        if(IsOnboardingCompleted||string.IsNullOrEmpty(CatName))
+            return;
+        PlayerPrefs.SetInt(IntroductionCompletedKey,1);
+        PlayerPrefs.SetInt(IntroductionStepKey,introduction!=null?introduction.Length:0);
+        currentStep=CelebrationStepIndex;
+        PlayerPrefs.SetInt(OnboardingStepKey,CelebrationStepIndex);
+        PlayerPrefs.Save();
+        advancing=false;
+        EvaluateVisibility();
     }
 
     public void RebuildCelebration(TMP_FontAsset preferredFont, bool immediate, bool force=false)
@@ -285,7 +313,8 @@ public sealed class PetTutorialHint : MonoBehaviour
         bool popupOpen=whileYouWereAwayPopup!=null&&whileYouWereAwayPopup.IsOpen;
         if(popupWasOpen&&!popupOpen) popupReleaseFrame=Time.frameCount+1;
         popupWasOpen=popupOpen;
-        if(popupOpen){ EndOnboardingSession(); SetAllHidden(); return; }
+        if (popupOpen){ EndOnboardingSession(); SetAllHidden(); return; }
+        if (TitleScreen.IsShowing){ SetAllHidden(); return; }
         if(Time.frameCount<=popupReleaseFrame){ BeginOnboardingSession(); SetAllHidden(); return; }
         if(!IntroductionFinished){ BeginOnboardingSession(); ShowIntroduction(); return; }
         if(Time.unscaledTime<onboardingReleaseTime){ SetAllHidden(); return; }

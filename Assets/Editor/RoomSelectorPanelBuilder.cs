@@ -28,6 +28,12 @@ public static class RoomSelectorPanelBuilder
         "Assets/Art/RoomPreviews/BedroomPreview.png";
     private const string GardenPreviewPath =
         "Assets/Art/RoomPreviews/GardenPreview.png";
+    private const string BalconyPreviewPath =
+        "Assets/Art/RoomPreviews/BalconyPreview.png";
+    private const string PatioPreviewPath =
+        "Assets/Art/RoomPreviews/PatioPreview.png";
+    private const string SecondFloorPreviewPath =
+        "Assets/Art/RoomPreviews/SecondFloorPreview.png";
 
     private static readonly Color Scrim = new Color32(44, 27, 67, 174);
     private static readonly Color Ink = PremiumUiStyle.Ink;
@@ -47,6 +53,9 @@ public static class RoomSelectorPanelBuilder
         ConfigurePreviewImporter(KitchenPreviewPath);
         ConfigurePreviewImporter(BedroomPreviewPath);
         ConfigurePreviewImporter(GardenPreviewPath);
+        ConfigurePreviewImporter(BalconyPreviewPath);
+        ConfigurePreviewImporter(PatioPreviewPath);
+        ConfigurePreviewImporter(SecondFloorPreviewPath);
 
         Scene uiScene = SceneManager.GetSceneByPath(UiScenePath);
         bool openedForBuild = !uiScene.IsValid() || !uiScene.isLoaded;
@@ -128,9 +137,9 @@ public static class RoomSelectorPanelBuilder
         feedback.text = "CURRENT HOME  •  LIVING ROOM";
         feedback.fontStyle = FontStyles.Bold;
         feedback.characterSpacing = 1.1f;
-        feedback.overflowMode = TextOverflowModes.Ellipsis;
+        feedback.overflowMode = TextOverflowModes.Truncate;
 
-        Button closeButton = BuildCloseButton(panel, font);
+        Button closeButton = BuildCloseButton(panel);
         BuildSparkle(panel, "SparkleLeft", new Vector2(-700f, 368f), 16f,
             PremiumUiStyle.CandyLemon, 18f);
         BuildSparkle(panel, "SparkleRight", new Vector2(700f, -368f), 14f,
@@ -191,7 +200,7 @@ public static class RoomSelectorPanelBuilder
         subtitle.fontStyle = FontStyles.Bold;
         subtitle.characterSpacing = 1.1f;
         subtitle.textWrappingMode = TextWrappingModes.Normal;
-        subtitle.overflowMode = TextOverflowModes.Ellipsis;
+        subtitle.overflowMode = TextOverflowModes.Truncate;
     }
 
     private const float CardWidth = 690f;
@@ -305,6 +314,33 @@ public static class RoomSelectorPanelBuilder
             return;
         }
 
+        if (string.Equals(roomId, HomeRoomService.BalconyId, StringComparison.Ordinal))
+        {
+            subtitle = "SUN, CITY & BREEZE";
+            previewPath = BalconyPreviewPath;
+            accent = PremiumUiStyle.CandyAqua;
+            theme = "balcony";
+            return;
+        }
+
+        if (string.Equals(roomId, HomeRoomService.PatioId, StringComparison.Ordinal))
+        {
+            subtitle = "STONE, FOUNTAIN & FIRE";
+            previewPath = PatioPreviewPath;
+            accent = PremiumUiStyle.CandyMint;
+            theme = "patio";
+            return;
+        }
+
+        if (string.Equals(roomId, HomeRoomService.SecondFloorId, StringComparison.Ordinal))
+        {
+            subtitle = "LOFT, BOOKS & WINDOW";
+            previewPath = SecondFloorPreviewPath;
+            accent = PremiumUiStyle.CandyGrape;
+            theme = "second-floor";
+            return;
+        }
+
         if (string.Equals(roomId, HomeRoomService.LivingRoomId, StringComparison.Ordinal))
         {
             subtitle = "COZY PLAY & CARE";
@@ -389,7 +425,7 @@ public static class RoomSelectorPanelBuilder
             : theme == "kitchen" ? "SUNNY KITCHEN"
             : theme == "bedroom" ? "DREAMY REST" : "COZY HOME";
         themeLabel.fontStyle = FontStyles.Bold;
-        themeLabel.overflowMode = TextOverflowModes.Ellipsis;
+        themeLabel.overflowMode = TextOverflowModes.Truncate;
 
         LowPolyPanelGraphic infoWell = CreatePanel(
             "RoomInfoWell", visual, PremiumUiStyle.CandyCloud, 20f, 5f, false);
@@ -425,7 +461,7 @@ public static class RoomSelectorPanelBuilder
         title.text = titleValue;
         title.fontStyle = FontStyles.Bold;
         title.characterSpacing = 1.2f;
-        title.overflowMode = TextOverflowModes.Ellipsis;
+        title.overflowMode = TextOverflowModes.Truncate;
 
         TMP_Text status = CreateText("RoomStatus", infoWell.transform, font, 16f,
             PremiumUiStyle.Muted, TextAlignmentOptions.Left);
@@ -437,7 +473,7 @@ public static class RoomSelectorPanelBuilder
         statusRect.anchoredPosition = new Vector2(18f, 12f);
         status.text = subtitleValue;
         status.fontStyle = FontStyles.Bold;
-        status.overflowMode = TextOverflowModes.Ellipsis;
+        status.overflowMode = TextOverflowModes.Truncate;
 
         LowPolyPanelGraphic action = CreatePanel("ActionFace", infoWell.transform,
             theme == "bathroom" ? PremiumUiStyle.CandyPink
@@ -454,7 +490,7 @@ public static class RoomSelectorPanelBuilder
         actionText.text = "VISIT";
         actionText.fontStyle = FontStyles.Bold;
         actionText.characterSpacing = 1.1f;
-        actionText.overflowMode = TextOverflowModes.Ellipsis;
+        actionText.overflowMode = TextOverflowModes.Truncate;
 
         GameObject lockBadge = BuildCornerBadge(previewWell.transform, font, "LockBadge",
             "LOCKED", PremiumUiStyle.CandyPeach, new Vector2(-18f, -18f));
@@ -483,7 +519,7 @@ public static class RoomSelectorPanelBuilder
         return panel.gameObject;
     }
 
-    private static Button BuildCloseButton(RectTransform panel, TMP_FontAsset font)
+    private static Button BuildCloseButton(RectTransform panel)
     {
         RectTransform root = CreateRect("CloseButton", panel);
         SetCentered(root, new Vector2(62f, 62f), new Vector2(710f, 372f));
@@ -493,11 +529,18 @@ public static class RoomSelectorPanelBuilder
             PremiumUiStyle.CandyPink, 31f, 8f, true);
         PremiumUiStyle.ConfigureAccentSurface(surface,
             PremiumUiStyle.CoralLift, PremiumUiStyle.CandyPink, 31f, 8f);
-        TMP_Text label = CreateText("CloseLabel", visual, font, 33f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(label.rectTransform);
-        label.text = "×";
-        label.fontStyle = FontStyles.Bold;
+
+        // A font glyph's side bearings and baseline make the multiplication sign
+        // look off-centre even when its RectTransform is mathematically centred.
+        // Build the mark from two identical bars so both axes stay symmetric.
+        RectTransform mark = CreateRect("CloseMark", visual);
+        SetCentered(mark, new Vector2(26f, 26f), Vector2.zero);
+        Image slashA = CreateImage("SlashA", mark, Color.white, false);
+        SetCentered(slashA.rectTransform, new Vector2(27f, 4.5f), Vector2.zero);
+        slashA.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        Image slashB = CreateImage("SlashB", mark, Color.white, false);
+        SetCentered(slashB.rectTransform, new Vector2(27f, 4.5f), Vector2.zero);
+        slashB.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -45f);
         Button button = GetOrAdd<Button>(root.gameObject);
         button.targetGraphic = surface;
         return button;

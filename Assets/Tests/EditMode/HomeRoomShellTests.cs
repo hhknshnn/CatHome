@@ -20,7 +20,10 @@ public sealed class HomeRoomShellTests
         HomeRoomService.BathroomScenePath,
         HomeRoomService.KitchenScenePath,
         HomeRoomService.BedroomScenePath,
-        HomeRoomService.GardenScenePath
+        HomeRoomService.GardenScenePath,
+        HomeRoomService.BalconyScenePath,
+        HomeRoomService.PatioScenePath,
+        HomeRoomService.SecondFloorScenePath
     };
 
     private const float Tolerance = .001f;
