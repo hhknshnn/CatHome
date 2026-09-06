@@ -10,9 +10,8 @@ public enum HomeProductPlacementKind
 }
 
 /// <summary>
-/// Free-drag placement for one purchased room product. The item is constrained
-/// to the usable floor rectangle and validated against real room colliders, so
-/// it cannot be confirmed through walls, furniture or another placed product.
+/// Keeps each room product at its authored location. Legacy preview entry points
+/// remain for existing serialized UI references but cannot start a drag session.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class HomeProductPlacement : MonoBehaviour
@@ -46,6 +45,11 @@ public sealed class HomeProductPlacement : MonoBehaviour
     [SerializeField, Min(0.05f)] private float validationHeight = 0.7f;
     [SerializeField, Min(0f)] private float hungHeight;
 
+    private bool cachedAuthoredPose;
+    private bool reconcilePending;
+    private Vector3 authoredPosition;
+    private Quaternion authoredRotation;
+
     private Vector3 originalPosition;
     private Quaternion originalRotation;
     private Vector3 lastValidPosition;
@@ -59,6 +63,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
     private Transform constrainedTarget;
 
     private static readonly Color ValidColor = new Color(0.15f, 0.85f, 0.58f, 0.55f);
+    private static readonly Color WallValidColor = new Color(0.65f, 0.32f, 0.95f, 0.58f);
     private static readonly Color InvalidColor = new Color(1f, 0.22f, 0.18f, 0.62f);
 
     public string ProductId => productId;
@@ -67,9 +72,12 @@ public sealed class HomeProductPlacement : MonoBehaviour
     public HomeProductPlacementKind PlacementKind => placementKind;
     public string RequiredProductId => requiredProductId;
     public Transform MovableRoot => movableRoot != null ? movableRoot : transform;
+    public Vector2 Footprint => footprintSize;
     public Vector3 PreviewPosition => movableRoot != null ? movableRoot.position : transform.position;
     public float PreviewRotationY => movableRoot != null ? movableRoot.eulerAngles.y : transform.eulerAngles.y;
-    public bool SupportsRotation => true;
+    public bool SupportsRotation => !HomeStoreService.IsFixedRoomProduct(productId) && !CatCollectionPolicy.IsCatItem(productId);
+    public Transform RequiredPlacementTarget =>
+        UsesRequiredProductTarget ? FindRequiredPlacementTarget() : null;
 
     private bool UsesRequiredProductTarget =>
         placementKind == HomeProductPlacementKind.BookshelfOnly ||
@@ -84,18 +92,25 @@ public sealed class HomeProductPlacement : MonoBehaviour
     private void OnEnable()
     {
         HomeStoreService.PlacementChanged += HandlePlacementChanged;
+        HomeStoreService.OwnershipChanged += HandlePlacementChanged;
+        HomeStoreService.StorageChanged += HandlePlacementChanged;
         ApplySavedPlacement();
+        reconcilePending = true;
     }
 
     private void OnDisable()
     {
         HomeStoreService.PlacementChanged -= HandlePlacementChanged;
+        HomeStoreService.OwnershipChanged -= HandlePlacementChanged;
+        HomeStoreService.StorageChanged -= HandlePlacementChanged;
         HideIndicator();
         previewing = false;
     }
 
     public bool BeginPreview()
     {
+        if (HomeStoreService.IsFixedRoomProduct(productId) || CatCollectionPolicy.IsCatItem(productId))
+            return false;
         ResolveRoot();
         if (movableRoot == null || !HomeStoreService.IsOwned(productId))
             return false;
@@ -116,8 +131,9 @@ public sealed class HomeProductPlacement : MonoBehaviour
                 return false;
             }
 
-            previewValid = false;
-            hasLastValidPreview = false;
+            previewValid = HomeStoreService.TryGetWorldPlacement(
+                productId, out _, out _);
+            hasLastValidPreview = previewValid;
             if (placementKind == HomeProductPlacementKind.BookshelfOnly)
             {
                 ResolveBookSet();
@@ -128,6 +144,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
                 ResolveRequiredAttachment();
                 requiredProductAttachment?.BeginPlacementPreview(constrainedTarget);
             }
+            SetRequiredTargetPreview(previewValid);
             HideIndicator();
             return true;
         }
@@ -251,6 +268,9 @@ public sealed class HomeProductPlacement : MonoBehaviour
 
     public bool CommitPreview()
     {
+        // Furniture ownership or another placement may have changed since drag.
+        RefreshValidity();
+        if (!CatCollectionPolicy.CanDisplay(productId, out _)) return false;
         if (!IsPreviewValid || movableRoot == null)
             return false;
 
@@ -337,6 +357,13 @@ public sealed class HomeProductPlacement : MonoBehaviour
         if (movableRoot == null || previewing)
             return;
 
+        if (HomeStoreService.IsFixedRoomProduct(productId))
+        {
+            if (!UsesRequiredProductTarget)
+                movableRoot.SetPositionAndRotation(authoredPosition, authoredRotation);
+            return; // Book/TV components own their authored attachment.
+        }
+
         if (UsesRequiredProductTarget)
         {
             constrainedTarget = FindRequiredPlacementTarget();
@@ -396,9 +423,10 @@ public sealed class HomeProductPlacement : MonoBehaviour
     {
         float left = Mathf.Abs(candidate.x - roomMinimum.x);
         float right = Mathf.Abs(roomMaximum.x - candidate.x);
-        float front = Mathf.Abs(candidate.z - roomMinimum.y);
         float back = Mathf.Abs(roomMaximum.y - candidate.z);
-        float nearest = Mathf.Min(left, right, front, back);
+        // Cat Home rooms have three authored walls. The open camera edge is a
+        // floor boundary, never a valid wall-placement surface.
+        float nearest = Mathf.Min(left, right, back);
 
         float yaw;
         if (Mathf.Approximately(nearest, left))
@@ -408,7 +436,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
         else if (Mathf.Approximately(nearest, back))
             yaw = 180f;
         else
-            yaw = 0f;
+            yaw = 270f;
 
         movableRoot.rotation = Quaternion.Euler(0f, yaw, 0f);
         GetWorldHalfExtents(out float halfX, out float halfZ);
@@ -418,8 +446,6 @@ public sealed class HomeProductPlacement : MonoBehaviour
             candidate.x = roomMaximum.x - halfX - WallSnapInset;
         else if (Mathf.Approximately(nearest, back))
             candidate.z = roomMaximum.y - halfZ - WallSnapInset;
-        else
-            candidate.z = roomMinimum.y + halfZ + WallSnapInset;
         return candidate;
     }
 
@@ -434,7 +460,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
                 collisionClearance;
     }
 
-    private void RefreshValidity()
+    private void RefreshValidity(bool ignoreCatProducts = false)
     {
         if (movableRoot == null)
             return;
@@ -455,17 +481,118 @@ public sealed class HomeProductPlacement : MonoBehaviour
             ~0,
             QueryTriggerInteraction.Ignore);
 
-        previewValid = true;
+        previewValid = !OverlapsReservedProduct(ignoreCatProducts);
+        var activity=GetComponent<CatActivity>();
+        if(CatCollectionPolicy.IsCatItem(productId) && activity!=null && activity.RoutineEntryPoint!=null)
+        {
+            previewValid &= CatActivityMotion.IsFloorClear(activity.RoutineEntryPoint.position,.24f,ignoreCatProducts);
+            var enrichment=activity as CatEnrichmentActivity;
+            if(enrichment!=null && enrichment.Mode==CatEnrichmentMode.Tunnel && enrichment.ExitPoint!=null)
+                previewValid &= CatActivityMotion.IsFloorClear(enrichment.ExitPoint.position,.24f,ignoreCatProducts);
+        }
         for (int i = 0; i < overlaps.Length; i++)
         {
             Collider collider = overlaps[i];
             if (collider == null || IsIgnoredCollider(collider))
                 continue;
+            var other=collider.GetComponentInParent<HomeProductPlacement>();
+            if(ignoreCatProducts && other!=null && CatCollectionPolicy.IsCatItem(other.ProductId)) continue;
             previewValid = false;
             break;
         }
 
         UpdateIndicator();
+    }
+
+    public bool IsCurrentPositionValid()
+    {
+        ResolveRoot(); RefreshValidity(); return previewValid;
+    }
+
+    public bool IsRoomPoseValid(Vector3 position, float yaw)
+    {
+        ResolveRoot();
+        var oldPosition=MovableRoot.position;var oldRotation=MovableRoot.rotation;
+        bool oldValid=previewValid;
+        try
+        {
+            MovableRoot.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));
+            GetWorldHalfExtents(out float x,out float z);
+            if(position.x-x<roomMinimum.x || position.x+x>roomMaximum.x || position.z-z<roomMinimum.y || position.z+z>roomMaximum.y)return false;
+            RefreshValidity(true);return previewValid;
+        }
+        finally { MovableRoot.SetPositionAndRotation(oldPosition,oldRotation);previewValid=oldValid; }
+    }
+
+    private void LateUpdate()
+    {
+        if (!Application.isPlaying || !reconcilePending || previewing) return;
+        reconcilePending = false;
+        if (!CatCollectionPolicy.IsCatItem(productId) || !HomeStoreService.IsOwned(productId) || HomeStoreService.IsStored(productId)) return;
+        CatRoomArrangement.Request(gameObject.scene);
+    }
+
+    private bool OverlapsReservedProduct(bool ignoreCatProducts = false)
+    {
+        if (!CatCollectionPolicy.IsCatItem(productId)) return false;
+        foreach (var other in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (other == this || other.gameObject.scene != gameObject.scene) continue;
+            bool fixedRoom = HomeStoreService.IsFixedRoomProduct(other.ProductId);
+            if(ignoreCatProducts && !fixedRoom)continue;
+            if (!fixedRoom && (!CatCollectionPolicy.IsCatItem(other.ProductId) ||
+                !HomeStoreService.IsOwned(other.ProductId) || HomeStoreService.IsStored(other.ProductId))) continue;
+            if (fixedRoom && !other.ReservesFloorSpace()) continue;
+            if (FootprintsOverlap(MovableRoot.position, footprintSize, MovableRoot.eulerAngles.y,
+                other.MovableRoot.position, other.footprintSize, other.MovableRoot.eulerAngles.y, collisionClearance)) return true;
+            var activity=GetComponent<CatActivity>();
+            if(activity!=null && activity.RoutineEntryPoint!=null && FootprintsOverlap(activity.RoutineEntryPoint.position,new Vector2(.48f,.48f),0,
+                other.MovableRoot.position,other.footprintSize,other.MovableRoot.eulerAngles.y,.04f))return true;
+            var tunnel=activity as CatEnrichmentActivity;
+            if(tunnel!=null && tunnel.Mode==CatEnrichmentMode.Tunnel && tunnel.ExitPoint!=null && FootprintsOverlap(tunnel.ExitPoint.position,new Vector2(.48f,.48f),0,
+                other.MovableRoot.position,other.footprintSize,other.MovableRoot.eulerAngles.y,.04f))return true;
+            if(!fixedRoom)
+            {
+                var otherActivity=other.GetComponent<CatActivity>();
+                if(otherActivity!=null && otherActivity.RoutineEntryPoint!=null && FootprintsOverlap(MovableRoot.position,footprintSize,MovableRoot.eulerAngles.y,
+                    otherActivity.RoutineEntryPoint.position,new Vector2(.48f,.48f),0,.04f))return true;
+                var otherTunnel=otherActivity as CatEnrichmentActivity;
+                if(otherTunnel!=null && otherTunnel.Mode==CatEnrichmentMode.Tunnel && otherTunnel.ExitPoint!=null && FootprintsOverlap(MovableRoot.position,footprintSize,MovableRoot.eulerAngles.y,
+                    otherTunnel.ExitPoint.position,new Vector2(.48f,.48f),0,.04f))return true;
+            }
+        }
+        return false;
+    }
+
+    public bool ReservesFloorSpace()
+    {
+        // Inspect inactive geometry too. Wall pictures and walkable rugs leave
+        // the floor available; tall furniture reserves its future footprint.
+        foreach (var filter in MovableRoot.GetComponentsInChildren<MeshFilter>(true))
+        {
+            if (filter.sharedMesh == null) continue;
+            var b=filter.sharedMesh.bounds;
+            Vector3 low=filter.transform.TransformPoint(b.center-Vector3.up*b.extents.y);
+            Vector3 high=filter.transform.TransformPoint(b.center+Vector3.up*b.extents.y);
+            float min=Mathf.Min(low.y,high.y), max=Mathf.Max(low.y,high.y);
+            if (min < .65f && max > .12f) return true;
+        }
+        return false;
+    }
+
+    public static bool FootprintsOverlap(Vector3 a, Vector2 aSize, float aYaw,
+        Vector3 b, Vector2 bSize, float bYaw, float gap)
+    {
+        Vector3 ax=Quaternion.Euler(0,aYaw,0)*Vector3.right, az=Quaternion.Euler(0,aYaw,0)*Vector3.forward;
+        Vector3 bx=Quaternion.Euler(0,bYaw,0)*Vector3.right, bz=Quaternion.Euler(0,bYaw,0)*Vector3.forward;
+        Vector3 delta=b-a; delta.y=0;
+        foreach(var axis in new[]{ax,az,bx,bz})
+        {
+            float ra=(Mathf.Abs(Vector3.Dot(ax,axis))*aSize.x+Mathf.Abs(Vector3.Dot(az,axis))*aSize.y)*.5f;
+            float rb=(Mathf.Abs(Vector3.Dot(bx,axis))*bSize.x+Mathf.Abs(Vector3.Dot(bz,axis))*bSize.y)*.5f;
+            if(Mathf.Abs(Vector3.Dot(delta,axis)) >= ra+rb+gap) return false;
+        }
+        return true;
     }
 
     private void RememberValidPreview()
@@ -534,7 +661,11 @@ public sealed class HomeProductPlacement : MonoBehaviour
     {
         if (indicatorRenderer == null)
             return;
-        Color color = previewValid ? ValidColor : InvalidColor;
+        Color color = previewValid
+            ? placementKind == HomeProductPlacementKind.WallEdge
+                ? WallValidColor
+                : ValidColor
+            : InvalidColor;
         var block = new MaterialPropertyBlock();
         block.SetColor("_BaseColor", color);
         block.SetColor("_Color", color);
@@ -556,6 +687,12 @@ public sealed class HomeProductPlacement : MonoBehaviour
     {
         if (movableRoot == null)
             movableRoot = transform;
+        if (!cachedAuthoredPose)
+        {
+            authoredPosition = movableRoot.position;
+            authoredRotation = movableRoot.rotation;
+            cachedAuthoredPose = true;
+        }
     }
 
     private void ResolveBookSet()
@@ -586,7 +723,8 @@ public sealed class HomeProductPlacement : MonoBehaviour
     private Transform FindRequiredPlacementTarget()
     {
         if (string.IsNullOrEmpty(requiredProductId) ||
-            !HomeStoreService.IsOwned(requiredProductId))
+            !HomeStoreService.IsOwned(requiredProductId) ||
+            HomeStoreService.IsStored(requiredProductId))
         {
             return null;
         }
@@ -608,6 +746,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
 
     private void HandlePlacementChanged(string changedProductId)
     {
+        reconcilePending = true;
         if (string.IsNullOrEmpty(changedProductId) ||
             string.Equals(changedProductId, productId, StringComparison.Ordinal) ||
             string.Equals(changedProductId, requiredProductId, StringComparison.Ordinal))

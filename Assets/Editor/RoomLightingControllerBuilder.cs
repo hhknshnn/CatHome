@@ -137,6 +137,7 @@ public static class RoomLightingControllerBuilder
         );
 
         WarnAboutDisabledAdditionalLightShadows(controller);
+        HomeRoomGameplaySafetyBuilder.ApplyToScene(controller.gameObject.scene);
     }
 
     /// <summary>

@@ -1,0 +1,58 @@
+{
+  "hud": {
+    "playing": true,
+    "scenes": [
+      "GameScene",
+      "CatHome_UI",
+      "LivingRoom_Level01"
+    ],
+    "active": "LivingRoom_Level01",
+    "width": 1920,
+    "height": 1080,
+    "cameras": 1,
+    "listeners": 1,
+    "events": 1,
+    "buttons": [
+      "MenuButton",
+      "PlusButton",
+      "CatShopButton",
+      "ShopButton",
+      "PlayCatRunnerButton",
+      "PlusButton",
+      "ShopButton",
+      "PlusButton"
+    ],
+    "overlaps": []
+  },
+  "shop": {
+    "playing": true,
+    "scenes": [
+      "GameScene",
+      "CatHome_UI",
+      "LivingRoom_Level01"
+    ],
+    "active": "LivingRoom_Level01",
+    "width": 1920,
+    "height": 1080,
+    "cameras": 1,
+    "listeners": 1,
+    "events": 1,
+    "buttons": [
+      "BuyButton",
+      "Tab_CAT",
+      "BuyButton",
+      "BuyButton",
+      "BuyButton",
+      "CloseButton",
+      "BuyButton",
+      "BuyButton",
+      "BuyButton",
+      "Tab_ROOM",
+      "BuyButton",
+      "Tab_HOME",
+      "BuyButton",
+      "BuyButton"
+    ],
+    "overlaps": []
+  }
+}

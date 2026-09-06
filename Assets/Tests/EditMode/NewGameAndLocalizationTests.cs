@@ -29,12 +29,16 @@ public sealed class NewGameAndLocalizationTests
             GameLanguageService.SetLanguage(GameLanguage.Turkish);
             Assert.That(PlayerPrefs.GetInt(GameLanguageService.PlayerPrefsKey),
                 Is.EqualTo((int)GameLanguage.Turkish));
-            Assert.That(GameLanguageService.Text("title.new_game"), Is.EqualTo("YENİ OYUN"));
-            Assert.That(GameLanguageService.Text("settings.row.language"), Is.EqualTo("DİL"));
+            Assert.That(GameLanguageService.Text("title.new_game"), Is.EqualTo("Yeni oyun"));
+            Assert.That(GameLanguageService.Text("settings.row.language"), Is.EqualTo("Dil"));
+            Assert.That(GameLanguageService.Text("account.google.action"),
+                Is.EqualTo("GOOGLE İLE GİRİŞ YAP"));
 
             GameLanguageService.SetLanguage(GameLanguage.English);
-            Assert.That(GameLanguageService.Text("title.new_game"), Is.EqualTo("NEW GAME"));
-            Assert.That(GameLanguageService.Text("settings.row.language"), Is.EqualTo("LANGUAGE"));
+            Assert.That(GameLanguageService.Text("title.new_game"), Is.EqualTo("New game"));
+            Assert.That(GameLanguageService.Text("settings.row.language"), Is.EqualTo("Language"));
+            Assert.That(GameLanguageService.Text("account.guest.action"),
+                Is.EqualTo("CONTINUE AS A GUEST"));
         }
         finally
         {
@@ -56,6 +60,58 @@ public sealed class NewGameAndLocalizationTests
         Assert.That(font.atlasPopulationMode, Is.EqualTo(AtlasPopulationMode.Dynamic));
         foreach (char character in "İŞĞÜÖÇışğüöç")
             Assert.That(font.HasCharacter(character, true, true), Is.True, character.ToString());
+    }
+
+    [Test]
+    public void PlayerAccountsSettings_HasARealClientAndDefaultMobileRedirect()
+    {
+        ScriptableObject settings = AssetDatabase.LoadAssetAtPath<ScriptableObject>(
+            "Assets/Resources/UnityPlayerAccountSettings.asset");
+        Assert.That(settings, Is.Not.Null);
+
+        var serialized = new SerializedObject(settings);
+        string clientId = serialized.FindProperty("clientId").stringValue;
+        Assert.That(Guid.TryParse(clientId, out _), Is.True,
+            "Unity Player Accounts needs the Dashboard-generated OAuth client ID.");
+        Assert.That(serialized.FindProperty("useCustomDeepLinkUri").boolValue, Is.False,
+            "Android/iOS should keep Unity's project-scoped unitydl redirect.");
+        Assert.That(serialized.FindProperty("scopeMask").intValue, Is.EqualTo(7),
+            "OpenID, email and offline access scopes should remain enabled.");
+    }
+
+    [Test]
+    public void GuestIdentity_IsRandomStableAndStoredOutsideTheGameplaySave()
+    {
+        bool hadGuest = PlayerPrefs.HasKey(AccountIdentityService.LocalGuestIdPlayerPrefsKey);
+        string oldGuest = PlayerPrefs.GetString(
+            AccountIdentityService.LocalGuestIdPlayerPrefsKey, string.Empty);
+        bool hadKind = PlayerPrefs.HasKey(AccountIdentityService.AccountKindPlayerPrefsKey);
+        int oldKind = PlayerPrefs.GetInt(AccountIdentityService.AccountKindPlayerPrefsKey, 0);
+        try
+        {
+            PlayerPrefs.DeleteKey(AccountIdentityService.LocalGuestIdPlayerPrefsKey);
+            PlayerPrefs.SetInt(AccountIdentityService.AccountKindPlayerPrefsKey,
+                (int)CatHomeAccountKind.Guest);
+            string first = AccountIdentityService.EnsureLocalGuestIdentity();
+            string second = AccountIdentityService.EnsureLocalGuestIdentity();
+
+            Assert.That(first, Has.Length.EqualTo(32));
+            Assert.That(second, Is.EqualTo(first));
+            Assert.That(Guid.TryParseExact(first, "N", out _), Is.True);
+            Assert.That(AccountIdentityService.Kind, Is.EqualTo(CatHomeAccountKind.Guest));
+        }
+        finally
+        {
+            if (hadGuest)
+                PlayerPrefs.SetString(AccountIdentityService.LocalGuestIdPlayerPrefsKey, oldGuest);
+            else
+                PlayerPrefs.DeleteKey(AccountIdentityService.LocalGuestIdPlayerPrefsKey);
+            if (hadKind)
+                PlayerPrefs.SetInt(AccountIdentityService.AccountKindPlayerPrefsKey, oldKind);
+            else
+                PlayerPrefs.DeleteKey(AccountIdentityService.AccountKindPlayerPrefsKey);
+            PlayerPrefs.Save();
+        }
     }
 
     [Test]

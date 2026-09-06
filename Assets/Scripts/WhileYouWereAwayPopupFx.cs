@@ -10,7 +10,7 @@ public sealed class WhileYouWereAwayPopupFx : MonoBehaviour
     [Header("Safe Area Layout")]
     [SerializeField] private RectTransform safeAreaRoot;
     [SerializeField] private RectTransform layoutRoot;
-    [SerializeField] private Vector2 designSize = new Vector2(1040f, 760f);
+    [SerializeField] private Vector2 designSize = new Vector2(980f, 680f);
     [SerializeField] private Vector2 safeMargin = new Vector2(44f, 34f);
 
     [Header("Reveal Targets")]
@@ -63,8 +63,7 @@ public sealed class WhileYouWereAwayPopupFx : MonoBehaviour
             return;
 
         float elapsed = Time.unscaledTime - idleStartedAt;
-        ApplyIdleFloat(elapsed);
-        ApplyIdleSheen(elapsed);
+        // The return summary is calm information; motion belongs to the reveal.
     }
 
     public void PrepareForOpen()

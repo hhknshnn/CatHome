@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using CatHome.Economy;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -128,14 +129,11 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
 
         panel = NewRect(root, "CelebrationPanel", new Vector2(880f, 580f), Vector2.zero);
 
-        NewPanel(panel, "Depth", new Vector2(900f, 600f), new Vector2(0f, -8f), PremiumUiStyle.Shadow, 54f, 12f);
-        NewPanel(panel, "ChampagneFrame", new Vector2(880f, 580f), Vector2.zero, PremiumUiStyle.Champagne, 54f, 14f);
-        NewPanel(panel, "NavyFace", new Vector2(836f, 536f), new Vector2(0f, 4f), PremiumUiStyle.Navy, 45f, 9f);
-
-        burst = NewRect(panel, "SunBurst", new Vector2(430f, 430f), new Vector2(0f, 150f));
+        NewPanel(panel,"IvoryFace",new Vector2(880,580),Vector2.zero,PremiumUiStyle.Ivory,32,2);
+        burst = NewRect(panel, "SunBurst", new Vector2(236f, 236f), new Vector2(0f, 150f));
         burst.gameObject.AddComponent<CanvasRenderer>();
         burst.gameObject.AddComponent<OnboardingCelebrationGraphic>()
-            .Configure(OnboardingCelebrationGraphic.ShapeKind.Burst, new Color32(255, 196, 64, 200));
+            .Configure(OnboardingCelebrationGraphic.ShapeKind.Burst, new Color32(255, 216, 147, 70));
 
         // Gold medallion with the new level number.
         medallion = NewRect(panel, "LevelMedallion", new Vector2(180f, 180f), new Vector2(0f, 152f));
@@ -146,12 +144,12 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         levelNumber = NewText(medallion, "LevelNumber", font, "6", 86f, FontStyles.Bold,
             new Vector2(160f, 104f), new Vector2(0f, -16f), PremiumUiStyle.Navy);
 
-        titleText = NewText(panel, "Title", font, "HOME LEVEL UP!", 56f, FontStyles.Bold,
-            new Vector2(760f, 72f), new Vector2(0f, 8f), PremiumUiStyle.Ivory);
+        titleText = NewText(panel, "Title", font, GameLanguageService.Text("celebration.level"), 44f, FontStyles.Bold,
+            new Vector2(760f, 72f), new Vector2(0f, 8f), PremiumUiStyle.Ink);
         subtitleText = NewText(panel, "Subtitle", font, "YOUR HOME REACHED LEVEL 6", 28f, FontStyles.Bold,
-            new Vector2(780f, 44f), new Vector2(0f, -44f), PremiumUiStyle.ChampagneLight);
+            new Vector2(780f, 44f), new Vector2(0f, -44f), PremiumUiStyle.Muted);
         rewardText = NewText(panel, "Reward", font, "REWARD  +500 COINS", 34f, FontStyles.Bold,
-            new Vector2(780f, 52f), new Vector2(0f, -108f), PremiumUiStyle.Champagne);
+            new Vector2(780f, 52f), new Vector2(0f, -108f), PremiumUiStyle.Teal);
 
         collectButton = BuildButton(font, "CollectButton", "COLLECT", new Vector2(320f, 96f),
             new Vector2(-172f, -196f), PremiumUiStyle.Teal, Color.white, out collectRoot, out collectFace);
@@ -209,15 +207,8 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
     private Button BuildButton(TMP_FontAsset font, string name, string label, Vector2 size, Vector2 pos,
         Color faceColor, Color textColor, out RectTransform root, out Graphic face)
     {
-        root = NewRect(panel, name, size, pos);
-        LowPolyPanelGraphic panelFace = NewPanel(root, "ButtonFace", new Vector2(size.x, size.y - 8f),
-            new Vector2(0f, 4f), faceColor, 40f, 6f);
-        face = panelFace;
-        NewText(root, "Label", font, label, 30f, FontStyles.Bold,
-            new Vector2(size.x - 26f, size.y - 30f), new Vector2(0f, 4f), textColor);
-        Button button = root.gameObject.AddComponent<Button>();
-        button.targetGraphic = panelFace;
-        button.transition = Selectable.Transition.ColorTint;
+        var button=U.Action(name,panel,font,name=="CollectButton"?"quests.claim":"celebration.double",name=="CollectButton"?PremiumUiStyle.Coral:PremiumUiStyle.Mint,pos.x,pos.y,size.x,size.y,out var text);
+        root=(RectTransform)button.transform; face=button.targetGraphic;
         return button;
     }
 
@@ -233,9 +224,9 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         if (levelNumber != null)
             levelNumber.text = level.ToString();
         if (subtitleText != null)
-            subtitleText.text = "YOUR HOME REACHED LEVEL " + level;
+            subtitleText.text = GameLanguageService.Format("celebration.level_body",level);
         if (rewardText != null)
-            rewardText.text = "REWARD  +" + BaseCoins + " COINS";
+            rewardText.text = GameLanguageService.Format("celebration.coins",BaseCoins);
 
         // The doubling button only appears when a rewarded ad is actually ready;
         // otherwise Collect takes the whole row so there is no dead button.

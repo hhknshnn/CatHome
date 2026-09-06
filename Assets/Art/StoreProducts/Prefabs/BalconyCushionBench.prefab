@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4563309314458245636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9075860993774437433}
+  m_Layer: 0
+  m_Name: PerchFloorPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9075860993774437433
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563309314458245636}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.42, y: 0, z: -0.52}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8459463821286228520}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4654473987387452491
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,6 +42,8 @@ GameObject:
   - component: {fileID: 8459463821286228520}
   - component: {fileID: 8794190268271620682}
   - component: {fileID: 6217737711397914338}
+  - component: {fileID: 6397544331281801482}
+  - component: {fileID: 4276889568389421576}
   m_Layer: 0
   m_Name: BalconyCushionBench
   m_TagString: Untagged
@@ -32,6 +65,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8463035997177888124}
+  - {fileID: 9075860993774437433}
+  - {fileID: 7403831284545040305}
+  - {fileID: 8403311643663884527}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8794190268271620682
@@ -73,6 +109,80 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
+--- !u!114 &6397544331281801482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654473987387452491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4c7789279ba54468041924f1d0f9e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::PerchNapActivity
+  activityId: bench-nap
+  displayName: CUSHION BENCH
+  kind: 52
+  questType: 2
+  requiredBondXp: 0
+  storeProductId: balcony.cushion-bench
+  actionText: NAP
+  interactionRadius: 1.1
+  energyCost: 8
+  interactionAnchor: {fileID: 8403311643663884527}
+  routineEntryPoint: {fileID: 9075860993774437433}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 5273493364788926859}
+  floorPoint: {fileID: 9075860993774437433}
+  perchPoint: {fileID: 7403831284545040305}
+  settleDuration: 3.4
+  energyRestore: 22
+  wideAwakeEnergy: 92
+  completeMessage: SUN NAP!
+--- !u!114 &4276889568389421576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654473987387452491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!1 &4827156100659842806
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8403311643663884527}
+  m_Layer: 0
+  m_Name: InteractionAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8403311643663884527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4827156100659842806}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.42, y: 0, z: -0.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8459463821286228520}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5273493364788926859
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,12 +231,60 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.6, y: 0.55, z: 0.6}
   m_Center: {x: 0, y: 0.275, z: 0}
+--- !u!1 &8824944256794044090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7403831284545040305}
+  - component: {fileID: 3931118724293006309}
+  m_Layer: 0
+  m_Name: PerchPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7403831284545040305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824944256794044090}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.42, y: 0.4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8459463821286228520}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3931118724293006309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8824944256794044090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
+  size: {x: 0.56, y: 0.42000002}
+  overridePose: 0
+  preferredPose: 2
+  alignAlongSurface: 0
 --- !u!1001 &3688156135954701504
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -149,7 +307,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.00000004371139
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_LocalRotation.x
@@ -157,7 +315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_LocalRotation.z
@@ -175,53 +333,67 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8398964229525998538, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+    - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 4d42cc56126624e4f983c8ac49175618, type: 2}
-    - target: {fileID: -8192122363070549459, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
       value: 
       objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
-    - target: {fileID: -6130080667574879464, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+    - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
       value: 
       objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
-    - target: {fileID: -6101046830371938757, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
-    - target: {fileID: -780998874241438960, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
-    - target: {fileID: 299840516981013670, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
     - target: {fileID: 919132149155446097, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_Name
       value: BalconyCushionBench_PremiumModel
       objectReference: {fileID: 0}
-    - target: {fileID: 2791033277642916486, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 4d42cc56126624e4f983c8ac49175618, type: 2}
-    - target: {fileID: 3259143269951959048, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 4d42cc56126624e4f983c8ac49175618, type: 2}
-    - target: {fileID: 9203071917232369007, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e20f96ef460c01446968a1f5b3658f6e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8829915839629646174}
   m_SourcePrefab: {fileID: 100100000, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
 --- !u!4 &3793243692559285035 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
   m_PrefabInstance: {fileID: 3688156135954701504}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4607076482958549393 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
+  m_PrefabInstance: {fileID: 3688156135954701504}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &8829915839629646174
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4607076482958549393}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1689949710826242216, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}

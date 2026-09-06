@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using U = PremiumUiElements;
 
 /// <summary>
 /// Authors the persistent, navigation-only room picker in CatHome_UI. Purchases
@@ -95,27 +96,11 @@ public static class RoomSelectorPanelBuilder
         scrimButton.targetGraphic = scrim;
         scrimButton.transition = Selectable.Transition.None;
 
-        RectTransform glow = CreateRect("AquaGlow", safeArea);
-        SetCentered(glow, new Vector2(1544f, 868f), new Vector2(0f, -10f));
-        LowPolyPanelGraphic glowGraphic = AddPanel(glow.gameObject,
-            new Color32(53, 231, 216, 88), 48f, 10f, false);
-        PremiumUiStyle.ConfigureShadowSurface(glowGraphic,
-            new Color32(45, 220, 209, 96), 48f);
-
-        RectTransform depth = CreateRect("CoralDepth", safeArea);
-        SetCentered(depth, new Vector2(1540f, 864f), Vector2.zero);
-        AddPanel(depth.gameObject, PremiumUiStyle.CoralLift, 44f, 10f, false);
-
         RectTransform panel = CreateRect("RoomSelectorPanelVisual", safeArea);
-        SetCentered(panel, new Vector2(1520f, 840f), Vector2.zero);
+        SetCentered(panel, new Vector2(1720f, 930f), Vector2.zero);
         CanvasGroup panelGroup = GetOrAdd<CanvasGroup>(panel.gameObject);
-        LowPolyPanelGraphic panelFace = AddPanel(panel.gameObject, Cream, 44f, 14f, true);
-        PremiumUiStyle.ConfigureAccentSurface(
-            panelFace,
-            new Color32(255, 239, 191, 255),
-            new Color32(211, 249, 234, 255),
-            44f,
-            14f);
+        var panelFace = AddPanel(panel.gameObject, Cream, 32f, 2f, true);
+        PremiumUiStyle.ConfigureLightSurface(panelFace, 32f, 2f);
 
         BuildHeader(panel, font);
 
@@ -133,18 +118,13 @@ public static class RoomSelectorPanelBuilder
 
         TMP_Text feedback = CreateText("RoomFeedback", panel, font, 22f, Ink,
             TextAlignmentOptions.Center);
-        SetCentered(feedback.rectTransform, new Vector2(1120f, 40f), new Vector2(0f, -378f));
+        SetCentered(feedback.rectTransform, new Vector2(324f, 76f), new Vector2(-598f, -296f));
         feedback.text = "CURRENT HOME  •  LIVING ROOM";
         feedback.fontStyle = FontStyles.Bold;
         feedback.characterSpacing = 1.1f;
         feedback.overflowMode = TextOverflowModes.Truncate;
 
         Button closeButton = BuildCloseButton(panel);
-        BuildSparkle(panel, "SparkleLeft", new Vector2(-700f, 368f), 16f,
-            PremiumUiStyle.CandyLemon, 18f);
-        BuildSparkle(panel, "SparkleRight", new Vector2(700f, -368f), 14f,
-            PremiumUiStyle.CandyPink, -12f);
-
         var serialized = new SerializedObject(controller);
         Assign(serialized, "catMovement", null);
         Assign(serialized, "levelLoader", null);
@@ -176,42 +156,30 @@ public static class RoomSelectorPanelBuilder
 
     private static void BuildHeader(RectTransform panel, TMP_FontAsset font)
     {
-        LowPolyPanelGraphic badge = CreatePanel("RoomsBadge", panel,
-            PremiumUiStyle.CandyPink, 26f, 8f, false);
-        SetCentered(badge.rectTransform, new Vector2(190f, 48f), new Vector2(-560f, 372f));
-        TMP_Text badgeText = CreateText("BadgeText", badge.transform, font, 20f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(badgeText.rectTransform);
-        badgeText.text = "CAT HOME";
-        badgeText.fontStyle = FontStyles.Bold;
-
-        TMP_Text title = CreateText("Title", panel, font, 44f, Ink,
-            TextAlignmentOptions.Center);
-        SetCentered(title.rectTransform, new Vector2(560f, 58f), new Vector2(0f, 372f));
-        title.text = "MY ROOMS";
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 2.2f;
-        title.overflowMode = TextOverflowModes.Overflow;
-
-        TMP_Text subtitle = CreateText("Subtitle", panel, font, 20f,
-            PremiumUiStyle.Muted, TextAlignmentOptions.Center);
-        SetCentered(subtitle.rectTransform, new Vector2(980f, 40f), new Vector2(0f, 328f));
-        subtitle.text = "PICK A HAPPY PLACE FOR YOUR CAT";
-        subtitle.fontStyle = FontStyles.Bold;
-        subtitle.characterSpacing = 1.1f;
-        subtitle.textWrappingMode = TextWrappingModes.Normal;
-        subtitle.overflowMode = TextOverflowModes.Truncate;
+        U.Panel("HomeSidebar",panel,PremiumUiStyle.WarmIvory,-598,0,420,824,30);
+        var emblem=U.Rect("HomeEmblem",panel);U.At(emblem,-598,306,86,86);
+        PremiumUiFactory.BuildCurrencyIcon(emblem,PremiumUiFactory.CurrencyVisual.Coin,false);
+        var heading=U.Label("RoomsHeading",panel,font,44,Ink,263,408,1010,68);
+        U.Localize(heading,"title.rooms");
+        var title = U.Label("Title", panel, font, 42, Ink, -598, 205, 320, 64,TextAlignmentOptions.Center);
+        U.Localize(title, "rooms.title");
+        var level = U.Label("HomeLevel", panel, font, 24, PremiumUiStyle.Teal, -598, 142, 320, 48,TextAlignmentOptions.Center);
+        level.gameObject.AddComponent<HomeLevelBadgeLabel>();
+        var body = U.Label("Subtitle", panel, font, 26, Ink, -598, 14, 320, 108,TextAlignmentOptions.Center);
+        U.Localize(body, "rooms.subtitle");
+        var hint = U.Label("RoomHint", panel, font, 23, PremiumUiStyle.Muted, -598, -134, 320, 116,TextAlignmentOptions.Center);
+        U.Localize(hint, "rooms.hint");
     }
 
-    private const float CardWidth = 690f;
-    private const float CardHeight = 500f;
-    private const float PreviewWidth = 658f;
-    private const float PreviewHeight = 370f;
+    private const float CardWidth = 508f;
+    private const float CardHeight = 364f;
+    private const float PreviewWidth = 480f;
+    private const float PreviewHeight = 270f;
 
     private static ScrollRect BuildRoomScroll(RectTransform panel)
     {
         RectTransform scrollRoot = CreateRect("RoomScroll", panel);
-        SetCentered(scrollRoot, new Vector2(1440f, 618f), new Vector2(0f, -22f));
+        SetCentered(scrollRoot, new Vector2(1078f, 770f), new Vector2(263f, -26f));
 
         RectTransform viewport = CreateRect("Viewport", scrollRoot);
         StretchWithOffsets(viewport, 0f, 0f, -22f, 0f);
@@ -356,155 +324,32 @@ public static class RoomSelectorPanelBuilder
         theme = "future";
     }
 
-    private static CardParts BuildRoomCard(
-        RectTransform parent,
-        TMP_FontAsset font,
-        string roomId,
-        string titleValue,
-        string subtitleValue,
-        string previewPath,
-        Color accent,
-        string theme)
+    private static CardParts BuildRoomCard(RectTransform parent, TMP_FontAsset font,
+        string roomId, string titleValue, string subtitleValue, string previewPath, Color accent, string theme)
     {
-        RectTransform cardRoot = CreateRect("RoomCard_" + roomId, parent);
-        cardRoot.sizeDelta = new Vector2(CardWidth, CardHeight);
-        CanvasGroup group = GetOrAdd<CanvasGroup>(cardRoot.gameObject);
-
-        RectTransform cardDepth = CreateRect("CardDepth", cardRoot);
-        PremiumUiStyle.SetCenteredShadowStretch(cardDepth, 6f);
-        AddPanel(cardDepth.gameObject, new Color(accent.r * .67f, accent.g * .67f,
-            accent.b * .67f, 1f), 28f, 8f, false);
-
-        RectTransform visual = CreateRect("CardVisual", cardRoot);
-        StretchWithOffsets(visual, 0f, 4f, 0f, 0f);
-        LowPolyPanelGraphic face = AddPanel(visual.gameObject, accent, 28f, 10f, true);
-        PremiumUiStyle.ConfigureAccentSurface(
-            face, Color.Lerp(accent, Color.white, .1f), accent, 28f, 10f);
-
-        Button button = GetOrAdd<Button>(cardRoot.gameObject);
-        button.targetGraphic = face;
-        button.transition = Selectable.Transition.ColorTint;
-
-        LowPolyPanelGraphic previewWell = CreatePanel("PreviewWell", visual,
-            PremiumUiStyle.CandyCloud, 22f, 6f, false);
-        RectTransform previewRect = previewWell.rectTransform;
-        previewRect.anchorMin = new Vector2(.5f, 1f);
-        previewRect.anchorMax = new Vector2(.5f, 1f);
-        previewRect.pivot = new Vector2(.5f, 1f);
-        previewRect.sizeDelta = new Vector2(PreviewWidth, PreviewHeight);
-        previewRect.anchoredPosition = new Vector2(0f, -12f);
-        RectMask2D mask = GetOrAdd<RectMask2D>(previewWell.gameObject);
-        mask.padding = new Vector4(6f, 6f, 6f, 6f);
-
-        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(previewPath);
-        if (texture != null)
-        {
-            RawImage preview = CreateRawImage("RoomPhoto", previewWell.transform, texture);
-            Stretch(preview.rectTransform);
-            preview.uvRect = RoomPreviewFit.CoverUv(
-                texture.width, texture.height, PreviewWidth, PreviewHeight);
-        }
-        else
-        {
-            BuildFallbackPreview(previewWell.transform, theme);
-        }
-
-        LowPolyPanelGraphic themePill = CreatePanel("ThemePill", previewWell.transform,
-            theme == "bathroom" ? PremiumUiStyle.CandyAqua
-                : theme == "kitchen" ? PremiumUiStyle.CandyLemon
-                : theme == "bedroom" ? PremiumUiStyle.CandyGrape : PremiumUiStyle.CandyMint,
-            13f, 4f, false);
-        RectTransform themeRect = themePill.rectTransform;
-        themeRect.anchorMin = themeRect.anchorMax = themeRect.pivot = new Vector2(0f, 0f);
-        themeRect.sizeDelta = new Vector2(168f, 28f);
-        themeRect.anchoredPosition = new Vector2(18f, 12f);
-        TMP_Text themeLabel = CreateText("ThemeText", themePill.transform, font, 13f,
-            Ink, TextAlignmentOptions.Center);
-        Stretch(themeLabel.rectTransform);
-        themeLabel.text = theme == "bathroom" ? "AQUA SPA"
-            : theme == "kitchen" ? "SUNNY KITCHEN"
-            : theme == "bedroom" ? "DREAMY REST" : "COZY HOME";
-        themeLabel.fontStyle = FontStyles.Bold;
-        themeLabel.overflowMode = TextOverflowModes.Truncate;
-
-        LowPolyPanelGraphic infoWell = CreatePanel(
-            "RoomInfoWell", visual, PremiumUiStyle.CandyCloud, 20f, 5f, false);
-        RectTransform infoRect = infoWell.rectTransform;
-        infoRect.anchorMin = new Vector2(.5f, 0f);
-        infoRect.anchorMax = new Vector2(.5f, 0f);
-        infoRect.pivot = new Vector2(.5f, 0f);
-        infoRect.sizeDelta = new Vector2(658f, 100f);
-        infoRect.anchoredPosition = new Vector2(0f, 10f);
-        PremiumUiStyle.ConfigureAccentSurface(
-            infoWell,
-            theme == "bathroom"
-                ? new Color32(224, 250, 246, 255)
-                : theme == "kitchen" ? new Color32(255, 242, 207, 255)
-                : theme == "bedroom" ? new Color32(244, 226, 255, 255)
-                : new Color32(255, 244, 210, 255),
-            theme == "bathroom"
-                ? new Color32(202, 235, 255, 255)
-                : theme == "kitchen" ? new Color32(210, 250, 226, 255)
-                : theme == "bedroom" ? new Color32(255, 214, 236, 255)
-                : new Color32(255, 222, 234, 255),
-            20f,
-            5f);
-
-        TMP_Text title = CreateText("RoomTitle", infoWell.transform, font, 24f, Ink,
-            TextAlignmentOptions.Left);
-        RectTransform titleRect = title.rectTransform;
-        titleRect.anchorMin = new Vector2(0f, 1f);
-        titleRect.anchorMax = new Vector2(1f, 1f);
-        titleRect.pivot = new Vector2(0f, 1f);
-        titleRect.sizeDelta = new Vector2(-176f, 36f);
-        titleRect.anchoredPosition = new Vector2(18f, -10f);
+        var root = U.Rect("RoomCard_" + roomId, parent); U.At(root, 0, 0, CardWidth, CardHeight);
+        var group = root.gameObject.AddComponent<CanvasGroup>();
+        var face = U.Panel("CardVisual", root, PremiumUiStyle.Ivory, 0, 0, CardWidth, CardHeight, 22, true);
+        var button = root.gameObject.AddComponent<Button>(); button.targetGraphic = face;
+        button.transition = Selectable.Transition.None;
+        var photoWell = U.Rect("PreviewWell", face.transform); U.At(photoWell, 0, 35, PreviewWidth, PreviewHeight);
+        var photo = photoWell.gameObject.AddComponent<RawImage>();
+        photo.texture = AssetDatabase.LoadAssetAtPath<Texture2D>(previewPath); photo.raycastTarget = false;
+        photo.uvRect = new Rect(0, 0, 1, 1);
+        var title = U.Label("RoomTitle", face.transform, font, 25, Ink, -85, -127, 306, 36);
         title.text = titleValue;
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 1.2f;
-        title.overflowMode = TextOverflowModes.Truncate;
-
-        TMP_Text status = CreateText("RoomStatus", infoWell.transform, font, 16f,
-            PremiumUiStyle.Muted, TextAlignmentOptions.Left);
-        RectTransform statusRect = status.rectTransform;
-        statusRect.anchorMin = new Vector2(0f, 0f);
-        statusRect.anchorMax = new Vector2(1f, 0f);
-        statusRect.pivot = new Vector2(0f, 0f);
-        statusRect.sizeDelta = new Vector2(-176f, 28f);
-        statusRect.anchoredPosition = new Vector2(18f, 12f);
+        var status = U.Label("RoomStatus", face.transform, font, 18, PremiumUiStyle.Muted, -85, -159, 306, 28);
         status.text = subtitleValue;
-        status.fontStyle = FontStyles.Bold;
-        status.overflowMode = TextOverflowModes.Truncate;
-
-        LowPolyPanelGraphic action = CreatePanel("ActionFace", infoWell.transform,
-            theme == "bathroom" ? PremiumUiStyle.CandyPink
-                : theme == "kitchen" ? PremiumUiStyle.CandyBerry
-                : theme == "bedroom" ? PremiumUiStyle.CandyGrape : PremiumUiStyle.CandyAqua,
-            18f, 6f, false);
-        RectTransform actionRect = action.rectTransform;
-        actionRect.anchorMin = actionRect.anchorMax = actionRect.pivot = new Vector2(1f, .5f);
-        actionRect.sizeDelta = new Vector2(148f, 52f);
-        actionRect.anchoredPosition = new Vector2(-18f, 0f);
-        TMP_Text actionText = CreateText("ActionText", action.transform, font, 16f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(actionText.rectTransform);
-        actionText.text = "VISIT";
-        actionText.fontStyle = FontStyles.Bold;
-        actionText.characterSpacing = 1.1f;
-        actionText.overflowMode = TextOverflowModes.Truncate;
-
-        GameObject lockBadge = BuildCornerBadge(previewWell.transform, font, "LockBadge",
-            "LOCKED", PremiumUiStyle.CandyPeach, new Vector2(-18f, -18f));
-        GameObject currentBadge = BuildCornerBadge(previewWell.transform, font,
-            "CurrentBadge", "CURRENT", PremiumUiStyle.CandyLemon, new Vector2(-18f, -18f));
-        lockBadge.SetActive(false);
-        currentBadge.SetActive(false);
-
-        return new CardParts(roomId, button, group, face, title, status,
-            actionText, lockBadge, currentBadge);
+        var action = U.Panel("ActionFace", face.transform, PremiumUiStyle.Mint, 157, -141, 154, 60, 28);
+        var actionText = U.Label("ActionText", action.transform, font, 21, Ink, 0, 0, 140, 48, TextAlignmentOptions.Center);
+        var lockBadge = BuildCornerBadge(photoWell, font, "LockBadge", "rooms.locked", PremiumUiStyle.Ivory, new Vector2(-12,-12));
+        var currentBadge = BuildCornerBadge(photoWell, font, "CurrentBadge", "rooms.current", PremiumUiStyle.Mint, new Vector2(-12,-12));
+        lockBadge.SetActive(false); currentBadge.SetActive(false);
+        return new CardParts(roomId, button, group, face, title, status, actionText, lockBadge, currentBadge);
     }
 
     private static GameObject BuildCornerBadge(Transform parent, TMP_FontAsset font,
-        string name, string value, Color color, Vector2 anchoredPosition)
+        string name, string textKey, Color color, Vector2 anchoredPosition)
     {
         LowPolyPanelGraphic panel = CreatePanel(name, parent, color, 15f, 4f, false);
         RectTransform rect = panel.rectTransform;
@@ -514,36 +359,17 @@ public static class RoomSelectorPanelBuilder
         TMP_Text text = CreateText("BadgeText", panel.transform, font, 14f, Ink,
             TextAlignmentOptions.Center);
         Stretch(text.rectTransform);
-        text.text = value;
-        text.fontStyle = FontStyles.Bold;
+        text.gameObject.AddComponent<LocalizedLabel>().EditorConfigure(text, textKey);
+        PremiumTypography.Apply(text, false);
         return panel.gameObject;
     }
 
     private static Button BuildCloseButton(RectTransform panel)
     {
-        RectTransform root = CreateRect("CloseButton", panel);
-        SetCentered(root, new Vector2(62f, 62f), new Vector2(710f, 372f));
-        RectTransform visual = CreateRect("CloseVisual", root);
-        Stretch(visual);
-        LowPolyPanelGraphic surface = AddPanel(visual.gameObject,
-            PremiumUiStyle.CandyPink, 31f, 8f, true);
-        PremiumUiStyle.ConfigureAccentSurface(surface,
-            PremiumUiStyle.CoralLift, PremiumUiStyle.CandyPink, 31f, 8f);
-
-        // A font glyph's side bearings and baseline make the multiplication sign
-        // look off-centre even when its RectTransform is mathematically centred.
-        // Build the mark from two identical bars so both axes stay symmetric.
-        RectTransform mark = CreateRect("CloseMark", visual);
-        SetCentered(mark, new Vector2(26f, 26f), Vector2.zero);
-        Image slashA = CreateImage("SlashA", mark, Color.white, false);
-        SetCentered(slashA.rectTransform, new Vector2(27f, 4.5f), Vector2.zero);
-        slashA.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
-        Image slashB = CreateImage("SlashB", mark, Color.white, false);
-        SetCentered(slashB.rectTransform, new Vector2(27f, 4.5f), Vector2.zero);
-        slashB.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -45f);
-        Button button = GetOrAdd<Button>(root.gameObject);
-        button.targetGraphic = surface;
-        return button;
+        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PremiumUiStyle.PremiumFontAssetPath);
+        var close = U.Action("CloseButton", panel, font, null, PremiumUiStyle.WarmIvory, 790, 410, 58, 58, out var text);
+        text.text = "×"; text.fontSize = 34;
+        return close;
     }
 
     private static void BuildFallbackPreview(Transform parent, string theme)

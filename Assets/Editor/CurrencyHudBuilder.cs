@@ -84,18 +84,18 @@ public static class CurrencyHudBuilder
     // previous strip occupied and keeps the existing clearance to the centered
     // needs group.
     private const float GroupHeight = TopBarButtonHeight;
-    private const float EntryWidth = 142f;
+    private const float EntryWidth = 160f;
     // Matches MainPanelBuilder's TopButtonGap so the rhythm across the whole top
     // bar is one value.
     private const float EntryGap = 14f;
-    private const float GroupWidth = EntryWidth * 3f + EntryGap * 2f;
+    private const float GroupWidth = EntryWidth * 2f + EntryGap;
 
     // Entry internals. The fixed parts sum to an even 68 (32 + 4 + 6 + 26) so
     // CurrencyEntryLayout's half-width offsets stay on whole units.
     private const float IconSize = 32f;
     private const float IconValueGap = 4f;
     private const float ValuePlusGap = 6f;
-    private const float PlusButtonSize = 26f;
+    private const float PlusButtonSize = 44f;
     private const float ContentPadX = 7f;
     private const float FixedContentWidth = IconSize + IconValueGap + ValuePlusGap + PlusButtonSize;
 
@@ -203,27 +203,31 @@ public static class CurrencyHudBuilder
         // ----- Top-left group -----
         GameObject group = CreateRect("Group", safeArea.transform);
         RectTransform groupRect = group.GetComponent<RectTransform>();
-        groupRect.anchorMin = groupRect.anchorMax = new Vector2(0f, 1f);
+        groupRect.anchorMin = groupRect.anchorMax = new Vector2(1f, 1f);
         // Left-centre pivot: responsive scale-down keeps both the left edge and
         // exact top-bar centre fixed. At scale 1, centre -56 plus half-height 34
         // still yields the authored -22 top edge.
-        groupRect.pivot = new Vector2(0f, 0.5f);
-        groupRect.anchoredPosition = new Vector2(LeftMargin, TopBarCenterY);
+        groupRect.pivot = new Vector2(1f, 0.5f);
+        groupRect.anchoredPosition = new Vector2(-144f, TopBarCenterY);
         groupRect.sizeDelta = new Vector2(GroupWidth, GroupHeight);
 
         // Left to right: Bond XP -> Coins -> Diamonds.
         EntryParts bondXpEntry =
-            CreateEntry(group.transform, "BondXpEntry", 0, font, BondFace, BuildBondXpIcon);
+            CreateEntry(safeArea.transform, "BondXpEntry", 0, font, BondFace, BuildBondXpIcon);
         EntryParts coinEntry =
-            CreateEntry(group.transform, "CoinEntry", 1, font, CoinFace, BuildCoinIcon);
+            CreateEntry(group.transform, "CoinEntry", 0, font, CoinFace, BuildCoinIcon);
         EntryParts diamondEntry =
-            CreateEntry(group.transform, "DiamondEntry", 2, font, DiamondFace, BuildDiamondIcon);
-        TMP_Text homeLevelText = BuildHomeLevelBadge(safeArea.transform, font);
+            CreateEntry(group.transform, "DiamondEntry", 1, font, DiamondFace, BuildDiamondIcon);
+        var bondRect = safeArea.transform.Find("BondXpEntry") as RectTransform;
+        bondRect.anchoredPosition = new Vector2(32f, -126f);
+        bondRect.sizeDelta = new Vector2(142f, 52f);
+        TMP_Text homeLevelText = null; // Shown with the cat identity in MainPanelCanvas.
 
         // ----- Wire the controller -----
         SerializedObject serialized = new SerializedObject(controller);
         Assign(serialized, "rootGroup", rootGroup);
         Assign(serialized, "groupRect", groupRect);
+        serialized.FindProperty("avoidNeedsHudOverlap").boolValue = false;
         Assign(serialized, "bondXpText", bondXpEntry.Value);
         Assign(serialized, "coinText", coinEntry.Value);
         Assign(serialized, "diamondText", diamondEntry.Value);
@@ -292,26 +296,9 @@ public static class CurrencyHudBuilder
     /// </summary>
     private static void CreateEntryFrame(Transform parent, Color faceColor)
     {
-        LowPolyPanelGraphic shadow = CreatePanelGraphic("Shadow", parent, PremiumUiStyle.SoftShadow, 28f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(shadow.rectTransform, 3f);
-
-        LowPolyPanelGraphic frame = CreatePanelGraphic("Frame", parent, FrameOrange, 30f, 2f, false);
-        Stretch(frame.rectTransform);
-
-        // The identity face distinguishes the currency at a glance. Its 5-unit
-        // inset leaves the shared orange reading as a frame rather than a halo.
-        LowPolyPanelGraphic face = CreatePanelGraphic(
-            "Face",
-            parent,
-            Color.Lerp(CreamBar, faceColor, 0.16f),
-            27f,
-            2f,
-            false);
-        StretchWithOffsets(face.rectTransform, 5f, 5f, -5f, -5f);
-
-        LowPolyPanelGraphic identity = CreatePanelGraphic("Identity", parent, faceColor, 6f, 1.5f, false);
-        SetRect(identity.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f),
-            new Vector2(0f, 0.5f), new Vector2(7f, 0f), new Vector2(5f, -18f));
+        var face = CreatePanelGraphic("Face", parent, PremiumUiStyle.Ivory, 24f, 2f, false);
+        Stretch(face.rectTransform);
+        PremiumUiStyle.ConfigureLightSurface(face, 24f, 2f);
     }
 
     // ----- Entries -----
@@ -448,7 +435,7 @@ public static class CurrencyHudBuilder
         faceGraphic.color = PlusGreen;
         // The only raycast targets in this HUD are these three faces.
         faceGraphic.raycastTarget = true;
-        ConfigurePanel(faceGraphic, 7f, 3f);
+        PremiumUiStyle.ConfigureSurface(faceGraphic, PremiumUiStyle.Teal, 15f, 1f);
 
         // Cream plus glyph, matching the cream-on-colour glyphs of the top bar.
         // Even arm sizes keep the bars centred on whole units inside the 26 box.

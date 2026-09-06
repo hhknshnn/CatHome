@@ -1,0 +1,5 @@
+Screen 2400x1080; SafeArea (x:0.00, y:0.00, width:2400.00, height:1080.00)
+GamesHubClose (x:1901.01, y:906.72, width:67.08, height:67.08)
+GamesHubLeaderboards (x:970.80, y:81.61, width:458.39, height:69.32)
+HubCatCatchButton (x:1217.89, y:182.23, width:711.07, height:632.81)
+HubCatRunnerButton (x:471.04, y:182.23, width:711.07, height:632.81)

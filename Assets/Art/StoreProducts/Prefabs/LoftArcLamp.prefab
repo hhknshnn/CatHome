@@ -48,7 +48,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -65,6 +65,8 @@ GameObject:
   - component: {fileID: 4123556060659915220}
   - component: {fileID: 5862162925800784991}
   - component: {fileID: 4620534950943065184}
+  - component: {fileID: 7321104475859519017}
+  - component: {fileID: 5088264288567153399}
   m_Layer: 0
   m_Name: LoftArcLamp
   m_TagString: Untagged
@@ -86,6 +88,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4476881157416291857}
+  - {fileID: 2457724722047933880}
+  - {fileID: 4043658377161559672}
+  - {fileID: 7786035101700244187}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5862162925800784991
@@ -127,6 +132,141 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
+--- !u!114 &7321104475859519017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6108938339256016413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 045ecf218eef5ee4ca46f59322301e3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::OvenWarmthActivity
+  activityId: lamp-glow-bask
+  displayName: ARC FLOOR LAMP
+  kind: 70
+  questType: 2
+  requiredBondXp: 0
+  storeProductId: loft.arc-lamp
+  actionText: WARM UP
+  interactionRadius: 1.1
+  energyCost: 0
+  interactionAnchor: {fileID: 7786035101700244187}
+  routineEntryPoint: {fileID: 7786035101700244187}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 2473202931894426655}
+  baskPoint: {fileID: 2457724722047933880}
+  doorPoint: {fileID: 4043658377161559672}
+  baskDuration: 4.2
+  energyRestore: 26
+  wideAwakeEnergy: 92
+--- !u!114 &5088264288567153399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6108938339256016413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!1 &6639811315095911434
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7786035101700244187}
+  m_Layer: 0
+  m_Name: InteractionAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7786035101700244187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6639811315095911434}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.78, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4123556060659915220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7318273588461851418
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2457724722047933880}
+  m_Layer: 0
+  m_Name: BaskPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2457724722047933880
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7318273588461851418}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.62, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4123556060659915220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7859731150754037229
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4043658377161559672}
+  m_Layer: 0
+  m_Name: BaskDoorPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4043658377161559672
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7859731150754037229}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.196, y: 1.4799999, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4123556060659915220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3094668398338955990
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -135,14 +275,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4476881157416291857}
     m_Modifications:
-    - target: {fileID: -8996812683374854489, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
-    - target: {fileID: -8805651946806375460, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
     - target: {fileID: -8679921383154817045, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -183,18 +315,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -7890305838696763805, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+    - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b83dd743604dbc94998175bd39f29aa5, type: 2}
-    - target: {fileID: -5918623446537285520, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: 906174442929127553, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+    - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
       value: 
       objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+    - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
     - target: {fileID: 919132149155446097, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: m_Name
       value: LoftArcLamp_PremiumModel
@@ -202,8 +342,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1773350876431565508}
   m_SourcePrefab: {fileID: 100100000, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+--- !u!1 &2752562845174720391 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
+  m_PrefabInstance: {fileID: 3094668398338955990}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1773350876431565508
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2752562845174720391}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 3564000480641988861, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
 --- !u!4 &3276582027358616893 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}

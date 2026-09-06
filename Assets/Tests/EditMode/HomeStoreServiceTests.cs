@@ -57,6 +57,64 @@ public sealed class HomeStoreServiceTests
     }
 
     [Test]
+    public void LivingRoomCollection_HasReadableDesignSetsAndPlacementLabels()
+    {
+        int reading = 0;
+        int media = 0;
+        for (int i = 0; i < HomeStoreService.LivingRoomCollection.Count; i++)
+        {
+            string productId = HomeStoreService.LivingRoomCollection[i];
+            string set = HomeStoreService.GetLivingRoomDesignSetLabel(productId);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(productId);
+            Assert.That(set, Is.Not.Empty, productId);
+            Assert.That(placement, Is.Not.Empty, productId);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(productId, "FALLBACK"),
+                Does.Contain(set).And.Contain(placement));
+            if (set == "READING") reading++;
+            if (set == "MEDIA") media++;
+        }
+
+        Assert.That(reading, Is.EqualTo(6));
+        Assert.That(media, Is.EqualTo(4));
+        Assert.That(reading + media, Is.EqualTo(HomeStoreService.LivingRoomItemCount));
+        Assert.That(HomeStoreService.GetPlacementFamilyLabel(
+            HomeStoreService.ModernTelevisionId), Is.EqualTo("TV UNIT"));
+        Assert.That(HomeStoreService.GetPlacementFamilyLabel(
+            HomeStoreService.BookSetId), Is.EqualTo("BOOKSHELF"));
+    }
+
+    [Test]
+    public void LivingRoomDesignSets_ReportOneCanonicalRemainingBudget()
+    {
+        Assert.That(HomeStoreService.TryGetLivingRoomDesignSetProgress(
+            "READING", out int readingOwned, out int readingTotal,
+            out long readingRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetLivingRoomDesignSetProgress(
+            "MEDIA", out int mediaOwned, out int mediaTotal,
+            out long mediaRemaining), Is.True);
+
+        Assert.That(readingOwned, Is.Zero);
+        Assert.That(mediaOwned, Is.Zero);
+        Assert.That(readingTotal, Is.EqualTo(6));
+        Assert.That(mediaTotal, Is.EqualTo(4));
+        Assert.That(readingRemaining + mediaRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.LivingRoomId)));
+
+        Assert.That(HomeStoreService.TryGetProduct(
+            HomeStoreService.FloorLampId, out HomeStoreProduct lamp), Is.True);
+        EconomyService.AddCurrency(CurrencyType.Coin, lamp.CoinPrice, EconomySource.Debug);
+        Assert.That(HomeStoreService.TryPurchase(HomeStoreService.FloorLampId).Succeeded,
+            Is.True);
+        Assert.That(HomeStoreService.TryGetLivingRoomDesignSetProgress(
+            "READING", out readingOwned, out readingTotal, out long afterPurchase), Is.True);
+        Assert.That(readingOwned, Is.EqualTo(1));
+        Assert.That(afterPurchase, Is.EqualTo(readingRemaining - lamp.CoinPrice));
+        Assert.That(HomeStoreService.GetRoomRemainingCoinCost(HomeRoomService.LivingRoomId),
+            Is.EqualTo(readingRemaining + mediaRemaining - lamp.CoinPrice));
+    }
+
+    [Test]
     public void ComingSoonCollection_CannotSpendEitherCurrency()
     {
         EconomyService.AddCurrency(CurrencyType.Coin, 5000, EconomySource.Debug);
@@ -77,35 +135,58 @@ public sealed class HomeStoreServiceTests
     }
 
     [Test]
-    public void WallEdgePlacement_SnapsFurnitureNearTheClosestWall()
+    public void AuthoredLayout_RejectsDragAndPreservesTheRoomPosition()
     {
-        HomeStoreService.ApplySavedState(new HomeStoreSaveState
-        {
-            ownedProductIds = new[] { HomeStoreService.TvUnitId }
-        });
-
-        GameObject product = new GameObject("WallEdgePlacementProduct");
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState { ownedProductIds = new[] { HomeStoreService.TvUnitId } });
+        var product = new GameObject("FixedProduct");
         try
         {
+            product.transform.position = new Vector3(-3.2f, 0f, .8f);
+            product.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
             var placement = product.AddComponent<HomeProductPlacement>();
-            placement.EditorConfigure(
-                HomeStoreService.TvUnitId,
-                product.transform,
-                System.Array.Empty<Transform>(),
-                new Vector2(1.72f, 0.62f),
-                HomeProductPlacementKind.WallEdge);
+            placement.EditorConfigure(HomeStoreService.TvUnitId, product.transform,
+                System.Array.Empty<Transform>(), new Vector2(1.8f, .6f), HomeProductPlacementKind.WallEdge);
+            Vector3 position = product.transform.position;
+            Quaternion rotation = product.transform.rotation;
+            Assert.That(placement.BeginPreview(), Is.False);
+            Assert.That(placement.PreviewWorldPosition(Vector3.zero), Is.False);
+            placement.RotatePreview(45f);
+            Assert.That(product.transform.position, Is.EqualTo(position));
+            Assert.That(product.transform.rotation, Is.EqualTo(rotation));
+        }
+        finally { Object.DestroyImmediate(product); }
+    }
 
-            Assert.That(placement.BeginPreview(), Is.True);
-            Assert.That(placement.PreviewWorldPosition(new Vector3(3f, 0f, 0f)), Is.True);
-            Assert.That(placement.PreviewPosition.x,
-                Is.EqualTo(HomeProductPlacement.DefaultRoomRight - 0.44f).Within(0.001f));
-            Assert.That(placement.PreviewRotationY, Is.EqualTo(270f).Within(0.001f));
-            placement.CancelPreview();
-        }
-        finally
+    [Test]
+    public void AuthoredLayout_RestoresTheAuthoredPoseOnSaveReload()
+    {
+        var product = new GameObject("FixedPose");
+        try
         {
-            Object.DestroyImmediate(product);
+            product.transform.position = new Vector3(1f, 0f, 2f);
+            var placement = product.AddComponent<HomeProductPlacement>();
+            placement.EditorConfigure(HomeStoreService.FloorLampId, product.transform,
+                System.Array.Empty<Transform>(), Vector2.one);
+            product.transform.position = Vector3.zero;
+            HomeStoreService.ApplySavedState(new HomeStoreSaveState { ownedProductIds = new[] { HomeStoreService.FloorLampId } });
+            placement.ApplySavedPlacement();
+            Assert.That(product.transform.position, Is.EqualTo(new Vector3(1f, 0f, 2f)));
+            Assert.That(placement.SupportsRotation, Is.False);
         }
+        finally { Object.DestroyImmediate(product); }
+    }
+
+    [Test]
+    public void AuthoredLayout_RestoresPreviouslyStoredSupportAndAttachment()
+    {
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState {
+            storeVersion = 6,
+            ownedProductIds = new[] { HomeStoreService.TvUnitId, HomeStoreService.ModernTelevisionId },
+            storedProductIds = new[] { HomeStoreService.TvUnitId, HomeStoreService.ModernTelevisionId }
+        });
+        Assert.That(HomeStoreService.IsStored(HomeStoreService.TvUnitId), Is.False);
+        Assert.That(HomeStoreService.IsStored(HomeStoreService.ModernTelevisionId), Is.False);
+        Assert.That(HomeStoreService.IsProductDependencyMet(HomeStoreService.ModernTelevisionId), Is.True);
     }
 
     [Test]
@@ -238,6 +319,13 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.BathroomCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int care = 0;
+        int spa = 0;
+        int floor = 0;
+        int wall = 0;
+        bool foundHamperLayout = false;
+        bool foundTowelLayout = false;
+        bool foundMirrorLayout = false;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.BathroomCollection.Count; i++)
         {
@@ -250,8 +338,79 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetBathroomDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            if (id == HomeStoreService.BathroomLaundryHamperId)
+            {
+                foundHamperLayout = true;
+                Assert.That(authoredAsset.DefaultPosition.z,
+                    Is.EqualTo(-1.05f).Within(.001f));
+            }
+            else if (id == HomeStoreService.BathroomTowelStorageId)
+            {
+                foundTowelLayout = true;
+                Assert.That(authoredAsset.DefaultYaw,
+                    Is.EqualTo(270f).Within(.001f));
+            }
+            else if (id == HomeStoreService.BathroomMirrorId)
+            {
+                foundMirrorLayout = true;
+                Assert.That(authoredAsset.DefaultYaw,
+                    Is.EqualTo(270f).Within(.001f));
+            }
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "CARE") care++;
+            if (set == "SPA") spa++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(care, Is.EqualTo(6));
+        Assert.That(spa, Is.EqualTo(4));
+        Assert.That(floor, Is.EqualTo(4));
+        Assert.That(wall, Is.EqualTo(6));
+        Assert.That(foundHamperLayout, Is.True);
+        Assert.That(foundTowelLayout, Is.True);
+        Assert.That(foundMirrorLayout, Is.True);
+        Assert.That(HomeStoreService.TryGetBathroomDesignSetProgress(
+            "CARE", out int careOwned, out int careTotal,
+            out long careRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetBathroomDesignSetProgress(
+            "SPA", out int spaOwned, out int spaTotal,
+            out long spaRemaining), Is.True);
+        Assert.That(careOwned, Is.Zero);
+        Assert.That(spaOwned, Is.Zero);
+        Assert.That(careTotal, Is.EqualTo(6));
+        Assert.That(spaTotal, Is.EqualTo(4));
+        Assert.That(careRemaining + spaRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.BathroomId)));
     }
 
     [Test]
@@ -259,6 +418,12 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.KitchenCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int cafe = 0;
+        int chef = 0;
+        int floor = 0;
+        int wall = 0;
+        bool foundFruitLayout = false;
+        bool foundPantryLayout = false;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.KitchenCollection.Count; i++)
         {
@@ -274,8 +439,76 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetKitchenDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            if (id == HomeStoreService.KitchenFruitBasketId)
+            {
+                foundFruitLayout = true;
+                Assert.That(authoredAsset.DefaultPosition.x,
+                    Is.EqualTo(-2.9f).Within(.001f));
+                Assert.That(authoredAsset.DefaultPosition.z,
+                    Is.EqualTo(-.55f).Within(.001f));
+            }
+            else if (id == HomeStoreService.KitchenPantryShelfId)
+            {
+                foundPantryLayout = true;
+                Assert.That(authoredAsset.DefaultPosition.x,
+                    Is.EqualTo(-3.45f).Within(.001f));
+                Assert.That(authoredAsset.DefaultYaw,
+                    Is.EqualTo(270f).Within(.001f));
+            }
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "CAFE") cafe++;
+            if (set == "CHEF") chef++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(cafe, Is.EqualTo(4));
+        Assert.That(chef, Is.EqualTo(6));
+        Assert.That(floor, Is.EqualTo(6));
+        Assert.That(wall, Is.EqualTo(4));
+        Assert.That(foundFruitLayout, Is.True);
+        Assert.That(foundPantryLayout, Is.True);
+        Assert.That(HomeStoreService.TryGetKitchenDesignSetProgress(
+            "CAFE", out int cafeOwned, out int cafeTotal,
+            out long cafeRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetKitchenDesignSetProgress(
+            "CHEF", out int chefOwned, out int chefTotal,
+            out long chefRemaining), Is.True);
+        Assert.That(cafeOwned, Is.Zero);
+        Assert.That(chefOwned, Is.Zero);
+        Assert.That(cafeTotal, Is.EqualTo(4));
+        Assert.That(chefTotal, Is.EqualTo(6));
+        Assert.That(cafeRemaining + chefRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.KitchenId)));
     }
 
     [Test]
@@ -283,6 +516,10 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.BedroomCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int cozy = 0;
+        int royal = 0;
+        int floor = 0;
+        int wall = 0;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.BedroomCollection.Count; i++)
         {
@@ -298,8 +535,58 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetBedroomDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "COZY") cozy++;
+            if (set == "ROYAL") royal++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(cozy, Is.EqualTo(6));
+        Assert.That(royal, Is.EqualTo(4));
+        Assert.That(floor, Is.EqualTo(6));
+        Assert.That(wall, Is.EqualTo(4));
+        Assert.That(HomeStoreService.TryGetBedroomDesignSetProgress(
+            "COZY", out int cozyOwned, out int cozyTotal,
+            out long cozyRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetBedroomDesignSetProgress(
+            "ROYAL", out int royalOwned, out int royalTotal,
+            out long royalRemaining), Is.True);
+        Assert.That(cozyOwned, Is.Zero);
+        Assert.That(royalOwned, Is.Zero);
+        Assert.That(cozyTotal, Is.EqualTo(6));
+        Assert.That(royalTotal, Is.EqualTo(4));
+        Assert.That(cozyRemaining + royalRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.BedroomId)));
     }
 
     [Test]
@@ -307,6 +594,9 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.GardenCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int nature = 0;
+        int patio = 0;
+        int floor = 0;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.GardenCollection.Count; i++)
         {
@@ -322,8 +612,55 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetGardenDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.EqualTo("FLOOR"), id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  FLOOR"), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            Assert.That(authoredAsset.PlacementKind,
+                Is.EqualTo(HomeProductPlacementKind.Floor), id);
+
+            if (set == "NATURE") nature++;
+            if (set == "PATIO") patio++;
+            if (placement == "FLOOR") floor++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(nature, Is.EqualTo(5));
+        Assert.That(patio, Is.EqualTo(5));
+        Assert.That(floor, Is.EqualTo(10));
+        Assert.That(HomeStoreService.TryGetGardenDesignSetProgress(
+            "NATURE", out int natureOwned, out int natureTotal,
+            out long natureRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetGardenDesignSetProgress(
+            "PATIO", out int patioOwned, out int patioTotal,
+            out long patioRemaining), Is.True);
+        Assert.That(natureOwned, Is.Zero);
+        Assert.That(patioOwned, Is.Zero);
+        Assert.That(natureTotal, Is.EqualTo(5));
+        Assert.That(patioTotal, Is.EqualTo(5));
+        Assert.That(natureRemaining + patioRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.GardenId)));
 
         Assert.That(
             HomeStoreService.GetRequiredProductId(HomeStoreService.HomeGardenPreviewId),
@@ -343,6 +680,10 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.BalconyCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int sunny = 0;
+        int lounge = 0;
+        int floor = 0;
+        int wall = 0;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.BalconyCollection.Count; i++)
         {
@@ -359,8 +700,58 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetBalconyDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "SUNNY") sunny++;
+            if (set == "LOUNGE") lounge++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(sunny, Is.EqualTo(5));
+        Assert.That(lounge, Is.EqualTo(5));
+        Assert.That(floor, Is.EqualTo(6));
+        Assert.That(wall, Is.EqualTo(4));
+        Assert.That(HomeStoreService.TryGetBalconyDesignSetProgress(
+            "SUNNY", out int sunnyOwned, out int sunnyTotal,
+            out long sunnyRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetBalconyDesignSetProgress(
+            "LOUNGE", out int loungeOwned, out int loungeTotal,
+            out long loungeRemaining), Is.True);
+        Assert.That(sunnyOwned, Is.Zero);
+        Assert.That(loungeOwned, Is.Zero);
+        Assert.That(sunnyTotal, Is.EqualTo(5));
+        Assert.That(loungeTotal, Is.EqualTo(5));
+        Assert.That(sunnyRemaining + loungeRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.BalconyId)));
 
         Assert.That(
             HomeStoreService.GetRequiredProductId(HomeStoreService.HomeBalconyPreviewId),
@@ -380,6 +771,10 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.PatioCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int oasis = 0;
+        int gather = 0;
+        int floor = 0;
+        int wall = 0;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.PatioCollection.Count; i++)
         {
@@ -397,8 +792,60 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetPatioDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "OASIS") oasis++;
+            if (set == "GATHER") gather++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(oasis, Is.EqualTo(5));
+        Assert.That(gather, Is.EqualTo(5));
+        // Eight floor, two wall: PatioStringLights moved off the wall on
+        // 5 Eylul 2026 because the Patio has no wall to hang a festoon from.
+        Assert.That(floor, Is.EqualTo(8));
+        Assert.That(wall, Is.EqualTo(2));
+        Assert.That(HomeStoreService.TryGetPatioDesignSetProgress(
+            "OASIS", out int oasisOwned, out int oasisTotal,
+            out long oasisRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetPatioDesignSetProgress(
+            "GATHER", out int gatherOwned, out int gatherTotal,
+            out long gatherRemaining), Is.True);
+        Assert.That(oasisOwned, Is.Zero);
+        Assert.That(gatherOwned, Is.Zero);
+        Assert.That(oasisTotal, Is.EqualTo(5));
+        Assert.That(gatherTotal, Is.EqualTo(5));
+        Assert.That(oasisRemaining + gatherRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.PatioId)));
 
         Assert.That(
             HomeStoreService.GetRequiredProductId(HomeStoreService.HomePatioPreviewId),
@@ -418,6 +865,10 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.SecondFloorCollection.Count, Is.EqualTo(10));
         long previousPrice = -1L;
+        int nook = 0;
+        int studio = 0;
+        int floor = 0;
+        int wall = 0;
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < HomeStoreService.SecondFloorCollection.Count; i++)
         {
@@ -436,8 +887,58 @@ public sealed class HomeStoreServiceTests
             Assert.That(product.CoinPrice, Is.GreaterThan(previousPrice));
             Assert.That(product.DiamondPrice * HomeStoreService.CoinsPerDiamond,
                 Is.EqualTo(product.CoinPrice));
+
+            string set = HomeStoreService.GetSecondFloorDesignSetLabel(id);
+            string placement = HomeStoreService.GetPlacementFamilyLabel(id);
+            Assert.That(set, Is.Not.Empty, id);
+            Assert.That(placement, Is.Not.Empty, id);
+            Assert.That(HomeStoreService.GetCatalogEyebrow(id, "FALLBACK"),
+                Is.EqualTo(set + "  •  " + placement), id);
+
+            StoreCatalogAsset authoredAsset = default;
+            bool foundAsset = false;
+            for (int assetIndex = 0;
+                 assetIndex < StoreCatalogAssets.PlaceableProducts.Length;
+                 assetIndex++)
+            {
+                StoreCatalogAsset candidate =
+                    StoreCatalogAssets.PlaceableProducts[assetIndex];
+                if (candidate.ProductId != id)
+                    continue;
+                authoredAsset = candidate;
+                foundAsset = true;
+                break;
+            }
+
+            Assert.That(foundAsset, Is.True, id);
+            string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
+            Assert.That(placement, Is.EqualTo(authoredPlacement), id);
+
+            if (set == "NOOK") nook++;
+            if (set == "STUDIO") studio++;
+            if (placement == "FLOOR") floor++;
+            if (placement == "WALL") wall++;
             previousPrice = product.CoinPrice;
         }
+
+        Assert.That(nook, Is.EqualTo(5));
+        Assert.That(studio, Is.EqualTo(5));
+        Assert.That(floor, Is.EqualTo(8));
+        Assert.That(wall, Is.EqualTo(2));
+        Assert.That(HomeStoreService.TryGetSecondFloorDesignSetProgress(
+            "NOOK", out int nookOwned, out int nookTotal,
+            out long nookRemaining), Is.True);
+        Assert.That(HomeStoreService.TryGetSecondFloorDesignSetProgress(
+            "STUDIO", out int studioOwned, out int studioTotal,
+            out long studioRemaining), Is.True);
+        Assert.That(nookOwned, Is.Zero);
+        Assert.That(studioOwned, Is.Zero);
+        Assert.That(nookTotal, Is.EqualTo(5));
+        Assert.That(studioTotal, Is.EqualTo(5));
+        Assert.That(nookRemaining + studioRemaining,
+            Is.EqualTo(HomeStoreService.GetRoomRemainingCoinCost(
+                HomeRoomService.SecondFloorId)));
 
         Assert.That(
             HomeStoreService.GetRequiredProductId(HomeStoreService.HomeSecondFloorPreviewId),
@@ -455,6 +956,7 @@ public sealed class HomeStoreServiceTests
     [Test]
     public void FreeTestingAcquisition_SpendsNothingAndAddsRequiredProducts()
     {
+        Assert.That(HomeStoreService.EconomyChecksEnabled, Is.False);
         Assert.That(HomeStoreService.FreePurchaseTestingEnabled, Is.True);
 
         HomeStorePurchaseResult room = HomeStoreService.TryAcquireForTesting(
@@ -468,8 +970,51 @@ public sealed class HomeStoreServiceTests
         Assert.That(HomeStoreService.IsOwned(HomeStoreService.HomeKitchenPreviewId), Is.True);
         Assert.That(HomeStoreService.IsOwned(HomeStoreService.TvUnitId), Is.True);
         Assert.That(HomeStoreService.IsOwned(HomeStoreService.ModernTelevisionId), Is.True);
+        Assert.That(HomeStoreService.IsStored(HomeStoreService.TvUnitId), Is.False);
+        Assert.That(HomeStoreService.IsStored(HomeStoreService.ModernTelevisionId), Is.False);
         Assert.That(EconomyService.Coins, Is.Zero);
         Assert.That(EconomyService.Diamonds, Is.Zero);
+    }
+
+    [Test]
+    public void FreshPlaceablePurchase_IsVisibleImmediately()
+    {
+        HomeStoreService.TryGetProduct(HomeStoreService.FloorLampId, out HomeStoreProduct product);
+        EconomyService.AddCurrency(CurrencyType.Coin, product.CoinPrice, EconomySource.Debug);
+        Assert.That(HomeStoreService.TryPurchase(product.Id).Succeeded, Is.True);
+        Assert.That(HomeStoreService.IsOwned(product.Id), Is.True);
+        Assert.That(HomeStoreService.IsStored(product.Id), Is.False);
+        Assert.That(HomeStoreService.CaptureState().storedProductIds, Is.Empty);
+    }
+
+    [Test]
+    public void ShopCompletion_DoesNotStartADragSession()
+    {
+        HomeStoreService.TryAcquireForTesting(HomeStoreService.KitchenFruitBasketId);
+        var host = new GameObject("FixedShop");
+        try
+        {
+            var shop = host.AddComponent<ShopPanelController>();
+            typeof(ShopPanelController).GetMethod("BeginPlacement", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(shop, new object[] { HomeStoreService.KitchenFruitBasketId });
+            Assert.That((bool)typeof(ShopPanelController).GetField("placementMode", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(shop), Is.False);
+            Assert.That(HomeStoreService.IsStored(HomeStoreService.KitchenFruitBasketId), Is.False);
+        }
+        finally { Object.DestroyImmediate(host); }
+    }
+
+    [Test]
+    public void LegacyRoomEditor_CannotOpenOrHideOwnedItems()
+    {
+        var host = new GameObject("RetiredRoomEditor");
+        try
+        {
+            var editor = host.AddComponent<HomeEditModeController>();
+            editor.Open();
+            Assert.That(editor.IsOpen, Is.False);
+            Assert.That(HomeEditModeController.IsAnyOpen, Is.False);
+        }
+        finally { Object.DestroyImmediate(host); }
     }
 
     [Test]
@@ -596,34 +1141,62 @@ public sealed class HomeStoreServiceTests
     }
 
     [Test]
-    public void Placement_RequiresOwnershipAndRoundTripsThroughSave()
+    public void LegacyPlacementMigration_DropsCoordinatesAndKeepsOwnershipAndWallet()
     {
-        Assert.That(
-            HomeStoreService.TrySetPlacement(
-                HomeStoreService.BallBasketId,
-                new UnityEngine.Vector3(-2.4f, 0f, 0.3f),
-                45f),
-            Is.False);
+        EconomyService.ApplyLegacyBalances(1200, 45);
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState {
+            storeVersion = 6,
+            ownedProductIds = new[] { HomeStoreService.FloorLampId },
+            placements = new[] { new HomeStorePlacementEntry(HomeStoreService.FloorLampId, new Vector3(99f, 0f, 99f), 45f) }
+        });
+        var save = HomeStoreService.CaptureState();
+        Assert.That(save.storeVersion, Is.EqualTo(8));
+        Assert.That(save.placements, Is.Empty);
+        Assert.That(save.ownedProductIds, Does.Contain(HomeStoreService.FloorLampId));
+        Assert.That(EconomyService.Coins, Is.EqualTo(1200));
+        Assert.That(EconomyService.Diamonds, Is.EqualTo(45));
+        HomeStoreService.ApplySavedState(save);
+        Assert.That(HomeStoreService.TryGetWorldPlacement(HomeStoreService.FloorLampId, out _, out _), Is.False);
+    }
 
-        EconomyService.AddCurrency(CurrencyType.Coin, HomeStoreService.BallBasketPrice, EconomySource.Debug);
-        Assert.That(HomeStoreService.TryPurchase(HomeStoreService.BallBasketId).Succeeded, Is.True);
-        UnityEngine.Vector3 expected = new UnityEngine.Vector3(-2.4f, 0f, 0.3f);
-        Assert.That(HomeStoreService.TrySetPlacement(
-            HomeStoreService.BallBasketId, expected, 45f), Is.True);
-        Assert.That(HomeStoreService.TryGetWorldPlacement(
-            HomeStoreService.BallBasketId, out UnityEngine.Vector3 placed, out float yaw), Is.True);
-        Assert.That(placed, Is.EqualTo(expected));
-        Assert.That(yaw, Is.EqualTo(45f));
+    [Test]
+    public void AllRoomProducts_RemainVisibleAndRejectStorage()
+    {
+        var ids = new System.Collections.Generic.List<string>();
+        foreach (var room in HomeRoomService.Rooms) ids.AddRange(HomeStoreService.GetRoomCollection(room.Id));
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState { ownedProductIds = ids.ToArray(), storedProductIds = ids.ToArray() });
+        Assert.That(ids.Count, Is.EqualTo(80));
+        foreach (string id in ids)
+        {
+            Assert.That(HomeStoreService.TrySetStored(id, true), Is.False, id);
+            Assert.That(HomeStoreService.IsStored(id), Is.False, id);
+            Assert.That(HomeStoreService.IsOwned(id), Is.True, id);
+        }
+        Assert.That(HomeStoreService.CaptureState().storedProductIds, Is.Empty);
+    }
 
-        HomeStoreSaveState saved = HomeStoreService.CaptureState();
-        HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
-        Assert.That(HomeStoreService.TryGetWorldPlacement(
-            HomeStoreService.BallBasketId, out _, out _), Is.False);
-        HomeStoreService.ApplySavedState(saved);
-        Assert.That(HomeStoreService.TryGetWorldPlacement(
-            HomeStoreService.BallBasketId, out placed, out yaw), Is.True);
-        Assert.That(placed, Is.EqualTo(expected));
-        Assert.That(yaw, Is.EqualTo(45f));
+    [Test]
+    public void Storage_RejectsUnownedAndNonPlaceableProducts()
+    {
+        Assert.That(HomeStoreService.TrySetStored(
+            HomeStoreService.BallBasketId, true), Is.False);
+
+        HomeStoreService.ApplySavedState(new HomeStoreSaveState
+        {
+            ownedProductIds = new[] { HomeStoreService.HomeBathroomPreviewId }
+        });
+        Assert.That(HomeStoreService.TrySetStored(
+            HomeStoreService.HomeBathroomPreviewId, true), Is.False);
+    }
+
+    [Test]
+    public void LegacyPlacementClear_IsIdempotentAndKeepsOwnership()
+    {
+        HomeStoreService.TryAcquireForTesting(HomeStoreService.FloorLampId);
+        Assert.That(HomeStoreService.TrySetPlacement(HomeStoreService.FloorLampId, Vector3.one, 45f), Is.False);
+        Assert.That(HomeStoreService.TryClearPlacement(HomeStoreService.FloorLampId), Is.True);
+        Assert.That(HomeStoreService.TryClearPlacement(HomeStoreService.FloorLampId), Is.True);
+        Assert.That(HomeStoreService.IsOwned(HomeStoreService.FloorLampId), Is.True);
     }
 
     [Test]
@@ -644,88 +1217,30 @@ public sealed class HomeStoreServiceTests
     }
 
     [Test]
-    public void FreePlacement_RejectsFurnitureOverlapAndAcceptsClearFloor()
+    public void FixedPlacement_RejectsBothLegacySlotAndWorldMutation()
     {
-        EconomyService.AddCurrency(CurrencyType.Coin, HomeStoreService.BallBasketPrice, EconomySource.Debug);
-        Assert.That(HomeStoreService.TryPurchase(HomeStoreService.BallBasketId).Succeeded, Is.True);
-
-        GameObject product = new GameObject("PlacementTestProduct");
-        GameObject obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        try
-        {
-            product.transform.position = new Vector3(-2.4f, 0f, -1.8f);
-            var placement = product.AddComponent<HomeProductPlacement>();
-            placement.EditorConfigure(
-                HomeStoreService.BallBasketId,
-                product.transform,
-                System.Array.Empty<Transform>(),
-                new Vector2(0.6f, 0.6f));
-
-            obstacle.name = "ExistingFurniture";
-            obstacle.transform.SetPositionAndRotation(new Vector3(0f, 0.35f, 0f), Quaternion.identity);
-            obstacle.transform.localScale = new Vector3(0.9f, 0.7f, 0.9f);
-            Physics.SyncTransforms();
-
-            Assert.That(placement.BeginPreview(), Is.True);
-            Assert.That(placement.PreviewWorldPosition(Vector3.zero), Is.False);
-            Assert.That(placement.IsPreviewValid, Is.False);
-            Assert.That(placement.RevertInvalidPreview(), Is.True);
-            Assert.That(placement.PreviewPosition, Is.EqualTo(new Vector3(-2.4f, 0f, -1.8f)));
-            Assert.That(placement.IsPreviewValid, Is.True);
-
-            Assert.That(
-                placement.PreviewWorldPosition(new Vector3(2.6f, 0f, -1.8f)),
-                Is.True);
-            Assert.That(placement.IsPreviewValid, Is.True);
-            placement.CancelPreview();
-        }
-        finally
-        {
-            Object.DestroyImmediate(obstacle);
-            Object.DestroyImmediate(product);
-        }
+        HomeStoreService.TryAcquireForTesting(HomeStoreService.FloorLampId);
+        Assert.That(HomeStoreService.TrySetPlacement(HomeStoreService.FloorLampId, 1, 3), Is.False);
+        Assert.That(HomeStoreService.TrySetPlacement(HomeStoreService.FloorLampId, Vector3.zero, 90f), Is.False);
+        Assert.That(HomeStoreService.CaptureState().placements, Is.Empty);
     }
 
     [Test]
-    public void FreePlacement_ClampsCloseToWallInsteadOfLeavingLargeDeadZone()
+    public void RepeatedLegacyCloudImport_CannotRestoreStorageOrFreePlacement()
     {
-        EconomyService.AddCurrency(CurrencyType.Coin, HomeStoreService.BallBasketPrice, EconomySource.Debug);
-        Assert.That(HomeStoreService.TryPurchase(HomeStoreService.BallBasketId).Succeeded, Is.True);
-
-        GameObject product = new GameObject("NearWallPlacementTestProduct");
-        GameObject baseboard = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        try
+        var legacy = new HomeStoreSaveState {
+            storeVersion = 6,
+            ownedProductIds = new[] { HomeStoreService.FloorLampId },
+            storedProductIds = new[] { HomeStoreService.FloorLampId },
+            placements = new[] { new HomeStorePlacementEntry(HomeStoreService.FloorLampId, Vector3.one, 270f) }
+        };
+        for (int i = 0; i < 2; i++)
         {
-            product.transform.position = new Vector3(0f, 0f, -1.8f);
-            baseboard.name = "Baseboard_Right";
-            baseboard.transform.position = new Vector3(3.9f, 0.09f, 0f);
-            baseboard.transform.localScale = new Vector3(0.28f, 0.18f, 6f);
-            var placement = product.AddComponent<HomeProductPlacement>();
-            placement.EditorConfigure(
-                HomeStoreService.BallBasketId,
-                product.transform,
-                System.Array.Empty<Transform>(),
-                new Vector2(0.6f, 0.6f));
-
-            Assert.That(placement.BeginPreview(), Is.True);
-            Assert.That(
-                placement.PreviewWorldPosition(new Vector3(20f, 0f, 0f)),
-                Is.True);
-
-            // 0.30 m half-footprint + 0.09 m collision clearance is removed
-            // from the near-wall authoring bounds. The visual edge therefore
-            // sits about 0.11 m from the side/back wall collider faces.
-            Assert.That(
-                placement.PreviewPosition.x,
-                Is.EqualTo(HomeProductPlacement.DefaultRoomRight - 0.39f).Within(0.001f));
-            Assert.That(3.8f - (placement.PreviewPosition.x + 0.3f),
-                Is.EqualTo(0.11f).Within(0.001f));
-            placement.CancelPreview();
-        }
-        finally
-        {
-            Object.DestroyImmediate(baseboard);
-            Object.DestroyImmediate(product);
+            HomeStoreService.ApplySavedState(legacy);
+            var current = HomeStoreService.CaptureState();
+            Assert.That(current.storedProductIds, Is.Empty);
+            Assert.That(current.placements, Is.Empty);
+            Assert.That(current.ownedProductIds, Does.Contain(HomeStoreService.FloorLampId));
         }
     }
 }

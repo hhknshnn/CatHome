@@ -45,8 +45,8 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
     [Header("Optional Input Target")]
     [SerializeField] private CatMovement catMovement;
 
-    private const string Title = "WHILE YOU WERE AWAY...";
-    private const string ButtonCopy = "WELCOME BACK!";
+    private static string Title => GameLanguageService.Text("return.title");
+    private static string ButtonCopy => GameLanguageService.Text("return.continue");
     private const float ChangeTolerance = 0.005f;
 
     private Coroutine animationCoroutine;
@@ -58,6 +58,18 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
     private CatHomeSaveSystem.OfflineReturnSummary pendingSummary;
 
     public bool IsOpen => isOpen;
+    public static bool IsAnyOpen
+    {
+        get
+        {
+            WhileYouWereAwayPopup[] popups =
+                Resources.FindObjectsOfTypeAll<WhileYouWereAwayPopup>();
+            for (int i = 0; i < popups.Length; i++)
+                if (popups[i] != null && popups[i].isOpen)
+                    return true;
+            return false;
+        }
+    }
 
     private void Awake()
     {
@@ -162,7 +174,7 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
 
     private void Populate(CatHomeSaveSystem.OfflineReturnSummary summary)
     {
-        durationText.text = $"YOU WERE AWAY FOR {FormatDuration(summary.AppliedDuration)}";
+        durationText.text = GameLanguageService.Format("return.away", FormatDuration(summary.AppliedDuration));
         hungerText.text = needLabelsAreSeparate
             ? FormatNeedValues(summary.HungerBefore, summary.HungerAfter)
             : FormatNeed("HUNGER", summary.HungerBefore, summary.HungerAfter);
@@ -320,6 +332,12 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
         int hours = totalMinutes % 1440 / 60;
         int minutes = totalMinutes % 60;
 
+        if(GameLanguageService.Current==GameLanguage.Turkish)
+        {
+            if(days>0)return hours>0?$"{days} gün {hours} saat":$"{days} gün";
+            if(hours>0)return minutes>0?$"{hours} saat {minutes} dakika":$"{hours} saat";
+            return $"{minutes} dakika";
+        }
         if (days > 0)
             return hours > 0 ? $"{days}d {hours}h" : $"{days}d";
         if (hours > 0)
@@ -353,21 +371,13 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
 
     public static string SelectSummaryCopy(CatHomeSaveSystem.OfflineReturnSummary summary)
     {
-        float energyChange = summary.EnergyAfter - summary.EnergyBefore;
-        if (summary.WasSleeping)
-        {
-            if (energyChange > ChangeTolerance)
-            {
-                int gain = Mathf.Max(0, Mathf.RoundToInt(energyChange));
-                return $"YOUR CAT HAD A COZY NAP\nAND RESTORED {gain}% ENERGY!";
-            }
-
-            return "YOUR CAT ENJOYED A COZY NAP\nWHILE YOU WERE AWAY!";
-        }
-
-        return energyChange < -ChangeTolerance
-            ? "YOUR CAT MISSED YOU\nAND GOT A LITTLE TIRED."
-            : "YOUR CAT MISSED YOU\nWHILE YOU WERE AWAY.";
+        if(summary.ThirstAfter<25f) return GameLanguageService.Text("return.water");
+        if(summary.HungerAfter<25f) return GameLanguageService.Text("return.food");
+        if(summary.EnergyAfter<25f) return GameLanguageService.Text("return.rest");
+        float energyChange=summary.EnergyAfter-summary.EnergyBefore;
+        if(summary.WasSleeping && energyChange>ChangeTolerance)
+            return GameLanguageService.Format("return.nap",Mathf.RoundToInt(energyChange));
+        return GameLanguageService.Text("return.missed");
     }
 
     private static float EaseOutBack(float value)

@@ -30,10 +30,10 @@ public static class GardenLevelBuilder
     private static readonly Color Lemon = new Color32(255, 222, 94, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(132, 214, 255, 255);
-    private static readonly Color Grass = new Color32(104, 196, 92, 255);
-    private static readonly Color GrassDeep = new Color32(72, 164, 78, 255);
-    private static readonly Color GrassLight = new Color32(156, 220, 112, 255);
-    private static readonly Color WoodFence = new Color32(214, 154, 92, 255);
+    private static readonly Color Grass = new Color32(138, 211, 110, 255);
+    private static readonly Color GrassDeep = new Color32(91, 176, 91, 255);
+    private static readonly Color GrassLight = new Color32(184, 232, 139, 255);
+    private static readonly Color WoodFence = new Color32(228, 177, 112, 255);
     private const float LivingCameraFieldOfView = 47f;
     private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
     private static readonly Quaternion LivingCameraRotation =
@@ -105,6 +105,7 @@ public static class GardenLevelBuilder
         Transform treeRoost;
         Transform[] flowerAnchors;
         BuildRoomShell(environment, materials, out treeRoost, out flowerAnchors);
+        HomeRoomShellVisualPolishBuilder.Apply(garden, HomeRoomService.GardenId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -706,6 +707,7 @@ public static class GardenLevelBuilder
         key.color = new Color32(255, 246, 210, 255);
         key.intensity = 1.05f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .46f;
 
         BuildFillLight(parent, "Sky Fill", new Vector3(-3.4f, 2.9f, -1.5f),
             new Color32(116, 244, 233, 255), .9f, 8.5f);

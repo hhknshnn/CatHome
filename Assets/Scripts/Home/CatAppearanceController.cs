@@ -46,11 +46,13 @@ public sealed class CatAppearanceController : MonoBehaviour
     private void OnEnable()
     {
         CatIdentityService.Changed += HandleIdentityChanged;
+        CatBreedService.Changed += HandleBreedChanged;
     }
 
     private void OnDisable()
     {
         CatIdentityService.Changed -= HandleIdentityChanged;
+        CatBreedService.Changed -= HandleBreedChanged;
     }
 
     private void Update()
@@ -75,6 +77,14 @@ public sealed class CatAppearanceController : MonoBehaviour
     {
         appliedTint = Color.clear;
         Apply();
+    }
+
+    private void HandleBreedChanged()
+    {
+        trackedCat = null;
+        catRenderers = null;
+        appliedTint = Color.clear;
+        nextScan = 0f;
     }
 
     private void Apply()

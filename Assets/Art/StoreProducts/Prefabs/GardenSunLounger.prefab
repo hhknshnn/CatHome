@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 8259836910546714986}
   - component: {fileID: 3655400871810142475}
   - component: {fileID: 4548092507931706322}
+  - component: {fileID: 7132014336871347115}
+  - component: {fileID: 67275112802662401}
   m_Layer: 0
   m_Name: GardenSunLounger
   m_TagString: Untagged
@@ -32,6 +34,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5388750278581573963}
+  - {fileID: 255082560316862221}
+  - {fileID: 7381385815468643725}
+  - {fileID: 4343174763391370647}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3655400871810142475
@@ -73,6 +78,158 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
+--- !u!114 &7132014336871347115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237939543453253187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cfec6256d33cdd49a67f24d18058bdf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::TowelNestActivity
+  activityId: sun-bask
+  displayName: SUN LOUNGER
+  kind: 42
+  questType: 2
+  requiredBondXp: 0
+  storeProductId: garden.sun-lounger
+  actionText: BASK
+  interactionRadius: 1.1
+  energyCost: 8
+  interactionAnchor: {fileID: 4343174763391370647}
+  routineEntryPoint: {fileID: 255082560316862221}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 7062730155340948266}
+  floorPoint: {fileID: 255082560316862221}
+  nestPoint: {fileID: 7381385815468643725}
+  napDuration: 3.8
+  energyRestore: 24
+  wideAwakeEnergy: 92
+--- !u!114 &67275112802662401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2237939543453253187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!1 &2588388550104472627
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4343174763391370647}
+  m_Layer: 0
+  m_Name: InteractionAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4343174763391370647
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2588388550104472627}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8259836910546714986}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2651058243484830532
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 255082560316862221}
+  m_Layer: 0
+  m_Name: NestFloorPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &255082560316862221
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651058243484830532}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.44}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8259836910546714986}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4842271171927233072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7381385815468643725}
+  - component: {fileID: 4427803775136959501}
+  m_Layer: 0
+  m_Name: NestPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7381385815468643725
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4842271171927233072}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.19629192, y: 0.29256845, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8259836910546714986}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4427803775136959501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4842271171927233072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
+  size: {x: 0.56, y: 0.42000002}
+  overridePose: 0
+  preferredPose: 2
+  alignAlongSurface: 0
 --- !u!1 &7062730155340948266
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,7 +278,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -137,19 +294,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.50091094
+      value: 0.9347235
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.50091094
+      value: 0.9347235
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.50091094
+      value: 0.9347235
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.007452965
+      value: 0.014955578
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_LocalPosition.y
@@ -187,51 +344,65 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -5781414489912325621, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+    - target: {fileID: -7511558181221131132, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
-    - target: {fileID: -1413609180871600059, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+    - target: {fileID: -7511558181221131132, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: c389359af3b2c5f46ad92767feff9bce, type: 2}
-    - target: {fileID: -1284953027892672604, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
-    - target: {fileID: 275906795802824834, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
     - target: {fileID: 919132149155446097, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
       propertyPath: m_Name
       value: GardenSunLounger_PremiumModel
       objectReference: {fileID: 0}
-    - target: {fileID: 1983864856652021327, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
-    - target: {fileID: 2267083466302814013, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
-    - target: {fileID: 3716697064364489712, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
-    - target: {fileID: 4049309899678812091, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e20f96ef460c01446968a1f5b3658f6e, type: 2}
-    - target: {fileID: 6649465632797440424, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e20f96ef460c01446968a1f5b3658f6e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4835968026378999613}
   m_SourcePrefab: {fileID: 100100000, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+--- !u!1 &2430027413019130810 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
+  m_PrefabInstance: {fileID: 3276466445046400747}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &4835968026378999613
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2430027413019130810}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3361694001699466203, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}
 --- !u!4 &3094783980693037312 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3a5321faa16568d49ad95d8bbdb69905, type: 3}

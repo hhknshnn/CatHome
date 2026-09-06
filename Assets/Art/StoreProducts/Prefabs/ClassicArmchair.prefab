@@ -1,5 +1,84 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &418269741462540947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2133119788636886512}
+  m_Layer: 0
+  m_Name: PerchFloorPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2133119788636886512
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418269741462540947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.815}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8957822582941563696}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &853980626525394680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4476734760103079402}
+  - component: {fileID: 7898492552823960893}
+  m_Layer: 0
+  m_Name: PerchPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4476734760103079402
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853980626525394680}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.37626737, z: -0.06}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8957822582941563696}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7898492552823960893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853980626525394680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
+  size: {x: 0.7, y: 0.49}
+  overridePose: 0
+  preferredPose: 2
+  alignAlongSurface: 0
 --- !u!1 &4945125802656751893
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,6 +90,8 @@ GameObject:
   - component: {fileID: 8957822582941563696}
   - component: {fileID: 8771117083646194543}
   - component: {fileID: 6818021560061470500}
+  - component: {fileID: 5113543316420310637}
+  - component: {fileID: 2208826691512128032}
   m_Layer: 0
   m_Name: ClassicArmchair
   m_TagString: Untagged
@@ -32,6 +113,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5022803491424950460}
+  - {fileID: 3472741180804193173}
+  - {fileID: 2133119788636886512}
+  - {fileID: 4476734760103079402}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8771117083646194543
@@ -63,7 +147,7 @@ MonoBehaviour:
   productId: room.armchair
   movableRoot: {fileID: 8957822582941563696}
   legacySlots: []
-  footprintSize: {x: 1.4, y: 1.05}
+  footprintSize: {x: 1.05, y: 0.79}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -73,6 +157,80 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
+--- !u!114 &5113543316420310637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4945125802656751893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4c7789279ba54468041924f1d0f9e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::PerchNapActivity
+  activityId: armchair-nap
+  displayName: ARMCHAIR
+  kind: 77
+  questType: 2
+  requiredBondXp: 0
+  storeProductId: room.armchair
+  actionText: NAP
+  interactionRadius: 1
+  energyCost: 6
+  interactionAnchor: {fileID: 3472741180804193173}
+  routineEntryPoint: {fileID: 2133119788636886512}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 8450395611724009413}
+  floorPoint: {fileID: 2133119788636886512}
+  perchPoint: {fileID: 4476734760103079402}
+  settleDuration: 3.5
+  energyRestore: 18
+  wideAwakeEnergy: 94
+  completeMessage: MY COZY CHAIR!
+--- !u!114 &2208826691512128032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4945125802656751893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!1 &6863657709334282184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3472741180804193173}
+  m_Layer: 0
+  m_Name: InteractionAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3472741180804193173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6863657709334282184}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.815}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8957822582941563696}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8450395611724009413
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,7 +261,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5747718375454708880}
+  - {fileID: 7344833672492356944}
   m_Father: {fileID: 8957822582941563696}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &132759933609829868
@@ -121,13 +279,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.4, y: 1.12, z: 1.05}
-  m_Center: {x: 0, y: 0.56, z: 0}
---- !u!1001 &6183970336763998749
+  m_Size: {x: 1.05, y: 0.84, z: 0.79}
+  m_Center: {x: 0, y: 0.42, z: 0}
+--- !u!1001 &7089983243184861883
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -135,69 +293,123 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5022803491424950460}
     m_Modifications:
-    - target: {fileID: 1250258544513006647, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
-      propertyPath: m_Name
-      value: ClassicArmchair_Model
-      objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 0.70993847
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalScale.y
-      value: 4
+      value: 0.70993847
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalScale.z
-      value: 4
+      value: 0.70993847
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.03310498
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
+    - target: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+    - target: {fileID: -7511558181221131132, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: 'm_Materials.Array.data[5]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+    - target: {fileID: 919132149155446097, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      propertyPath: m_Name
+      value: ClassicArmchair_PremiumModel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
---- !u!4 &5747718375454708880 stripped
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4348389879422558518}
+  m_SourcePrefab: {fileID: 100100000, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+--- !u!4 &7344833672492356944 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 1878598256555484813, guid: 5c29fca4d1829d74c8149e47f6978235, type: 3}
-  m_PrefabInstance: {fileID: 6183970336763998749}
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+  m_PrefabInstance: {fileID: 7089983243184861883}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7972998496952012778 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}
+  m_PrefabInstance: {fileID: 7089983243184861883}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &4348389879422558518
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7972998496952012778}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 31625569227349644, guid: cf9e4aeb5deaca540b6a95ae7497b534, type: 3}

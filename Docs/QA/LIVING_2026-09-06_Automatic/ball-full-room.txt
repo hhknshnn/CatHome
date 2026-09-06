@@ -1,0 +1,1 @@
+started=True hits=3 roll=1,95 lastGap=0,01542649 reason= running=False controller=True

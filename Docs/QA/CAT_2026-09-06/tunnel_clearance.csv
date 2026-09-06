@@ -1,0 +1,11 @@
+breed,samples,maxEnvelopeRatio,point,pose
+domestic-shorthair,212996,0.6815397,"(0.005, 0.460, 0.017)",Crawl
+domestic-shorthair-orange,211040,0.6815192,"(0.005, 0.460, 0.027)",Crawl
+khao-manee,210713,0.6815412,"(0.005, 0.460, 0.008)",Crawl
+british-shorthair,207703,0.7101303,"(0.005, 0.469, 0.013)",Crawl
+domestic-longhair,220078,0.743171,"(0.005, 0.479, 0.005)",Crawl
+maine-coon,244896,0.9149017,"(-0.119, 0.464, 0.325)",Crawl
+oriental-shorthair,214047,0.7211338,"(0.005, 0.472, 0.016)",Crawl
+persian,248430,0.7631143,"(0.011, 0.485, -0.129)",Crawl
+russian-blue,208065,0.6815224,"(0.005, 0.460, 0.028)",Crawl
+sphynx,206591,0.7030661,"(0.023, 0.464, -0.105)",Crawl

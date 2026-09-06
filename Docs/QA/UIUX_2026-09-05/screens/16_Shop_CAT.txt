@@ -1,0 +1,103 @@
+SectionTitle | 1 | CAT TOYS & NEEDS
+ThirstLabelFront | 16 | THIRST
+Description | 20 | A plush oval bed for long afternoon naps in a quiet corner.
+Description | 20 | A basket full of soft balls. Unlocks Ball Chase in your living room.
+Category | 15 | REST
+ProductTitle | 31 | TREAT JAR
+ActionLabel | 19 | GET
+Description | 20 | A weighty ceramic bowl that stays put during enthusiastic meals.
+Description | 20 | A polished collar displayed in the cat's growing accessory collection.
+Description | 20 | A squashy floor pillow for short sunbeam naps.
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+Category | 15 | FEEDING
+Description | 20 | A small leafy pot for the play corner and curious nibbles.
+Feedback | 16 | FREE TEST MODE  •  TAP GET  •  NO COINS OR DIAMONDS USED
+Description | 20 | A soft low-sided bed made for naps beside the family.
+Description | 20 | A playful burger-shaped hideaway for warm naps and funny photos.
+Description | 20 | A sturdy scratching post. Unlocks the Scratch activity at home.
+Description | 20 | A coordinated leash ready for future garden and outdoor adventures.
+SpecialPrice | 21 | FREE TEST
+ProductTitle | 31 | TOY MOUSE
+ActionLabel | 19 | GET
+Category | 15 | COMFORT
+SpecialPrice | 21 | FREE TEST
+ProductTitle | 31 | BURGER CAT BED
+PercentageText | 14 | 0%
+ActionLabel | 19 | GET
+SpecialPrice | 21 | FREE TEST
+Category | 15 | TOY
+OwnedCount | 17 | 0 OF 17  •  COLLECTED
+SpecialPrice | 21 | FREE TEST
+HomeLevelText | 18 | HOME LV. 30
+SpecialPrice | 21 | FREE TEST
+ProductTitle | 31 | BELL COLLAR
+PercentageText | 14 | 0%
+Category | 15 | REST
+Label | 23 | HOME
+SpecialPrice | 21 | FREE TEST
+ActionLabel | 19 | GET
+Category | 15 | REST
+SpecialPrice | 21 | FREE TEST
+ActionLabel | 19 | GET
+Description | 20 | A colorful treat jar for the feeding corner and future snack rewards.
+Description | 20 | A colorful wet-food tin for the feeding corner.
+Description | 20 | A springy wobble toy that adds movement to the play corner.
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+Label | 23 | ROOM
+Description | 20 | A colorful tunnel with a hanging toy at the entrance.
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+ProductTitle | 31 | CAT FOOD TIN
+ProductTitle | 31 | SCRATCHING POST
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+ProductTitle | 31 | BOUNCY CAT TOY
+Category | 15 | TOY
+Intro | 20 | Build a happy cat, a personal room and a growing home.
+ProductTitle | 31 | CLOUD BED
+SpecialPrice | 21 | FREE TEST
+PercentageText | 14 | 0%
+Category | 15 | REST
+ActionLabel | 19 | GET
+ProductTitle | 31 | CARDBOARD HIDEOUT
+ProductTitle | 31 | CLASSIC COLLAR
+SpecialPrice | 21 | FREE TEST
+Category | 15 | GREENERY
+Category | 15 | TOY
+Subtitle | 16 | MAKE EVERY ROOM YOUR CAT'S FAVORITE PLACE
+Category | 15 | STYLE
+Category | 15 | FEEDING
+ProductTitle | 31 | CAT GRASS POT
+Description | 20 | A bright clockwork mouse for short bursts of indoor play.
+Description | 20 | An open box hideout. Sometimes the simplest toy is the favorite.
+SpecialPrice | 21 | FREE TEST
+Category | 15 | FEEDING
+ProductTitle | 31 | NAP PILLOW
+CollectionLabel | 11 | COLLECTION PROGRESS
+Category | 15 | STYLE
+ProductTitle | 31 | BALL BASKET
+Label | 23 | CAT
+Balance | 26 | 657
+SpecialPrice | 21 | FREE TEST
+Category | 15 | TOY
+ActionLabel | 19 | GET
+ProductTitle | 31 | WALKING LEASH
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+Description | 20 | A jingling pastel collar for showing off around the house.
+ProductTitle | 31 | COZY POD BED
+Category | 15 | STYLE
+ProductTitle | 31 | CERAMIC BOWL
+Title | 48 | HOME STORE
+Category | 15 | TOY
+EnergyLabelFront | 16 | ENERGY
+HungerLabelFront | 16 | HUNGER
+ActionLabel | 19 | GET
+ProductTitle | 31 | PLAY TUNNEL

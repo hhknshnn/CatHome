@@ -1,0 +1,65 @@
+SectionTitle | 1 | HOME EXPANSIONS
+ThirstLabelFront | 16 | THIRST
+Category | 15 | NEW ROOM
+Category | 15 | NEW ROOM
+SpecialPrice | 21 | FREE TEST
+Category | 15 | NEW ROOM
+Feedback | 16 | COMPLETE EACH ROOM  •  UNLOCK THE NEXT WITH COINS OR DIAMONDS
+OwnedText | 14 | AT HOME
+ProductTitle | 31 | BALCONY
+Category | 15 | NEW ROOM
+ProductTitle | 31 | KITCHEN
+ProductTitle | 31 | GARDEN PATIO
+SpecialPrice | 21 | FREE TEST
+PercentageText | 14 | 0%
+SpecialPrice | 21 | FREE TEST
+OwnedCount | 17 | 7 OF 7  •  COLLECTED
+SpecialPrice | 21 | FREE TEST
+OwnedText | 14 | AT HOME
+Description | 20 | A paved garden patio with a fountain, fire pit and its own 10-piece patio collection.
+HomeLevelText | 18 | HOME LV. 30
+ActionLabel | 19 | PREVIEW READY
+PercentageText | 14 | 0%
+ActionLabel | 19 | PREVIEW READY
+Category | 15 | NEW ROOM
+Label | 23 | HOME
+SpecialPrice | 21 | 0 / 10
+ProductTitle | 31 | SECOND FLOOR
+Description | 20 | A warm cat-friendly bathroom with its own completely new 10-piece collection.
+OwnedText | 14 | AT HOME
+Description | 20 | A calm pastel bedroom with its own completely new 10-piece collection.
+OwnedText | 14 | AT HOME
+OwnedText | 14 | AT HOME
+Description | 20 | A sunny balcony with plants, cushions and its own 10-piece balcony collection over a city view.
+Label | 23 | ROOM
+Category | 15 | NEW ROOM
+Description | 20 | A bright cat-friendly kitchen with its own completely new 10-piece collection.
+ActionLabel | 19 | PREVIEW READY
+Intro | 20 | Build a happy cat, a personal room and a growing home.
+Description | 20 | A sunny fenced courtyard with grass, birds and its own 10-piece garden collection.
+ActionLabel | 19 | PREVIEW READY
+ActionLabel | 19 | GET
+ProductTitle | 31 | GARDEN
+PercentageText | 14 | 0%
+SpecialPrice | 21 | FREE TEST
+Category | 15 | NEW ROOM
+ActionLabel | 19 | CURRENT ROOM
+Subtitle | 16 | MAKE EVERY ROOM YOUR CAT'S FAVORITE PLACE
+ProductTitle | 31 | BATHROOM
+CollectionLabel | 11 | COLLECTION PROGRESS
+ProductTitle | 31 | BEDROOM
+Label | 23 | CAT
+Balance | 26 | 657
+OwnedText | 14 | AT HOME
+Description | 20 | A cozy upstairs loft with a big window and its own 10-piece loft collection.
+ActionLabel | 19 | PREVIEW READY
+Category | 15 | CURRENT ROOM
+Description | 20 | Your first complete room collection. Finish it to unlock the next room.
+SpecialPrice | 21 | FREE TEST
+Title | 48 | HOME STORE
+EnergyLabelFront | 16 | ENERGY
+HungerLabelFront | 16 | HUNGER
+ActionLabel | 19 | PREVIEW READY
+ProductTitle | 31 | LIVING ROOM
+SpecialPrice | 21 | FREE TEST
+OwnedText | 14 | AT HOME

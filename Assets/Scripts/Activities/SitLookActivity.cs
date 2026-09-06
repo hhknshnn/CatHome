@@ -42,6 +42,7 @@ public sealed class SitLookActivity : CatActivity
 
     protected override bool BeginActivity()
     {
+        PlayCatPose(CatActivityPose.Walk);
         reaction = Cat.GetComponent<CatActivityReaction>() ??
                    Cat.gameObject.AddComponent<CatActivityReaction>();
         characterController = Cat.GetComponent<CharacterController>();
@@ -112,7 +113,7 @@ public sealed class SitLookActivity : CatActivity
                 reaction.PlayPounceReaction();
                 break;
             default:
-                reaction.PlayScratchReaction(Mathf.Min(1.1f, lookDuration));
+                PlayCatPose(CatActivityPose.Sit);
                 break;
         }
     }

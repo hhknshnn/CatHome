@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Failed(Child)" total="6" passed="5" failed="1" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 15:27:59Z" end-time="2026-09-06 15:30:34Z" duration="155,8772143">
+  <test-suite type="TestSuite" id="1093" name="CatHome" fullname="CatHome" runstate="Runnable" testcasecount="65" result="Failed" site="Child" start-time="2026-09-06 15:27:59Z" end-time="2026-09-06 15:30:34Z" duration="155.877214" total="6" passed="5" failed="1" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1089" name="CatHome.PlayModeTests.dll" fullname="C:/Users/HAKAN/Desktop/CatHome/CatHome/Library/ScriptAssemblies/CatHome.PlayModeTests.dll" runstate="Runnable" testcasecount="65" result="Failed" site="Child" start-time="2026-09-06 15:27:59Z" end-time="2026-09-06 15:30:34Z" duration="155.867166" total="6" passed="5" failed="1" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="12060" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+      <test-suite type="TestFixture" id="1027" name="CatEnrichmentTests" fullname="CatEnrichmentTests" classname="CatEnrichmentTests" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2026-09-06 15:27:59Z" end-time="2026-09-06 15:30:34Z" duration="155.862611" total="6" passed="5" failed="1" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+        <test-case id="1028" name="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" fullname="CatEnrichmentTests.AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" methodname="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" classname="CatEnrichmentTests" runstate="Runnable" seed="1610057253" result="Passed" start-time="2026-09-06 15:27:59Z" end-time="2026-09-06 15:29:33Z" duration="94.101861" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+ProgressionService: quest 'level1_eat' completed.
+ProgressionService: quest 'level1_ball' completed.
+]]></output>
+        </test-case>
+        <test-case id="1030" name="BasketAndScratchPost_KeepRealPlayOnEveryBreed" fullname="CatEnrichmentTests.BasketAndScratchPost_KeepRealPlayOnEveryBreed" methodname="BasketAndScratchPost_KeepRealPlayOnEveryBreed" classname="CatEnrichmentTests" runstate="Runnable" seed="504644638" result="Failed" start-time="2026-09-06 15:29:33Z" end-time="2026-09-06 15:29:33Z" duration="0.603711" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+            <stack-trace><![CDATA[at CatEnrichmentTests+<BasketAndScratchPost_KeepRealPlayOnEveryBreed>d__9.MoveNext () [0x002be] in C:\Users\HAKAN\Desktop\CatHome\CatHome\Assets\Tests\PlayMode\CatEnrichmentTests.cs:108
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@76560ee600cb\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1029" name="CancelAndOwnership_RestorePhysicsPoseAndToy" fullname="CatEnrichmentTests.CancelAndOwnership_RestorePhysicsPoseAndToy" methodname="CancelAndOwnership_RestorePhysicsPoseAndToy" classname="CatEnrichmentTests" runstate="Runnable" seed="799340004" result="Passed" start-time="2026-09-06 15:29:33Z" end-time="2026-09-06 15:29:34Z" duration="0.394367" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1031" name="RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" fullname="CatEnrichmentTests.RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" methodname="RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" classname="CatEnrichmentTests" runstate="Runnable" seed="1687131231" result="Passed" start-time="2026-09-06 15:29:34Z" end-time="2026-09-06 15:29:42Z" duration="7.779726" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1032" name="ToyResponses_FollowRealPawContact_AndUseVariedPoses" fullname="CatEnrichmentTests.ToyResponses_FollowRealPawContact_AndUseVariedPoses" methodname="ToyResponses_FollowRealPawContact_AndUseVariedPoses" classname="CatEnrichmentTests" runstate="Runnable" seed="2131725155" result="Passed" start-time="2026-09-06 15:29:42Z" end-time="2026-09-06 15:30:20Z" duration="38.888212" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1033" name="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" fullname="CatEnrichmentTests.Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" methodname="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" classname="CatEnrichmentTests" runstate="Runnable" seed="701271416" result="Passed" start-time="2026-09-06 15:30:20Z" end-time="2026-09-06 15:30:34Z" duration="14.079785" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: Docs/QA/UIUX_2026-09-06\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

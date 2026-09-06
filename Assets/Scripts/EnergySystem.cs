@@ -62,8 +62,14 @@ public class EnergySystem : MonoBehaviour
     private void Update()
     {
         bool isSleeping = sleepInteraction != null && sleepInteraction.IsSleeping;
-
-        if (isSleeping)
+        var rest = CatActivity.Active as CatEnrichmentActivity;
+        var furnitureRest = CatActivity.Active as LivingFurnitureActivity;
+        bool isResting = (rest != null && rest.IsResting) || (furnitureRest != null && furnitureRest.IsResting);
+        if (isResting)
+        {
+            currentEnergy += CatEnrichmentActivity.RestEnergyPerSecond * Time.deltaTime;
+        }
+        else if (isSleeping)
         {
             currentEnergy += recoveryPerSecond * Time.deltaTime;
         }
@@ -93,6 +99,19 @@ public class EnergySystem : MonoBehaviour
         ApplySavedValue(currentEnergy + delta);
     }
 
+    /// <summary>
+    /// Adds energy back after a resting activity. Sleeping in bed uses the
+    /// per-second recovery in Update; short naps land here instead.
+    /// </summary>
+    public void RestoreEnergy(float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        currentEnergy = Mathf.Clamp(currentEnergy + amount, 0f, 100f);
+        UpdateUI();
+    }
+
     public bool CanSpendEnergy(float amount)
     {
         return amount <= 0f || currentEnergy >= amount;
@@ -117,7 +136,7 @@ public class EnergySystem : MonoBehaviour
         if (percentageText != null)
         {
             percentageText.text = Mathf.CeilToInt(currentEnergy) + "%";
-            percentageText.color = textColor;
+            percentageText.color = PremiumUiStyle.Ink;
         }
 
         if (isExhausted)
@@ -165,7 +184,7 @@ public class EnergySystem : MonoBehaviour
             energyFrame.color = flashingRed;
 
         if (percentageText != null)
-            percentageText.color = Color.Lerp(textColor, Color.white, pulse);
+            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     private void OnDisable()

@@ -32,6 +32,8 @@ public static class CatHomeAuthoringWorkspace
         "Tools/Cat Home/Workspace/Organize Living Room Hierarchy";
     private const string DisplayMenu =
         "Tools/Cat Home/Workspace/Apply 1920x1080 Landscape Preview";
+    private const string ManualTestRunMenu =
+        "Tools/Cat Home/Workspace/Hold Fast Play Mode For A Manual Test Run";
 
     private const int PreviewWidth = 1920;
     private const int PreviewHeight = 1080;
@@ -39,6 +41,14 @@ public static class CatHomeAuthoringWorkspace
     private const string McpTestRunActiveKey = "TestRunnerNoThrottle_TestRunActive";
     private const string McpPlayModeRestorePendingKey =
         "MCPForUnity.PlayModeOptions.PendingRestore";
+
+    /// <summary>
+    /// Set while the workspace must stop re-arming <c>DisableSceneReload</c>, so
+    /// PlayMode tests can be run by hand from the Test Runner window. Session
+    /// scoped on purpose: it survives the domain reloads a test run causes and
+    /// dies with the editor session.
+    /// </summary>
+    private const string ManualTestRunKey = "CatHome.Workspace.ManualPlayModeTestRun";
 
     private static readonly string[] EnvironmentObjects =
     {
@@ -116,6 +126,10 @@ public static class CatHomeAuthoringWorkspace
             return;
         }
 
+        // Opening the workspace is the deliberate "back to authoring" gesture, so
+        // it also ends any manual-test-run hold and restores fast Play Mode.
+        SessionState.SetBool(ManualTestRunKey, false);
+
         if (askToSave && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
             return;
 
@@ -137,6 +151,7 @@ public static class CatHomeAuthoringWorkspace
         ConfigureCanonicalPlayModeReloadPolicy();
         ApplyHierarchyPresentation();
         ScheduleHierarchyPresentation();
+        ApplyEditModeHudPresentation();
 
         SceneView.RepaintAll();
         UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
@@ -182,6 +197,7 @@ public static class CatHomeAuthoringWorkspace
             ConfigurePlayModeStartScene();
             ConfigureCanonicalPlayModeReloadPolicy();
             ScheduleHierarchyPresentation();
+            ApplyEditModeHudPresentation();
             return;
         }
 
@@ -191,6 +207,48 @@ public static class CatHomeAuthoringWorkspace
                 SceneManager.GetActiveScene().path))
         {
             OpenFullHomePreview(false);
+        }
+    }
+
+    private static void ApplyEditModeHudPresentation()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        Scene ui=SceneManager.GetSceneByPath(UiScenePath);
+        if (!ui.IsValid() || !ui.isLoaded) return;
+        foreach (var root in ui.GetRootGameObjects())
+        {
+            if (root.name=="TitleScreenCanvas")
+            {
+                var group=root.GetComponent<CanvasGroup>();
+                if (group!=null) group.alpha=0f;
+            }
+            var wallet=root.GetComponent<CurrencyHudController>();
+            if (wallet!=null)
+            {
+                var group=root.GetComponent<CanvasGroup>();
+                if (group!=null) group.alpha=1f;
+            }
+            var menu=root.GetComponent<MainPanelController>();
+            if (menu!=null && root.activeSelf)
+            {
+                var data=new SerializedObject(menu);
+                foreach (var key in new[]{"menuButtonGroup","catShopButtonGroup"})
+                {
+                    var field=data.FindProperty(key);
+                    var group=field!=null?field.objectReferenceValue as CanvasGroup:null;
+                    if (group!=null) group.alpha=1f;
+                }
+            }
+            if (root.name!="Canvas") continue;
+            foreach (var rect in root.GetComponentsInChildren<RectTransform>(true))
+            {
+                if (rect.name=="RewardedEnergyButton") rect.gameObject.SetActive(false);
+                if (rect.name=="RoomProgressLabel")
+                {
+                    var label=rect.GetComponent<TMPro.TMP_Text>();
+                    if (label!=null) label.text=GameContentCopy.RoomName(HomeRoomService.LivingRoomId,"Living room");
+                }
+            }
         }
     }
 
@@ -254,9 +312,37 @@ public static class CatHomeAuthoringWorkspace
     /// processing without destroying the already visible scene objects, removing that camera gap.
     /// Domain reload remains enabled so static runtime state still starts clean on every Play.
     /// </summary>
+    /// <summary>
+    /// Turns the workspace's fast-Play policy off for the rest of the editor
+    /// session so PlayMode tests can be run by hand.
+    ///
+    /// `DisableSceneReload` is what makes iterating on the home fast, but the
+    /// PlayMode Test Runner needs the scene reload: without it the test scene is
+    /// never loaded, the authoring scenes stay live, the game boots normally and
+    /// the run just sits there - Play Mode starts and no test ever begins, with
+    /// no error to read. Clearing the option by hand does not survive, because
+    /// `InitializeAuthoringWorkspace` re-arms it on every domain reload and a
+    /// test run causes several. Hence a session flag rather than a settings
+    /// poke. `Open Full Home Preview` clears the flag and puts fast Play back.
+    /// </summary>
+    [MenuItem(ManualTestRunMenu, priority = 4)]
+    public static void HoldFastPlayModeForManualTestRun()
+    {
+        SessionState.SetBool(ManualTestRunKey, true);
+        EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.None;
+        EditorSettings.enterPlayModeOptionsEnabled = false;
+        Debug.Log(
+            "Fast Play Mode is held off for this editor session: PlayMode tests " +
+            "can now be run from the Test Runner window. Reopen " +
+            "Tools > Cat Home > Workspace > Open Full Home Preview to restore it.");
+    }
+
     private static void ConfigureCanonicalPlayModeReloadPolicy()
     {
         if (IsAutomatedTestTransition())
+            return;
+
+        if (SessionState.GetBool(ManualTestRunKey, false))
             return;
 
         if (!IsCanonicalHomeWorkspaceOpen() && !IsSingleRoomAuthoringSceneOpen())
@@ -271,8 +357,26 @@ public static class CatHomeAuthoringWorkspace
 
     private static bool IsAutomatedTestTransition()
     {
-        return SessionState.GetBool(McpTestRunActiveKey, false) ||
-               SessionState.GetBool(McpPlayModeRestorePendingKey, false);
+        if (SessionState.GetBool(McpTestRunActiveKey, false) ||
+            SessionState.GetBool(McpPlayModeRestorePendingKey, false))
+        {
+            return true;
+        }
+
+        // Unity's Test Runner can reload the domain while preparing its temporary scene.
+        // The MCP session flags may be restored before RunStarted in that window, but the
+        // InitTestScene itself remains authoritative: authoring policy must not replace it
+        // with GameScene or reapply the normal three-scene Enter Play Mode options.
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene scene = SceneManager.GetSceneAt(i);
+            if (scene.name.StartsWith("InitTestScene", StringComparison.Ordinal))
+                return true;
+        }
+
+        SceneAsset startScene = EditorSceneManager.playModeStartScene;
+        return startScene != null &&
+               startScene.name.StartsWith("InitTestScene", StringComparison.Ordinal);
     }
 
     /// <summary>

@@ -33,11 +33,11 @@ public static class PatioLevelBuilder
     private static readonly Color Lemon = new Color32(255, 222, 94, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(140, 216, 255, 255);
-    private static readonly Color Grass = new Color32(104, 196, 92, 255);
-    private static readonly Color GrassDeep = new Color32(72, 164, 78, 255);
-    private static readonly Color Stone = new Color32(224, 210, 186, 255);
-    private static readonly Color StoneLight = new Color32(242, 232, 214, 255);
-    private static readonly Color Wood = new Color32(214, 154, 92, 255);
+    private static readonly Color Grass = new Color32(138, 211, 110, 255);
+    private static readonly Color GrassDeep = new Color32(91, 176, 91, 255);
+    private static readonly Color Stone = new Color32(235, 225, 208, 255);
+    private static readonly Color StoneLight = new Color32(252, 244, 230, 255);
+    private static readonly Color Wood = new Color32(228, 177, 112, 255);
 
     private const float LivingCameraFieldOfView = 47f;
     private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
@@ -108,6 +108,7 @@ public static class PatioLevelBuilder
         Transform setup = CreateSceneRoot(patio, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(patio, HomeRoomService.PatioId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -489,6 +490,7 @@ public static class PatioLevelBuilder
         key.color = new Color32(255, 246, 210, 255);
         key.intensity = 1.05f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .46f;
 
         BuildFillLight(parent, "Sky Fill", new Vector3(-3.4f, 2.9f, -1.5f),
             new Color32(140, 216, 255, 255), .9f, 8.5f);

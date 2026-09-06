@@ -13,11 +13,23 @@ public static class DirectLevelPlayBootstrap
     private static bool redirecting;
     private static string requestedRoomId;
 
+    /// <summary>
+    /// PlayMode fixtures load a single room scene on purpose and bring their own
+    /// need systems and store state. Adding GameScene underneath them races that
+    /// setup: LevelLoader re-applies the save file, so a product the fixture just
+    /// reset comes back owned, and it may add a second room and therefore a
+    /// second cat to the same session. A fixture sets this before loading a room
+    /// and clears it afterwards; normal play never assigns it, and every Play
+    /// session starts with it false.
+    /// </summary>
+    public static bool RedirectSuppressed { get; set; }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetState()
     {
         redirecting = false;
         requestedRoomId = null;
+        RedirectSuppressed = false;
         SceneManager.sceneLoaded -= HandleSceneLoaded;
     }
 
@@ -38,8 +50,11 @@ public static class DirectLevelPlayBootstrap
 
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (redirecting || mode != LoadSceneMode.Single || !IsHomeRoomScene(scene))
+        if (RedirectSuppressed || redirecting || mode != LoadSceneMode.Single ||
+            !IsHomeRoomScene(scene))
+        {
             return;
+        }
 
         if (Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include) != null)
             return;

@@ -32,17 +32,19 @@ public sealed class HomeLevelBadgeLabel : MonoBehaviour
             label = GetComponent<TMP_Text>();
 
         HomeProgressionService.Changed += Apply;
+        GameLanguageService.Changed += Apply;
         Apply();
     }
 
     private void OnDisable()
     {
         HomeProgressionService.Changed -= Apply;
+        GameLanguageService.Changed -= Apply;
     }
 
     private void Apply()
     {
         if (label != null)
-            label.text = "HOME LV. " + HomeProgressionService.HomeLevel;
+            label.text = GameLanguageService.Format("home.level", HomeProgressionService.HomeLevel);
     }
 }

@@ -189,6 +189,7 @@ public static class GameplayActivityContentBuilder
         BuildScratchActivity(root.transform);
         BuildMouseActivity(root.transform);
         BuildWindowWatchActivity(root.transform);
+        CatProductContentBuilder.UpgradeLegacyStations(scene);
 
         CatMovement cat = FindInScene<CatMovement>(scene);
         if (cat != null && cat.GetComponent<CatActivityReaction>() == null)

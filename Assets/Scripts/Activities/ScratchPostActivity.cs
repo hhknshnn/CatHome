@@ -1,89 +1,72 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
 public sealed class ScratchPostActivity : CatActivity
 {
-    [Header("Scratch Post")]
-    [SerializeField] private Transform scratchPoint;
-    [SerializeField, Min(0.5f)] private float scratchDuration = 2.4f;
-
-    private CatActivityReaction reaction;
-    private CharacterController characterController;
-
-    public override string ProgressLabel => IsRunning ? "SCRATCHING..." : string.Empty;
-
+    [SerializeField] Transform scratchPoint;
+    [SerializeField,Min(.5f)] float scratchDuration=2.4f;
+    [SerializeField] Transform hangingToy;
+    CharacterController controller;
+    bool wasEnabled,captured;
+    Vector3 start;
+    Quaternion rotation,toyRotation;
+    List<Vector3> approach;
+    public override string ProgressLabel=>IsRunning?"SCRATCHING...":string.Empty;
     protected override bool CanBeginActivity(out string failureReason)
     {
-        if (scratchPoint == null)
-        {
-            failureReason = "SCRATCH POST IS NOT READY";
-            return false;
-        }
-
-        failureReason = string.Empty;
+        failureReason="";
+        if(scratchPoint==null){failureReason="SCRATCH POST IS NOT READY";return false;}
+        if(!CatActivityMotion.TryFloorPath(Cat.transform.position,RoutineEntryPoint.position,out approach))
+        {failureReason="LET'S GET A LITTLE CLOSER!";return false;}
         return true;
     }
-
     protected override bool BeginActivity()
     {
-        reaction = Cat.GetComponent<CatActivityReaction>() ??
-                   Cat.gameObject.AddComponent<CatActivityReaction>();
-        characterController = Cat.GetComponent<CharacterController>();
-        StartCoroutine(ScratchRoutine());
-        return true;
+        controller=Cat.GetComponent<CharacterController>();wasEnabled=controller!=null&&controller.enabled;
+        start=Cat.transform.position;rotation=Cat.transform.rotation;captured=true;
+        if(hangingToy!=null)toyRotation=hangingToy.localRotation;
+        Cat.SetMovementLocked(this,true);if(controller!=null)controller.enabled=false;
+        StartCoroutine(Routine());return true;
     }
-
-    private IEnumerator ScratchRoutine()
+    IEnumerator Routine()
     {
-        Cat.SetMovementLocked(this, true);
-        Vector3 startPosition = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 destination = scratchPoint.position;
-        Vector3 lookDirection = transform.position - destination;
-        lookDirection.y = 0f;
-        Quaternion destinationRotation = lookDirection.sqrMagnitude > 0.001f
-            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
-            : startRotation;
-
-        if (characterController != null)
-            characterController.enabled = false;
-
-        const float approachDuration = 0.35f;
-        float elapsed = 0f;
-        while (elapsed < approachDuration)
+        foreach(var point in approach)yield return Walk(point);
+        yield return Walk(scratchPoint.position);
+        Vector3 facing=transform.position-Cat.transform.position;facing.y=0;
+        if(facing.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(facing);
+        PlayCatPose(CatActivityPose.Scratch);
+        float time=0;
+        while(time<scratchDuration)
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / approachDuration);
-            Cat.transform.position = Vector3.Lerp(startPosition, destination, t);
-            Cat.transform.rotation = Quaternion.Slerp(startRotation, destinationRotation, t);
+            time+=Time.deltaTime;
+            if(hangingToy!=null)hangingToy.localRotation=toyRotation*Quaternion.Euler(0,0,Mathf.Sin(time*10)*9);
             yield return null;
         }
-
-        if (characterController != null)
-            characterController.enabled = true;
-
-        reaction.PlayScratchReaction(scratchDuration);
-        yield return new WaitForSeconds(scratchDuration + 0.05f);
-        Cat.SetMovementLocked(this, false);
-        CompleteActivity("CLAWS FEEL GREAT!");
+        yield return Walk(RoutineEntryPoint.position);
+        Restore(false);CompleteActivity("CLAWS FEEL GREAT!");
     }
-
-    protected override void OnDisable()
+    IEnumerator Walk(Vector3 point)
     {
-        StopAllCoroutines();
-        if (characterController != null)
-            characterController.enabled = true;
-        if (Cat != null)
-            Cat.SetMovementLocked(this, false);
-        base.OnDisable();
+        PlayCatPose(CatActivityPose.Walk);
+        Vector3 direction=point-Cat.transform.position;direction.y=0;
+        if(direction.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(direction);
+        while(Vector3.Distance(Cat.transform.position,point)>.005f)
+        {Cat.transform.position=Vector3.MoveTowards(Cat.transform.position,point,1.5f*Time.deltaTime);yield return null;}
+        Cat.transform.position=point;
     }
-
+    void Restore(bool cancel)
+    {
+        if(!captured)return;captured=false;
+        if(hangingToy!=null)hangingToy.localRotation=toyRotation;
+        if(Cat!=null){if(cancel){Cat.transform.position=start;Cat.transform.rotation=rotation;}Cat.SetMovementLocked(this,false);}
+        if(controller!=null)controller.enabled=wasEnabled;
+    }
+    protected override void CancelActivity(){StopAllCoroutines();Restore(true);base.CancelActivity();}
+    protected override void OnDisable(){StopAllCoroutines();Restore(true);base.OnDisable();}
 #if UNITY_EDITOR
-    public void EditorConfigureScratch(Transform point, float duration)
-    {
-        scratchPoint = point;
-        scratchDuration = Mathf.Max(0.5f, duration);
-    }
+    public void EditorConfigureScratch(Transform point,float duration){scratchPoint=point;scratchDuration=Mathf.Max(.5f,duration);}
+    public void EditorConfigureToy(Transform toy){hangingToy=toy;}
 #endif
 }

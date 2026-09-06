@@ -28,13 +28,20 @@ public readonly struct AchievementDefinition
         long diamonds)
     {
         Id = id;
-        Title = title;
+        englishTitle = title;
         Coins = Math.Max(0L, coins);
         Diamonds = Math.Max(0L, diamonds);
     }
 
     public string Id { get; }
-    public string Title { get; }
+    private readonly string englishTitle;
+    public string Title => GameLanguageService.Current==GameLanguage.Turkish ? TurkishTitle : englishTitle;
+    private string TurkishTitle => Id switch
+    {
+        "ach.first-run" => "İlk koşu", "ach.first-shop" => "İlk eşyan", "ach.home-level-3" => "Sıcak bir yuva",
+        "ach.home-level-5" => "Bahçeye hazır", "ach.bond-80" => "Pencere arkadaşı", "ach.bond-250" => "Kuş dostu",
+        "ach.login-streak-7" => "Birlikte bir hafta", _ => englishTitle
+    };
     public long Coins { get; }
     public long Diamonds { get; }
 }
@@ -70,6 +77,7 @@ public static class AchievementService
     private static bool initialized;
 
     public static event Action StateChanged;
+    public static event Action<AchievementDefinition> RewardGranted;
     public static IReadOnlyList<AchievementDefinition> Catalog => CatalogInternal;
     public static int UnlockedCount => Unlocked.Count;
 
@@ -157,6 +165,7 @@ public static class AchievementService
 
         Unlocked.Add(id);
         StateChanged?.Invoke();
+        RewardGranted?.Invoke(definition);
         return true;
     }
 
@@ -201,5 +210,6 @@ public static class AchievementService
         Unlocked.Clear();
         initialized = false;
         StateChanged = null;
+        RewardGranted = null;
     }
 }

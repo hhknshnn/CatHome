@@ -16,8 +16,7 @@ using UnityEngine.UI;
 public static class CatCatchContentBuilder
 {
     public const string ScenePath = CatCatchLauncher.CatchScenePath;
-    private const string CatPrefabPath =
-        "Assets/PolyOne/Cartoon Dog, Cat/Prefab/SM_CartoonAnimal_Cat.prefab";
+    private const string CatPrefabPath = PolyperfectCatIntegrationBuilder.PrefabPath;
     private const string MaterialFolder = "Assets/Art/Catch/Materials";
 
     private static readonly Color Cream = new Color32(255, 247, 224, 255);
@@ -91,8 +90,7 @@ public static class CatCatchContentBuilder
         BuildCatchBursts(root.transform, materials);
         // Keep hand-authored / AI premium hero art when present; only bake a
         // procedural arena still as a fallback so rebuilds never wipe the card.
-        if (AssetDatabase.LoadAssetAtPath<Texture2D>(CatchHeroPath) == null)
-            BakeWelcomeHero(root.transform, camera, player, mice);
+        BakeWelcomeHero(root.transform, camera, player, mice);
         BuildUi(
             root.transform,
             game,
@@ -345,10 +343,8 @@ public static class CatCatchContentBuilder
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CatPrefabPath);
         if (prefab == null)
             throw new InvalidOperationException("Cat prefab missing for Cat Catch.");
-        // The cat prefab carries its Animator on its own root, and the clips
-        // animate that root's transform. Moving it directly means the Animator
-        // rewrites the position every frame and the cat sticks in place, so the
-        // hunt drives a wrapper and the animated model rides underneath it.
+        // The hunt drives a wrapper while the project-owned visual prefab keeps
+        // the imported Animator isolated underneath it.
         GameObject cat = new GameObject("CatchCat");
         cat.transform.SetParent(parent, false);
         cat.transform.localPosition = spawn.localPosition;
@@ -359,9 +355,7 @@ public static class CatCatchContentBuilder
         model.transform.SetParent(cat.transform, false);
         model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.identity;
-        // Left at one on purpose: the cat's Idle and Run clips drive the root
-        // scale to one, so any other authored value is overwritten the moment
-        // the Animator plays and only shows up as a pop mid-animation.
+        // The integrated prefab owns the model-fit scale internally.
         model.transform.localScale = Vector3.one;
         // The hunt drives the cat directly across a flat arena, so every collider
         // and the shared prefab's CharacterController are stripped: left enabled,
@@ -535,218 +529,28 @@ public static class CatCatchContentBuilder
         if (pauseLabel != null)
             pauseLabel.fontSize = 26f;
 
-        // Deliberately the Cat Runner welcome geometry: same scrim, same candy
-        // ribbons, same 1100x770 card, same left hero frame and right action
-        // column, so switching between the two mini-games is not a style jump.
-        welcome = CreateUi("WelcomePanel", canvasObject.transform);
-        Stretch(welcome.GetComponent<RectTransform>());
-        Image welcomeScrim = welcome.AddComponent<Image>();
-        welcomeScrim.color = new Color32(52, 44, 137, 238);
-        GameObject candyLeft = CreateFlatPanel(
-            welcome.transform, "CandyGlowLeft", new Color32(54, 227, 216, 118));
-        SetAnchored(candyLeft.GetComponent<RectTransform>(), new Vector2(0f, 0.5f),
-            new Vector2(85f, 0f), new Vector2(390f, 1240f));
-        candyLeft.transform.localRotation = Quaternion.Euler(0f, 0f, -17f);
-        GameObject candyRight = CreateFlatPanel(
-            welcome.transform, "CandyGlowRight", new Color32(255, 100, 177, 124));
-        SetAnchored(candyRight.GetComponent<RectTransform>(), new Vector2(1f, 0.5f),
-            new Vector2(-70f, 0f), new Vector2(390f, 1240f));
-        candyRight.transform.localRotation = Quaternion.Euler(0f, 0f, 17f);
+        var welcomeParts=PremiumMiniGameUiBuilder.Welcome(canvasObject.transform,false);
+        welcome=welcomeParts.Root;welcomeBest=welcomeParts.Best;welcomeLives=welcomeParts.Energy;
+        start=welcomeParts.Start;exit=welcomeParts.Exit;rewarded=welcomeParts.Rewarded;
+        var resultParts=PremiumMiniGameUiBuilder.Results(canvasObject.transform,false);
+        results=resultParts.Root;title=resultParts.Title;details=resultParts.Details;collect=resultParts.Home;retry=resultParts.Retry;
+        resultParts.NewBest.SetActive(false);resultParts.Missions.gameObject.SetActive(false);
+        var pauseParts=PremiumMiniGameUiBuilder.Pause(canvasObject.transform,false);
+        pausePanel=pauseParts.Root;resume=pauseParts.Resume;pauseExit=pauseParts.Exit;
+        var tutorialParts=PremiumMiniGameUiBuilder.Tutorial(canvasObject.transform);
+        tutorial=tutorialParts.Root;tutorialMessage=tutorialParts.Message;tutorialSkip=tutorialParts.Skip;
 
-        GameObject welcomeSafe = CreateUi("WelcomeSafeArea", welcome.transform);
-        Stretch(welcomeSafe.GetComponent<RectTransform>());
-        welcomeSafe.AddComponent<SafeAreaRect>();
-        GameObject welcomeLayout = CreateUi("WelcomeCardLayout", welcomeSafe.transform);
-        SetAnchored(welcomeLayout.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(1120f, 790f));
-
-        GameObject welcomeGlow = CreatePremium(
-            welcomeLayout.transform, "WelcomeCardGlow", new Color32(255, 221, 86, 220), 48f);
-        SetAnchored(welcomeGlow.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(1120f, 790f));
-        GameObject welcomeCard = CreatePremium(
-            welcomeLayout.transform, "WelcomeCard", CardCream, 42f);
-        SetAnchored(welcomeCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(1100f, 770f));
-
-        GameObject cardHeader = CreatePremium(
-            welcomeCard.transform, "CardHeader", HeaderPink, 34f);
-        RectTransform cardHeaderRect = cardHeader.GetComponent<RectTransform>();
-        cardHeaderRect.anchorMin = new Vector2(0f, 1f);
-        cardHeaderRect.anchorMax = new Vector2(1f, 1f);
-        cardHeaderRect.pivot = new Vector2(0.5f, 1f);
-        cardHeaderRect.sizeDelta = new Vector2(0f, 170f);
-        cardHeaderRect.anchoredPosition = Vector2.zero;
-        TMP_Text eyebrow = CreateLabel(
-            cardHeader.transform, "Eyebrow", "A SIXTY SECOND MOUSE HUNT", 20f, Cream);
-        SetAnchored(eyebrow.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -36f), new Vector2(600f, 30f));
-        eyebrow.alignment = TextAlignmentOptions.Center;
-        eyebrow.fontStyle = FontStyles.Bold;
-        TMP_Text welcomeTitle = CreateLabel(
-            cardHeader.transform, "WelcomeTitle", "CAT CATCH", 64f, Cream);
-        SetAnchored(welcomeTitle.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -100f), new Vector2(680f, 82f));
-        welcomeTitle.alignment = TextAlignmentOptions.Center;
-        welcomeTitle.fontStyle = FontStyles.Bold;
-
-        BuildWelcomeHero(welcomeCard.transform);
-
-        // Right-column anchors mirror Cat Runner welcome exactly so the two
-        // screens share one vertical rhythm (tagline → best → lives → rules →
-        // start → exit → controls) with no stacked overlaps.
-        TMP_Text tagline = CreateLabel(welcomeCard.transform, "Tagline",
-            "CHASE THE MICE  •  POUNCE TO CATCH  •  BEAT YOUR BEST", 20f, CardDark);
-        SetAnchored(tagline.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(270f, -230f), new Vector2(470f, 66f));
-        tagline.alignment = TextAlignmentOptions.Center;
-        tagline.fontStyle = FontStyles.Bold;
-
-        GameObject bestPill = CreatePremium(welcomeCard.transform, "BestScorePill", Grape, 28f);
-        SetAnchored(bestPill.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(270f, -326f), new Vector2(430f, 82f));
-        welcomeBest = CreateLabel(bestPill.transform, "BestScore", "BEST SCORE   0", 31f, Gold);
-        Stretch(welcomeBest.rectTransform);
-        welcomeBest.alignment = TextAlignmentOptions.Center;
-        welcomeBest.fontStyle = FontStyles.Bold;
-
-        welcomeLives = CreateLabel(welcomeCard.transform, "WelcomeLives",
-            "1 LIFE PER HUNT", 18f, TealDark);
-        SetAnchored(welcomeLives.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(270f, -394f), new Vector2(470f, 44f));
-        welcomeLives.alignment = TextAlignmentOptions.Center;
-        welcomeLives.fontStyle = FontStyles.Bold;
-
-        GameObject rulesPill = CreatePremium(
-            welcomeCard.transform, "HuntRulesPill", new Color32(91, 210, 191, 255), 24f);
-        SetAnchored(rulesPill.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(270f, -475f), new Vector2(470f, 80f));
-        TMP_Text rules = CreateLabel(rulesPill.transform, "HuntRules",
-            "60 SECONDS  •  5 MICE ON THE FLOOR  •  COMBO BONUS", 15f, CardDark);
-        StretchWithOffsets(rules.rectTransform, 12f, 6f, -12f, -6f);
-        rules.alignment = TextAlignmentOptions.Center;
-        rules.fontStyle = FontStyles.Bold;
-
-        start = CreateButton(welcomeCard.transform, "WelcomeStartButton", "START HUNT",
-            Orange, new Vector2(430f, 94f));
-        SetAnchored(start.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(270f, 175f), new Vector2(430f, 94f));
-        start.GetComponentInChildren<TMP_Text>(true).fontSize = 36f;
-        rewarded = CreateButton(welcomeCard.transform, "WelcomeRewardedButton",
-            "WATCH  •  LIVES +2", Teal, new Vector2(430f, 94f));
-        SetAnchored(rewarded.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(270f, 175f), new Vector2(430f, 94f));
-        rewarded.GetComponentInChildren<TMP_Text>(true).fontSize = 28f;
-        rewarded.gameObject.SetActive(false);
-        exit = CreateButton(welcomeCard.transform, "WelcomeExitButton", "EXIT TO MAIN MENU",
-            Teal, new Vector2(430f, 76f));
-        SetAnchored(exit.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(270f, 80f), new Vector2(430f, 76f));
-        TMP_Text controls = CreateLabel(welcomeCard.transform, "Controls",
-            "TAP A MOUSE  •  YOUR CAT CHASES IT DOWN AND POUNCES", 14f, CardDark);
-        SetAnchored(controls.rectTransform, new Vector2(0.5f, 0f),
-            new Vector2(270f, 23f), new Vector2(480f, 34f));
-        controls.alignment = TextAlignmentOptions.Center;
-
-        results = CreateUi("ResultsPanel", canvasObject.transform);
-        Stretch(results.GetComponent<RectTransform>());
-        Image resultScrim = results.AddComponent<Image>();
-        resultScrim.color = new Color32(70, 34, 132, 232);
-        GameObject resultRibbonLeft = CreateFlatPanel(
-            results.transform, "ResultCandyRibbonLeft", new Color32(47, 233, 218, 108));
-        SetAnchored(resultRibbonLeft.GetComponent<RectTransform>(), new Vector2(0f, 0.5f),
-            new Vector2(100f, 0f), new Vector2(430f, 1260f));
-        resultRibbonLeft.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
-        GameObject resultRibbonRight = CreateFlatPanel(
-            results.transform, "ResultCandyRibbonRight", new Color32(255, 100, 177, 112));
-        SetAnchored(resultRibbonRight.GetComponent<RectTransform>(), new Vector2(1f, 0.5f),
-            new Vector2(-86f, 0f), new Vector2(430f, 1260f));
-        resultRibbonRight.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
-        GameObject resultShadow = CreatePremium(
-            results.transform, "ResultsCardShadow", new Color32(255, 221, 86, 220), 46f);
-        SetAnchored(resultShadow.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(736f, 616f));
-        GameObject resultCard = CreatePremium(results.transform, "ResultsCard", CardCream, 46f);
-        SetAnchored(resultCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(720f, 600f));
-
-        GameObject titleBanner = CreatePremium(resultCard.transform, "ResultBanner", Lemon, 28f);
-        SetAnchored(titleBanner.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(0f, -58f), new Vector2(600f, 96f));
-        title = CreateLabel(titleBanner.transform, "ResultTitle", "MIGHTY HUNTER!", 42f, Ink);
-        Stretch(title.rectTransform);
-        title.alignment = TextAlignmentOptions.Center;
-        title.fontStyle = FontStyles.Bold;
-
-        // Sits clear below the banner (no overlap) and centres its four rows.
-        GameObject detailPanel = CreatePremium(resultCard.transform, "ResultDetailPanel", Aqua, 26f);
-        SetAnchored(detailPanel.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(0f, -232f), new Vector2(600f, 236f));
-        details = CreateLabel(detailPanel.transform, "ResultDetails", string.Empty, 27f, Ink);
-        StretchWithOffsets(details.rectTransform, 26f, 18f, -26f, -18f);
-        details.alignment = TextAlignmentOptions.Center;
-        details.lineSpacing = 26f;
-
-        collect = CreateButton(resultCard.transform, "CollectButton", "COLLECT  •  HOME", Orange,
-            new Vector2(470f, 92f));
-        SetAnchored(collect.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 158f), new Vector2(470f, 92f));
-        retry = CreateButton(resultCard.transform, "RetryButton", "HUNT AGAIN", Teal,
-            new Vector2(470f, 76f));
-        SetAnchored(retry.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 60f), new Vector2(470f, 76f));
-
-        tutorial = CreateUi("CatchTutorialPanel", canvasObject.transform);
-        Stretch(tutorial.GetComponent<RectTransform>());
-        GameObject tutorialSafe = CreateUi("TutorialSafeArea", tutorial.transform);
-        Stretch(tutorialSafe.GetComponent<RectTransform>());
-        tutorialSafe.AddComponent<SafeAreaRect>();
-        GameObject tutorialLayout = CreateUi("TutorialCardLayout", tutorialSafe.transform);
-        SetAnchored(tutorialLayout.GetComponent<RectTransform>(), new Vector2(0.5f, 1f),
-            new Vector2(0f, -228f), new Vector2(760f, 194f));
-        GameObject tutorialGlow = CreatePremium(tutorialLayout.transform, "TutorialGlow",
-            Lemon, 30f);
-        SetAnchored(tutorialGlow.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(760f, 194f));
-        GameObject tutorialCard = CreatePremium(tutorialLayout.transform, "TutorialCard",
-            Cream, 28f);
-        SetAnchored(tutorialCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(744f, 180f));
-        tutorialMessage = CreateLabel(tutorialCard.transform, "TutorialMessage",
-            "TAP THE FLOOR\nYOUR CAT POUNCES THERE", 28f, Ink);
-        SetAnchored(tutorialMessage.rectTransform, new Vector2(0.44f, 0.5f),
-            new Vector2(-34f, 0f), new Vector2(500f, 136f));
-        tutorialMessage.alignment = TextAlignmentOptions.Center;
-        tutorialMessage.raycastTarget = false;
-        tutorialSkip = CreateButton(tutorialCard.transform, "TutorialSkipButton", "SKIP",
-            Lilac, new Vector2(150f, 60f));
-        SetAnchored(tutorialSkip.GetComponent<RectTransform>(), new Vector2(0.86f, 0.5f),
-            Vector2.zero, new Vector2(150f, 60f));
-
-        pausePanel = CreateUi("PausePanel", canvasObject.transform);
-        Stretch(pausePanel.GetComponent<RectTransform>());
-        Image pauseScrim = pausePanel.AddComponent<Image>();
-        pauseScrim.color = new Color32(52, 44, 137, 230);
-        GameObject pauseCard = CreatePremium(pausePanel.transform, "PauseCard", CardCream, 42f);
-        SetAnchored(pauseCard.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(660f, 388f));
-        TMP_Text pauseTitle = CreateLabel(pauseCard.transform, "PauseTitle", "HUNT PAUSED", 44f, Ink);
-        SetAnchored(pauseTitle.rectTransform, new Vector2(0.5f, 1f),
-            new Vector2(0f, -74f), new Vector2(560f, 66f));
-        pauseTitle.alignment = TextAlignmentOptions.Center;
-        pauseTitle.fontStyle = FontStyles.Bold;
-        resume = CreateButton(pauseCard.transform, "ResumeButton", "RESUME HUNT", Orange,
-            new Vector2(430f, 90f));
-        SetAnchored(resume.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 150f), new Vector2(430f, 90f));
-        pauseExit = CreateButton(pauseCard.transform, "PauseExitButton", "EXIT TO MAIN MENU",
-            Teal, new Vector2(430f, 74f));
-        SetAnchored(pauseExit.GetComponent<RectTransform>(), new Vector2(0.5f, 0f),
-            new Vector2(0f, 52f), new Vector2(430f, 74f));
+        var fitSafe=canvasObject.transform.Find("WelcomePanel/WelcomeSafeArea") as RectTransform;
+        canvasObject.AddComponent<CatRunnerResponsiveLayout>().EditorConfigure(fitSafe,null,welcomeParts.Card,resultParts.Card,pauseParts.Card,tutorialParts.Card);
 
         TMP_FontAsset font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
             PremiumUiStyle.PremiumFontAssetPath);
         PremiumUiFactory.PolishHierarchy(canvasObject.transform, font);
+        PremiumMiniGameUiBuilder.PolishHud(hud.transform);
+        PremiumUiElements.Localize(hint,"catch.hint");
+        PremiumUiElements.Localize(score.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"games.score");
+        PremiumUiElements.Localize(timer.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"games.time");
+        PremiumUiElements.Localize(caught.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"catch.mice");
         hud.SetActive(false);
         results.SetActive(false);
         tutorial.SetActive(false);
@@ -821,7 +625,7 @@ public static class CatCatchContentBuilder
 
         try
         {
-            EnsureFolder("Assets/Art/Catch/UI");
+            EnsureFolder("Assets/Art/Games");
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.72f, 0.76f, 0.82f, 1f);
 
@@ -849,7 +653,7 @@ public static class CatCatchContentBuilder
             heroCamera.allowHDR = sceneCamera.allowHDR;
             heroCamera.GetComponent<UniversalAdditionalCameraData>().renderPostProcessing = false;
 
-            target = new RenderTexture(768, 768, 24, RenderTextureFormat.ARGB32)
+            target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32)
             {
                 antiAliasing = 8
             };
@@ -860,9 +664,9 @@ public static class CatCatchContentBuilder
             var baked = new Texture2D(target.width, target.height, TextureFormat.RGB24, false);
             baked.ReadPixels(new Rect(0f, 0f, target.width, target.height), 0, 0);
             baked.Apply();
-            System.IO.File.WriteAllBytes(CatchHeroPath, baked.EncodeToPNG());
+            System.IO.File.WriteAllBytes("Assets/Art/Games/CatchPreview.png", baked.EncodeToPNG());
             UnityEngine.Object.DestroyImmediate(baked);
-            AssetDatabase.ImportAsset(CatchHeroPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset("Assets/Art/Games/CatchPreview.png", ImportAssetOptions.ForceUpdate);
         }
         catch (Exception error)
         {

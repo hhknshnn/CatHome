@@ -3,8 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Keeps a purchased product attached to another purchased room product.
-/// The saved rotation is a local yaw offset, so the attachment follows its
-/// supporting furniture while still allowing the player to rotate it.
+/// Fixed ROOM products always use the designed local position and angle.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class HomeRequiredProductAttachment : MonoBehaviour
@@ -29,7 +28,7 @@ public sealed class HomeRequiredProductAttachment : MonoBehaviour
     public float CurrentLocalYaw => previewLocalYaw;
     public bool IsInstalled =>
         HomeStoreService.IsOwned(productId) &&
-        HomeStoreService.TryGetWorldPlacement(productId, out _, out _);
+        HomeStoreService.IsOwned(requiredProductId);
 
     private void Awake()
     {
@@ -131,14 +130,14 @@ public sealed class HomeRequiredProductAttachment : MonoBehaviour
             return;
 
         if (!HomeStoreService.IsOwned(productId) ||
-            !HomeStoreService.TryGetWorldPlacement(productId, out _, out float localYaw) ||
+            !HomeStoreService.IsOwned(requiredProductId) ||
             !TryFindRequiredProduct(out Transform target))
         {
             HideUninstalled();
             return;
         }
 
-        SnapToTargetImmediate(target, localYaw);
+        SnapToTargetImmediate(target, 0f);
     }
 
     private bool TryFindRequiredProduct(out Transform target)

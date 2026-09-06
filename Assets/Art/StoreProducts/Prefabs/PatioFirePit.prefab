@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2376452860603344613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6843398412089486020}
+  m_Layer: 0
+  m_Name: InteractionAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6843398412089486020
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2376452860603344613}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.88}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9158655279950423980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4016020140876025756
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1598130194315527414}
+  m_Layer: 0
+  m_Name: BaskDoorPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1598130194315527414
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4016020140876025756}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.4, z: -0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9158655279950423980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4510082673582725918
 GameObject:
   m_ObjectHideFlags: 0
@@ -48,12 +110,43 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.9, y: 0.8, z: 0.9}
   m_Center: {x: 0, y: 0.4, z: 0}
+--- !u!1 &5314404003091134872
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1998434124381337300}
+  m_Layer: 0
+  m_Name: BaskPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1998434124381337300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5314404003091134872}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.72}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9158655279950423980}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6624967667049806455
 GameObject:
   m_ObjectHideFlags: 0
@@ -65,6 +158,8 @@ GameObject:
   - component: {fileID: 9158655279950423980}
   - component: {fileID: 791233340943119778}
   - component: {fileID: 2506818300471315460}
+  - component: {fileID: 7298766916966491882}
+  - component: {fileID: 8901626145501679505}
   m_Layer: 0
   m_Name: PatioFirePit
   m_TagString: Untagged
@@ -86,6 +181,9 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2323212031314847655}
+  - {fileID: 1998434124381337300}
+  - {fileID: 1598130194315527414}
+  - {fileID: 6843398412089486020}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &791233340943119778
@@ -127,6 +225,48 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
+--- !u!114 &7298766916966491882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6624967667049806455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 045ecf218eef5ee4ca46f59322301e3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::OvenWarmthActivity
+  activityId: fire-pit-bask
+  displayName: FIRE PIT
+  kind: 61
+  questType: 2
+  requiredBondXp: 0
+  storeProductId: patio.fire-pit
+  actionText: WARM UP
+  interactionRadius: 1.1
+  energyCost: 0
+  interactionAnchor: {fileID: 6843398412089486020}
+  routineEntryPoint: {fileID: 6843398412089486020}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 4510082673582725918}
+  baskPoint: {fileID: 1998434124381337300}
+  doorPoint: {fileID: 1598130194315527414}
+  baskDuration: 4.2
+  energyRestore: 28
+  wideAwakeEnergy: 92
+--- !u!114 &8901626145501679505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6624967667049806455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
 --- !u!1001 &3525470144616851657
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -135,10 +275,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2323212031314847655}
     m_Modifications:
-    - target: {fileID: -9177496039264103629, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
     - target: {fileID: -8679921383154817045, guid: 368b84387d073074bb51d82063513c34, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -179,65 +315,67 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -7517330374613345250, guid: 368b84387d073074bb51d82063513c34, type: 3}
+    - target: {fileID: -7511558181221131132, guid: 368b84387d073074bb51d82063513c34, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 368b84387d073074bb51d82063513c34, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: -5017809157875554572, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: e20f96ef460c01446968a1f5b3658f6e, type: 2}
-    - target: {fileID: -4022099695484929207, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: -3676498536161634050, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: -2646768793140681009, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: -1003248942091757563, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: 131612780121114847, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
+    - target: {fileID: -7511558181221131132, guid: 368b84387d073074bb51d82063513c34, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
       value: 
       objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 368b84387d073074bb51d82063513c34, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 368b84387d073074bb51d82063513c34, type: 3}
+      propertyPath: 'm_Materials.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
     - target: {fileID: 919132149155446097, guid: 368b84387d073074bb51d82063513c34, type: 3}
       propertyPath: m_Name
       value: PatioFirePit_PremiumModel
       objectReference: {fileID: 0}
-    - target: {fileID: 2175226288113740155, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
-    - target: {fileID: 2647456052238226961, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: b83dd743604dbc94998175bd39f29aa5, type: 2}
-    - target: {fileID: 6916966332066505506, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
-    - target: {fileID: 7547034110090846837, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
-    - target: {fileID: 7822657585831234828, guid: 368b84387d073074bb51d82063513c34, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 368b84387d073074bb51d82063513c34, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1570239421519992152}
   m_SourcePrefab: {fileID: 100100000, guid: 368b84387d073074bb51d82063513c34, type: 3}
 --- !u!4 &3991954087122603810 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 368b84387d073074bb51d82063513c34, type: 3}
   m_PrefabInstance: {fileID: 3525470144616851657}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4336286646890452376 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 368b84387d073074bb51d82063513c34, type: 3}
+  m_PrefabInstance: {fileID: 3525470144616851657}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1570239421519992152
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4336286646890452376}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3924522169664091713, guid: 368b84387d073074bb51d82063513c34, type: 3}

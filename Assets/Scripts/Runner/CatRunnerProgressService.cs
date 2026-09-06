@@ -280,15 +280,15 @@ public static class CatRunnerProgressService
     {
         EnsureCurrentDay(DateTime.UtcNow);
         string coins = state.dailyCoinsClaimed
-            ? "COINS ✓"
-            : $"COINS {state.dailyCoins}/{DailyCoinTarget}";
+            ? GameContentCopy.Text("Jeton ✓", "Coins ✓")
+            : GameContentCopy.Text($"Jeton {state.dailyCoins}/{DailyCoinTarget}",$"Coins {state.dailyCoins}/{DailyCoinTarget}");
         string jumps = state.dailyJumpsClaimed
-            ? "JUMPS ✓"
-            : $"JUMPS {state.dailyJumps}/{DailyJumpTarget}";
+            ? GameContentCopy.Text("Zıplama ✓", "Jumps ✓")
+            : GameContentCopy.Text($"Zıplama {state.dailyJumps}/{DailyJumpTarget}",$"Jumps {state.dailyJumps}/{DailyJumpTarget}");
         string distance = state.dailyDistanceClaimed
-            ? "DISTANCE ✓"
-            : $"DISTANCE {state.dailyDistance}/{DailyDistanceTarget} m";
-        return $"DAILY MISSIONS   •   {coins}   •   {jumps}   •   {distance}";
+            ? GameContentCopy.Text("Mesafe ✓", "Distance ✓")
+            : GameContentCopy.Text($"Mesafe {state.dailyDistance}/{DailyDistanceTarget} m",$"Distance {state.dailyDistance}/{DailyDistanceTarget} m");
+        return GameContentCopy.Text("Günün hedefleri", "Daily goals") + $"\n{coins}   ·   {jumps}   ·   {distance}";
     }
 
     public static void SetPendingResult(CatRunnerResult result, int score)

@@ -103,6 +103,7 @@ public static class CatIdentityService
         PlayerPrefs.DeleteKey(NameKey);
         PlayerPrefs.DeleteKey(CoatKey);
         PlayerPrefs.Save();
+        CatBreedService.ResetForNewGame();
         Changed?.Invoke();
     }
 }

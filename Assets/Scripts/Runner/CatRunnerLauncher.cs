@@ -48,7 +48,10 @@ public sealed class CatRunnerLauncher : MonoBehaviour
     {
         ResolveReferences();
         RunnerEnergyService.Refresh();
-        bool baseReady = !loading &&
+        bool baseReady = !loading && !HomeUiFlow.IsHomeControlBlocked &&
+                         !GamesHubPanel.IsAnyOpen && !LeaderboardPanel.IsAnyOpen &&
+                         !SettingsPanel.IsAnyOpen && !PrivacyDataPanel.IsAnyOpen &&
+                         !CatBreedShopPanel.IsAnyOpen && !TitleScreen.IsShowing &&
                          PetTutorialHint.IsOnboardingCompleted &&
                          levelLoader != null && levelLoader.IsReady &&
                          !ShopPanelController.IsAnyOpen &&
@@ -68,8 +71,11 @@ public sealed class CatRunnerLauncher : MonoBehaviour
             // request a verified rewarded-energy grant before leaving.
             playButton.interactable = baseReady && !GamesHubPanel.IsAnyOpen;
         if (rewardedAdButton != null)
+        {
             rewardedAdButton.gameObject.SetActive(
-                baseReady && CanRequestRewardedEnergy());
+                baseReady && CatActivity.Active == null && CanRequestRewardedEnergy());
+            SetButtonText(rewardedAdButton,GameContentCopy.Text("İzle · +2 can","Watch · +2 lives"));
+        }
         RefreshEnergyUi();
         RefreshRoomUi();
     }
@@ -177,8 +183,8 @@ public sealed class CatRunnerLauncher : MonoBehaviour
 
         if (RunnerEnergyService.IsUnlimited)
         {
-            energyLabel.text = "ENERGY  UNLIMITED";
-            SetButtonText(playButton, "GAMES");
+            energyLabel.text = GameLanguageService.Text("games.unlimited");
+            SetButtonText(playButton, GameLanguageService.Text("title.games"));
             return;
         }
 
@@ -186,15 +192,15 @@ public sealed class CatRunnerLauncher : MonoBehaviour
         if (value > 0)
         {
             energyLabel.text =
-                $"RUN {value}/{RunnerEnergyService.MaximumEnergy}  •  CATCH {DescribeCatchLives()}";
-            SetButtonText(playButton, "GAMES");
+                $"Runner {value}/{RunnerEnergyService.MaximumEnergy}  ·  Catch {DescribeCatchLives()}";
+            SetButtonText(playButton, GameLanguageService.Text("title.games"));
             return;
         }
 
         TimeSpan remaining = RunnerEnergyService.TimeUntilNextEnergy();
-        energyLabel.text = $"RUN 0/{RunnerEnergyService.MaximumEnergy}  •  " +
-                           $"NEXT {FormatCountdown(remaining)}";
-        SetButtonText(playButton, "GAMES");
+        energyLabel.text = $"Runner 0/{RunnerEnergyService.MaximumEnergy}  ·  " +
+                           GameContentCopy.Text($"Yeni can {FormatCountdown(remaining)}",$"Next life {FormatCountdown(remaining)}");
+        SetButtonText(playButton, GameLanguageService.Text("title.games"));
     }
 
     /// <summary>
@@ -213,23 +219,9 @@ public sealed class CatRunnerLauncher : MonoBehaviour
         if (roomProgressLabel == null)
             return;
 
-        if (string.Equals(
-                HomeRoomService.CurrentRoomId,
-                HomeRoomService.LivingRoomId,
-                StringComparison.Ordinal))
-        {
-            roomProgressLabel.text = "LIVING ROOM  •  " +
-                HomeStoreService.LivingRoomOwnedCount + "/" +
-                HomeStoreService.LivingRoomItemCount;
-            return;
-        }
-
-        if (HomeRoomService.TryGetRoom(
-                HomeRoomService.CurrentRoomId,
-                out HomeRoomDefinition room))
-        {
-            roomProgressLabel.text = room.DisplayName + "  •  LEVEL 1";
-        }
+        if (HomeRoomService.TryGetRoom(HomeRoomService.CurrentRoomId, out HomeRoomDefinition room))
+            roomProgressLabel.text = room.DisplayName + "  ·  " +
+                HomeStoreService.GetRoomOwnedCount(room.Id) + "/" + HomeStoreService.GetRoomCollection(room.Id).Count;
     }
 
     private static string FormatCountdown(TimeSpan value)

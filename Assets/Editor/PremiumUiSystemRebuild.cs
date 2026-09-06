@@ -14,6 +14,7 @@ public static class PremiumUiSystemRebuild
         EditorSceneManager.OpenScene(UiScene, OpenSceneMode.Single);
         PremiumUiFactory.ConfigureCurrencyImporters();
         MainPanelBuilder.BuildSilently();
+        HomeEditPanelBuilder.BuildSilently();
         CurrencyHudBuilder.BuildSilently();
         QuestPanelBuilder.BuildSilently();
         WhileYouWereAwayPopupBuilder.BuildSilently();
@@ -21,10 +22,13 @@ public static class PremiumUiSystemRebuild
         ShopPanelBuilder.BuildSilently();
         RoomSelectorPanelBuilder.BuildSilently();
         CatJournalPanelBuilder.BuildSilently();
+        CatBreedShopPanelBuilder.BuildSilently();
         SettingsPanelBuilder.BuildSilently();
+        OnlineServicesPanelBuilder.BuildSilently();
         TitleScreenBuilder.BuildSilently();
         PremiumUiRefreshBuilder.Build();
         PremiumWorldVisualBuilder.BuildSilently();
+        PremiumReferenceArtBuilder.BuildSilently();
         EditorSceneManager.SaveOpenScenes();
         AssetDatabase.SaveAssets();
 

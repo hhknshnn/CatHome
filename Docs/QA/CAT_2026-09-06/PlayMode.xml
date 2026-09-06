@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 12:31:43Z" end-time="2026-09-06 12:33:57Z" duration="133,7223065">
+  <test-suite type="TestSuite" id="1090" name="CatHome" fullname="CatHome" runstate="Runnable" testcasecount="62" result="Passed" start-time="2026-09-06 12:31:43Z" end-time="2026-09-06 12:33:57Z" duration="133.722307" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1086" name="CatHome.PlayModeTests.dll" fullname="C:/Users/HAKAN/Desktop/CatHome/CatHome/Library/ScriptAssemblies/CatHome.PlayModeTests.dll" runstate="Runnable" testcasecount="62" result="Passed" start-time="2026-09-06 12:31:43Z" end-time="2026-09-06 12:33:57Z" duration="133.703363" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="33768" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+      <test-suite type="TestFixture" id="1027" name="CatEnrichmentTests" fullname="CatEnrichmentTests" classname="CatEnrichmentTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-09-06 12:31:43Z" end-time="2026-09-06 12:33:57Z" duration="133.698776" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+        <test-case id="1028" name="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" fullname="CatEnrichmentTests.AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" methodname="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" classname="CatEnrichmentTests" runstate="Runnable" seed="1820994239" result="Passed" start-time="2026-09-06 12:31:43Z" end-time="2026-09-06 12:33:44Z" duration="120.564059" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+ProgressionService: quest 'level1_ball' completed.
+ProgressionService: quest 'level1_eat' completed.
+]]></output>
+        </test-case>
+        <test-case id="1030" name="BasketAndScratchPost_KeepRealPlayOnEveryBreed" fullname="CatEnrichmentTests.BasketAndScratchPost_KeepRealPlayOnEveryBreed" methodname="BasketAndScratchPost_KeepRealPlayOnEveryBreed" classname="CatEnrichmentTests" runstate="Runnable" seed="1942545076" result="Passed" start-time="2026-09-06 12:33:44Z" end-time="2026-09-06 12:33:57Z" duration="12.753816" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=4825350); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=4825350); active blockers=0.
+]]></output>
+        </test-case>
+        <test-case id="1029" name="CancelAndOwnership_RestorePhysicsPoseAndToy" fullname="CatEnrichmentTests.CancelAndOwnership_RestorePhysicsPoseAndToy" methodname="CancelAndOwnership_RestorePhysicsPoseAndToy" classname="CatEnrichmentTests" runstate="Runnable" seed="1578032372" result="Passed" start-time="2026-09-06 12:33:57Z" end-time="2026-09-06 12:33:57Z" duration="0.361218" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[Saving results to: Docs/QA/UIUX_2026-09-06\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

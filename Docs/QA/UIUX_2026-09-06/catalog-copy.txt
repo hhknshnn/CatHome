@@ -1,0 +1,114 @@
+home.ball-basket|BALL BASKET|A basket full of soft balls. Unlocks Ball Chase in your living room.
+home.scratch-post|SCRATCHING POST|A sturdy scratching post. Unlocks the Scratch activity at home.
+cat.cozy-pod-bed|COZY POD BED|A soft low-sided bed made for naps beside the family.
+cat.toy-mouse|TOY MOUSE|A bright clockwork mouse for short bursts of indoor play.
+cat.play-tunnel|PLAY TUNNEL|A colorful tunnel with a hanging toy at the entrance.
+cat.ceramic-bowl|CERAMIC BOWL|A weighty ceramic bowl that stays put during enthusiastic meals.
+cat.cloud-bed|CLOUD BED|A plush oval bed for long afternoon naps in a quiet corner.
+cat.canopy-bed|BURGER CAT BED|A playful burger-shaped hideaway for warm naps and funny photos.
+cat.treat-jar|TREAT JAR|A colorful treat jar for the feeding corner and future snack rewards.
+cat.feather-toy|BOUNCY CAT TOY|A springy wobble toy that adds movement to the play corner.
+cat.collar|CLASSIC COLLAR|A polished collar displayed in the cat's growing accessory collection.
+cat.leash|WALKING LEASH|A coordinated leash ready for future garden and outdoor adventures.
+cat.bell-collar|BELL COLLAR|A jingling pastel collar for showing off around the house.
+cat.kibble-bag|CAT FOOD TIN|A colorful wet-food tin for the feeding corner.
+cat.nap-pillow|NAP PILLOW|A squashy floor pillow for short sunbeam naps.
+cat.catnip-plant|CAT GRASS POT|A small leafy pot for the play corner and curious nibbles.
+cat.cardboard-hideout|CARDBOARD HIDEOUT|An open box hideout. Sometimes the simplest toy is the favorite.
+room.tv-console|MODERN TELEVISION|A clean modern television that can only be installed on the TV unit.
+room.tv-unit|TV UNIT|A wide low furniture unit designed to support the television.
+room.game-console|GAME CONSOLE SET|A modern game console with a classic controller for the living-room play corner.
+room.floor-lamp|FLOOR LAMP|A warm floor lamp that fits beside a sofa, bed or reading corner.
+room.side-table|SIDE TABLE|A small round table for an open corner or beside the sofa.
+room.sofa|TWO-SEAT SOFA|A compact modern sofa that can become the main anchor of the room.
+room.armchair|CLASSIC ARMCHAIR|A comfortable reading chair for an open corner near a lamp.
+room.coffee-table|COFFEE TABLE|A low wooden table sized for the centre of the living room.
+room.carpet|WOVEN CARPET|A large woven carpet that instantly changes the room's color balance.
+room.bookshelf|TALL BOOKSHELF|An empty tall bookshelf. Place it first, then add the colorful book set.
+room.colorful-book-set|COLORFUL BOOK SET|Ten colorful books arranged across all three shelves. Drag the set directly onto the bookshelf.
+room.tall-plant|TALL HOUSEPLANT|A sculptural indoor plant for softening a bare corner.
+room.small-plant|TABLE PLANT|A small potted plant for a table, shelf or sunny window corner.
+room.modern-painting|MODERN PAINTING|A bold framed print that brings color to an empty wall.
+room.mirror|WALL MIRROR|A clean-lined mirror that makes a compact room feel brighter.
+room.wall-clock|ROUND WALL CLOCK|A classic wall clock for finishing the living room composition.
+room.stereo|SPEAKER SYSTEM|A stereo main unit with two matching speakers for a fuller living-room sound setup.
+room.retro-tv|RETRO TELEVISION|A characterful retro television for a warm nostalgic room theme.
+room.stool|ACCENT STOOL|A small accent stool that fits beside a table or reading chair.
+bathroom.bath-mat|PAW BATH MAT|A soft aqua bath mat with a bright paw detail for the bathroom floor.
+bathroom.laundry-hamper|LAUNDRY HAMPER|A colorful woven hamper for towels and small bathroom laundry.
+bathroom.litter-box|CAT LITTER BOX|A tidy low-sided litter tray designed for the bathroom care corner.
+bathroom.grooming-cart|GROOMING CART|A rolling care cart with brushes, bottles and room for grooming supplies.
+bathroom.towel-storage|TOWEL STORAGE|A slim gold-trimmed rack filled with rolled mint, coral and lilac towels.
+bathroom.wall-mirror|BUBBLE WALL MIRROR|A bright round-edged mirror that makes the bathroom feel open and polished.
+bathroom.toilet|PASTEL TOILET|A compact porcelain toilet with cheerful pastel accents.
+bathroom.vanity-sink|VANITY & SINK|A roomy vanity with a glossy sink and useful storage underneath.
+bathroom.tub|CAT PAW BATHTUB|A deep premium bathtub for future splash and wash activities.
+bathroom.shower|RAINBOW SHOWER|A glass shower enclosure with a bright premium frame and rain head.
+kitchen.paw-mat|PAW BREAKFAST RUG|A sunny paw-print rug that adds a soft landing to the breakfast corner.
+kitchen.fruit-basket|RAINBOW FRUIT BASKET|A gold-trimmed basket filled with bright low-poly fruit.
+kitchen.feeding-station|TWIN FEEDING STATION|A mint feeding nook with two easy-to-reach bowls and a cheerful paw badge.
+kitchen.counter-stool|BREAKFAST STOOL|A lilac counter stool with sturdy gold legs for the breakfast corner.
+kitchen.pantry-shelf|CANDY PANTRY SHELF|A tall open pantry filled with colorful jars, boxes and cat-safe treats.
+kitchen.dish-cart|PASTEL DISH CART|A compact aqua cart carrying cups, plates and tidy kitchen supplies.
+kitchen.sink-cabinet|PAW SINK CABINET|A coral-and-cream sink cabinet with a polished gold faucet.
+kitchen.refrigerator|CANDY REFRIGERATOR|A tall mint refrigerator with lilac handles and playful paw magnets.
+kitchen.stove-oven|CUPCAKE STOVE & OVEN|A peach stove and oven with bright burners, knobs and a dark glass window.
+kitchen.island|CAT KITCHEN ISLAND|A roomy cream-and-aqua island with coral panels and gold details.
+bedroom.paw-rug|STARRY PAW RUG|A plush lilac rug with a mint paw print for sleepy paws.
+bedroom.night-light|MOON NIGHT LIGHT|A glowing lemon moon lamp that keeps bedtime soft and bright.
+bedroom.dream-art|DREAM WALL ART|A pastel star-and-cloud painting that hangs at cat-eye height.
+bedroom.yarn-basket|YARN BASKET|A coral basket of mint and lilac yarn balls for quiet play.
+bedroom.nightstand|PASTEL NIGHTSTAND|A peach nightstand with a gold drawer and tiny paw knob.
+bedroom.vanity-stool|CLOUD VANITY STOOL|A round aqua stool with a cream cushion for the dressing corner.
+bedroom.wardrobe|RAINBOW WARDROBE|A tall mint wardrobe with coral doors and gold handles.
+bedroom.window-daybed|WINDOW DAYBED|A peach window seat with mint pillows for sunny naps.
+bedroom.star-canopy|STAR CANOPY|A lilac canopy nook with hanging stars for secret cat naps.
+bedroom.queen-bed|QUEEN CLOUD BED|A big cream bed with coral pillows and a mint headboard.
+garden.yarn-ball|SUNNY YARN BALL|A bright yarn ball for chasing across the lawn.
+garden.flower-pots|FLOWER POTS|A cluster of coral, lemon and lilac blooms in sunny pots.
+garden.daisy-bed|DAISY FLOWER BED|A low mint bed packed with daisies for the courtyard edge.
+garden.sapling|LITTLE GARDEN TREE|A small shade tree just the right size for a courtyard.
+garden.bird-bath|BIRD BATH|A shallow peach bath where courtyard birds come to splash.
+garden.sun-lounger|SUN LOUNGER|A mint balcony lounger for sleepy sun patches.
+garden.bistro-set|BALCONY SET|A peach table and two chairs for sunny snacks outside.
+garden.grill|PAW GRILL|A compact coral barbecue with gold knobs for courtyard cookouts.
+garden.hammock|GARDEN HAMMOCK|A lilac hammock strung between gold posts for long naps.
+garden.pergola|SUN PERGOLA|A cream pergola with mint beams that frames the whole courtyard.
+balcony.sun-mat|SUN MAT|A soft striped mat for warm sun patches on the balcony floor.
+balcony.planter-box|PLANTER BOX|A cheerful wooden box of coral and lemon blooms.
+balcony.herb-shelf|HERB SHELF|A little shelf of mint and basil pots for the sunny corner.
+balcony.railing-flowers|RAILING FLOWERS|Flower boxes clipped along the railing over the city view.
+balcony.bird-feeder|BIRD FEEDER|A hanging feeder where little birds visit the railing.
+balcony.lantern-string|LANTERN STRING|A string of warm gold lanterns for cozy evening light.
+balcony.cushion-bench|CUSHION BENCH|A low bench piled with mint and peach cushions.
+balcony.side-table|SIDE TABLE|A round peach table just right for a cup and a nap.
+balcony.hanging-chair|HANGING CHAIR|A lilac egg chair swinging gently from a gold hook.
+balcony.sun-awning|SUN AWNING|A striped awning that shades the whole balcony from above.
+patio.stone-rug|STONE PATIO RUG|A soft outdoor rug that warms the paved stone floor.
+patio.potted-ferns|POTTED FERNS|A pair of leafy ferns in tall stone planters.
+patio.herb-trough|HERB TROUGH|A long trough of mint and lavender along the patio edge.
+patio.string-lights|PATIO STRING LIGHTS|Warm bulbs strung overhead for cozy evenings outside.
+patio.water-fountain|WATER FOUNTAIN|A little tiered stone fountain with trickling aqua water.
+patio.fire-pit|FIRE PIT|A round stone fire pit with a warm coral glow.
+patio.dining-set|PATIO DINING SET|A cream table and four chairs for sunny outdoor meals.
+patio.parasol|GARDEN PARASOL|A big mint parasol that shades the whole dining set.
+patio.porch-swing|PORCH SWING|A cushioned swing bench hung from a sturdy gold frame.
+patio.pergola-arch|PERGOLA ARCH|A grand cream arch with climbing vines over the patio.
+loft.floor-runner|LOFT FLOOR RUNNER|A long woven runner that warms the loft's wooden floor.
+loft.floor-cushions|FLOOR CUSHIONS|A cozy pile of oversized floor cushions for lounging.
+loft.book-stack|BOOK STACKS|Neat stacks of colorful books for the reading loft.
+loft.arc-lamp|ARC FLOOR LAMP|A tall arc lamp that curves warm light over the nook.
+loft.bean-bag|BEAN BAG CHAIR|A squishy coral bean bag that molds to a napping cat.
+loft.record-player|RECORD PLAYER|A retro turntable on a slim stand for lazy afternoons.
+loft.study-desk|STUDY DESK|A tidy wooden desk with a lamp and a comfy chair.
+loft.wall-gallery|WALL GALLERY|A framed gallery wall of bright little art prints.
+loft.tall-bookcase|TALL BOOKCASE|A floor-to-ceiling bookcase packed with books and plants.
+loft.chaise-lounge|CHAISE LOUNGE|A velvet chaise by the window for sunny afternoon naps.
+home.rooms-preview|LIVING ROOM|Your first complete room collection. Finish it to unlock the next room.
+home.garden-preview|GARDEN|A sunny fenced courtyard with grass, birds and its own 10-piece garden collection.
+home.bedroom-preview|BEDROOM|A calm pastel bedroom with its own completely new 10-piece collection.
+home.bathroom-preview|BATHROOM|A warm cat-friendly bathroom with its own completely new 10-piece collection.
+home.kitchen-preview|KITCHEN|A bright cat-friendly kitchen with its own completely new 10-piece collection.
+home.balcony-preview|BALCONY|A sunny balcony with plants, cushions and its own 10-piece balcony collection over a city view.
+home.patio-preview|GARDEN PATIO|A paved garden patio with a fountain, fire pit and its own 10-piece patio collection.
+home.second-floor-preview|SECOND FLOOR|A cozy upstairs loft with a big window and its own 10-piece loft collection.

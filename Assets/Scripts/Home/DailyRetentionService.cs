@@ -285,8 +285,8 @@ public static class DailyRetentionService
         QuestType type = (QuestType)quest.type;
         return new QuestSnapshot(
             quest.questId,
-            TitleFor(type),
-            "Daily: " + TitleFor(type).ToLowerInvariant(),
+            GameQuestCopy.Title(type,TitleFor(type)),
+            GameQuestCopy.Description(type,quest.requiredCount,"Daily: " + TitleFor(type).ToLowerInvariant()),
             quest.count,
             Mathf.Max(1, quest.requiredCount),
             quest.rewardCoins,

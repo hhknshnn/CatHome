@@ -24,19 +24,19 @@ public static class SecondFloorLevelBuilder
     private const string SharedVolumePath =
         "Assets/Art/PremiumWorld/CatHomeRoom_PremiumVolume.asset";
 
-    private static readonly Color Cream = new Color32(255, 247, 224, 255);
-    private static readonly Color Aqua = new Color32(67, 220, 211, 255);
-    private static readonly Color Mint = new Color32(126, 235, 190, 255);
-    private static readonly Color Coral = new Color32(255, 120, 130, 255);
-    private static readonly Color Lilac = new Color32(188, 143, 235, 255);
-    private static readonly Color Lemon = new Color32(255, 222, 94, 255);
+    private static readonly Color Cream = new Color32(255, 250, 236, 255);
+    private static readonly Color Aqua = new Color32(145, 231, 222, 255);
+    private static readonly Color Mint = new Color32(184, 242, 211, 255);
+    private static readonly Color Coral = new Color32(255, 181, 176, 255);
+    private static readonly Color Lilac = new Color32(218, 195, 243, 255);
+    private static readonly Color Lemon = new Color32(255, 232, 139, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(150, 220, 255, 255);
-    private static readonly Color Wall = new Color32(255, 238, 214, 255);
-    private static readonly Color WallDeep = new Color32(232, 210, 235, 255);
-    private static readonly Color Wood = new Color32(214, 154, 92, 255);
-    private static readonly Color WoodLight = new Color32(232, 182, 128, 255);
-    private static readonly Color Roof = new Color32(196, 168, 214, 255);
+    private static readonly Color Wall = new Color32(255, 244, 226, 255);
+    private static readonly Color WallDeep = new Color32(232, 218, 242, 255);
+    private static readonly Color Wood = new Color32(218, 166, 110, 255);
+    private static readonly Color WoodLight = new Color32(240, 198, 151, 255);
+    private static readonly Color Roof = new Color32(211, 190, 226, 255);
 
     private const float LivingCameraFieldOfView = 47f;
     private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
@@ -107,6 +107,7 @@ public static class SecondFloorLevelBuilder
         Transform setup = CreateSceneRoot(loft, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(loft, HomeRoomService.SecondFloorId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -428,6 +429,7 @@ public static class SecondFloorLevelBuilder
         key.color = new Color32(255, 244, 214, 255);
         key.intensity = 1.0f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .50f;
 
         BuildFillLight(parent, "Window Fill", new Vector3(0f, 2.2f, 2.2f),
             new Color32(150, 220, 255, 255), .8f, 8.5f);

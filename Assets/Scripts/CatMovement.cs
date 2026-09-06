@@ -34,9 +34,15 @@ public class CatMovement : MonoBehaviour
     [Header("Mobil Kontrol")]
     [SerializeField] private MobileJoystick mobileJoystick;
 
+    [Header("Oda Sınırları")]
+    [Tooltip("Kedinin görünen modelini duvardan ayıran ek dünya boşluğu.")]
+    [SerializeField, Min(0f)] private float roomEdgeClearance = 0.03f;
+
     private CharacterController characterController;
     private Animator animator;
     private Transform cameraTransform;
+    private HomeRoomBoundary roomBoundary;
+    private float physicalFootprintRadius;
 
     private float verticalVelocity;
     private int speedParameterHash;
@@ -117,6 +123,16 @@ public class CatMovement : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         speedParameterHash = Animator.StringToHash(speedParameterName);
         ResolveSceneReferences();
+        physicalFootprintRadius = ResolvePhysicalFootprintRadius();
+    }
+
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement == null)
+            return;
+        animator = replacement;
+        speedParameterHash = Animator.StringToHash(speedParameterName);
+        physicalFootprintRadius = ResolvePhysicalFootprintRadius();
     }
 
     public void ResolveSceneReferences()
@@ -126,6 +142,9 @@ public class CatMovement : MonoBehaviour
 
         if (cameraTransform == null && Camera.main != null)
             cameraTransform = Camera.main.transform;
+
+        if (roomBoundary == null || roomBoundary.gameObject.scene != gameObject.scene)
+            roomBoundary = HomeRoomBoundary.FindFor(gameObject.scene);
     }
 
     private void Start()
@@ -259,7 +278,27 @@ public class CatMovement : MonoBehaviour
         Vector3 velocity = horizontalVelocity;
         velocity.y = verticalVelocity;
 
-        characterController.Move(velocity * Time.deltaTime);
+        Vector3 movement = velocity * Time.deltaTime;
+        if (roomBoundary != null)
+        {
+            Vector3 target = roomBoundary.ClampPosition(
+                transform.position + new Vector3(movement.x, 0f, movement.z),
+                physicalFootprintRadius + roomEdgeClearance);
+            movement.x = target.x - transform.position.x;
+            movement.z = target.z - transform.position.z;
+        }
+
+        characterController.Move(movement);
+    }
+
+    private float ResolvePhysicalFootprintRadius()
+    {
+        // Renderer bounds include the tail and change with breed/pose. Using
+        // that diagonal as a wall margin pushed large breeds INTO nearby
+        // furniture as soon as an activity released its movement lock.
+        if (characterController == null) return .25f;
+        Vector3 scale = transform.lossyScale;
+        return characterController.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
     }
 
     public void SetHungerSpeedMultiplier(float multiplier)
@@ -425,6 +464,15 @@ public class CatMovement : MonoBehaviour
 
         if (controllerWasEnabled)
             characterController.enabled = false;
+
+        if (roomBoundary == null)
+            roomBoundary = HomeRoomBoundary.FindFor(gameObject.scene);
+        if (physicalFootprintRadius <= 0f)
+            physicalFootprintRadius = ResolvePhysicalFootprintRadius();
+        if (roomBoundary != null)
+            position = roomBoundary.ClampPosition(
+                position,
+                physicalFootprintRadius + roomEdgeClearance);
 
         transform.SetPositionAndRotation(position, rotation);
 

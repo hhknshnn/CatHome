@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &694862273129276057
+--- !u!1 &505454170766909618
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,75 +8,79 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8776199938953877924}
-  - component: {fileID: 3675736761036464072}
-  - component: {fileID: 6529799647871818592}
+  - component: {fileID: 3061258319808887068}
+  - component: {fileID: 7470515077387906326}
+  - component: {fileID: 1178181361460151482}
   m_Layer: 0
-  m_Name: SelectionRing
+  m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &8776199938953877924
+  m_IsActive: 1
+--- !u!224 &3061258319808887068
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 694862273129276057}
+  m_GameObject: {fileID: 505454170766909618}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6197189265654125465}
+  m_Children:
+  - {fileID: 84526340910595203}
+  - {fileID: 5372641735880176032}
+  m_Father: {fileID: 7713737477114982301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
+  m_AnchoredPosition: {x: -44, y: 8}
+  m_SizeDelta: {x: 38, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3675736761036464072
+--- !u!222 &7470515077387906326
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 694862273129276057}
+  m_GameObject: {fileID: 505454170766909618}
   m_CullTransparentMesh: 1
---- !u!114 &6529799647871818592
+--- !u!114 &1178181361460151482
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 694862273129276057}
+  m_GameObject: {fileID: 505454170766909618}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_Color: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 20
+  bevelWidth: 3
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.74509805}
+  bottomRightShadow: {r: 0.21568628, g: 0.13725491, b: 0.4392157, a: 0.47058824}
+  warmFacet: {r: 1, g: 0.80784315, b: 0.91764706, a: 0.29803923}
   useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  gradientTop: {r: 0.35686275, g: 0.8392157, b: 0.89411765, a: 1}
+  gradientBottom: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &819094363194082933
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,8 +111,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5447797909205737893}
-  - {fileID: 3895164705777780098}
+  - {fileID: 2981152251126153269}
+  - {fileID: 7768998429067558742}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -156,7 +160,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 4982304421664461898}
+  m_TargetGraphic: {fileID: 7571559971974696662}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -172,8 +176,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 3895164705777780098}
-  surface: {fileID: 4982304421664461898}
+  visualRoot: {fileID: 7768998429067558742}
+  surface: {fileID: 7571559971974696662}
   button: {fileID: 2921790768650331315}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -181,83 +185,6 @@ MonoBehaviour:
   pressedScale: 0.94
   hoverScale: 1.035
   animateScale: 1
---- !u!1 &979914900864360504
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8682420282093204799}
-  - component: {fileID: 525439410141772973}
-  - component: {fileID: 1815845977218238047}
-  m_Layer: 0
-  m_Name: SelectionRing
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &8682420282093204799
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979914900864360504}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7192614800256323767}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &525439410141772973
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979914900864360504}
-  m_CullTransparentMesh: 1
---- !u!114 &1815845977218238047
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 979914900864360504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
 --- !u!1 &996170913751761250
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6413947, g: 0.58641464, b: 0.5692987, a: 1}
+  m_Color: {r: 0.6413947, g: 0.52107465, b: 0.58236665, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -333,6 +260,85 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &1083962897898437807
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7600204628229038473}
+  - component: {fileID: 3032940888028819266}
+  - component: {fileID: 4369470763199420406}
+  m_Layer: 0
+  m_Name: SelectionRing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7600204628229038473
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083962897898437807}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6197189265654125465}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 88, y: 88}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3032940888028819266
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083962897898437807}
+  m_CullTransparentMesh: 1
+--- !u!114 &4369470763199420406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083962897898437807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 30
+  bevelWidth: 4.5
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &1101706493543789934
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +397,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6413947, g: 0.58641464, b: 0.5692987, a: 1}
+  m_Color: {r: 0.6413947, g: 0.52107465, b: 0.58236665, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -438,8 +444,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8776199938953877924}
-  - {fileID: 7019303285222494643}
+  - {fileID: 7600204628229038473}
+  - {fileID: 3032631639999200187}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -487,7 +493,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 2040935332513900335}
+  m_TargetGraphic: {fileID: 6338404259499175601}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -503,8 +509,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 7019303285222494643}
-  surface: {fileID: 2040935332513900335}
+  visualRoot: {fileID: 3032631639999200187}
+  surface: {fileID: 6338404259499175601}
   button: {fileID: 1076800300168066195}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -589,8 +595,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.89509803, g: 0.9436275, b: 0.9832353, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!114 &7892256079519502175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,83 +700,6 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!1 &1417194010532012099
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6112652632830609611}
-  - component: {fileID: 3153722843777252212}
-  - component: {fileID: 8056240752345298597}
-  m_Layer: 0
-  m_Name: SelectionRing
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6112652632830609611
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417194010532012099}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2612362628118281088}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3153722843777252212
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417194010532012099}
-  m_CullTransparentMesh: 1
---- !u!114 &8056240752345298597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417194010532012099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
 --- !u!1 &1468006990786161758
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,8 +783,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.6695098, g: 0.86715686, b: 0.9411765, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &1480468285191046575
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,7 +846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -926,12 +859,93 @@ MonoBehaviour:
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.86254835, b: 0.7926909, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
+  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &1602250797139939561
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9172339042060596789}
+  - component: {fileID: 940081555098981857}
+  - component: {fileID: 2737099440123592100}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &9172339042060596789
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602250797139939561}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2612362628118281088}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &940081555098981857
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602250797139939561}
+  m_CullTransparentMesh: 1
+--- !u!114 &2737099440123592100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602250797139939561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.8853312, g: 0.8476112, b: 0.78273284, a: 1}
+  gradientBottom: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &1682214946266711885
 GameObject:
   m_ObjectHideFlags: 0
@@ -962,8 +976,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8682420282093204799}
-  - {fileID: 699397604778751421}
+  - {fileID: 4431359138363656239}
+  - {fileID: 5625991969338433775}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1011,7 +1025,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 375456047662930703}
+  m_TargetGraphic: {fileID: 3077548908309934732}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1027,8 +1041,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 699397604778751421}
-  surface: {fileID: 375456047662930703}
+  visualRoot: {fileID: 5625991969338433775}
+  surface: {fileID: 3077548908309934732}
   button: {fileID: 3142991378835894992}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -1036,7 +1050,7 @@ MonoBehaviour:
   pressedScale: 0.94
   hoverScale: 1.035
   animateScale: 1
---- !u!1 &1815043291854217011
+--- !u!1 &1713744949131534669
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1044,152 +1058,77 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1883164477646126641}
-  - component: {fileID: 8409062573343273209}
-  - component: {fileID: 8233192620977737694}
+  - component: {fileID: 8306744895266534471}
+  - component: {fileID: 8553758568625608971}
+  - component: {fileID: 8722918201649598473}
   m_Layer: 0
-  m_Name: Iris
+  m_Name: SelectionRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1883164477646126641
+  m_IsActive: 0
+--- !u!224 &8306744895266534471
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815043291854217011}
+  m_GameObject: {fileID: 1713744949131534669}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2270721015293414793}
+  m_Father: {fileID: 4958282224367323441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 21, y: 29}
+  m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8409062573343273209
+--- !u!222 &8553758568625608971
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815043291854217011}
+  m_GameObject: {fileID: 1713744949131534669}
   m_CullTransparentMesh: 1
---- !u!114 &8233192620977737694
+--- !u!114 &8722918201649598473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1815043291854217011}
+  m_GameObject: {fileID: 1713744949131534669}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.35858038, g: 0.75826275, b: 0.69876474, a: 1}
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 12
-  bevelWidth: 3.5
+  cornerCut: 30
+  bevelWidth: 4.5
   topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.53256786, g: 0.8727875, b: 0.8047435, a: 1}
-  gradientBottom: {r: 0.35858038, g: 0.75826275, b: 0.69876474, a: 1}
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &1894463565401473627
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7085161631460290387}
-  - component: {fileID: 4795669813455882329}
-  - component: {fileID: 1535734041164931191}
-  m_Layer: 0
-  m_Name: SwatchFace
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &7085161631460290387
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1894463565401473627}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3471570141866336271}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4795669813455882329
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1894463565401473627}
-  m_CullTransparentMesh: 1
---- !u!114 &1535734041164931191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1894463565401473627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.87929606, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &1997878502984771433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,8 +1196,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: NAME YOUR CAT & PICK A COAT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1288,14 +1227,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1.1
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1394,8 +1333,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: CAT JOURNAL
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f95949babe4af4441be44bf8dc850a7d, type: 2}
+  m_sharedMaterial: {fileID: -2367521305780520962, guid: f95949babe4af4441be44bf8dc850a7d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1425,14 +1364,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 2.2
+  m_characterSpacing: -0.25
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -2
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1464,6 +1403,81 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &2204778284282126370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7588450772640588089}
+  - component: {fileID: 7140270156478007568}
+  - component: {fileID: 8130558414697685702}
+  m_Layer: 0
+  m_Name: BeamB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7588450772640588089
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204778284282126370}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3074693652056125424}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7140270156478007568
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204778284282126370}
+  m_CullTransparentMesh: 1
+--- !u!114 &8130558414697685702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2204778284282126370}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.8117647, b: 0.23921569, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2266348583083450527
 GameObject:
   m_ObjectHideFlags: 0
@@ -1522,7 +1536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6413947, g: 0.58641464, b: 0.5692987, a: 1}
+  m_Color: {r: 0.6413947, g: 0.52107465, b: 0.58236665, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1615,8 +1629,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.9792157, g: 0.86715686, b: 0.91058826, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &2326524751650377701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1684,8 +1700,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: YOUR NAME & COAT FOLLOW YOU THROUGH EVERY ROOM AND GAME
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1715,14 +1731,14 @@ MonoBehaviour:
   m_enableAutoSizing: 1
   m_fontSizeMin: 14
   m_fontSizeMax: 18
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0.7
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -1754,83 +1770,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &2399414587987956818
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6482923284356885976}
-  - component: {fileID: 5497743384739425957}
-  - component: {fileID: 1114490277277435547}
-  m_Layer: 0
-  m_Name: SwatchFace
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6482923284356885976
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2399414587987956818}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8563549222538561963}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5497743384739425957
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2399414587987956818}
-  m_CullTransparentMesh: 1
---- !u!114 &1114490277277435547
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2399414587987956818}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.7978208, b: 0.7193632, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
 --- !u!1 &2407985648047236385
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,8 +1845,89 @@ MonoBehaviour:
   gradientBottom: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &2426319224559941294
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5009461913126999327}
+  - component: {fileID: 6198884142410444256}
+  - component: {fileID: 4376493143010277302}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5009461913126999327
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2426319224559941294}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8563549222538561963}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6198884142410444256
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2426319224559941294}
+  m_CullTransparentMesh: 1
+--- !u!114 &4376493143010277302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2426319224559941294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.8853312, g: 0.7978208, b: 0.7193632, a: 1}
+  gradientBottom: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &2513639899277860737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,7 +1987,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1980,12 +2000,14 @@ MonoBehaviour:
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.86254835, b: 0.7926909, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
+  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &2560362650839118046
 GameObject:
   m_ObjectHideFlags: 0
@@ -2062,9 +2084,11 @@ MonoBehaviour:
   gradientBottom: {r: 0.9143686, g: 0.8075098, b: 0.86409414, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &2723529171056383254
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &2610826364570787562
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2072,75 +2096,156 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7114675781190210826}
-  - component: {fileID: 9187756438258028366}
-  - component: {fileID: 4660956824860541971}
+  - component: {fileID: 969604726926567870}
+  - component: {fileID: 5807697845507949212}
+  - component: {fileID: 3225542790291280044}
   m_Layer: 0
-  m_Name: SelectionRing
+  m_Name: Iris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &7114675781190210826
+  m_IsActive: 1
+--- !u!224 &969604726926567870
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2723529171056383254}
+  m_GameObject: {fileID: 2610826364570787562}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4958282224367323441}
+  m_Father: {fileID: 801009788570601379}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
+  m_SizeDelta: {x: 21, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &9187756438258028366
+--- !u!222 &5807697845507949212
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2723529171056383254}
+  m_GameObject: {fileID: 2610826364570787562}
   m_CullTransparentMesh: 1
---- !u!114 &4660956824860541971
+--- !u!114 &3225542790291280044
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2723529171056383254}
+  m_GameObject: {fileID: 2610826364570787562}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_Color: {r: 0.35858038, g: 0.75826275, b: 0.69876474, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
+  cornerCut: 12
+  bevelWidth: 3.5
   topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  gradientTop: {r: 0.53256786, g: 0.8727875, b: 0.8047435, a: 1}
+  gradientBottom: {r: 0.35858038, g: 0.75826275, b: 0.69876474, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &2658271007534785517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5625991969338433775}
+  - component: {fileID: 7918851528884708376}
+  - component: {fileID: 3077548908309934732}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5625991969338433775
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658271007534785517}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7192614800256323767}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7918851528884708376
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658271007534785517}
+  m_CullTransparentMesh: 1
+--- !u!114 &3077548908309934732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2658271007534785517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.8853312, g: 0.856664, b: 0.73746884, a: 1}
+  gradientBottom: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &2790746416470181892
 GameObject:
   m_ObjectHideFlags: 0
@@ -2208,8 +2313,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u2022"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2243,10 +2348,10 @@ MonoBehaviour:
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0.45
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -2345,8 +2450,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: TAP TO RENAME
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2376,14 +2481,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1.1
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -2415,83 +2520,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &2846766133168024838
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9069723465827533098}
-  - component: {fileID: 7346138927128794187}
-  - component: {fileID: 5401848262543742394}
-  m_Layer: 0
-  m_Name: Shine
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &9069723465827533098
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2846766133168024838}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2270721015293414793}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -7, y: 10}
-  m_SizeDelta: {x: 10, y: 10}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &7346138927128794187
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2846766133168024838}
-  m_CullTransparentMesh: 1
---- !u!114 &5401848262543742394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2846766133168024838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.9143686, g: 0.9095215, b: 0.9309294, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 6
-  bevelWidth: 3.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 1, g: 1, b: 1, a: 1}
-  gradientBottom: {r: 0.9143686, g: 0.9095215, b: 0.9309294, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
 --- !u!1 &2877148650022143850
 GameObject:
   m_ObjectHideFlags: 0
@@ -2522,8 +2550,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5440972366221399269}
-  - {fileID: 6482923284356885976}
+  - {fileID: 7606132735125059684}
+  - {fileID: 5009461913126999327}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2571,7 +2599,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1114490277277435547}
+  m_TargetGraphic: {fileID: 4376493143010277302}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2587,8 +2615,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 6482923284356885976}
-  surface: {fileID: 1114490277277435547}
+  visualRoot: {fileID: 5009461913126999327}
+  surface: {fileID: 4376493143010277302}
   button: {fileID: 4262479955823830326}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -2625,8 +2653,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 577238826301822051}
-  - {fileID: 1823515884939324456}
+  - {fileID: 6221751834405177487}
+  - {fileID: 7588450772640588089}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2651,6 +2679,85 @@ MonoBehaviour:
   rotationDegrees: 10
   floatDistance: 1.4
   speed: 1.5
+--- !u!1 &2901589365658287075
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2252464385014931170}
+  - component: {fileID: 2225153391404087012}
+  - component: {fileID: 6073632515965356925}
+  m_Layer: 0
+  m_Name: SelectionRing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &2252464385014931170
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2901589365658287075}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2612362628118281088}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 88, y: 88}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2225153391404087012
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2901589365658287075}
+  m_CullTransparentMesh: 1
+--- !u!114 &6073632515965356925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2901589365658287075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 30
+  bevelWidth: 4.5
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &2968166112137314879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2727,9 +2834,11 @@ MonoBehaviour:
   gradientBottom: {r: 0.9143686, g: 0.74067456, b: 0.24850589, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &3197813194914830528
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &3147428109348118072
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2737,73 +2846,77 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1823515884939324456}
-  - component: {fileID: 2237639378718365841}
-  - component: {fileID: 2718794576277018544}
+  - component: {fileID: 3032631639999200187}
+  - component: {fileID: 8098493002095875984}
+  - component: {fileID: 6338404259499175601}
   m_Layer: 0
-  m_Name: BeamB
+  m_Name: SwatchFace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1823515884939324456
+--- !u!224 &3032631639999200187
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3197813194914830528}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_GameObject: {fileID: 3147428109348118072}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3074693652056125424}
+  m_Father: {fileID: 6197189265654125465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &2237639378718365841
+--- !u!222 &8098493002095875984
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3197813194914830528}
+  m_GameObject: {fileID: 3147428109348118072}
   m_CullTransparentMesh: 1
---- !u!114 &2718794576277018544
+--- !u!114 &6338404259499175601
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3197813194914830528}
+  m_GameObject: {fileID: 3147428109348118072}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.8117647, b: 0.23921569, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.8853312, g: 0.7797152, b: 0.796312, a: 1}
+  gradientBottom: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &3225015895375770132
 GameObject:
   m_ObjectHideFlags: 0
@@ -2871,8 +2984,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: CLASSIC COAT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2902,14 +3015,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1.4
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -2941,85 +3054,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &3348195055391570146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2270721015293414793}
-  - component: {fileID: 1952701690187848254}
-  - component: {fileID: 7292225117552611697}
-  m_Layer: 0
-  m_Name: Eye
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2270721015293414793
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3348195055391570146}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1883164477646126641}
-  - {fileID: 9069723465827533098}
-  m_Father: {fileID: 7713737477114982301}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 44, y: 8}
-  m_SizeDelta: {x: 38, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1952701690187848254
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3348195055391570146}
-  m_CullTransparentMesh: 1
---- !u!114 &7292225117552611697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3348195055391570146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 20
-  bevelWidth: 3
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.74509805}
-  bottomRightShadow: {r: 0.21568628, g: 0.13725491, b: 0.4392157, a: 0.47058824}
-  warmFacet: {r: 1, g: 0.80784315, b: 0.91764706, a: 0.29803923}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.35686275, g: 0.8392157, b: 0.89411765, a: 1}
-  gradientBottom: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
 --- !u!1 &3448749671100675970
 GameObject:
   m_ObjectHideFlags: 0
@@ -3158,21 +3192,21 @@ MonoBehaviour:
   - {fileID: 8338174880288437312}
   swatches:
   - button: {fileID: 1450750579901508446}
-    selectionRing: {fileID: 5790067547347992783}
+    selectionRing: {fileID: 8580373485386686898}
   - button: {fileID: 622146049332336876}
-    selectionRing: {fileID: 1417194010532012099}
+    selectionRing: {fileID: 2901589365658287075}
   - button: {fileID: 4262479955823830326}
-    selectionRing: {fileID: 5257964091769703940}
+    selectionRing: {fileID: 3503057949670849034}
   - button: {fileID: 1076800300168066195}
-    selectionRing: {fileID: 694862273129276057}
+    selectionRing: {fileID: 1083962897898437807}
   - button: {fileID: 6596863994219700402}
-    selectionRing: {fileID: 2723529171056383254}
+    selectionRing: {fileID: 1713744949131534669}
   - button: {fileID: 385868740756503612}
-    selectionRing: {fileID: 3670801943123166912}
+    selectionRing: {fileID: 7246797795014180136}
   - button: {fileID: 2921790768650331315}
-    selectionRing: {fileID: 3721513376238063146}
+    selectionRing: {fileID: 5086833899394232035}
   - button: {fileID: 3142991378835894992}
-    selectionRing: {fileID: 979914900864360504}
+    selectionRing: {fileID: 8339405802908681214}
   transitionDuration: 0.2
   revealScale: 0.88
   reducedMotion: 0
@@ -3188,6 +3222,85 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!1 &3460486441665946463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1744546251487975877}
+  - component: {fileID: 2186579686789858604}
+  - component: {fileID: 6219013652998030538}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1744546251487975877
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3460486441665946463}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4958282224367323441}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2186579686789858604
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3460486441665946463}
+  m_CullTransparentMesh: 1
+--- !u!114 &6219013652998030538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3460486441665946463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.7857503, g: 0.87929606, b: 0.8098912, a: 1}
+  gradientBottom: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &3479988230705338933
 GameObject:
   m_ObjectHideFlags: 0
@@ -3263,8 +3376,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &3496676405311898090
 GameObject:
   m_ObjectHideFlags: 0
@@ -3368,7 +3483,7 @@ MonoBehaviour:
   pressedScale: 0.94
   hoverScale: 1.035
   animateScale: 1
---- !u!1 &3670801943123166912
+--- !u!1 &3503057949670849034
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3376,9 +3491,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3492085090131772279}
-  - component: {fileID: 144278867046404059}
-  - component: {fileID: 8725593557269252338}
+  - component: {fileID: 7606132735125059684}
+  - component: {fileID: 3835792851096201345}
+  - component: {fileID: 7768052769712485779}
   m_Layer: 0
   m_Name: SelectionRing
   m_TagString: Untagged
@@ -3386,40 +3501,40 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!224 &3492085090131772279
+--- !u!224 &7606132735125059684
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3670801943123166912}
+  m_GameObject: {fileID: 3503057949670849034}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3114694071051566682}
+  m_Father: {fileID: 8563549222538561963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &144278867046404059
+--- !u!222 &3835792851096201345
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3670801943123166912}
+  m_GameObject: {fileID: 3503057949670849034}
   m_CullTransparentMesh: 1
---- !u!114 &8725593557269252338
+--- !u!114 &7768052769712485779
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3670801943123166912}
+  m_GameObject: {fileID: 3503057949670849034}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
@@ -3443,9 +3558,11 @@ MonoBehaviour:
   gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &3721513376238063146
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &3673711972378013032
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3453,75 +3570,77 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5447797909205737893}
-  - component: {fileID: 3038381314741112132}
-  - component: {fileID: 3849723790633625509}
+  - component: {fileID: 1072419544271892238}
+  - component: {fileID: 3259442778367049362}
+  - component: {fileID: 817542840698067931}
   m_Layer: 0
-  m_Name: SelectionRing
+  m_Name: SwatchFace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &5447797909205737893
+  m_IsActive: 1
+--- !u!224 &1072419544271892238
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3721513376238063146}
+  m_GameObject: {fileID: 3673711972378013032}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 745119865247292287}
+  m_Father: {fileID: 3471570141866336271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3038381314741112132
+--- !u!222 &3259442778367049362
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3721513376238063146}
+  m_GameObject: {fileID: 3673711972378013032}
   m_CullTransparentMesh: 1
---- !u!114 &3849723790633625509
+--- !u!114 &817542840698067931
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3721513376238063146}
+  m_GameObject: {fileID: 3673711972378013032}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
+  cornerCut: 26
+  bevelWidth: 8
   topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  gradientTop: {r: 0.8853312, g: 0.87929606, b: 0.8732608, a: 1}
+  gradientBottom: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &3878327069038052381
 GameObject:
   m_ObjectHideFlags: 0
@@ -3552,8 +3671,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6112652632830609611}
-  - {fileID: 6674550350042756353}
+  - {fileID: 2252464385014931170}
+  - {fileID: 9172339042060596789}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3601,7 +3720,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 6118856063800640842}
+  m_TargetGraphic: {fileID: 2737099440123592100}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3617,8 +3736,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 6674550350042756353}
-  surface: {fileID: 6118856063800640842}
+  visualRoot: {fileID: 9172339042060596789}
+  surface: {fileID: 2737099440123592100}
   button: {fileID: 622146049332336876}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -3626,83 +3745,6 @@ MonoBehaviour:
   pressedScale: 0.94
   hoverScale: 1.035
   animateScale: 1
---- !u!1 &3879943697316814347
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2742591141777475383}
-  - component: {fileID: 2758824791407556483}
-  - component: {fileID: 3609355788323444413}
-  m_Layer: 0
-  m_Name: SwatchFace
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2742591141777475383
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3879943697316814347}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3114694071051566682}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &2758824791407556483
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3879943697316814347}
-  m_CullTransparentMesh: 1
---- !u!114 &3609355788323444413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3879943697316814347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.7766976, g: 0.834032, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
 --- !u!1 &4266256258905882205
 GameObject:
   m_ObjectHideFlags: 0
@@ -3780,6 +3822,8 @@ MonoBehaviour:
   cornerSegments: 18
   candyGlossStrength: 0
   innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
 --- !u!1 &4694251495003098616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3810,7 +3854,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1406221159751585781}
+  m_Father: {fileID: 3061258319808887068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3855,8 +3899,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.9143686, g: 0.9095215, b: 0.9309294, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &4697476486949352660
 GameObject:
   m_ObjectHideFlags: 0
@@ -4044,8 +4090,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: NAME YOUR CAT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4075,14 +4121,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 3
+  m_fontStyle: 2
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0.8
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -4114,7 +4160,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &5038724235192470572
+--- !u!1 &5086833899394232035
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4122,86 +4168,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6674550350042756353}
-  - component: {fileID: 3830285178789539703}
-  - component: {fileID: 6118856063800640842}
-  m_Layer: 0
-  m_Name: SwatchFace
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6674550350042756353
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5038724235192470572}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2612362628118281088}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3830285178789539703
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5038724235192470572}
-  m_CullTransparentMesh: 1
---- !u!114 &6118856063800640842
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5038724235192470572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.8476112, b: 0.78273284, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
---- !u!1 &5257964091769703940
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5440972366221399269}
-  - component: {fileID: 3023227507176637234}
-  - component: {fileID: 3607479859594354058}
+  - component: {fileID: 2981152251126153269}
+  - component: {fileID: 8297553801852519497}
+  - component: {fileID: 2333676190666454192}
   m_Layer: 0
   m_Name: SelectionRing
   m_TagString: Untagged
@@ -4209,40 +4178,40 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!224 &5440972366221399269
+--- !u!224 &2981152251126153269
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5257964091769703940}
+  m_GameObject: {fileID: 5086833899394232035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8563549222538561963}
+  m_Father: {fileID: 745119865247292287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3023227507176637234
+--- !u!222 &8297553801852519497
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5257964091769703940}
+  m_GameObject: {fileID: 5086833899394232035}
   m_CullTransparentMesh: 1
---- !u!114 &3607479859594354058
+--- !u!114 &2333676190666454192
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5257964091769703940}
+  m_GameObject: {fileID: 5086833899394232035}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
@@ -4266,8 +4235,89 @@ MonoBehaviour:
   gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &5206019554984428721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7768998429067558742}
+  - component: {fileID: 8815382467836261457}
+  - component: {fileID: 7571559971974696662}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7768998429067558742
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5206019554984428721}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 745119865247292287}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8815382467836261457
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5206019554984428721}
+  m_CullTransparentMesh: 1
+--- !u!114 &7571559971974696662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5206019554984428721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.8219616, g: 0.78876805, b: 0.8732608, a: 1}
+  gradientBottom: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &5271729353285058029
 GameObject:
   m_ObjectHideFlags: 0
@@ -4301,8 +4351,8 @@ RectTransform:
   - {fileID: 5131156671577978777}
   - {fileID: 8291875906997820158}
   - {fileID: 76891267927785638}
-  - {fileID: 1406221159751585781}
-  - {fileID: 2270721015293414793}
+  - {fileID: 3061258319808887068}
+  - {fileID: 801009788570601379}
   - {fileID: 7329910193292425123}
   - {fileID: 7990942018721860719}
   - {fileID: 6264829476832893572}
@@ -4334,7 +4384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4347,12 +4397,93 @@ MonoBehaviour:
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.86254835, b: 0.7926909, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
+  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &5298381731669718422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 524089620384392985}
+  - component: {fileID: 5843674400694915672}
+  - component: {fileID: 3179042458489160496}
+  m_Layer: 0
+  m_Name: SwatchFace
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &524089620384392985
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5298381731669718422}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3114694071051566682}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5843674400694915672
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5298381731669718422}
+  m_CullTransparentMesh: 1
+--- !u!114 &3179042458489160496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5298381731669718422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 26
+  bevelWidth: 8
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.7766976, g: 0.834032, b: 0.8732608, a: 1}
+  gradientBottom: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &5402582045897229661
 GameObject:
   m_ObjectHideFlags: 0
@@ -4420,8 +4551,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "loki\u015F\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4451,14 +4582,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1.4
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -4599,85 +4730,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.8109804, g: 0.95509803, b: 0.90294117, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &5790067547347992783
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1686032861455698212}
-  - component: {fileID: 6481944064032041345}
-  - component: {fileID: 3937887679040469731}
-  m_Layer: 0
-  m_Name: SelectionRing
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1686032861455698212
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5790067547347992783}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3471570141866336271}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 88, y: 88}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6481944064032041345
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5790067547347992783}
-  m_CullTransparentMesh: 1
---- !u!114 &3937887679040469731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5790067547347992783}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 30
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
-  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &5806603474679687637
 GameObject:
   m_ObjectHideFlags: 0
@@ -4736,7 +4792,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4749,12 +4805,89 @@ MonoBehaviour:
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.86254835, b: 0.7926909, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.74608815, b: 0.6844338, a: 1}
+  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
+  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &5913027259800254674
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4762747997030925779}
+  - component: {fileID: 2111046279483180283}
+  - component: {fileID: 1039781673846456879}
+  m_Layer: 0
+  m_Name: BeamB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4762747997030925779
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5913027259800254674}
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4870952934660590344}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2111046279483180283
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5913027259800254674}
+  m_CullTransparentMesh: 1
+--- !u!114 &1039781673846456879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5913027259800254674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9647059, g: 0.3254902, b: 0.56078434, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &6060246456314398754
 GameObject:
   m_ObjectHideFlags: 0
@@ -4831,85 +4964,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.94480395, g: 0.32039216, b: 0.555, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
---- !u!1 &6071257258607044368
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7019303285222494643}
-  - component: {fileID: 4140925962584823392}
-  - component: {fileID: 2040935332513900335}
-  m_Layer: 0
-  m_Name: SwatchFace
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &7019303285222494643
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6071257258607044368}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6197189265654125465}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4140925962584823392
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6071257258607044368}
-  m_CullTransparentMesh: 1
---- !u!114 &2040935332513900335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6071257258607044368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.7797152, b: 0.796312, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
+  candyGlossStrength: 0.055
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &6113363191990628474
 GameObject:
   m_ObjectHideFlags: 0
@@ -4940,8 +4998,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7114675781190210826}
-  - {fileID: 8269993693163796325}
+  - {fileID: 8306744895266534471}
+  - {fileID: 1744546251487975877}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -4989,7 +5047,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 4239509706818408253}
+  m_TargetGraphic: {fileID: 6219013652998030538}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -5005,8 +5063,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 8269993693163796325}
-  surface: {fileID: 4239509706818408253}
+  visualRoot: {fileID: 1744546251487975877}
+  surface: {fileID: 6219013652998030538}
   button: {fileID: 6596863994219700402}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -5081,8 +5139,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\xD7"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5090,7 +5148,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
+  m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -5112,14 +5170,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1.1
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -5227,83 +5285,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &6364123359616676453
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3941270974509068331}
-  - component: {fileID: 1796517941796879982}
-  - component: {fileID: 2222120625666707446}
-  m_Layer: 0
-  m_Name: BeamA
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3941270974509068331
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6364123359616676453}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4870952934660590344}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1796517941796879982
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6364123359616676453}
-  m_CullTransparentMesh: 1
---- !u!114 &2222120625666707446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6364123359616676453}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.9647059, g: 0.3254902, b: 0.56078434, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &6485414023632722727
 GameObject:
   m_ObjectHideFlags: 0
@@ -5334,8 +5319,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3492085090131772279}
-  - {fileID: 2742591141777475383}
+  - {fileID: 3346784084535319988}
+  - {fileID: 524089620384392985}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5383,7 +5368,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 3609355788323444413}
+  m_TargetGraphic: {fileID: 3179042458489160496}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -5399,8 +5384,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 2742591141777475383}
-  surface: {fileID: 3609355788323444413}
+  visualRoot: {fileID: 524089620384392985}
+  surface: {fileID: 3179042458489160496}
   button: {fileID: 385868740756503612}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -5438,7 +5423,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1406221159751585781}
+  m_Father: {fileID: 3061258319808887068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5483,237 +5468,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.35858038, g: 0.75826275, b: 0.69876474, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &6731468447430037582
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1406221159751585781}
-  - component: {fileID: 3753406281450693324}
-  - component: {fileID: 7758706968298033734}
-  m_Layer: 0
-  m_Name: Eye
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1406221159751585781
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6731468447430037582}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 84526340910595203}
-  - {fileID: 5372641735880176032}
-  m_Father: {fileID: 7713737477114982301}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -44, y: 8}
-  m_SizeDelta: {x: 38, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3753406281450693324
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6731468447430037582}
-  m_CullTransparentMesh: 1
---- !u!114 &7758706968298033734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6731468447430037582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  cornerCut: 20
-  bevelWidth: 3
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.74509805}
-  bottomRightShadow: {r: 0.21568628, g: 0.13725491, b: 0.4392157, a: 0.47058824}
-  warmFacet: {r: 1, g: 0.80784315, b: 0.91764706, a: 0.29803923}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.35686275, g: 0.8392157, b: 0.89411765, a: 1}
-  gradientBottom: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
---- !u!1 &6848479372965023754
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 577238826301822051}
-  - component: {fileID: 8265763181573936717}
-  - component: {fileID: 5023318396236793390}
-  m_Layer: 0
-  m_Name: BeamA
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &577238826301822051
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848479372965023754}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3074693652056125424}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8265763181573936717
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848479372965023754}
-  m_CullTransparentMesh: 1
---- !u!114 &5023318396236793390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6848479372965023754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.8117647, b: 0.23921569, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!1 &6949281841120019754
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3027353750573984251}
-  - component: {fileID: 3892873821239588514}
-  - component: {fileID: 5063568387409913564}
-  m_Layer: 0
-  m_Name: BeamB
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3027353750573984251
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6949281841120019754}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4870952934660590344}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &3892873821239588514
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6949281841120019754}
-  m_CullTransparentMesh: 1
---- !u!114 &5063568387409913564
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6949281841120019754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.9647059, g: 0.3254902, b: 0.56078434, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &7102931221575472705
 GameObject:
   m_ObjectHideFlags: 0
@@ -5791,6 +5549,8 @@ MonoBehaviour:
   cornerSegments: 18
   candyGlossStrength: 0
   innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
 --- !u!1 &7205398265168485745
 GameObject:
   m_ObjectHideFlags: 0
@@ -5858,8 +5618,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: YOUR COZY COMPANION
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5889,14 +5649,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 1
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -5928,7 +5688,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &7455135954396726009
+--- !u!1 &7220192275886519196
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5936,76 +5696,74 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8269993693163796325}
-  - component: {fileID: 6861132818972355175}
-  - component: {fileID: 4239509706818408253}
+  - component: {fileID: 6221751834405177487}
+  - component: {fileID: 4333221419652859175}
+  - component: {fileID: 3285924280450975989}
   m_Layer: 0
-  m_Name: SwatchFace
+  m_Name: BeamA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &8269993693163796325
+--- !u!224 &6221751834405177487
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7455135954396726009}
+  m_GameObject: {fileID: 7220192275886519196}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4958282224367323441}
+  m_Father: {fileID: 3074693652056125424}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &6861132818972355175
+--- !u!222 &4333221419652859175
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7455135954396726009}
+  m_GameObject: {fileID: 7220192275886519196}
   m_CullTransparentMesh: 1
---- !u!114 &4239509706818408253
+--- !u!114 &3285924280450975989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7455135954396726009}
+  m_GameObject: {fileID: 7220192275886519196}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 1, g: 0.8117647, b: 0.23921569, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
-  useVerticalGradient: 1
-  gradientTop: {r: 0.7857503, g: 0.87929606, b: 0.8098912, a: 1}
-  gradientBottom: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
-  useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
---- !u!1 &7581921871148051339
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &7246797795014180136
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6013,75 +5771,156 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3895164705777780098}
-  - component: {fileID: 4592067133958176757}
-  - component: {fileID: 4982304421664461898}
+  - component: {fileID: 3346784084535319988}
+  - component: {fileID: 8697061686165444485}
+  - component: {fileID: 8508203331997422481}
   m_Layer: 0
-  m_Name: SwatchFace
+  m_Name: SelectionRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &3895164705777780098
+  m_IsActive: 0
+--- !u!224 &3346784084535319988
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7581921871148051339}
+  m_GameObject: {fileID: 7246797795014180136}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 745119865247292287}
+  m_Father: {fileID: 3114694071051566682}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4592067133958176757
+--- !u!222 &8697061686165444485
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7581921871148051339}
+  m_GameObject: {fileID: 7246797795014180136}
   m_CullTransparentMesh: 1
---- !u!114 &4982304421664461898
+--- !u!114 &8508203331997422481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7581921871148051339}
+  m_GameObject: {fileID: 7246797795014180136}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
+  cornerCut: 30
+  bevelWidth: 4.5
   topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8219616, g: 0.78876805, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &7426483532947590257
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4081748215877060840}
+  - component: {fileID: 3729766071918889718}
+  - component: {fileID: 2770595985266579184}
+  m_Layer: 0
+  m_Name: Shine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4081748215877060840
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7426483532947590257}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 801009788570601379}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -7, y: 10}
+  m_SizeDelta: {x: 10, y: 10}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3729766071918889718
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7426483532947590257}
+  m_CullTransparentMesh: 1
+--- !u!114 &2770595985266579184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7426483532947590257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9143686, g: 0.9095215, b: 0.9309294, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 6
+  bevelWidth: 3.5
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 1, g: 1, b: 1, a: 1}
+  gradientBottom: {r: 0.9143686, g: 0.9095215, b: 0.9309294, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &7648567910609777582
 GameObject:
   m_ObjectHideFlags: 0
@@ -6201,8 +6040,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: MELO
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f95949babe4af4441be44bf8dc850a7d, type: 2}
+  m_sharedMaterial: {fileID: -2367521305780520962, guid: f95949babe4af4441be44bf8dc850a7d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6232,14 +6071,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 2
+  m_characterSpacing: -0.25
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -2
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -6300,8 +6139,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3941270974509068331}
-  - {fileID: 3027353750573984251}
+  - {fileID: 5792270450714439643}
+  - {fileID: 4762747997030925779}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6401,8 +6240,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.16159217, g: 0.7230863, b: 0.716353, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &7938871876373219935
 GameObject:
   m_ObjectHideFlags: 0
@@ -6433,8 +6274,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1686032861455698212}
-  - {fileID: 7085161631460290387}
+  - {fileID: 3118851381519717012}
+  - {fileID: 1072419544271892238}
   m_Father: {fileID: 3113115181039898895}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6482,7 +6323,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1535734041164931191}
+  m_TargetGraphic: {fileID: 817542840698067931}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -6498,8 +6339,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb537c9d0418744aa03c3dcb9742e65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::PremiumButtonFx
-  visualRoot: {fileID: 7085161631460290387}
-  surface: {fileID: 1535734041164931191}
+  visualRoot: {fileID: 1072419544271892238}
+  surface: {fileID: 817542840698067931}
   button: {fileID: 1450750579901508446}
   primaryAction: 0
   shimmerSeconds: 4.8
@@ -6507,6 +6348,87 @@ MonoBehaviour:
   pressedScale: 0.94
   hoverScale: 1.035
   animateScale: 1
+--- !u!1 &8081247122767243524
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 801009788570601379}
+  - component: {fileID: 7486035545517592603}
+  - component: {fileID: 2301218331753933856}
+  m_Layer: 0
+  m_Name: Eye
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &801009788570601379
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8081247122767243524}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 969604726926567870}
+  - {fileID: 4081748215877060840}
+  m_Father: {fileID: 7713737477114982301}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 44, y: 8}
+  m_SizeDelta: {x: 38, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7486035545517592603
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8081247122767243524}
+  m_CullTransparentMesh: 1
+--- !u!114 &2301218331753933856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8081247122767243524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 20
+  bevelWidth: 3
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.74509805}
+  bottomRightShadow: {r: 0.21568628, g: 0.13725491, b: 0.4392157, a: 0.47058824}
+  warmFacet: {r: 1, g: 0.80784315, b: 0.91764706, a: 0.29803923}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.35686275, g: 0.8392157, b: 0.89411765, a: 1}
+  gradientBottom: {r: 0.16470589, g: 0.5921569, b: 0.8117647, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &8204897755672991228
 GameObject:
   m_ObjectHideFlags: 0
@@ -6636,7 +6558,9 @@ MonoBehaviour:
   cornerSegments: 18
   candyGlossStrength: 0
   innerGlowStrength: 0
---- !u!1 &8363367585461695609
+  softElevation: 0
+  referenceFinish: 0
+--- !u!1 &8339405802908681214
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6644,23 +6568,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 699397604778751421}
-  - component: {fileID: 922437731118597094}
-  - component: {fileID: 375456047662930703}
+  - component: {fileID: 4431359138363656239}
+  - component: {fileID: 6730616061162696708}
+  - component: {fileID: 8237520300929723076}
   m_Layer: 0
-  m_Name: SwatchFace
+  m_Name: SelectionRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &699397604778751421
+  m_IsActive: 0
+--- !u!224 &4431359138363656239
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8363367585461695609}
+  m_GameObject: {fileID: 8339405802908681214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -6668,51 +6592,128 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 7192614800256323767}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 88, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &922437731118597094
+--- !u!222 &6730616061162696708
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8363367585461695609}
+  m_GameObject: {fileID: 8339405802908681214}
   m_CullTransparentMesh: 1
---- !u!114 &375456047662930703
+--- !u!114 &8237520300929723076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8363367585461695609}
+  m_GameObject: {fileID: 8339405802908681214}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
-  m_RaycastTarget: 1
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
+  cornerCut: 30
+  bevelWidth: 4.5
   topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
   bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
   warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.856664, b: 0.73746884, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.22
-  innerGlowStrength: 0.09
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &8384475596543169814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5792270450714439643}
+  - component: {fileID: 7494184858022068959}
+  - component: {fileID: 7286280390865131430}
+  m_Layer: 0
+  m_Name: BeamA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5792270450714439643
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8384475596543169814}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4870952934660590344}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &7494184858022068959
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8384475596543169814}
+  m_CullTransparentMesh: 1
+--- !u!114 &7286280390865131430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8384475596543169814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9647059, g: 0.3254902, b: 0.56078434, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8447216411739244612
 GameObject:
   m_ObjectHideFlags: 0
@@ -6788,8 +6789,89 @@ MonoBehaviour:
   gradientBottom: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
+--- !u!1 &8580373485386686898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3118851381519717012}
+  - component: {fileID: 8476239790408528601}
+  - component: {fileID: 4819620501843361077}
+  m_Layer: 0
+  m_Name: SelectionRing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &3118851381519717012
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8580373485386686898}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3471570141866336271}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 88, y: 88}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8476239790408528601
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8580373485386686898}
+  m_CullTransparentMesh: 1
+--- !u!114 &4819620501843361077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8580373485386686898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b74f9bc154192419f224808ee9bd29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  cornerCut: 30
+  bevelWidth: 4.5
+  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
+  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
+  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  useVerticalGradient: 1
+  gradientTop: {r: 0.79882663, g: 0.46748236, b: 0.82545257, a: 1}
+  gradientBottom: {r: 0.6751687, g: 0.2763451, b: 0.72338825, a: 1}
+  useRoundedCorners: 1
+  cornerSegments: 18
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &8630633169237067265
 GameObject:
   m_ObjectHideFlags: 0
@@ -6857,8 +6939,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: CAT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6888,14 +6970,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0.45
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -7002,8 +7084,10 @@ MonoBehaviour:
   gradientBottom: {r: 0.9143686, g: 0.87786275, b: 0.8289176, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1
 --- !u!1 &8840792223709528812
 GameObject:
   m_ObjectHideFlags: 0
@@ -7071,8 +7155,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "PICK A COAT  \u2022  SEE IT LIVE"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d6899380cea7c274da66167c63603def, type: 2}
-  m_sharedMaterial: {fileID: -438568518006044654, guid: d6899380cea7c274da66167c63603def, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
+  m_sharedMaterial: {fileID: 5728936023692535950, guid: 37eaa17c1f403494b813d72a83ab8ef3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7102,14 +7186,14 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0.8
+  m_characterSpacing: 0.05
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 3
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -7216,5 +7300,7 @@ MonoBehaviour:
   gradientBottom: {r: 0.9143686, g: 0.87786275, b: 0.8289176, a: 1}
   useRoundedCorners: 1
   cornerSegments: 18
-  candyGlossStrength: 0.24
-  innerGlowStrength: 0.1
+  candyGlossStrength: 0.065
+  innerGlowStrength: 0.025
+  softElevation: 1
+  referenceFinish: 1

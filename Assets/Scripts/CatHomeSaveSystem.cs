@@ -135,9 +135,10 @@ public static class CatHomeSaveSystem
     private static long lastPresentedSummaryId;
     private static OfflineReturnSummary latestSummary;
     private static bool hasLatestSummary;
+    private static CatHomeSaveData pendingImportedData;
 
     public static string SaveFilePath =>
-        Path.Combine(Application.persistentDataPath, SaveFileName);
+        Path.Combine(EditorQaSession.SaveDirectory, SaveFileName);
 
     public static string RecoveryFilePath => SaveFilePath + RecoveryFileSuffix;
 
@@ -167,6 +168,7 @@ public static class CatHomeSaveSystem
     public static TimeSpan AppliedOfflineDuration { get; private set; }
     public static bool OfflineProgressApplied { get; private set; }
     public static event Action<OfflineReturnSummary> OfflineSummaryReady;
+    public static event Action LocalSaveWritten;
 
     public static bool TryGetLatestOfflineSummary(out OfflineReturnSummary summary)
     {
@@ -203,6 +205,14 @@ public static class CatHomeSaveSystem
                     thirstSystem = UnityEngine.Object.FindAnyObjectByType<ThirstSystem>();
                 if (energySystem == null)
                     energySystem = UnityEngine.Object.FindAnyObjectByType<EnergySystem>();
+                if (pendingImportedData != null && hungerSystem != null &&
+                    thirstSystem != null && energySystem != null)
+                {
+                    CatHomeSaveData imported = pendingImportedData;
+                    pendingImportedData = null;
+                    ApplyLoadedValues(imported);
+                    ApplyImportedCatState(imported);
+                }
             }
             return;
         }
@@ -301,6 +311,7 @@ public static class CatHomeSaveSystem
         {
             lastSuccessfulSaveUtc = savedAtUtc;
             lastSaveFrame = Time.frameCount;
+            LocalSaveWritten?.Invoke();
         }
     }
 
@@ -342,6 +353,7 @@ public static class CatHomeSaveSystem
         ApplyNewGameRuntime(reset, utcNow);
         lastSuccessfulSaveUtc = utcNow;
         lastSaveFrame = Time.frameCount;
+        LocalSaveWritten?.Invoke();
         report = string.IsNullOrEmpty(backupPath)
             ? "NEW GAME started."
             : "NEW GAME started. Safety backup: " + backupPath;
@@ -534,6 +546,142 @@ public static class CatHomeSaveSystem
             );
             return false;
         }
+    }
+
+    /// <summary>
+    /// Returns the validated, migrated local save used by Cloud Save. The JSON
+    /// leaves account identifiers and service tokens out because those are never
+    /// fields in <see cref="CatHomeSaveData"/>.
+    /// </summary>
+    public static bool TryExportLocalSave(out string json, out CatHomeSaveData data)
+    {
+        json = string.Empty;
+        data = null;
+        if (!TryReadSave(out data))
+            return false;
+        json = JsonUtility.ToJson(data, true);
+        return !string.IsNullOrWhiteSpace(json);
+    }
+
+    /// <summary>
+    /// Preserves the cloud copy before a seamless newest-save decision overwrites
+    /// it with this device. This support-only shadow is never loaded automatically.
+    /// </summary>
+    public static bool TryPreserveCloudShadow(string json, out string backupPath)
+    {
+        backupPath = string.Empty;
+        if (string.IsNullOrWhiteSpace(json))
+            return false;
+        try
+        {
+            string stamp = DateTime.UtcNow.ToString(
+                "yyyyMMdd-HHmmss-fffffff", CultureInfo.InvariantCulture);
+            backupPath = SaveFilePath + ".cloud-shadow-" + stamp;
+            File.WriteAllText(backupPath, json);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning("Cat Home could not preserve the older cloud shadow: " +
+                             exception.Message);
+            backupPath = string.Empty;
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Validates and atomically installs the automatically selected cloud copy. A support
+    /// backup is taken before replacement. The running home is then updated; a
+    /// room change is delegated to LevelLoader so camera/event-system ownership
+    /// remains canonical.
+    /// </summary>
+    public static bool TryImportCloudSave(string json, out string report)
+    {
+        report = string.Empty;
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            report = "The cloud save was empty.";
+            return false;
+        }
+
+        CatHomeSaveData data;
+        try
+        {
+            data = JsonUtility.FromJson<CatHomeSaveData>(json);
+        }
+        catch (Exception exception)
+        {
+            report = "The cloud save could not be read: " + exception.Message;
+            return false;
+        }
+
+        if (data == null || data.version <= 0 || data.version > CurrentSaveVersion)
+        {
+            report = data != null && data.version > CurrentSaveVersion
+                ? $"Cloud save v{data.version} is newer than supported v{CurrentSaveVersion}."
+                : "The cloud save did not contain a supported Cat Home profile.";
+            return false;
+        }
+        if (data.version < CurrentSaveVersion)
+            MigrateSaveData(data);
+
+        string backupPath = string.Empty;
+        if (File.Exists(SaveFilePath))
+        {
+            string stamp = DateTime.UtcNow.ToString(
+                "yyyyMMdd-HHmmss-fffffff", CultureInfo.InvariantCulture);
+            backupPath = SaveFilePath + ".before-cloud-" + stamp;
+            try
+            {
+                File.Copy(SaveFilePath, backupPath, false);
+            }
+            catch (Exception exception)
+            {
+                report = "The local safety backup failed; cloud import was cancelled. " +
+                         exception.Message;
+                return false;
+            }
+        }
+
+        if (!TryWriteSaveData(data))
+        {
+            report = "The cloud save could not replace the local copy.";
+            return false;
+        }
+
+        if (initialized && CanCaptureData())
+        {
+            string roomBefore = HomeRoomService.CurrentRoomId;
+            ApplyLoadedValues(data);
+            string roomAfter = HomeRoomService.CurrentRoomId;
+            if (string.Equals(roomBefore, roomAfter, StringComparison.Ordinal))
+            {
+                ApplyImportedCatState(data);
+            }
+            else
+            {
+                pendingImportedData = data;
+                LevelLoader loader = UnityEngine.Object.FindAnyObjectByType<LevelLoader>(
+                    FindObjectsInactive.Include);
+                loader?.LoadRoom(roomAfter);
+            }
+        }
+
+        lastSuccessfulSaveUtc = DateTime.UtcNow;
+        report = string.IsNullOrEmpty(backupPath)
+            ? "Cloud save applied."
+            : "Cloud save applied. Local safety backup: " + backupPath;
+        return true;
+    }
+
+    private static void ApplyImportedCatState(CatHomeSaveData data)
+    {
+        if (data.wasSleeping)
+            RestoreSavedSleepingState();
+        else if (data.hasCatPose && IsFinite(data.catWorldPosition) &&
+                 IsValidRotation(data.catWorldRotation))
+            catMovement.ApplySavedWorldPose(
+                data.catWorldPosition, data.catWorldRotation.normalized);
     }
 
     public static void SaveForSuspension()
@@ -1320,6 +1468,8 @@ public static class CatHomeSaveSystem
         lastPresentedSummaryId = 0;
         latestSummary = default;
         hasLatestSummary = false;
+        pendingImportedData = null;
         OfflineSummaryReady = null;
+        LocalSaveWritten = null;
     }
 }

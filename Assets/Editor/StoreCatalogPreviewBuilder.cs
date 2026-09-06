@@ -6,7 +6,8 @@ using UnityEngine;
 /// <summary>Renders consistent premium product-card thumbnails from real 3D assets.</summary>
 public static class StoreCatalogPreviewBuilder
 {
-    private const int PreviewSize = 512;
+    private const int PreviewSize = 1024;
+    private const string GeneratedPrefabFolder = "Assets/Art/StoreProducts/Prefabs/";
 
     [MenuItem("Tools/Cat Home/Store/Rebuild Catalog Previews")]
     public static void BuildAll()
@@ -23,6 +24,9 @@ public static class StoreCatalogPreviewBuilder
     {
         EnsureIconFolder();
         int rendered = 0;
+        foreach(var definition in CatProductContentBuilder.LegacyDefinitions)
+            if(forceAll||AssetDatabase.LoadAssetAtPath<Texture2D>(definition.IconPath)==null)
+            {Render(definition);if(rendered==0)Render(definition);rendered++;}
         for (int i = 0; i < StoreCatalogAssets.PlaceableProducts.Length; i++)
         {
             StoreCatalogAsset definition = StoreCatalogAssets.PlaceableProducts[i];
@@ -44,7 +48,20 @@ public static class StoreCatalogPreviewBuilder
 
     private static void Render(StoreCatalogAsset definition)
     {
-        GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(definition.SourceAssetPath);
+        // Always photograph the BUILT PRODUCT PREFAB when there is one, never the
+        // raw source. Twenty-eight products (`Custom`, `Pet`, `Room` entries)
+        // point `SourceAssetPath` at a bare FBX or a third-party pack prefab,
+        // and `StoreProductContentBuilder` applies scale, offset and orientation
+        // on top of that when it bakes the real product. Shooting the source
+        // therefore photographed something the player never receives:
+        // `RoundWallClock.fbx` is authored face-up, so its card was a blank gold
+        // disc, and `SideTable.fbx` came out as a bare top. The prefab is what
+        // the player gets, so the prefab is what the card must show.
+        string builtPrefabPath = GeneratedPrefabFolder + definition.PrefabName + ".prefab";
+        GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(builtPrefabPath);
+        bool fromBuiltPrefab = asset != null;
+        if (asset == null)
+            asset = AssetDatabase.LoadAssetAtPath<GameObject>(definition.SourceAssetPath);
         if (asset == null)
             throw new InvalidOperationException("Catalog preview source is missing: " + definition.SourceAssetPath);
 
@@ -57,12 +74,37 @@ public static class StoreCatalogPreviewBuilder
             Transform[] previewTransforms = instance.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < previewTransforms.Length; i++)
                 previewTransforms[i].gameObject.SetActive(true);
-            instance.transform.localScale = Vector3.one * definition.VisualScale;
-            instance.transform.localPosition = definition.VisualOffset;
-            bool generated = definition.SourceAssetPath.StartsWith(
-                "Assets/Art/StoreProducts/Prefabs/", StringComparison.Ordinal);
+            // The built prefab already carries the catalog scale and offset the
+            // builder baked in; applying them again would double them, and the
+            // pack products scale up to 7x.
+            if (!fromBuiltPrefab)
+            {
+                instance.transform.localScale = Vector3.one * definition.VisualScale;
+                instance.transform.localPosition = definition.VisualOffset;
+            }
+            bool generated = fromBuiltPrefab || definition.SourceAssetPath.StartsWith(
+                GeneratedPrefabFolder, StringComparison.Ordinal);
+            // The preview camera always stands on the prefab's -Z side, so a
+            // product whose decorated face ends up at prefab +Z shows the card
+            // its blank back. This is NOT the same set as `facesBackward` in
+            // StoreProductContentBuilder: a product lands in that list either
+            // because its mesh front was authored at +Z (BathroomToilet and the
+            // other Bathroom fixtures, which photograph correctly at 28) or
+            // because it stands at a yaw that puts the room behind it (the ten
+            // below). Only the second kind needs the flip, so the list is
+            // explicit and every entry was checked on the rendered card.
             bool reverseWallPreview =
-                definition.ProductId == HomeStoreService.LoftTallBookcaseId;
+                definition.ProductId == HomeStoreService.LoftTallBookcaseId ||
+                definition.ProductId == HomeStoreService.LoftWallGalleryId ||
+                definition.ProductId == HomeStoreService.BedroomDreamArtId ||
+                definition.ProductId == HomeStoreService.BedroomWardrobeId ||
+                definition.ProductId == HomeStoreService.BookshelfId ||
+                definition.ProductId == HomeStoreService.ModernPaintingId ||
+                definition.ProductId == HomeStoreService.ModernTelevisionId ||
+                definition.ProductId == HomeStoreService.TvUnitId ||
+                definition.ProductId == HomeStoreService.MirrorId ||
+                definition.ProductId == HomeStoreService.RetroTvId ||
+                definition.ProductId == HomeStoreService.WallClockId;
             instance.transform.localRotation = generated
                 ? Quaternion.Euler(0f, reverseWallPreview ? 208f : 28f, 0f)
                 : Quaternion.Euler(0f, 156f, 0f);
@@ -77,7 +119,7 @@ public static class StoreCatalogPreviewBuilder
 
             Camera camera = preview.camera;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color32(21, 55, 68, 255);
+            camera.backgroundColor = new Color32(255, 249, 239, 255);
             camera.orthographic = true;
             camera.nearClipPlane = .01f;
             camera.farClipPlane = 100f;

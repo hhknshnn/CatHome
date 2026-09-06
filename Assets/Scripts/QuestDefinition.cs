@@ -68,8 +68,8 @@ public sealed class QuestDefinition
     public string QuestId => questId;
     public QuestType Type => type;
     public int RequiredCount => requiredCount < 1 ? 1 : requiredCount;
-    public string Title => title;
-    public string Description => description;
+    public string Title => GameQuestCopy.Title(type,title);
+    public string Description => GameQuestCopy.Description(type,RequiredCount,description);
     public long RewardCoins => rewardCoins < 0 ? 0 : rewardCoins;
     public long RewardBondXp => rewardBondXp < 0 ? 0 : rewardBondXp;
     public long RewardDiamonds => rewardDiamonds < 0 ? 0 : rewardDiamonds;

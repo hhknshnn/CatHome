@@ -133,6 +133,66 @@ public sealed class HomeRoomShellTests
             "Products reach through the canonical shell:\n" + string.Join("\n", failures));
     }
 
+    [Test]
+    public void KitchenScene_StartsFurnitureFreeAndKeepsPremiumFixedArchitecture()
+    {
+        WithScene(HomeRoomService.KitchenScenePath, scene =>
+        {
+            Assert.That(FindNamed(scene, "Sunshine Checker Floor"), Is.Not.Null);
+            Assert.That(FindNamed(scene, "Sunshine Floor Inlay"), Is.Not.Null);
+            Assert.That(FindNamed(scene, "Kitchen Crown Moulding"), Is.Not.Null);
+            Assert.That(FindNamed(scene, "Kitchen Sunrise Window"), Is.Not.Null);
+
+            var displays = new List<StoreProductDisplay>();
+            foreach (GameObject root in scene.GetRootGameObjects())
+                displays.AddRange(root.GetComponentsInChildren<StoreProductDisplay>(true));
+
+            Assert.That(displays.Count, Is.EqualTo(10));
+            for (int i = 0; i < displays.Count; i++)
+            {
+                Renderer[] renderers =
+                    displays[i].GetComponentsInChildren<Renderer>(true);
+                for (int j = 0; j < renderers.Length; j++)
+                {
+                    Assert.That(renderers[j].gameObject.activeInHierarchy, Is.False,
+                        displays[i].ProductId + " must not furnish a fresh Kitchen.");
+                }
+            }
+        });
+    }
+
+    [Test]
+    public void EveryRoomScene_StartsWithoutCatalogFurnitureAndKeepsItsFixedPolish()
+    {
+        foreach (string path in RoomScenePaths)
+        {
+            WithScene(path, scene =>
+            {
+                Assert.That(
+                    FindNamed(scene, HomeRoomShellVisualPolishBuilder.RootName),
+                    Is.Not.Null,
+                    $"'{path}' is missing the shared fixed-architecture polish.");
+
+                var displays = new List<StoreProductDisplay>();
+                foreach (GameObject root in scene.GetRootGameObjects())
+                    displays.AddRange(root.GetComponentsInChildren<StoreProductDisplay>(true));
+
+                Assert.That(displays.Count, Is.GreaterThanOrEqualTo(10),
+                    $"'{path}' is missing its placeable catalog collection.");
+                for (int i = 0; i < displays.Count; i++)
+                {
+                    Renderer[] renderers =
+                        displays[i].GetComponentsInChildren<Renderer>(true);
+                    for (int j = 0; j < renderers.Length; j++)
+                    {
+                        Assert.That(renderers[j].gameObject.activeInHierarchy, Is.False,
+                            $"{displays[i].ProductId} must not furnish a fresh '{path}'.");
+                    }
+                }
+            });
+        }
+    }
+
     private static void AssertWall(Scene scene, string path, string side,
         Vector3 expectedPosition, Vector3 expectedScale)
     {

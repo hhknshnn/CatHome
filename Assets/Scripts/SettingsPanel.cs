@@ -6,9 +6,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Premium settings panel opened from the hamburger's SETTINGS row. Each row is a
-/// simple ON/OFF toggle bound by key to an existing preference service: the home
-/// soundscape (<see cref="HomeAudioService"/>) and the shared mini-game switches
-/// (<see cref="CatRunnerProgressService"/>). No new persistence is introduced.
+/// preference/account action bound by key to the home soundscape, mini-game
+/// switches, language service and account identity service.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class SettingsPanel : MonoBehaviour
@@ -34,6 +33,8 @@ public sealed class SettingsPanel : MonoBehaviour
     [SerializeField] private RectTransform panelVisual;
     [SerializeField] private CanvasGroup panelGroup;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Button privacyDataButton;
+    [SerializeField] private TMP_Text accountStatus;
     [SerializeField] private ToggleRow[] rows = Array.Empty<ToggleRow>();
 
     [Header("Animation")]
@@ -41,8 +42,8 @@ public sealed class SettingsPanel : MonoBehaviour
     [SerializeField, Range(0.75f, 1f)] private float revealScale = 0.88f;
     [SerializeField] private bool reducedMotion;
 
-    private static readonly Color OnColor = new Color(0.42f, 0.84f, 0.55f);
-    private static readonly Color OffColor = new Color(0.74f, 0.72f, 0.78f);
+    private static readonly Color OnColor = PremiumUiStyle.Teal;
+    private static readonly Color OffColor = PremiumUiStyle.Mint;
 
     private static SettingsPanel activeInstance;
     private PanelState state = PanelState.Closed;
@@ -111,6 +112,11 @@ public sealed class SettingsPanel : MonoBehaviour
             RefreshRows();
             return;
         }
+        if (key == "account")
+        {
+            ConnectAccount();
+            return;
+        }
         SetPref(key, !GetPref(key));
         RefreshRows();
     }
@@ -123,6 +129,10 @@ public sealed class SettingsPanel : MonoBehaviour
             {
                 if (rows[i].stateText != null)
                 {
+                    rows[i].stateText.enableAutoSizing = true;
+                    rows[i].stateText.fontSizeMin = 14f;
+                    rows[i].stateText.fontSizeMax = 20f;
+                    rows[i].stateText.textWrappingMode = TextWrappingModes.NoWrap;
                     rows[i].stateText.text = GameLanguageService.Text(
                         GameLanguageService.Current == GameLanguage.English
                             ? "language.english"
@@ -132,13 +142,50 @@ public sealed class SettingsPanel : MonoBehaviour
                     rows[i].face.SetPremiumBaseColor(PremiumUiStyle.CandyAqua);
                 continue;
             }
+            if (rows[i].key == "account")
+            {
+                if (rows[i].stateText != null)
+                {
+                    string statusKey = AccountIdentityService.IsBusy
+                        ? "account.status.connecting"
+                        : AccountIdentityService.IsGoogleConnected
+                            ? "account.status.google"
+                            : AccountIdentityService.HasChosenAccount
+                                ? "account.status.guest"
+                                : "account.status.none";
+                    if (accountStatus != null) accountStatus.text = GameLanguageService.Text(statusKey);
+                    rows[i].stateText.text = GameLanguageService.Text(AccountIdentityService.IsGoogleConnected
+                        ? "settings.connected" : "settings.connect");
+                    rows[i].stateText.color = PremiumUiStyle.Ink;
+                    if (rows[i].button != null) rows[i].button.interactable = !AccountIdentityService.IsGoogleConnected && !AccountIdentityService.IsBusy;
+                }
+                if (rows[i].face != null)
+                {
+                    Color accountColor = AccountIdentityService.IsGoogleConnected
+                        ? PremiumUiStyle.Mint
+                        : PremiumUiStyle.WarmIvory;
+                    rows[i].face.SetPremiumBaseColor(accountColor);
+                }
+                continue;
+            }
             bool on = GetPref(rows[i].key);
+            if(rows[i].stateText!=null) rows[i].stateText.color=on?Color.white:PremiumUiStyle.Ink;
             if (rows[i].stateText != null)
                 rows[i].stateText.text = GameLanguageService.Text(
                     on ? "settings.on" : "settings.off");
             if (rows[i].face != null)
                 rows[i].face.SetPremiumBaseColor(on ? OnColor : OffColor);
         }
+    }
+
+    private async void ConnectAccount()
+    {
+        if (AccountIdentityService.IsBusy || AccountIdentityService.IsGoogleConnected)
+            return;
+        RefreshRows();
+        await AccountIdentityService.ConnectWithGoogleAsync();
+        if (this != null)
+            RefreshRows();
     }
 
     private static bool GetPref(string key)
@@ -290,6 +337,11 @@ public sealed class SettingsPanel : MonoBehaviour
             closeButton.onClick.RemoveListener(RequestClose);
             closeButton.onClick.AddListener(RequestClose);
         }
+        if (privacyDataButton != null)
+        {
+            privacyDataButton.onClick.RemoveListener(OpenPrivacyData);
+            privacyDataButton.onClick.AddListener(OpenPrivacyData);
+        }
         for (int i = 0; i < rows.Length; i++)
         {
             if (rows[i].button == null)
@@ -302,9 +354,16 @@ public sealed class SettingsPanel : MonoBehaviour
             HomeAudioService.Changed += RefreshRows;
             CatRunnerProgressService.PreferencesChanged += RefreshRows;
             GameLanguageService.Changed += RefreshRows;
+            AccountIdentityService.Changed += RefreshRows;
             prefsBound = true;
         }
         listenersBound = true;
+    }
+
+    private void OpenPrivacyData()
+    {
+        RequestClose();
+        PrivacyDataPanel.Open();
     }
 
     private void OnDisable()
@@ -319,6 +378,7 @@ public sealed class SettingsPanel : MonoBehaviour
             HomeAudioService.Changed -= RefreshRows;
             CatRunnerProgressService.PreferencesChanged -= RefreshRows;
             GameLanguageService.Changed -= RefreshRows;
+            AccountIdentityService.Changed -= RefreshRows;
             prefsBound = false;
         }
         if (activeInstance == this)

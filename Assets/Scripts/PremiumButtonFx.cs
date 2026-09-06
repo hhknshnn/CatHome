@@ -21,9 +21,9 @@ public sealed class PremiumButtonFx : MonoBehaviour,
     [SerializeField] private Button button;
     [SerializeField] private bool primaryAction = true;
     [SerializeField, Min(1.8f)] private float shimmerSeconds = 3.6f;
-    [SerializeField, Range(0f, 0.04f)] private float idlePulse = 0.012f;
-    [SerializeField, Range(0.9f, 1f)] private float pressedScale = 0.94f;
-    [SerializeField, Range(1f, 1.12f)] private float hoverScale = 1.035f;
+    [SerializeField, Range(0f, 0.04f)] private float idlePulse = 0f;
+    [SerializeField, Range(0.9f, 1f)] private float pressedScale = 0.97f;
+    [SerializeField, Range(1f, 1.12f)] private float hoverScale = 1.015f;
     [SerializeField] private bool animateScale = true;
 
     private Vector3 baseScale = Vector3.one;
@@ -57,7 +57,7 @@ public sealed class PremiumButtonFx : MonoBehaviour,
     {
         bool interactable = button == null || button.IsInteractable();
         bool scaleActive = animateScale && !reducedMotion &&
-                           ((primaryAction && interactable) || pressed || hovering || selected ||
+                           (pressed || hovering || selected ||
                             releaseBounce > 0f || Mathf.Abs(currentScale - 1f) > 0.001f);
         if (scaleActive)
         {
@@ -67,7 +67,7 @@ public sealed class PremiumButtonFx : MonoBehaviour,
                 if (pressed)
                     target = pressedScale;
                 else if (releaseBounce > 0f)
-                    target = Mathf.Lerp(1f, 1.075f, releaseBounce);
+                    target = Mathf.Lerp(1f, 1.025f, releaseBounce);
                 else if (hovering || selected)
                     target = hoverScale;
                 else if (primaryAction)
@@ -98,25 +98,12 @@ public sealed class PremiumButtonFx : MonoBehaviour,
         if (surface == null)
             return;
 
-        if (reducedMotion || !interactable || !primaryAction)
-        {
+        // Feedback is driven by intent. No perpetual pulse or gloss sweep
+        // competes with the cat while the player reads or watches the room.
+        if (reducedMotion || !interactable || (!hovering && !selected))
             surface.SetRuntimeGloss(-1f, 0f);
-            return;
-        }
-
-        float cycle = Mathf.Repeat(Time.unscaledTime / shimmerSeconds + phaseOffset, 1f);
-        // Sweep occupies most of the cycle so paired hub cards both show gloss
-        // often enough that screenshots and live play don't look one-sided.
-        if (cycle <= 0.72f)
-        {
-            // Mesh-based UI gloss does not need a 60 Hz rebuild to look fluid.
-            // Quantising to 24 positions keeps the sweep clean while avoiding
-            // repeated geometry work and managed buffer churn every frame.
-            float sweep = Mathf.Round(cycle / 0.72f * 24f) / 24f;
-            surface.SetRuntimeGloss(sweep, hovering ? 0.5f : 0.34f);
-        }
         else
-            surface.SetRuntimeGloss(-1f, 0f);
+            surface.SetRuntimeGloss(.5f, .10f);
     }
 
     public void OnPointerEnter(PointerEventData eventData) => hovering = true;
@@ -178,7 +165,7 @@ public sealed class PremiumButtonFx : MonoBehaviour,
         primaryAction = isPrimary;
         animateScale = allowScale;
         shimmerSeconds = isPrimary ? 3.6f : 4.8f;
-        idlePulse = isPrimary ? 0.012f : 0f;
+        idlePulse = 0f;
         CaptureBaseScale();
     }
 

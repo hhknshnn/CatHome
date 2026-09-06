@@ -1,5 +1,6 @@
 using System.IO;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -98,122 +99,36 @@ public static class WhileYouWereAwayPopupBuilder
         SetFixedRect(
             layoutRoot.GetComponent<RectTransform>(),
             new Vector2(0.5f, 0.5f),
-            new Vector2(1040f, 760f));
+            new Vector2(980f, 680f));
 
         GameObject animationContainer = CreateRect("AnimationContainer", layoutRoot.transform);
         Stretch(animationContainer.GetComponent<RectTransform>());
         CanvasGroup panelGroup = animationContainer.AddComponent<CanvasGroup>();
 
-        LowPolyPanelGraphic aquaRibbon = CreateGradientPanel(
-            "AquaRibbon", animationContainer.transform,
-            new Color32(117, 247, 226, 255), PremiumUiStyle.CandySky, 48f, 4f);
-        SetAnchors(aquaRibbon.rectTransform, new Vector2(-0.035f, 0.735f), new Vector2(1.035f, 0.885f));
-        aquaRibbon.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -4.5f);
-
-        LowPolyPanelGraphic pinkRibbon = CreateGradientPanel(
-            "PinkRibbon", animationContainer.transform,
-            new Color32(255, 139, 191, 255), PremiumUiStyle.CandyBerry, 46f, 4f);
-        SetAnchors(pinkRibbon.rectTransform, new Vector2(-0.04f, 0.22f), new Vector2(1.04f, 0.36f));
-        pinkRibbon.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 4f);
-
-        LowPolyPanelGraphic lemonRibbon = CreateGradientPanel(
-            "LemonRibbon", animationContainer.transform,
-            PremiumUiStyle.ChampagneLight, PremiumUiStyle.CandyPeach, 38f, 3f);
-        SetAnchors(lemonRibbon.rectTransform, new Vector2(0.12f, -0.025f), new Vector2(0.88f, 0.09f));
-        lemonRibbon.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -2.2f);
-
-        LowPolyPanelGraphic shadow = CreatePanel("CardVolumeShadow", animationContainer.transform, FrameShadow, 36f, 0f);
-        PremiumUiStyle.SetCenteredShadowStretch(shadow.rectTransform, 10f);
-        LowPolyPanelGraphic ambientShadow = CreatePanel("AmbientShadow", animationContainer.transform, PremiumUiStyle.SoftShadow, 40f, 0f);
-        PremiumUiStyle.SetCenteredShadowStretch(ambientShadow.rectTransform, 14f);
-
-        LowPolyPanelGraphic berryFrame = CreateGradientPanel(
-            "BerryOuterFrame", animationContainer.transform,
-            new Color32(225, 94, 220, 255), PremiumUiStyle.CandyGrape, 43f, 6f);
-        Stretch(berryFrame.rectTransform);
-        LowPolyPanelGraphic goldRim = CreateGradientPanel(
-            "GoldInnerRim", animationContainer.transform,
-            PremiumUiStyle.ChampagneLight, PremiumUiStyle.Champagne, 39f, 3f);
-        StretchWithOffsets(goldRim.rectTransform, 8f, 8f, -8f, -8f);
-        LowPolyPanelGraphic aquaInnerRim = CreateGradientPanel(
-            "AquaInnerRim", animationContainer.transform,
-            new Color32(128, 246, 224, 255), PremiumUiStyle.CandySky, 36f, 3f);
-        StretchWithOffsets(aquaInnerRim.rectTransform, 14f, 14f, -14f, -14f);
-        LowPolyPanelGraphic face = CreateGradientPanel(
-            "CandyPeachFace", animationContainer.transform,
-            FaceTop, FaceBottom, 33f, 4f);
-        StretchWithOffsets(face.rectTransform, 21f, 21f, -21f, -21f);
-
-        GameObject content = CreateRect("Content", animationContainer.transform);
-        SetAnchors(content.GetComponent<RectTransform>(), new Vector2(0.052f, 0.045f), new Vector2(0.948f, 0.955f));
-
-        LowPolyPanelGraphic titleRibbon = CreateGradientPanel(
-            "TitleCandyRibbon", content.transform,
-            PremiumUiStyle.CoralLift, PremiumUiStyle.CandyBerry, 38f, 5f);
-        SetAnchors(titleRibbon.rectTransform, new Vector2(0.115f, 0.835f), new Vector2(0.92f, 0.975f));
-
-        TMP_Text titleShadow = CreateText(
-            "TitleShadow", content.transform, font, 43f,
-            new Color32(55, 35, 98, 150), TextAlignmentOptions.Center);
-        SetAnchors(titleShadow.rectTransform, new Vector2(0.15f, 0.84f), new Vector2(0.91f, 0.97f), new Vector2(0f, -3f));
-        TMP_Text title = CreateText("Title", content.transform, font, 43f, LightText, TextAlignmentOptions.Center);
-        SetAnchors(title.rectTransform, new Vector2(0.15f, 0.84f), new Vector2(0.91f, 0.97f));
-
-        CreatePawSeal(content.transform);
-
-        GameObject durationBadge = CreateRect("AwayDurationBadge", content.transform);
-        SetAnchors(durationBadge.GetComponent<RectTransform>(), new Vector2(0.24f, 0.715f), new Vector2(0.76f, 0.815f));
-        LowPolyPanelGraphic durationFace = CreateGradientPanel(
-            "DurationFace", durationBadge.transform,
-            new Color32(100, 240, 225, 255), PremiumUiStyle.CandySky, 31f, 4f);
-        Stretch(durationFace.rectTransform);
-        TMP_Text duration = CreateText("Duration", durationBadge.transform, font, 25f, LightText, TextAlignmentOptions.Center);
-        duration.enableAutoSizing = true;
-        duration.fontSizeMin = 20f;
-        duration.fontSizeMax = 27f;
-        StretchWithOffsets(duration.rectTransform, 18f, 5f, -18f, -5f);
-
-        Row hunger = CreateRewardCard(
-            content.transform, "HungerRewardCard", "HUNGER",
-            new Vector2(0.025f, 0.405f), new Vector2(0.326f, 0.685f),
-            HungerTop, HungerBottom, hungerIcon, "H", font);
-        Row thirst = CreateRewardCard(
-            content.transform, "ThirstRewardCard", "THIRST",
-            new Vector2(0.349f, 0.405f), new Vector2(0.65f, 0.685f),
-            ThirstTop, ThirstBottom, thirstIcon, "T", font);
-        Row energy = CreateRewardCard(
-            content.transform, "EnergyRewardCard", "ENERGY",
-            new Vector2(0.674f, 0.405f), new Vector2(0.975f, 0.685f),
-            EnergyTop, EnergyBottom, energyIcon, "E", font);
-
-        GameObject summaryBadge = CreateRect("ReturnSummaryBadge", content.transform);
-        SetAnchors(summaryBadge.GetComponent<RectTransform>(), new Vector2(0.09f, 0.225f), new Vector2(0.91f, 0.37f));
-        LowPolyPanelGraphic summaryFace = CreateGradientPanel(
-            "SummaryFace", summaryBadge.transform,
-            new Color32(202, 250, 224, 255), new Color32(255, 210, 229, 255), 31f, 4f);
-        Stretch(summaryFace.rectTransform);
-        TMP_Text summary = CreateText("ReturnSummary", summaryBadge.transform, font, 24f, ContentText, TextAlignmentOptions.Center);
-        summary.enableAutoSizing = true;
-        summary.fontSizeMin = 20f;
-        summary.fontSizeMax = 26f;
-        summary.textWrappingMode = TextWrappingModes.Normal;
-        StretchWithOffsets(summary.rectTransform, 30f, 8f, -30f, -8f);
-
-        ButtonParts button = CreateButton(content.transform, font);
-        CreateSparkle(
-            content.transform, "SparkleLeft", new Vector2(0.045f, 0.76f),
-            new Vector2(36f, 36f), PremiumUiStyle.CandyLemon, 1.45f);
-        CreateSparkle(
-            content.transform, "SparkleRight", new Vector2(0.945f, 0.74f),
-            new Vector2(44f, 44f), Color.white, 1.8f);
-        CreateSparkle(
-            content.transform, "SparkleBottom", new Vector2(0.935f, 0.2f),
-            new Vector2(30f, 30f), PremiumUiStyle.CandyAqua, 1.25f);
+        var face=U.Panel("ReturnFace",animationContainer.transform,PremiumUiStyle.Ivory,0,0,980,680,32,true);
+        var title=U.Label("Title",animationContainer.transform,font,43,ContentText,-84,253,704,70);
+        TMP_Text titleShadow=null;
+        U.Panel("PortraitMedallion",animationContainer.transform,PremiumUiStyle.Mint,378,244,132,132,66);
+        var portrait=U.Rect("CatPortrait",animationContainer.transform); U.At(portrait,378,244,104,104);
+        portrait.gameObject.AddComponent<Image>().raycastTarget=false; portrait.gameObject.AddComponent<SelectedCatPortrait>();
+        var durationBadge=U.Rect("AwayDurationBadge",animationContainer.transform).gameObject;
+        U.At((RectTransform)durationBadge.transform,0,183,872,42);
+        var duration=U.Label("Duration",durationBadge.transform,font,21,PremiumUiStyle.Muted,0,0,872,42);
+        var summaryBadge=U.Rect("ReturnSummaryBadge",animationContainer.transform).gameObject;
+        U.At((RectTransform)summaryBadge.transform,0,58,872,150);
+        var summaryFace=U.Panel("SummaryFace",summaryBadge.transform,PremiumUiStyle.Mint,0,0,872,150,24);
+        var summary=U.Label("ReturnSummary",summaryBadge.transform,font,29,ContentText,0,0,796,118,TextAlignmentOptions.Center);
+        Row hunger=CreateNeedSummary(animationContainer.transform,"HungerRewardCard","home.hunger",-294,hungerIcon,font);
+        Row thirst=CreateNeedSummary(animationContainer.transform,"ThirstRewardCard","home.thirst",0,thirstIcon,font);
+        Row energy=CreateNeedSummary(animationContainer.transform,"EnergyRewardCard","home.energy",294,energyIcon,font);
+        var action=U.Action("WelcomeBackButton",animationContainer.transform,font,"return.continue",PremiumUiStyle.Coral,0,-239,400,80,out var actionLabel);
+        actionLabel.fontSize=26;
+        var button=new ButtonParts(action,actionLabel,(RectTransform)action.transform);
 
         SerializedObject serialized = new SerializedObject(controller);
-        serialized.FindProperty("openingDuration").floatValue = 0.56f;
-        serialized.FindProperty("closingDuration").floatValue = 0.28f;
-        serialized.FindProperty("openingScale").floatValue = 0.76f;
+        serialized.FindProperty("openingDuration").floatValue = 0.28f;
+        serialized.FindProperty("closingDuration").floatValue = 0.18f;
+        serialized.FindProperty("openingScale").floatValue = 0.96f;
         Assign(serialized, "popupGroup", popupGroup);
         Assign(serialized, "panelGroup", panelGroup);
         Assign(serialized, "animationContainer", animationContainer.GetComponent<RectTransform>());
@@ -244,8 +159,8 @@ public static class WhileYouWereAwayPopupBuilder
             button.RevealRoot,
             new[] { hunger.Rect, thirst.Rect, energy.Rect },
             new[] { hunger.Text.rectTransform, thirst.Text.rectTransform, energy.Text.rectTransform },
-            new[] { face, durationFace, summaryFace, hunger.Face, thirst.Face, energy.Face },
-            new[] { hunger.Rect, thirst.Rect, energy.Rect });
+            new[] { face, summaryFace },
+            new RectTransform[0]);
 
         PremiumUiFactory.PolishHierarchy(root.transform, font);
         ValidateGraphics(root);
@@ -281,6 +196,19 @@ public static class WhileYouWereAwayPopupBuilder
         suppressDialogs = true;
         try { Build(); }
         finally { suppressDialogs = false; }
+    }
+
+    private static Row CreateNeedSummary(Transform parent,string name,string key,float x,Sprite icon,TMP_FontAsset font)
+    {
+        var face=U.Panel(name,parent,PremiumUiStyle.WarmIvory,x,-103,272,102,20);
+        var group=face.gameObject.AddComponent<CanvasGroup>();
+        var picture=U.Rect("Icon",face.transform); U.At(picture,-98,0,36,36);
+        var image=picture.gameObject.AddComponent<Image>(); image.sprite=icon; image.preserveAspect=true; image.raycastTarget=false;
+        U.Localize(U.Label("NeedLabel",face.transform,font,20,PremiumUiStyle.Muted,20,22,174,30),key);
+        var value=U.Label("Value",face.transform,font,26,ContentText,20,-17,174,40);
+        value.textWrappingMode=TextWrappingModes.NoWrap;
+        value.enableAutoSizing=true;value.fontSizeMin=20;value.fontSizeMax=26;
+        return new Row(group,value,face.rectTransform,face);
     }
 
     private static GameObject PrepareExistingRoot(GameObject root)
@@ -542,11 +470,13 @@ public static class WhileYouWereAwayPopupBuilder
         foreach (Graphic graphic in graphics)
         {
             EnsureCanvasRenderer(graphic.gameObject);
-            graphic.raycastTarget = graphic.name == "WarmOverlay" || graphic.name == "ButtonFace";
+            Button owner = graphic.GetComponentInParent<Button>();
+            graphic.raycastTarget = graphic.name == "WarmOverlay" ||
+                                    (owner != null && owner.targetGraphic == graphic);
         }
 
         Button button = root.GetComponentInChildren<Button>(true);
-        if (button == null || button.targetGraphic == null ||
+        if (button == null || button.targetGraphic == null || !button.targetGraphic.raycastTarget ||
             button.targetGraphic.GetComponent<CanvasRenderer>() == null)
         {
             throw new System.InvalidOperationException(

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -19,7 +20,7 @@ public static class TitleScreenBuilder
     public const string PrefabPath = "Assets/UI/TitleScreen.prefab";
     private const string UiScenePath = "Assets/Scenes/UI/CatHome_UI.unity";
     private const string HeroBackgroundPath =
-        "Assets/Art/Title/CatHome_TitleHero_v1.png";
+        TitleShowcaseContentBuilder.PosterPath;
     private const string MainMenuLogoPath =
         "Assets/Art/Title/CatHome_MainMenuLogo_v1.png";
     private const string ShopShortcutPath =
@@ -30,6 +31,8 @@ public static class TitleScreenBuilder
         "Assets/Art/Title/MainMenu_GamesCard_v1.png";
     private const string PawCoinIconPath =
         "Assets/Art/PremiumCurrency/Icons/PawCoin_Icon.png";
+    private const string GoogleSignInIconPath =
+        "Assets/Art/Title/Google/GoogleSignIn_G_Square_Light.png";
 
     private static readonly Color Ink = PremiumUiStyle.Ink;
     private static readonly Color Cream = PremiumUiStyle.CandyCloud;
@@ -44,11 +47,14 @@ public static class TitleScreenBuilder
 
     public static string BuildSilently()
     {
+        TitleShowcaseContentBuilder.BuildSilently();
+        TitleShowcaseContentBuilder.CapturePoster();
         ConfigureHeroImporter();
         ConfigureTextureImporter(MainMenuLogoPath, true);
         ConfigureTextureImporter(ShopShortcutPath, false);
         ConfigureTextureImporter(RoomsShortcutPath, false);
         ConfigureTextureImporter(GamesShortcutPath, false);
+        ConfigureTextureImporter(GoogleSignInIconPath, false);
         Scene uiScene = SceneManager.GetSceneByPath(UiScenePath);
         bool openedForBuild = !uiScene.IsValid() || !uiScene.isLoaded;
         if (openedForBuild)
@@ -72,7 +78,9 @@ public static class TitleScreenBuilder
 
         TitleScreen controller = GetOrAdd<TitleScreen>(root);
         CanvasGroup rootGroup = GetOrAdd<CanvasGroup>(root);
-        rootGroup.alpha = 1f;
+        // The authoring Game view shows the room; TitleScreen.OnEnable shows
+        // the welcome screen on entering Play, including DisableSceneReload.
+        rootGroup.alpha = 0f;
         rootGroup.interactable = true;
         rootGroup.blocksRaycasts = true;
 
@@ -82,10 +90,16 @@ public static class TitleScreenBuilder
 
         BuildBackdrop(safeArea, font);
         TitleScreenBindings bindings = BuildCard(safeArea, font);
+        safeArea.gameObject.AddComponent<TitleScreenLayout>().EditorConfigure(
+            safeArea.Find("BrandDockLayout") as RectTransform,
+            safeArea.Find("MainMenuShortcuts") as RectTransform);
         CanvasGroup creditsGroup = BuildCreditsOverlay(safeArea, font, out Button creditsClose);
         CanvasGroup newGameGroup = BuildNewGameOverlay(
             safeArea, font, out Button newGameCancel, out Button newGameConfirm,
             out TMP_Text newGameStatus);
+        CanvasGroup accountChoiceGroup = BuildAccountChoiceOverlay(
+            safeArea, font, out Button accountGoogle, out Button accountGuest,
+            out Button accountBack, out TMP_Text accountStatus);
 
         var serialized = new SerializedObject(controller);
         Assign(serialized, "rootGroup", rootGroup);
@@ -103,6 +117,9 @@ public static class TitleScreenBuilder
         Assign(serialized, "creditsCloseButton", creditsClose);
         Assign(serialized, "newGameCancelButton", newGameCancel);
         Assign(serialized, "newGameConfirmButton", newGameConfirm);
+        Assign(serialized, "accountGoogleButton", accountGoogle);
+        Assign(serialized, "accountGuestButton", accountGuest);
+        Assign(serialized, "accountBackButton", accountBack);
         Assign(serialized, "greetingText", bindings.Greeting);
         Assign(serialized, "catNameText", bindings.CatName);
         Assign(serialized, "playLabel", bindings.PlayLabel);
@@ -112,6 +129,8 @@ public static class TitleScreenBuilder
         Assign(serialized, "creditsGroup", creditsGroup);
         Assign(serialized, "newGameGroup", newGameGroup);
         Assign(serialized, "newGameStatusText", newGameStatus);
+        Assign(serialized, "accountChoiceGroup", accountChoiceGroup);
+        Assign(serialized, "accountStatusText", accountStatus);
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         PremiumUiFactory.PolishHierarchy(root.transform, font);
@@ -125,7 +144,7 @@ public static class TitleScreenBuilder
 
         if (openedForBuild)
             EditorSceneManager.CloseScene(uiScene, true);
-        return "Premium Title Screen v4 built in CatHome_UI.";
+        return "Premium Title Screen v5 with live Full HD game cats built in CatHome_UI.";
     }
 
     private struct TitleScreenBindings
@@ -155,191 +174,86 @@ public static class TitleScreenBuilder
         Stretch(heroRect);
         RawImage hero = heroRect.gameObject.AddComponent<RawImage>();
         hero.texture = AssetDatabase.LoadAssetAtPath<Texture2D>(HeroBackgroundPath);
-        // The source is intentionally sunlit; a subtle neutral multiplier keeps
-        // mint, coral and tabby markings rich after Unity's linear UI sampling.
-        hero.color = new Color32(226, 226, 226, 255);
-        hero.raycastTarget = true;
+        hero.color = Color.white;
+        hero.raycastTarget = false;
+        heroRect.gameObject.AddComponent<TitleCatShowcase>().EditorConfigure(
+            AssetDatabase.LoadAssetAtPath<GameObject>(TitleShowcaseContentBuilder.PrefabPath),
+            hero.texture as Texture2D, CatBreedCatalog.Load());
         if (hero.texture != null)
             hero.uvRect = RoomPreviewFit.CoverUv(
                 hero.texture.width, hero.texture.height, 1920f, 1080f);
 
-        // A warm glass veil gives the left-side controls stable contrast while
-        // preserving the aspirational room and sunlight behind them.
-        LowPolyPanelGraphic veil = CreatePanel("LeftPearlVeil", safeArea,
-            new Color32(255, 247, 228, 205), 76f, 0f, false);
-        SetCentered(veil.rectTransform, new Vector2(790f, 1180f), new Vector2(-610f, 0f));
-        PremiumUiStyle.ConfigureShadowSurface(veil,
-            new Color32(255, 247, 228, 205), 76f);
-
-        Image lowerWarmth = CreateImage("LowerWarmth", safeArea,
-            new Color32(255, 167, 112, 7), false);
-        lowerWarmth.rectTransform.anchorMin = Vector2.zero;
-        lowerWarmth.rectTransform.anchorMax = Vector2.one;
-        lowerWarmth.rectTransform.offsetMin = lowerWarmth.rectTransform.offsetMax = Vector2.zero;
-
-        BuildSparkle(safeArea, "SparkleA", new Vector2(-858f, 438f), 28f,
-            PremiumUiStyle.CandyLemon, 18f);
-        BuildSparkle(safeArea, "SparkleB", new Vector2(-728f, -438f), 22f,
-            PremiumUiStyle.CandyPink, -12f);
+        // The left reading area is part of the composition, with no stacked
+        // decorative shells between the player and the animated cats.
+        RectTransform veil = CreateRect("LeftPearlVeil", safeArea);
+        veil.anchorMin = Vector2.zero;
+        veil.anchorMax = new Vector2(.50f, 1f);
+        veil.offsetMin = veil.offsetMax = Vector2.zero;
+        veil.gameObject.AddComponent<PremiumReadingVeil>().raycastTarget = false;
     }
 
     private static TitleScreenBindings BuildCard(RectTransform safeArea, TMP_FontAsset font)
     {
         var bindings = new TitleScreenBindings();
-
         RectTransform layout = CreateRect("BrandDockLayout", safeArea);
-        SetCentered(layout, new Vector2(520f, 1000f), new Vector2(-672f, 0f));
-
-        LowPolyPanelGraphic glow = CreatePanel("BrandDockGlow", layout,
-            new Color32(255, 199, 62, 196), 58f, 10f, false);
-        SetCentered(glow.rectTransform, new Vector2(520f, 1000f), Vector2.zero);
-
-        LowPolyPanelGraphic card = CreatePanel("BrandDock", layout, Cream, 52f, 12f, false);
-        SetCentered(card.rectTransform, new Vector2(492f, 972f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(card,
-            new Color32(255, 252, 238, 252), new Color32(255, 222, 231, 248), 52f, 12f);
-
-        RectTransform neonRoot = CreateRect("LogoNeonAura", card.transform);
-        SetCentered(neonRoot, new Vector2(482f, 404f), new Vector2(0f, 292f));
-        CanvasGroup neonGroup = neonRoot.gameObject.AddComponent<CanvasGroup>();
-        neonGroup.alpha = .72f;
-        LowPolyPanelGraphic aquaAura = CreatePanel("NeonAquaRing", neonRoot,
-            new Color32(34, 218, 255, 210), 56f, 5f, false);
-        Stretch(aquaAura.rectTransform);
-        PremiumUiStyle.ConfigureAccentSurface(aquaAura,
-            new Color32(174, 255, 255, 220), new Color32(18, 172, 255, 224), 56f, 5f);
-        LowPolyPanelGraphic mintAura = CreatePanel("NeonMintRing", neonRoot,
-            new Color32(54, 255, 185, 218), 54f, 5f, false);
-        SetCentered(mintAura.rectTransform, new Vector2(470f, 392f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(mintAura,
-            new Color32(194, 255, 226, 226), new Color32(32, 224, 162, 226), 54f, 5f);
-        LowPolyPanelGraphic goldAura = CreatePanel("NeonGoldRing", neonRoot,
-            Gold, 53f, 5f, false);
-        SetCentered(goldAura.rectTransform, new Vector2(460f, 382f), Vector2.zero);
-        PremiumUiStyle.ConfigureMetalSurface(goldAura, Gold, 53f, 5f);
-
-        LowPolyPanelGraphic logoGlow = CreatePanel("BlenderLogoGlow", card.transform,
-            new Color32(163, 246, 255, 136), 52f, 5f, false);
-        SetCentered(logoGlow.rectTransform, new Vector2(452f, 374f), new Vector2(0f, 292f));
-        RectTransform logoRect = CreateRect("BlenderLogo", logoGlow.transform);
-        StretchWithOffsets(logoRect, 7f, 7f, -7f, -7f);
-        RawImage logoImage = logoRect.gameObject.AddComponent<RawImage>();
-        logoImage.texture = AssetDatabase.LoadAssetAtPath<Texture2D>(MainMenuLogoPath);
-        logoImage.color = new Color32(236, 253, 255, 255);
-        logoImage.raycastTarget = false;
-        // The Blender render is square and transparent; crop its authored clear
-        // margin so the bright emblem, rather than empty pixels, owns the dock.
-        logoImage.uvRect = new Rect(.08f, .12f, .84f, .73f);
-
-        RectTransform logoSparkles = CreateRect("LogoLightOrbit", card.transform);
-        SetCentered(logoSparkles, new Vector2(474f, 396f), new Vector2(0f, 292f));
-        BuildSparkle(logoSparkles, "NeonSparkleTopLeft",
-            new Vector2(-214f, 158f), 18f, new Color32(255, 240, 111, 230), -12f);
-        BuildSparkle(logoSparkles, "NeonSparkleTopRight",
-            new Vector2(216f, 144f), 15f, new Color32(108, 248, 255, 235), 8f);
-        BuildSparkle(logoSparkles, "NeonSparkleBottomLeft",
-            new Vector2(-218f, -146f), 14f, new Color32(100, 255, 197, 230), 6f);
-        BuildSparkle(logoSparkles, "NeonSparkleBottomRight",
-            new Vector2(214f, -154f), 17f, new Color32(255, 151, 210, 230), -8f);
-
-        TitleLogoNeonFx neonFx = logoGlow.gameObject.AddComponent<TitleLogoNeonFx>();
-        neonFx.EditorConfigure(neonGroup, neonRoot, logoImage, logoSparkles);
-
-        bindings.Greeting = CreateText("Greeting", card.transform, font, 18f,
-            PremiumUiStyle.Muted, TextAlignmentOptions.Center);
-        SetCentered(bindings.Greeting.rectTransform, new Vector2(432f, 34f),
-            new Vector2(0f, 76f));
-        bindings.Greeting.text = "YOUR COZY CAT AWAITS";
-        bindings.Greeting.fontStyle = FontStyles.Bold;
-        bindings.Greeting.characterSpacing = 1.8f;
-        bindings.Greeting.overflowMode = TextOverflowModes.Truncate;
-
-        LowPolyPanelGraphic nameRim = CreatePanel("WelcomeNameRim", card.transform,
-            Gold, 24f, 6f, false);
-        SetCentered(nameRim.rectTransform, new Vector2(440f, 66f), new Vector2(0f, 18f));
-        LowPolyPanelGraphic namePlate = CreatePanel("WelcomeNamePlate", nameRim.transform,
-            new Color32(255, 226, 239, 255), 20f, 5f, false);
-        StretchWithOffsets(namePlate.rectTransform, 5f, 5f, -5f, -5f);
-        PremiumUiStyle.ConfigureAccentSurface(namePlate,
-            new Color32(255, 244, 211, 255), new Color32(255, 151, 196, 255), 20f, 5f);
-        bindings.CatName = CreateText("CatName", namePlate.transform, font, 26f,
-            Ink, TextAlignmentOptions.Center);
-        StretchWithOffsets(bindings.CatName.rectTransform, 18f, 6f, -18f, -6f);
-        bindings.CatName.text = "WELCOME HOME";
-        bindings.CatName.fontStyle = FontStyles.Bold;
-        bindings.CatName.characterSpacing = 1.2f;
+        SetCentered(layout, new Vector2(540f, 960f), new Vector2(-632f, 0f));
+        var logo = CreateText("Wordmark", layout, font, 54f, Ink, TextAlignmentOptions.Left);
+        SetCentered(logo.rectTransform, new Vector2(480f, 82f), new Vector2(70f, 398f));
+        logo.text = "CAT <color=#218F87>HOME</color>";
+        logo.characterSpacing = 2f;
+        var mark=U.Rect("PawWordmark",layout);U.At(mark,-220,398,62,62);
+        PremiumUiFactory.BuildCurrencyIcon(mark,PremiumUiFactory.CurrencyVisual.Coin,false);
+        bindings.Greeting = CreateText("Greeting", layout, font, 20f,
+            PremiumUiStyle.Muted, TextAlignmentOptions.Left);
+        SetCentered(bindings.Greeting.rectTransform, new Vector2(500f, 42f), new Vector2(0f, 274f));
+        bindings.Greeting.text = GameLanguageService.Text("title.greeting.empty");
+        bindings.CatName = CreateText("CatName", layout, font, 80f, Ink, TextAlignmentOptions.Left);
+        SetCentered(bindings.CatName.rectTransform, new Vector2(620f, 214f), new Vector2(60f, 139f));
+        bindings.CatName.text = GameLanguageService.Text("title.home.empty");
+        bindings.CatName.textWrappingMode = TextWrappingModes.Normal;
         bindings.CatName.enableAutoSizing = true;
-        bindings.CatName.fontSizeMin = 19f;
-        bindings.CatName.fontSizeMax = 26f;
-
-        bindings.HomeLevel = BuildStatPill(card.transform, font, "HomeLevelPill",
-            PremiumUiStyle.CandyGrape, new Vector2(210f, 60f), new Vector2(-112f, -58f), "HOME LV. 1");
-        bindings.Coins = BuildStatPill(card.transform, font, "CoinsPill",
-            new Color32(255, 176, 64, 255), new Vector2(210f, 60f), new Vector2(112f, -58f), "0");
-        bindings.Collection = BuildStatPill(card.transform, font, "CollectionPill",
-            PremiumUiStyle.CandyPink, new Vector2(432f, 58f), new Vector2(0f, -130f),
-            "0 OF " + CollectionMilestoneService.CatalogSize + " • COLLECTED");
-
-        bindings.Play = BuildButton(card.transform, font, "PlayButton", "PLAY",
-            new Vector2(432f, 108f), new Vector2(0f, -228f), 40f,
-            new Color32(255, 112, 120, 255), new Color32(255, 177, 136, 255));
+        bindings.CatName.fontSizeMin = 62f;
+        bindings.CatName.fontSizeMax = 80f;
+        var promise = CreateText("ExperiencePromise", layout, font, 25f, Ink, TextAlignmentOptions.Left);
+        SetCentered(promise.rectTransform, new Vector2(560f, 65f), new Vector2(30f, -8f));
+        Localize(promise, "title.promise");
+        bindings.Play = BuildButton(layout, font, "PlayButton", "CONTINUE",
+            new Vector2(540f, 104f), new Vector2(20f, -140f), 32f,
+            PremiumUiStyle.Coral, PremiumUiStyle.CoralLift);
         bindings.PlayLabel = bindings.Play.GetComponentInChildren<TMP_Text>(true);
-
-        bindings.NewGame = BuildButton(card.transform, font, "NewGameButton", "NEW GAME",
-            new Vector2(102f, 62f), new Vector2(-171f, -340f), 14f,
-            PremiumUiStyle.CandyAqua, new Color32(93, 215, 224, 255));
+        bindings.PlayLabel.rectTransform.offsetMin=new Vector2(96,8);
+        bindings.PlayLabel.rectTransform.offsetMax=new Vector2(-68,-8);
+        var playMedal=U.Rect("PawMedal",bindings.Play.targetGraphic.transform);U.At(playMedal,-211,0,72,72);
+        PremiumUiFactory.BuildCurrencyIcon(playMedal,PremiumUiFactory.CurrencyVisual.Coin,false);
+        U.Label("ContinueArrow",bindings.Play.targetGraphic.transform,font,36,Ink,219,0,42,62,TextAlignmentOptions.Center).text="→";
+        bindings.NewGame = BuildButton(layout, font, "NewGameButton", "New game",
+            new Vector2(220f, 64f), new Vector2(-140f, -247f), 23f, Cream, Cream, false);
         Localize(bindings.NewGame.GetComponentInChildren<TMP_Text>(true), "title.new_game");
-        bindings.Settings = BuildButton(card.transform, font, "SettingsButton", "SETTINGS",
-            new Vector2(102f, 62f), new Vector2(-57f, -340f), 15f,
-            PremiumUiStyle.CandyGrape, new Color32(190, 150, 235, 255));
+        bindings.HomeLevel = BuildStatPill(layout, font, "HomeLevelPill",
+            PremiumUiStyle.Mint, new Vector2(340f, 64f), new Vector2(-80f, -426f), "Home level 1");
+
+        RectTransform utilities = CreateRect("TitleUtilities", safeArea);
+        utilities.anchorMin = utilities.anchorMax = utilities.pivot = Vector2.one;
+        utilities.anchoredPosition = new Vector2(-40f, -36f);
+        utilities.sizeDelta = new Vector2(450f, 64f);
+        bindings.Settings = BuildButton(utilities, font, "SettingsButton", "Settings",
+            new Vector2(150f, 64f), new Vector2(-300f, 0f), 21f, Cream, Cream, false);
+        bindings.Credits = BuildButton(utilities, font, "CreditsButton", "Credits",
+            new Vector2(130f, 64f), new Vector2(-142f, 0f), 19f, Cream, Cream, false);
+        bindings.Quit = BuildButton(utilities, font, "QuitButton", "Quit",
+            new Vector2(108f, 64f), new Vector2(-5f, 0f), 19f, Cream, Cream, false);
         Localize(bindings.Settings.GetComponentInChildren<TMP_Text>(true), "title.settings");
-        bindings.Credits = BuildButton(card.transform, font, "CreditsButton", "CREDITS",
-            new Vector2(102f, 62f), new Vector2(57f, -340f), 15f,
-            PremiumUiStyle.CandyBerry, new Color32(230, 140, 235, 255));
         Localize(bindings.Credits.GetComponentInChildren<TMP_Text>(true), "title.credits");
-        bindings.Quit = BuildButton(card.transform, font, "QuitButton", "QUIT",
-            new Vector2(102f, 62f), new Vector2(171f, -340f), 15f,
-            new Color32(255, 145, 92, 255), new Color32(255, 186, 130, 255));
         Localize(bindings.Quit.GetComponentInChildren<TMP_Text>(true), "title.quit");
 
-        TMP_Text promise = CreateText("ExperiencePromise", card.transform, font, 17f,
-            PremiumUiStyle.Muted, TextAlignmentOptions.Center);
-        SetCentered(promise.rectTransform, new Vector2(420f, 34f), new Vector2(0f, -408f));
-        promise.text = "CARE  •  DECORATE  •  PLAY";
-        promise.fontStyle = FontStyles.Bold;
-        promise.characterSpacing = 2.4f;
-        Localize(promise, "title.promise");
-        BuildSparkle(card.rectTransform, "PromiseSparkleLeft",
-            new Vector2(-218f, -408f), 12f, PremiumUiStyle.CandyLemon, 0f);
-        BuildSparkle(card.rectTransform, "PromiseSparkleRight",
-            new Vector2(218f, -408f), 12f, PremiumUiStyle.CandyAqua, 0f);
-
         RectTransform shortcuts = CreateRect("MainMenuShortcuts", safeArea);
-        SetCentered(shortcuts, new Vector2(316f, 900f), new Vector2(782f, 0f));
-        LowPolyPanelGraphic shortcutHeader = CreatePanel("ShortcutHeader", shortcuts,
-            new Color32(255, 247, 220, 246), 20f, 5f, false);
-        SetCentered(shortcutHeader.rectTransform, new Vector2(306f, 48f), new Vector2(0f, 440f));
-        TMP_Text shortcutTitle = CreateText("ShortcutTitle", shortcutHeader.transform, font, 18f,
-            Ink, TextAlignmentOptions.Center);
-        StretchWithOffsets(shortcutTitle.rectTransform, 12f, 5f, -12f, -5f);
-        shortcutTitle.text = "CHOOSE YOUR HAPPY PLACE";
-        shortcutTitle.fontStyle = FontStyles.Bold;
-        shortcutTitle.characterSpacing = 1.2f;
-        shortcutTitle.enableAutoSizing = true;
-        shortcutTitle.fontSizeMin = 14f;
-        shortcutTitle.fontSizeMax = 18f;
-        Localize(shortcutTitle, "title.shortcuts");
-
-        bindings.Shop = BuildShortcutCard(shortcuts, font, "ShopShortcut", "SHOP", "title.shop",
-            ShopShortcutPath, new Color32(255, 119, 111, 255), new Vector2(0f, 274f),
-            out bindings.ShopAfterTourBadge);
-        bindings.Rooms = BuildShortcutCard(shortcuts, font, "RoomsShortcut", "ROOMS", "title.rooms",
-            RoomsShortcutPath, new Color32(66, 218, 170, 255), Vector2.zero,
-            out bindings.RoomsAfterTourBadge);
-        bindings.Games = BuildShortcutCard(shortcuts, font, "GamesShortcut", "GAMES", "title.games",
-            GamesShortcutPath, new Color32(177, 117, 239, 255), new Vector2(0f, -274f),
-            out bindings.GamesAfterTourBadge);
-
+        SetCentered(shortcuts, new Vector2(756f, 146f), new Vector2(500f, -420f));
+        bindings.Shop = BuildShortcutCard(shortcuts, font, "ShopShortcut", "My cat", "title.my_cat",
+            null, PremiumUiStyle.Teal, new Vector2(-252f, 0f), out bindings.ShopAfterTourBadge);
+        bindings.Rooms = BuildShortcutCard(shortcuts, font, "RoomsShortcut", "Rooms", "title.rooms",
+            RoomsShortcutPath, PremiumUiStyle.Teal, Vector2.zero, out bindings.RoomsAfterTourBadge);
+        bindings.Games = BuildShortcutCard(shortcuts, font, "GamesShortcut", "Games", "title.games",
+            GamesShortcutPath, PremiumUiStyle.Teal, new Vector2(252f, 0f), out bindings.GamesAfterTourBadge);
         return bindings;
     }
 
@@ -348,77 +262,36 @@ public static class TitleScreenBuilder
         out GameObject afterTourBadge)
     {
         RectTransform root = CreateRect(name, parent);
-        SetCentered(root, new Vector2(304f, 250f), position);
-        LowPolyPanelGraphic glow = CreatePanel("OuterGlow", root,
-            new Color(accent.r, accent.g, accent.b, .40f), 38f, 7f, false);
-        SetCentered(glow.rectTransform, new Vector2(322f, 268f), Vector2.zero);
-        LowPolyPanelGraphic rim = CreatePanel("ChampagneRim", root,
-            Gold, 35f, 8f, false);
-        SetCentered(rim.rectTransform, new Vector2(312f, 258f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(rim,
-            new Color32(255, 235, 137, 255), Gold, 35f, 8f);
-        LowPolyPanelGraphic face = CreatePanel("Visual", root, Cream, 31f, 10f, true);
-        SetCentered(face.rectTransform, new Vector2(300f, 246f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(face,
-            new Color32(255, 253, 236, 255), Color.Lerp(accent, Color.white, .32f), 31f, 10f);
-
-        LowPolyPanelGraphic imageRim = CreatePanel("PreviewRim", face.transform,
-            Gold, 23f, 6f, false);
-        SetCentered(imageRim.rectTransform, new Vector2(270f, 170f), new Vector2(0f, 30f));
-        LowPolyPanelGraphic imageWell = CreatePanel("PreviewWell", imageRim.transform,
-            new Color32(255, 250, 235, 255), 20f, 5f, false);
-        StretchWithOffsets(imageWell.rectTransform, 5f, 5f, -5f, -5f);
-        Mask mask = imageWell.gameObject.AddComponent<Mask>();
-        mask.showMaskGraphic = true;
-        RawImage image = CreateRect("Preview", imageWell.transform).gameObject.AddComponent<RawImage>();
-        Stretch(image.rectTransform);
-        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
-        image.texture = texture;
-        image.color = Color.white;
-        image.raycastTarget = false;
-        if (texture != null)
-            image.uvRect = RoomPreviewFit.CoverUv(texture.width, texture.height, 260f, 160f);
-
-        LowPolyPanelGraphic labelPlate = CreatePanel("LabelPlate", face.transform,
-            accent, 18f, 6f, false);
-        SetCentered(labelPlate.rectTransform, new Vector2(262f, 58f), new Vector2(0f, -82f));
-        PremiumUiStyle.ConfigureAccentSurface(labelPlate,
-            Color.Lerp(accent, Color.white, .08f),
-            Color.Lerp(accent, PremiumUiStyle.Night, .10f), 18f, 6f);
-        LowPolyPanelGraphic gloss = CreatePanel("TopGlossBand", labelPlate.transform,
-            new Color32(255, 255, 255, 64), 7f, 2f, false);
-        SetCentered(gloss.rectTransform, new Vector2(236f, 13f), new Vector2(0f, 15f));
-        TMP_Text text = CreateText("Label", labelPlate.transform, font, 25f,
-            Color.white, TextAlignmentOptions.Center);
-        StretchWithOffsets(text.rectTransform, 18f, 7f, -18f, -7f);
-        text.text = label;
-        text.fontStyle = FontStyles.Bold;
-        text.characterSpacing = 2f;
+        SetCentered(root, new Vector2(228f, 146f), position);
+        LowPolyPanelGraphic face = CreatePanel("Visual", root, Cream, 26f, 2f, true);
+        Stretch(face.rectTransform);
+        var preview = CreateRect("Preview", face.transform);
+        SetCentered(preview, new Vector2(108f, 100f), new Vector2(-45f, 12f));
+        if (texturePath == null)
+        {
+            var portrait = preview.gameObject.AddComponent<Image>();
+            var catalog = CatBreedCatalog.Load();
+            var entry = catalog.Find(CatBreedService.SelectedBreedId) ?? catalog.Get(0);
+            portrait.sprite = entry.Portrait;
+            portrait.preserveAspect = true;
+            portrait.raycastTarget = false;
+            preview.gameObject.AddComponent<SelectedCatPortrait>();
+        }
+        else
+        {
+            var image = preview.gameObject.AddComponent<RawImage>();
+            image.texture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+            image.raycastTarget = false;
+        }
+        var text = CreateText("Label", face.transform, font, 23f, Ink, TextAlignmentOptions.Right);
+        SetCentered(text.rectTransform, new Vector2(192f, 36f), new Vector2(0f, -46f));
         Localize(text, labelKey);
-        BuildSparkle(face.rectTransform, "CardSparkle", new Vector2(126f, 101f), 13f,
-            PremiumUiStyle.CandyLemon, 0f);
-
-        LowPolyPanelGraphic tourRim = CreatePanel("AfterTourBadge", face.transform,
-            Gold, 13f, 4f, false);
-        SetCentered(tourRim.rectTransform, new Vector2(132f, 38f), new Vector2(-62f, 91f));
-        LowPolyPanelGraphic tourPlate = CreatePanel("Visual", tourRim.transform,
-            new Color32(112, 83, 174, 252), 11f, 3f, false);
-        StretchWithOffsets(tourPlate.rectTransform, 4f, 4f, -4f, -4f);
-        PremiumUiStyle.ConfigureAccentSurface(tourPlate,
-            new Color32(157, 124, 220, 255), new Color32(93, 68, 160, 255), 11f, 3f);
-        TMP_Text tourText = CreateText("Label", tourPlate.transform, font, 13f,
-            Color.white, TextAlignmentOptions.Center);
-        StretchWithOffsets(tourText.rectTransform, 7f, 3f, -7f, -3f);
-        tourText.text = "AFTER TOUR";
-        tourText.fontStyle = FontStyles.Bold;
-        tourText.characterSpacing = 1.1f;
-        tourText.enableAutoSizing = true;
-        tourText.fontSizeMin = 10f;
-        tourText.fontSizeMax = 13f;
-        Localize(tourText, "title.after_tour");
-        afterTourBadge = tourRim.gameObject;
-
-        Button button = GetOrAdd<Button>(root.gameObject);
+        var badge = CreateText("AfterTourBadge", face.transform, font, 14f,
+            PremiumUiStyle.Muted, TextAlignmentOptions.Center);
+        SetCentered(badge.rectTransform, new Vector2(200f, 28f), new Vector2(0f, 48f));
+        Localize(badge, "title.after_tour");
+        afterTourBadge = badge.gameObject;
+        Button button = root.gameObject.AddComponent<Button>();
         button.targetGraphic = face;
         button.transition = Selectable.Transition.None;
         return button;
@@ -440,40 +313,12 @@ public static class TitleScreenBuilder
         scrimButton.targetGraphic = scrim;
         scrimButton.transition = Selectable.Transition.None;
 
-        LowPolyPanelGraphic card = CreatePanel("CreditsCard", overlay, Cream, 36f, 10f, true);
-        SetCentered(card.rectTransform, new Vector2(720f, 460f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(card,
-            new Color32(255, 248, 226, 255), new Color32(255, 226, 236, 255), 36f, 10f);
-
-        LowPolyPanelGraphic banner = CreatePanel("CreditsBanner", card.transform,
-            HeaderPink, 22f, 6f, false);
-        SetCentered(banner.rectTransform, new Vector2(620f, 80f), new Vector2(0f, 160f));
-        TMP_Text title = CreateText("CreditsTitle", banner.transform, font, 36f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(title.rectTransform);
-        title.text = "CREDITS";
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 2f;
-        Localize(title, "credits.title");
-
-        TMP_Text body = CreateText("CreditsBody", card.transform, font, 24f,
-            Ink, TextAlignmentOptions.Center);
-        SetCentered(body.rectTransform, new Vector2(620f, 180f), new Vector2(0f, 10f));
-        body.text = "CAT HOME\nA COZY CAT CARE GAME\nMADE WITH CARE FOR CATS AND KIDS";
-        body.fontStyle = FontStyles.Bold;
-        body.textWrappingMode = TextWrappingModes.Normal;
-        body.lineSpacing = 12f;
-        body.characterSpacing = 0.8f;
-        body.enableAutoSizing = true;
-        body.fontSizeMin = 18f;
-        body.fontSizeMax = 24f;
-        Localize(body, "credits.body");
-
-        closeButton = BuildButton(card.transform, font, "CreditsCloseButton", "CLOSE",
-            new Vector2(280f, 72f), new Vector2(0f, -150f), 28f,
-            PremiumUiStyle.CandyMint, new Color32(120, 235, 180, 255));
-        Localize(closeButton.GetComponentInChildren<TMP_Text>(true), "common.close");
-        scrimButton.onClick.AddListener(closeButton.onClick.Invoke);
+        var card=U.Panel("CreditsCard",overlay,Cream,0,0,920,640,32,true);
+        U.Localize(U.Label("CreditsTitle",card.transform,font,44,Ink,0,225,792,70),"credits.title");
+        U.Localize(U.Label("CreditsBody",card.transform,font,24,Ink,0,32,792,260),"credits.body");
+        U.Label("Version",card.transform,font,19,PremiumUiStyle.Muted,0,-142,792,38).text="Cat Home · "+Application.version;
+        closeButton=U.Action("CreditsCloseButton",card.transform,font,"common.close",PremiumUiStyle.Mint,0,-236,310,72,out var closeLabel);
+        scrimButton.gameObject.AddComponent<UiButtonRelay>().Configure(closeButton);
         return group;
     }
 
@@ -498,86 +343,87 @@ public static class TitleScreenBuilder
         scrimButton.targetGraphic = scrim;
         scrimButton.transition = Selectable.Transition.None;
 
-        LowPolyPanelGraphic glow = CreatePanel("NewGameAquaGlow", overlay,
-            new Color32(64, 229, 220, 118), 44f, 8f, false);
-        SetCentered(glow.rectTransform, new Vector2(790f, 510f), Vector2.zero);
-        LowPolyPanelGraphic card = CreatePanel("NewGameCard", overlay, Cream, 40f, 12f, true);
-        SetCentered(card.rectTransform, new Vector2(760f, 480f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(card,
-            new Color32(255, 247, 216, 255), new Color32(255, 220, 235, 255), 40f, 12f);
-
-        LowPolyPanelGraphic banner = CreatePanel("NewGameBanner", card.transform,
-            HeaderPink, 24f, 7f, false);
-        SetCentered(banner.rectTransform, new Vector2(650f, 82f), new Vector2(0f, 160f));
-        TMP_Text title = CreateText("NewGameTitle", banner.transform, font, 34f,
-            Color.white, TextAlignmentOptions.Center);
-        StretchWithOffsets(title.rectTransform, 20f, 8f, -20f, -8f);
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 1.6f;
-        title.enableAutoSizing = true;
-        title.fontSizeMin = 24f;
-        title.fontSizeMax = 34f;
-        Localize(title, "new_game.title");
-
-        TMP_Text body = CreateText("NewGameBody", card.transform, font, 23f,
-            Ink, TextAlignmentOptions.Center);
-        SetCentered(body.rectTransform, new Vector2(650f, 150f), new Vector2(0f, 45f));
-        body.fontStyle = FontStyles.Bold;
-        body.textWrappingMode = TextWrappingModes.Normal;
-        body.lineSpacing = 10f;
-        body.characterSpacing = .7f;
-        body.enableAutoSizing = true;
-        body.fontSizeMin = 18f;
-        body.fontSizeMax = 23f;
-        Localize(body, "new_game.body");
-
-        statusText = CreateText("NewGameStatus", card.transform, font, 17f,
-            PremiumUiStyle.CandyBerry, TextAlignmentOptions.Center);
-        SetCentered(statusText.rectTransform, new Vector2(620f, 46f), new Vector2(0f, -58f));
-        statusText.fontStyle = FontStyles.Bold;
-        statusText.textWrappingMode = TextWrappingModes.Normal;
-        statusText.text = string.Empty;
-
-        cancelButton = BuildButton(card.transform, font, "NewGameCancelButton", "CANCEL",
-            new Vector2(260f, 76f), new Vector2(-150f, -145f), 25f,
-            PremiumUiStyle.CandyGrape, new Color32(190, 150, 235, 255));
-        Localize(cancelButton.GetComponentInChildren<TMP_Text>(true), "new_game.cancel");
-        confirmButton = BuildButton(card.transform, font, "NewGameConfirmButton", "YES, NEW GAME",
-            new Vector2(310f, 76f), new Vector2(145f, -145f), 24f,
-            new Color32(255, 112, 120, 255), new Color32(255, 177, 136, 255));
-        Localize(confirmButton.GetComponentInChildren<TMP_Text>(true), "new_game.confirm");
-        scrimButton.onClick.AddListener(cancelButton.onClick.Invoke);
+        var card=U.Panel("NewGameCard",overlay,Cream,0,0,960,560,32,true);
+        U.Localize(U.Label("NewGameTitle",card.transform,font,40,Ink,0,195,824,88),"new_game.title");
+        U.Localize(U.Label("NewGameBody",card.transform,font,24,Ink,0,60,824,148),"new_game.body");
+        statusText=U.Label("NewGameStatus",card.transform,font,20,new Color32(152,53,43,255),0,-61,824,64);
+        cancelButton=U.Action("NewGameCancelButton",card.transform,font,"new_game.cancel",PremiumUiStyle.Mint,-212,-185,400,80,out var cancelLabel);
+        confirmButton=U.Action("NewGameConfirmButton",card.transform,font,"new_game.confirm",new Color32(163,56,48,255),212,-185,400,80,out var confirmLabel);
+        confirmLabel.color=Color.white;
+        scrimButton.gameObject.AddComponent<UiButtonRelay>().Configure(cancelButton);
         return group;
     }
 
-    private static TMP_Text BuildStatPill(
-        Transform parent, TMP_FontAsset font, string name, Color color,
-        Vector2 size, Vector2 position, string label)
+    private static CanvasGroup BuildAccountChoiceOverlay(
+        RectTransform safeArea,
+        TMP_FontAsset font,
+        out Button googleButton,
+        out Button guestButton,
+        out Button backButton,
+        out TMP_Text statusText)
     {
-        RectTransform root = CreateRect(name, parent);
-        SetCentered(root, size, position);
-        LowPolyPanelGraphic rim = CreatePanel("ChampagneRim", root, Gold,
-            size.y * .42f, 6f, false);
-        SetCentered(rim.rectTransform, size + new Vector2(7f, 7f), Vector2.zero);
-        LowPolyPanelGraphic pill = CreatePanel("Visual", root, color,
-            size.y * .40f, 6f, false);
-        SetCentered(pill.rectTransform, size, Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(pill,
-            Color.Lerp(color, Color.white, .12f),
-            Color.Lerp(color, PremiumUiStyle.Night, .08f), size.y * .40f, 6f);
-        LowPolyPanelGraphic gloss = CreatePanel("TopGlossBand", pill.transform,
-            new Color32(255, 255, 255, 58), 7f, 2f, false);
-        SetCentered(gloss.rectTransform, new Vector2(size.x - 24f, 11f),
-            new Vector2(0f, size.y * .22f));
-        TMP_Text text = CreateText("Label", pill.transform, font, 22f,
-            Color.white, TextAlignmentOptions.Center);
-        StretchWithOffsets(text.rectTransform, 12f, 6f, -12f, -6f);
-        text.text = label;
-        text.fontStyle = FontStyles.Bold;
-        text.characterSpacing = 1.1f;
-        text.enableAutoSizing = true;
-        text.fontSizeMin = 16f;
-        text.fontSizeMax = 22f;
+        RectTransform overlay = CreateRect("AccountChoiceOverlay", safeArea);
+        Stretch(overlay);
+        CanvasGroup group = overlay.gameObject.AddComponent<CanvasGroup>();
+        group.alpha = 0f;
+        group.interactable = false;
+        group.blocksRaycasts = false;
+
+        Image scrim = CreateImage("AccountChoiceScrim", overlay,
+            new Color32(44, 27, 67, 184), true);
+        Stretch(scrim.rectTransform);
+        Button scrimButton = GetOrAdd<Button>(scrim.gameObject);
+        scrimButton.targetGraphic = scrim;
+        scrimButton.transition = Selectable.Transition.None;
+
+        var card=U.Panel("AccountChoiceCard",overlay,Cream,0,0,860,710,32,true);
+        U.Localize(U.Label("AccountChoiceTitle",card.transform,font,42,Ink,0,266,720,90),"account.choice.title");
+        U.Localize(U.Label("AccountChoiceSubtitle",card.transform,font,23,PremiumUiStyle.Muted,0,167,720,78),"account.choice.subtitle");
+        googleButton=U.Action("GoogleSignInButton",card.transform,font,"account.google.action",Color.white,0,55,660,84,out var googleLabel);
+        BuildGoogleSignInBadge(googleButton,googleLabel);
+        guestButton=U.Action("GuestContinueButton",card.transform,font,"account.guest.action",PremiumUiStyle.Mint,0,-53,660,76,out var guestLabel);
+        U.Localize(U.Label("GuestNote",card.transform,font,20,PremiumUiStyle.Muted,0,-126,710,56),"account.guest.note");
+        statusText=U.Label("AccountChoiceStatus",card.transform,font,20,new Color32(152,53,43,255),0,-200,710,66);
+        backButton=U.Action("AccountBackButton",card.transform,font,"common.back",PremiumUiStyle.WarmIvory,0,-288,260,62,out var backLabel);
+        scrimButton.gameObject.AddComponent<UiButtonRelay>().Configure(backButton);
+        return group;
+    }
+
+    private static void BuildGoogleSignInBadge(Button button, TMP_Text label)
+    {
+        RectTransform face = button.transform.Find("Visual") as RectTransform;
+        if (face == null)
+            throw new InvalidOperationException("Google sign-in button is missing its Visual surface.");
+
+        // The downloaded Google asset is the official pre-approved light square.
+        // Keep its colours, aspect and white background intact; Cat Home's premium
+        // treatment lives in the soft halo around it and in the parent button.
+        LowPolyPanelGraphic halo = CreatePanel("GoogleBrandHalo", face,
+            new Color32(116, 232, 214, 76), 20f, 3f, false);
+        SetCentered(halo.rectTransform, new Vector2(76f, 76f), new Vector2(-242f, 0f));
+
+        RectTransform markRect = CreateRect("GoogleBrandMark", face);
+        SetCentered(markRect, new Vector2(58f, 58f), new Vector2(-242f, 0f));
+        RawImage mark = markRect.gameObject.AddComponent<RawImage>();
+        mark.texture = AssetDatabase.LoadAssetAtPath<Texture2D>(GoogleSignInIconPath);
+        mark.color = Color.white;
+        mark.raycastTarget = false;
+        if (mark.texture == null)
+            throw new InvalidOperationException("Official Google sign-in mark is missing.");
+
+        // Centre the localized action inside the remaining space without letting
+        // long Turkish copy collide with the protected logo padding.
+        StretchWithOffsets(label.rectTransform, 92f, 8f, -24f, -8f);
+    }
+
+    private static TMP_Text BuildStatPill(Transform parent, TMP_FontAsset font, string name,
+        Color color, Vector2 size, Vector2 position, string value)
+    {
+        var surface = CreatePanel(name, parent, Cream, 28f, 2f, false);
+        SetCentered(surface.rectTransform, size, position);
+        var text = CreateText("Label", surface.transform, font, 23f, Ink, TextAlignmentOptions.Center);
+        StretchWithOffsets(text.rectTransform, 20f, 8f, -20f, -8f);
+        text.text = value;
         return text;
     }
 
@@ -629,70 +475,26 @@ public static class TitleScreenBuilder
     }
 
     private static Button BuildButton(Transform parent, TMP_FontAsset font, string name,
-        string label, Vector2 size, Vector2 position, float fontSize, Color color, Color accent)
+        string label, Vector2 size, Vector2 position, float fontSize, Color color, Color accent,
+        bool showHeroBadge = true)
     {
         RectTransform rootRect = CreateRect(name, parent);
         SetCentered(rootRect, size, position);
 
-        LowPolyPanelGraphic aura = CreatePanel("OuterGlow", rootRect,
-            new Color(accent.r, accent.g, accent.b, .28f), size.y * .46f, 6f, false);
-        SetCentered(aura.rectTransform, size + new Vector2(18f, 18f), Vector2.zero);
-
-        LowPolyPanelGraphic rim = CreatePanel("ChampagneRim", rootRect,
-            Gold, size.y * .44f, 8f, false);
-        SetCentered(rim.rectTransform, size + new Vector2(8f, 8f), Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(rim,
-            new Color32(255, 235, 137, 255), Gold, size.y * .44f, 8f);
-
         LowPolyPanelGraphic face = CreatePanel("Visual", rootRect,
-            color, size.y * .42f, 9f, true);
-        SetCentered(face.rectTransform, size, Vector2.zero);
-        PremiumUiStyle.ConfigureAccentSurface(face,
-            Color.Lerp(accent, Color.white, .06f),
-            Color.Lerp(color, PremiumUiStyle.Night, .10f), size.y * 0.42f, 9f);
-
-        float glossHeight = Mathf.Max(10f, size.y * .18f);
-        LowPolyPanelGraphic topGloss = CreatePanel("TopGlossBand", face.transform,
-            new Color32(255, 255, 255, 70), glossHeight * .46f, 2f, false);
-        SetCentered(topGloss.rectTransform,
-            new Vector2(size.x - 24f, glossHeight), new Vector2(0f, size.y * .25f));
-        LowPolyPanelGraphic depthBand = CreatePanel("InnerDepthBand", face.transform,
-            new Color(color.r * .55f, color.g * .55f, color.b * .55f, .23f),
-            5f, 1f, false);
-        SetCentered(depthBand.rectTransform,
-            new Vector2(size.x - 28f, Mathf.Max(7f, size.y * .08f)),
-            new Vector2(0f, -size.y * .34f));
-
-        bool heroAction = size.y >= 90f;
-        float textInset = heroAction ? 88f : 14f;
-        TMP_Text text = CreateText("Label", face.transform, font, fontSize, Color.white,
+            color, Mathf.Min(36f, size.y * .42f), 2f, true);
+        Stretch(face.rectTransform);
+        bool neutral = color == Cream || color == (Color)PremiumUiStyle.Ivory;
+        if (neutral) PremiumUiStyle.ConfigureLightSurface(face, 22f, 2f);
+        else PremiumUiStyle.ConfigureAccentSurface(face, accent, color, 32f, 2f);
+        TMP_Text text = CreateText("Label", face.transform, font, fontSize,
+            neutral || color == (Color)PremiumUiStyle.Coral ? Ink : Color.white,
             TextAlignmentOptions.Center);
-        StretchWithOffsets(text.rectTransform,
-            heroAction ? textInset : 14f, 8f, -14f, -8f);
+        StretchWithOffsets(text.rectTransform, 20f, 8f, -20f, -8f);
         text.text = label;
-        text.fontStyle = FontStyles.Bold;
-        text.characterSpacing = 2f;
         text.enableAutoSizing = true;
-        text.fontSizeMin = Mathf.Max(12f, fontSize * .70f);
+        text.fontSizeMin = Mathf.Max(16f, fontSize * .8f);
         text.fontSizeMax = fontSize;
-
-        if (heroAction)
-        {
-            Texture2D coinTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(PawCoinIconPath);
-            RectTransform badge = CreateRect("ActionPawBadge", face.transform);
-            SetCentered(badge, new Vector2(68f, 68f), new Vector2(-size.x * .36f, 0f));
-            RawImage coin = badge.gameObject.AddComponent<RawImage>();
-            coin.texture = coinTexture;
-            coin.color = Color.white;
-            coin.raycastTarget = false;
-        }
-        else
-        {
-            BuildSparkle(face.rectTransform, "ButtonSparkle",
-                new Vector2(size.x * .38f, size.y * .27f), 7f,
-                new Color32(255, 255, 255, 150), 0f);
-        }
-
         Button button = GetOrAdd<Button>(rootRect.gameObject);
         button.targetGraphic = face;
         button.transition = Selectable.Transition.None;
@@ -870,8 +672,9 @@ public static class TitleScreenBuilder
         importer.mipmapEnabled = false;
         importer.wrapMode = TextureWrapMode.Clamp;
         importer.filterMode = FilterMode.Bilinear;
-        importer.textureCompression = TextureImporterCompression.CompressedHQ;
-        importer.maxTextureSize = 2048;
+        importer.textureCompression = path == HeroBackgroundPath ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+        importer.maxTextureSize = 4096;
+        importer.npotScale = TextureImporterNPOTScale.None;
         importer.SaveAndReimport();
     }
 

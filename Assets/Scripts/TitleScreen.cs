@@ -26,6 +26,9 @@ public sealed class TitleScreen : MonoBehaviour
     [SerializeField] private Button creditsCloseButton;
     [SerializeField] private Button newGameCancelButton;
     [SerializeField] private Button newGameConfirmButton;
+    [SerializeField] private Button accountGoogleButton;
+    [SerializeField] private Button accountGuestButton;
+    [SerializeField] private Button accountBackButton;
     [SerializeField] private TMP_Text greetingText;
     [SerializeField] private TMP_Text catNameText;
     [SerializeField] private TMP_Text playLabel;
@@ -35,6 +38,8 @@ public sealed class TitleScreen : MonoBehaviour
     [SerializeField] private CanvasGroup creditsGroup;
     [SerializeField] private CanvasGroup newGameGroup;
     [SerializeField] private TMP_Text newGameStatusText;
+    [SerializeField] private CanvasGroup accountChoiceGroup;
+    [SerializeField] private TMP_Text accountStatusText;
     [SerializeField, Min(0.05f)] private float fadeDuration = 0.35f;
 
     private static TitleScreen activeInstance;
@@ -43,6 +48,8 @@ public sealed class TitleScreen : MonoBehaviour
     private bool dismissed;
     private bool creditsOpen;
     private bool newGameOpen;
+    private bool accountChoiceOpen;
+    private bool accountChoiceForNewGame;
     private LaunchAction pendingAction;
 
     private enum LaunchAction
@@ -80,6 +87,16 @@ public sealed class TitleScreen : MonoBehaviour
         GameLanguageService.Changed += RefreshContent;
     }
 
+    private void LateUpdate()
+    {
+        bool available=!creditsOpen && !newGameOpen && !accountChoiceOpen &&
+            !SettingsPanel.IsAnyOpen && !PrivacyDataPanel.IsAnyOpen && fadeRoutine==null;
+        foreach(var button in new[]{playButton,settingsButton,creditsButton,quitButton,newGameButton})
+            if(button!=null)button.interactable=available;
+        bool shortcuts=available&&PetTutorialHint.IsOnboardingCompleted;
+        foreach(var button in new[]{shopButton,roomsButton,gamesButton})if(button!=null)button.interactable=shortcuts;
+    }
+
     private void OnDisable()
     {
         HomeProgressionService.Changed -= RefreshContent;
@@ -102,6 +119,9 @@ public sealed class TitleScreen : MonoBehaviour
         Bind(creditsCloseButton, OnCreditsClose);
         Bind(newGameCancelButton, OnNewGameCancel);
         Bind(newGameConfirmButton, OnNewGameConfirm);
+        Bind(accountGoogleButton, OnAccountGoogle);
+        Bind(accountGuestButton, OnAccountGuest);
+        Bind(accountBackButton, OnAccountBack);
     }
 
     private static void Bind(Button button, UnityEngine.Events.UnityAction action)
@@ -120,7 +140,7 @@ public sealed class TitleScreen : MonoBehaviour
             greetingText.text = string.IsNullOrEmpty(name)
                 ? GameLanguageService.Text("title.greeting.empty")
                 : GameLanguageService.Format(
-                    "title.greeting.named", CatIdentityService.DisplayName.ToUpperInvariant());
+                    "title.greeting.named", CatIdentityService.DisplayName);
         }
 
         if (catNameText != null)
@@ -128,7 +148,7 @@ public sealed class TitleScreen : MonoBehaviour
             catNameText.text = string.IsNullOrEmpty(CatIdentityService.CatName)
                 ? GameLanguageService.Text("title.home.empty")
                 : GameLanguageService.Format(
-                    "title.home.named", CatIdentityService.DisplayName.ToUpperInvariant());
+                    "title.home.named", CatIdentityService.DisplayName);
         }
 
         if (playLabel != null)
@@ -151,8 +171,7 @@ public sealed class TitleScreen : MonoBehaviour
         SetShortcutAvailability(roomsButton, roomsAfterTourBadge, shortcutsUnlocked);
         SetShortcutAvailability(gamesButton, gamesAfterTourBadge, shortcutsUnlocked);
 
-        bool hasJourney = PetTutorialHint.IsOnboardingCompleted ||
-                          !string.IsNullOrEmpty(CatIdentityService.CatName);
+        bool hasJourney = HasJourney();
         if (newGameButton != null)
             newGameButton.gameObject.SetActive(hasJourney);
 
@@ -160,37 +179,14 @@ public sealed class TitleScreen : MonoBehaviour
         {
 #if UNITY_STANDALONE || UNITY_EDITOR
             quitButton.gameObject.SetActive(true);
-            if (hasJourney)
-            {
-                SetUtilityButtonX(newGameButton, -171f);
-                SetUtilityButtonX(settingsButton, -57f);
-                SetUtilityButtonX(creditsButton, 57f);
-                SetUtilityButtonX(quitButton, 171f);
-            }
-            else
-            {
-                SetUtilityButtonX(settingsButton, -146f);
-                SetUtilityButtonX(creditsButton, 0f);
-                SetUtilityButtonX(quitButton, 146f);
-            }
 #else
             quitButton.gameObject.SetActive(false);
-            if (hasJourney)
-            {
-                SetUtilityButtonX(newGameButton, -114f);
-                SetUtilityButtonX(settingsButton, 0f);
-                SetUtilityButtonX(creditsButton, 114f);
-            }
-            else
-            {
-                SetUtilityButtonX(settingsButton, -73f);
-                SetUtilityButtonX(creditsButton, 73f);
-            }
 #endif
         }
 
         SetCreditsVisible(creditsOpen);
         SetNewGameVisible(newGameOpen);
+        SetAccountChoiceVisible(accountChoiceOpen);
     }
 
     private static void SetUtilityButtonX(Button button, float x)
@@ -219,6 +215,8 @@ public sealed class TitleScreen : MonoBehaviour
         dismissed = false;
         creditsOpen = false;
         newGameOpen = false;
+        accountChoiceOpen = false;
+        accountChoiceForNewGame = false;
         if (rootGroup != null)
         {
             rootGroup.alpha = 1f;
@@ -227,11 +225,38 @@ public sealed class TitleScreen : MonoBehaviour
         }
         SetCreditsVisible(false);
         SetNewGameVisible(false);
+        SetAccountChoiceVisible(false);
         gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Reopens the existing title overlay from the in-game drop-down without
+    /// reloading scenes, duplicating cameras or changing the current journey.
+    /// </summary>
+    public void RequestShow()
+    {
+        if (fadeRoutine != null)
+        {
+            StopCoroutine(fadeRoutine);
+            fadeRoutine = null;
+        }
+
+        bool wasActive = gameObject.activeSelf;
+        gameObject.SetActive(true);
+        if (!wasActive)
+            return; // OnEnable refreshes and calls Show().
+
+        RefreshContent();
+        Show();
     }
 
     private void OnPlay()
     {
+        if (!HasJourney() && !AccountIdentityService.HasChosenAccount)
+        {
+            ShowAccountChoice(false);
+            return;
+        }
         BeginDismiss(LaunchAction.None);
     }
 
@@ -291,6 +316,8 @@ public sealed class TitleScreen : MonoBehaviour
     {
         newGameOpen = false;
         SetNewGameVisible(false);
+        accountChoiceOpen = false;
+        SetAccountChoiceVisible(false);
         creditsOpen = true;
         SetCreditsVisible(true);
     }
@@ -305,6 +332,8 @@ public sealed class TitleScreen : MonoBehaviour
     {
         creditsOpen = false;
         SetCreditsVisible(false);
+        accountChoiceOpen = false;
+        SetAccountChoiceVisible(false);
         newGameOpen = true;
         if (newGameStatusText != null)
             newGameStatusText.text = string.Empty;
@@ -319,24 +348,97 @@ public sealed class TitleScreen : MonoBehaviour
 
     private void OnNewGameConfirm()
     {
-        if (newGameConfirmButton != null)
-            newGameConfirmButton.interactable = false;
-        bool succeeded = CatHomeSaveSystem.TryStartNewGame(out string report);
-        if (newGameConfirmButton != null)
-            newGameConfirmButton.interactable = true;
-        if (!succeeded)
+        newGameOpen = false;
+        SetNewGameVisible(false);
+        ShowAccountChoice(true);
+    }
+
+    private async void OnAccountGoogle()
+    {
+        SetAccountButtonsInteractable(false);
+        if (accountStatusText != null)
+            accountStatusText.text = GameLanguageService.Text("account.status.connecting");
+
+        AccountSignInResult result = await AccountIdentityService.ConnectWithGoogleAsync();
+        if (this == null || !accountChoiceOpen)
+            return;
+        SetAccountButtonsInteractable(true);
+        if (!result.Succeeded)
         {
-            Debug.LogWarning(report);
-            if (newGameStatusText != null)
-                newGameStatusText.text = GameLanguageService.Text("new_game.failed");
+            if (accountStatusText != null)
+                accountStatusText.text = GameLanguageService.Text(result.MessageKey);
             return;
         }
 
-        Debug.Log(report);
-        newGameOpen = false;
-        SetNewGameVisible(false);
-        RefreshContent();
+        CompleteAccountChoice();
     }
+
+    private void OnAccountGuest()
+    {
+        AccountIdentityService.ContinueAsGuest();
+        CompleteAccountChoice();
+    }
+
+    private void OnAccountBack()
+    {
+        bool returnToNewGame = accountChoiceForNewGame;
+        accountChoiceOpen = false;
+        accountChoiceForNewGame = false;
+        SetAccountChoiceVisible(false);
+        if (!returnToNewGame)
+            return;
+        newGameOpen = true;
+        SetNewGameVisible(true);
+    }
+
+    private void ShowAccountChoice(bool forNewGame)
+    {
+        creditsOpen = false;
+        newGameOpen = false;
+        SetCreditsVisible(false);
+        SetNewGameVisible(false);
+        accountChoiceForNewGame = forNewGame;
+        accountChoiceOpen = true;
+        if (accountStatusText != null)
+            accountStatusText.text = string.Empty;
+        SetAccountButtonsInteractable(true);
+        SetAccountChoiceVisible(true);
+    }
+
+    private void CompleteAccountChoice()
+    {
+        if (accountChoiceForNewGame)
+        {
+            bool succeeded = CatHomeSaveSystem.TryStartNewGame(out string report);
+            if (!succeeded)
+            {
+                Debug.LogWarning(report);
+                if (accountStatusText != null)
+                    accountStatusText.text = GameLanguageService.Text("new_game.failed");
+                return;
+            }
+            Debug.Log(report);
+        }
+
+        accountChoiceOpen = false;
+        accountChoiceForNewGame = false;
+        SetAccountChoiceVisible(false);
+        RefreshContent();
+        BeginDismiss(LaunchAction.None);
+    }
+
+    private void SetAccountButtonsInteractable(bool interactable)
+    {
+        if (accountGoogleButton != null)
+            accountGoogleButton.interactable = interactable;
+        if (accountGuestButton != null)
+            accountGuestButton.interactable = interactable;
+        if (accountBackButton != null)
+            accountBackButton.interactable = true;
+    }
+
+    private static bool HasJourney() => PetTutorialHint.IsOnboardingCompleted ||
+                                        !string.IsNullOrEmpty(CatIdentityService.CatName);
 
     private void OnQuit()
     {
@@ -367,6 +469,16 @@ public sealed class TitleScreen : MonoBehaviour
         newGameGroup.gameObject.SetActive(true);
     }
 
+    private void SetAccountChoiceVisible(bool visible)
+    {
+        if (accountChoiceGroup == null)
+            return;
+        accountChoiceGroup.alpha = visible ? 1f : 0f;
+        accountChoiceGroup.interactable = visible;
+        accountChoiceGroup.blocksRaycasts = visible;
+        accountChoiceGroup.gameObject.SetActive(true);
+    }
+
     private IEnumerator FadeOut()
     {
         if (rootGroup != null)
@@ -392,10 +504,10 @@ public sealed class TitleScreen : MonoBehaviour
         switch (action)
         {
             case LaunchAction.Shop:
-                ShopPanelController shop =
-                    FindAnyObjectByType<ShopPanelController>(FindObjectsInactive.Include);
-                if (shop != null)
-                    shop.RequestOpen(HomeStoreCategory.Cat);
+                CatBreedShopPanel cats =
+                    FindAnyObjectByType<CatBreedShopPanel>(FindObjectsInactive.Include);
+                if (cats != null)
+                    cats.RequestOpen();
                 break;
             case LaunchAction.Rooms:
                 RoomSelectorPanel rooms =

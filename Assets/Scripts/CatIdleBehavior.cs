@@ -39,6 +39,15 @@ public sealed class CatIdleBehavior : MonoBehaviour
             cat.gameObject.AddComponent<CatIdleBehavior>();
     }
 
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement == null)
+            return;
+        if (beatRoutine != null)
+            StopBeat(false);
+        animator = replacement;
+    }
+
     private void Awake()
     {
         ResolveReferences();

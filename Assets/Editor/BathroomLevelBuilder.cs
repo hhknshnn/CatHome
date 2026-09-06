@@ -29,12 +29,12 @@ public static class BathroomLevelBuilder
     private const string ToiletModel = ModelFolder + "/BathroomToilet.fbx";
     private const string ShowerModel = ModelFolder + "/BathroomShower.fbx";
 
-    private static readonly Color Cream = new Color32(255, 244, 220, 255);
-    private static readonly Color Aqua = new Color32(67, 220, 211, 255);
-    private static readonly Color Mint = new Color32(126, 235, 190, 255);
-    private static readonly Color Coral = new Color32(255, 120, 130, 255);
-    private static readonly Color Lilac = new Color32(188, 143, 235, 255);
-    private static readonly Color Lemon = new Color32(255, 222, 94, 255);
+    private static readonly Color Cream = new Color32(255, 250, 236, 255);
+    private static readonly Color Aqua = new Color32(145, 231, 222, 255);
+    private static readonly Color Mint = new Color32(184, 242, 211, 255);
+    private static readonly Color Coral = new Color32(255, 181, 176, 255);
+    private static readonly Color Lilac = new Color32(218, 195, 243, 255);
+    private static readonly Color Lemon = new Color32(255, 232, 139, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Mirror = new Color32(174, 240, 246, 255);
     private static readonly Color Water = new Color32(83, 211, 244, 255);
@@ -127,6 +127,7 @@ public static class BathroomLevelBuilder
         Transform setup = CreateSceneRoot(bathroom, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(bathroom, HomeRoomService.BathroomId, environment);
         Camera camera = BuildPresentation(presentation, materials);
         BuildEmptyBathroomUsables(gameplay);
         CareSet care = BuildEmptyCareArea(gameplay);
@@ -363,6 +364,7 @@ public static class BathroomLevelBuilder
         sun.color = new Color32(255, 245, 220, 255);
         sun.intensity = 1.08f;
         sun.shadows = LightShadows.Soft;
+        sun.shadowStrength = .55f;
 
         BuildFillLight(parent, "Aqua Fill", new Vector3(-3.4f, 2.9f, -1.5f),
             new Color32(116, 244, 233, 255), .82f, 8.5f);

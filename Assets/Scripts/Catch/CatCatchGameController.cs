@@ -15,7 +15,7 @@ public sealed class CatCatchGameController : MonoBehaviour
     private const float MouseSpawnClearance = CatchHuntRules.MouseSpawnClearance;
     private const float MouseSpawnGrace = CatchHuntRules.MouseSpawnGrace;
     private const float MaximumTutorialSeconds = 25f;
-    private static readonly Color LowTimeColor = new Color32(255, 236, 120, 255);
+    private static readonly Color LowTimeColor = new Color32(178, 54, 51, 255);
 
     [SerializeField] private CatCatchPlayer player;
     [SerializeField] private CatCatchMouse[] mice = Array.Empty<CatCatchMouse>();
@@ -54,6 +54,8 @@ public sealed class CatCatchGameController : MonoBehaviour
     private int catches;
     private int score;
     private int combo;
+    private int comboStepsTotal;
+    private string huntId = string.Empty;
     private float lastCatchTime;
     private static int bestScore;
     private Coroutine huntRoutine;
@@ -204,6 +206,8 @@ public sealed class CatCatchGameController : MonoBehaviour
         catches = 0;
         score = 0;
         combo = 0;
+        comboStepsTotal = 0;
+        huntId = Guid.NewGuid().ToString("N");
         lastCatchTime = float.NegativeInfinity;
         remaining = HuntDuration;
         hunting = true;
@@ -284,7 +288,8 @@ public sealed class CatCatchGameController : MonoBehaviour
             return;
         }
 
-        if (score > bestScore)
+        bool newBest = score > bestScore;
+        if (newBest)
             bestScore = score;
         long coins = CatchScoring.CoinsForCatches(catches);
         if (coins > 0)
@@ -292,19 +297,26 @@ public sealed class CatCatchGameController : MonoBehaviour
             EconomyService.GrantReward(
                 RewardBundle.Coins(coins),
                 EconomySource.CatCatch,
-                "cat-catch:" + DateTime.UtcNow.Ticks);
+                "cat-catch:" + huntId);
         }
+        _ = CompetitionService.SubmitCatchAsync(
+            huntId,
+            HuntDuration - remaining,
+            catches,
+            comboStepsTotal,
+            StrikesResolved,
+            score);
         CatHomeSaveSystem.SaveNow();
         SetPanel(resultPanel, true);
         if (resultTitle != null)
-            resultTitle.text = catches > 0 ? "MIGHTY HUNTER!" : "NICE TRY!";
+            resultTitle.text = GameLanguageService.Text(catches>0?"catch.complete":"catch.nice_try");
         if (resultDetails != null)
         {
-            string coinLine = CatchScoring.IsCoinCapReached(catches)
-                ? $"COINS  +{coins}  (HUNT CAP)"
-                : $"COINS  +{coins}";
-            resultDetails.text =
-                $"MICE CAUGHT  {catches}\nSCORE  {score}\n{coinLine}\nBEST  {bestScore}";
+            var view=resultPanel.GetComponent<MiniGameResultView>(); if(view!=null)view.Present(score,coins);
+            resultDetails.text=GameLanguageService.Format("catch.result_stats",catches,bestScore);
+            var bestBadge=resultPanel.transform.Find("ResultsSafeArea/ResultsCardLayout/NewBestBadge");
+            if(bestBadge!=null)bestBadge.gameObject.SetActive(newBest);
+
         }
         if (retryButton != null)
             retryButton.interactable = CatchLivesService.CanStartHunt();
@@ -342,6 +354,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         target.Hide();
         catches++;
         combo = CatchScoring.ComboFor(combo, Time.time - lastCatchTime);
+        comboStepsTotal += Mathf.Clamp(combo - 1, 0, CatchScoring.MaximumComboSteps);
         lastCatchTime = Time.time;
         score += CatchScoring.ScoreForCatch(combo);
         player.PlayCatchReaction();
@@ -606,7 +619,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         // The caption lives in the same label as the value, matching the Cat
         // Runner best-score pill; a separate caption row overlapped the digits.
         if (welcomeBestText != null)
-            welcomeBestText.text = $"BEST SCORE   {bestScore}";
+            welcomeBestText.text = GameLanguageService.Format("games.best",bestScore.ToString("N0"));
         bool canStart = CatchLivesService.CanStartHunt();
         if (welcomeStartButton != null)
             welcomeStartButton.interactable = canStart;
@@ -614,21 +627,23 @@ public sealed class CatCatchGameController : MonoBehaviour
         {
             bool canReward = CatchLivesService.CanClaimRewardedAd();
             welcomeRewardedButton.gameObject.SetActive(!canStart && canReward);
+            if (welcomeStartButton != null)
+                welcomeStartButton.gameObject.SetActive(canStart || !canReward);
             welcomeRewardedButton.interactable = canReward;
         }
         if (welcomeLivesText == null)
             return;
         if (CatchLivesService.IsUnlimited)
-            welcomeLivesText.text = "UNLIMITED LIVES";
+            welcomeLivesText.text = GameLanguageService.Text("games.unlimited");
         else
         {
             welcomeLivesText.text =
-                $"1 LIFE PER HUNT   •   {CatchLivesService.CurrentLives}/{CatchLivesService.MaximumLives} READY";
+                GameLanguageService.Format("games.lives_ready",CatchLivesService.CurrentLives,CatchLivesService.MaximumLives);
             if (!canStart)
             {
                 TimeSpan remainingLife = CatchLivesService.TimeUntilNextLife();
                 int seconds = Mathf.Max(0, Mathf.CeilToInt((float)remainingLife.TotalSeconds));
-                welcomeLivesText.text = $"NEXT LIFE   {seconds / 60:00}:{seconds % 60:00}";
+                welcomeLivesText.text = GameLanguageService.Format("games.next_life",$"{seconds / 60:00}:{seconds % 60:00}");
             }
         }
     }
@@ -642,7 +657,7 @@ public sealed class CatCatchGameController : MonoBehaviour
             int seconds = Mathf.CeilToInt(remaining);
             timerLabel.text = seconds.ToString();
             // The last ten seconds read as urgent without an extra widget.
-            timerLabel.color = seconds <= 10 ? LowTimeColor : Color.white;
+            timerLabel.color = seconds <= 10 ? LowTimeColor : PremiumUiStyle.Ink;
         }
         if (catchLabel != null)
             catchLabel.text = $"{catches}  •  {CatchScoring.CoinsForCatches(catches)}";
@@ -703,13 +718,13 @@ public sealed class CatCatchGameController : MonoBehaviour
         switch (tutorialStage)
         {
             case 0:
-                tutorialText.text = "TAP A SQUEAKY MOUSE\nYOUR CAT RUNS IT DOWN";
+                tutorialText.text = GameContentCopy.Text("Bir fareye dokun\nKedin peşinden koşsun", "Tap a squeaky mouse\nYour cat chases it");
                 break;
             case 1:
-                tutorialText.text = "CLOSE IN AND THE CAT POUNCES\nTHE LANDING IS THE CATCH";
+                tutorialText.text = GameContentCopy.Text("Yaklaşınca kedin atlar\nİnişte fareyi yakalar", "Get close and your cat pounces\nLand to catch the mouse");
                 break;
             default:
-                tutorialText.text = "FILL THE 60 SECONDS\nCATCH AS MANY AS YOU CAN";
+                tutorialText.text = GameContentCopy.Text("Altmış saniyen var\nKaç fare yakalayabilirsin?", "You have sixty seconds\nHow many can you catch?");
                 break;
         }
     }

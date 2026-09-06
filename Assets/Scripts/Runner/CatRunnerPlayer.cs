@@ -514,11 +514,22 @@ public sealed class CatRunnerPlayer : MonoBehaviour
             animator.SetFloat(speedHash, value, 0.08f, Time.deltaTime);
     }
 
+    public void RebindBreedVisual(Animator replacementAnimator, Transform replacementRoot)
+    {
+        if (replacementAnimator == null || replacementRoot == null)
+            return;
+        animator = replacementAnimator;
+        visualRoot = replacementRoot;
+        baseVisualPosition = visualRoot.localPosition;
+        baseVisualRotation = visualRoot.localRotation;
+        baseVisualScale = visualRoot.localScale;
+        speedHash = Animator.StringToHash("Speed");
+    }
+
 #if UNITY_EDITOR
     public void EditorConfigure(Animator runnerAnimator, Transform modelRoot)
     {
-        animator = runnerAnimator;
-        visualRoot = modelRoot;
+        RebindBreedVisual(runnerAnimator, modelRoot);
         swipeThreshold = 45f;
         laneChangeSpeed = 10.5f;
         dragSensitivity = 1.08f;

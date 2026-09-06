@@ -264,7 +264,7 @@ public sealed class GameSceneSmokeTests
         Assert.That(animator, Is.Not.Null);
         Assert.That(animator.runtimeAnimatorController, Is.Not.Null);
         Assert.That(animator.runtimeAnimatorController.name,
-            Is.EqualTo("Controller_CartoonAnimal_Cat"));
+            Is.EqualTo("CatHome_Polyperfect"));
 
         FieldInfo obstacleTemplates = typeof(CatRunnerTrackManager).GetField(
             "obstacleTemplates",

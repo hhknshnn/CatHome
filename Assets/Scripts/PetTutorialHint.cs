@@ -205,9 +205,9 @@ public sealed class PetTutorialHint : MonoBehaviour
         TMP_FontAsset font=preferredFont!=null?preferredFont:Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
         hintRoot.sizeDelta=new Vector2(cardSize.x+50f,cardSize.y+100f); hintRoot.localScale=Vector3.one;
         cardRoot=CreateRect(hintRoot,"CardFloatRoot",cardSize,new Vector2(0f,18f));
-        CreatePanel(cardRoot,"HardDepthShadow",cardSize+new Vector2(12f,12f),Vector2.zero,PremiumUiStyle.Shadow,28f,7f);
-        CreatePanel(cardRoot,"ChampagneFrame",cardSize,Vector2.zero,PremiumUiStyle.Champagne,28f,9f);
-        CreatePanel(cardRoot,"NavyFace",cardSize-new Vector2(30f,28f),new Vector2(0f,2f),PremiumUiStyle.Navy,23f,6f);
+        
+        CreatePanel(cardRoot,"IvoryFrame",cardSize,Vector2.zero,PremiumUiStyle.Ivory,24f,2f);
+        CreatePanel(cardRoot,"NavyFace",cardSize-new Vector2(30f,28f),new Vector2(0f,2f),PremiumUiStyle.Ivory,20f,0f);
         RectTransform pointer=CreateRect(cardRoot,"TargetPointer",new Vector2(58f,48f),new Vector2(0f,-cardSize.y*.5f-15f));
         pointer.gameObject.AddComponent<CanvasRenderer>(); pointerGraphic=pointer.gameObject.AddComponent<LowPolyTutorialPointerGraphic>(); pointerGraphic.raycastTarget=false;
         RectTransform gesture=CreateRect(cardRoot,"SwipeGesture",new Vector2(250f,72f),new Vector2(0f,34f));
@@ -220,7 +220,7 @@ public sealed class PetTutorialHint : MonoBehaviour
         TMP_Text joy=joystick.gameObject.AddComponent<TextMeshProUGUI>(); joy.font=font; joy.fontSize=29f; joy.alignment=TextAlignmentOptions.Center; joy.text="←  ●  →"; joy.color=PremiumUiStyle.TealLift; joy.raycastTarget=false;
         RectTransform labelRect=CreateRect(cardRoot,"Instruction",new Vector2(276f,58f),new Vector2(0f,-44f)); labelRect.gameObject.AddComponent<CanvasRenderer>();
         instructionLabel=labelRect.gameObject.AddComponent<TextMeshProUGUI>(); instructionLabel.font=font; instructionLabel.fontSize=23f; instructionLabel.fontStyle=FontStyles.Bold;
-        instructionLabel.alignment=TextAlignmentOptions.Center; instructionLabel.color=PremiumUiStyle.Ivory; instructionLabel.raycastTarget=false;
+        instructionLabel.alignment=TextAlignmentOptions.Center; instructionLabel.color=PremiumUiStyle.Ink; instructionLabel.raycastTarget=false;
         Image tapSurface=cardRoot.gameObject.GetComponent<Image>()??cardRoot.gameObject.AddComponent<Image>(); tapSurface.color=Color.clear; tapSurface.raycastTarget=false;
         Button cardButton=cardRoot.gameObject.GetComponent<Button>()??cardRoot.gameObject.AddComponent<Button>(); cardButton.targetGraphic=tapSurface; cardButton.transition=Selectable.Transition.None; cardButton.onClick.RemoveAllListeners(); cardButton.onClick.AddListener(HandleContinue);
         cardRestPosition=cardRoot.anchoredPosition;
@@ -233,8 +233,8 @@ public sealed class PetTutorialHint : MonoBehaviour
         skipLabelRect.gameObject.AddComponent<CanvasRenderer>();
         TMP_Text skipLabel=skipLabelRect.gameObject.AddComponent<TextMeshProUGUI>();
         skipLabel.font=font; skipLabel.fontSize=20f; skipLabel.fontStyle=FontStyles.Bold;
-        skipLabel.alignment=TextAlignmentOptions.Center; skipLabel.color=PremiumUiStyle.Ivory;
-        skipLabel.text="SKIP TOUR"; skipLabel.raycastTarget=false; skipLabel.characterSpacing=1.2f;
+        skipLabel.alignment=TextAlignmentOptions.Center; skipLabel.color=PremiumUiStyle.Ink;
+        skipLabel.text=GameContentCopy.Text("Turu atla","Skip tour"); skipLabel.raycastTarget=false; skipLabel.characterSpacing=1.2f;
         Button skipButton=skipRect.gameObject.AddComponent<Button>();
         skipButton.targetGraphic=skipFace; skipButton.transition=Selectable.Transition.None;
         skipButton.onClick.AddListener(SkipRemainingTour);
@@ -293,12 +293,12 @@ public sealed class PetTutorialHint : MonoBehaviour
         spotlight=overlay.gameObject.AddComponent<TutorialSpotlight>(); spotlight.raycastTarget=true;
         spotlightButton=overlay.gameObject.AddComponent<Button>(); spotlightButton.targetGraphic=spotlight; spotlightButton.transition=Selectable.Transition.None; spotlightButton.onClick.AddListener(HandleContinue);
         spotlightCopy=CreateRect(transform,"NeedsCaptionGroup",new Vector2(780f,88f),Vector2.zero);
-        CreatePanel(spotlightCopy,"CaptionShadow",new Vector2(762f,90f),Vector2.zero,PremiumUiStyle.Shadow,26f,5f);
-        CreatePanel(spotlightCopy,"CaptionFace",new Vector2(750f,78f),Vector2.zero,PremiumUiStyle.Navy,26f,5f);
+        
+        CreatePanel(spotlightCopy,"CaptionFace",new Vector2(750f,78f),Vector2.zero,PremiumUiStyle.Ivory,24f,2f);
         spotlightTitle=CreateText(spotlightCopy,"Title",font,27f,FontStyles.Bold,TextAlignmentOptions.Center,new Vector2(720f,34f),new Vector2(0f,17f));
-        spotlightTitle.color=PremiumUiStyle.Ivory; spotlightTitle.characterSpacing=.8f; spotlightTitle.outlineWidth=.10f; spotlightTitle.outlineColor=PremiumUiStyle.Night;
+        spotlightTitle.color=PremiumUiStyle.Ink; spotlightTitle.characterSpacing=.8f; spotlightTitle.outlineWidth=0f; spotlightTitle.outlineColor=PremiumUiStyle.Night;
         spotlightSubtitle=CreateText(spotlightCopy,"Subtitle",font,18f,FontStyles.Normal,TextAlignmentOptions.Center,new Vector2(720f,26f),new Vector2(0f,-18f));
-        spotlightSubtitle.color=PremiumUiStyle.ChampagneLight; spotlightSubtitle.characterSpacing=.3f;
+        spotlightSubtitle.color=PremiumUiStyle.Muted; spotlightSubtitle.characterSpacing=.3f;
         dialogue=GetComponentInChildren<CatDialogueView>(true);
         RectTransform dialogueRoot=dialogue!=null?dialogue.transform as RectTransform:EnsureStretchRect(transform,"CatDialogue");
         if(dialogue==null) dialogue=dialogueRoot.gameObject.AddComponent<CatDialogueView>();
@@ -644,6 +644,6 @@ public sealed class PetTutorialHint : MonoBehaviour
     private static RectTransform CreateRect(Transform parent,string name,Vector2 size,Vector2 position){var go=new GameObject(name,typeof(RectTransform));var r=go.GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.sizeDelta=size;r.anchoredPosition=position;r.localScale=Vector3.one;return r;}
     private static RectTransform CreateStretchRect(Transform parent,string name){var r=CreateRect(parent,name,Vector2.zero,Vector2.zero);r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;return r;}
     private static RectTransform EnsureStretchRect(Transform parent,string name){Transform existing=parent.Find(name);RectTransform r=existing as RectTransform;if(r==null)r=CreateRect(parent,name,Vector2.zero,Vector2.zero);r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;return r;}
-    private static void CreatePanel(Transform parent,string name,Vector2 size,Vector2 position,Color color,float cut,float bevel){RectTransform r=CreateRect(parent,name,size,position);r.gameObject.AddComponent<CanvasRenderer>();var p=r.gameObject.AddComponent<LowPolyPanelGraphic>();p.ConfigureTutorialStyle(color,cut,bevel);p.raycastTarget=false;}
-    private static TMP_Text CreateText(Transform parent,string name,TMP_FontAsset font,float size,FontStyles style,TextAlignmentOptions align,Vector2 rectSize,Vector2 pos){RectTransform r=CreateRect(parent,name,rectSize,pos);r.gameObject.AddComponent<CanvasRenderer>();var t=r.gameObject.AddComponent<TextMeshProUGUI>();t.font=font;t.fontSize=size;t.fontStyle=style;t.alignment=align;t.color=new Color32(255,235,190,255);t.raycastTarget=false;t.richText=false;return t;}
+    private static void CreatePanel(Transform parent,string name,Vector2 size,Vector2 position,Color color,float cut,float bevel){RectTransform r=CreateRect(parent,name,size,position);r.gameObject.AddComponent<CanvasRenderer>();var p=r.gameObject.AddComponent<LowPolyPanelGraphic>();PremiumUiStyle.ConfigureAccentSurface(p,color,color,cut,2f);p.raycastTarget=false;}
+    private static TMP_Text CreateText(Transform parent,string name,TMP_FontAsset font,float size,FontStyles style,TextAlignmentOptions align,Vector2 rectSize,Vector2 pos){RectTransform r=CreateRect(parent,name,rectSize,pos);r.gameObject.AddComponent<CanvasRenderer>();var t=r.gameObject.AddComponent<TextMeshProUGUI>();t.font=font;t.fontSize=size;t.fontStyle=style;t.alignment=align;t.color=PremiumUiStyle.Ink;t.raycastTarget=false;t.richText=false;return t;}
 }

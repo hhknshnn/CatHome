@@ -140,7 +140,7 @@ public class ThirstSystem : MonoBehaviour
         if (percentageText != null)
         {
             percentageText.text = Mathf.CeilToInt(currentThirst) + "%";
-            percentageText.color = textColor;
+            percentageText.color = PremiumUiStyle.Ink;
         }
 
         if (isDehydrated)
@@ -173,6 +173,21 @@ public class ThirstSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Top the bar up without running the drinking routine. Activities that
+    /// already record their own quest progress use this: BeginDrinking fires
+    /// Drank, which records a Drink quest, so calling it from a CatActivity
+    /// would count the same sip twice.
+    /// </summary>
+    public void RestoreThirst(float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        currentThirst = Mathf.Clamp(currentThirst + amount, 0f, 100f);
+        UpdateUI();
+    }
+
     public void ApplySavedValue(float value)
     {
         currentThirst = Mathf.Clamp(value, 0f, 100f);
@@ -199,7 +214,7 @@ public class ThirstSystem : MonoBehaviour
             thirstFrame.color = flashingRed;
 
         if (percentageText != null)
-            percentageText.color = Color.Lerp(textColor, Color.white, pulse);
+            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     private void OnDisable()

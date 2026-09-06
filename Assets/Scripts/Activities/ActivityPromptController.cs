@@ -19,6 +19,7 @@ public sealed class ActivityPromptController : MonoBehaviour
     private static ActivityPromptController instance;
     private CatMovement cat;
     private BowlInteraction bowlInteraction;
+    private EnergySystem energySystem;
     private CatActivity candidate;
 
     public static void NotifyActivityChanged()
@@ -59,6 +60,7 @@ public sealed class ActivityPromptController : MonoBehaviour
     {
         cat = null;
         bowlInteraction = null;
+        energySystem = null;
         ResolveReferences();
     }
 
@@ -68,10 +70,18 @@ public sealed class ActivityPromptController : MonoBehaviour
             cat = FindAnyObjectByType<CatMovement>(FindObjectsInactive.Include);
         if (bowlInteraction == null)
             bowlInteraction = FindAnyObjectByType<BowlInteraction>(FindObjectsInactive.Include);
+        if (energySystem == null)
+            energySystem = FindAnyObjectByType<EnergySystem>(FindObjectsInactive.Include);
     }
 
     private void RefreshImmediate()
     {
+        if(HomeUiFlow.IsHomeControlBlocked || TitleScreen.IsShowing || GamesHubPanel.IsAnyOpen || LeaderboardPanel.IsAnyOpen ||
+           ShopPanelController.IsAnyOpen || QuestPanelController.IsAnyOpen || CatBreedShopPanel.IsAnyOpen ||
+           RoomSelectorPanel.IsAnyOpen || SettingsPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen ||
+           WhileYouWereAwayPopup.IsAnyOpen || HomeLevelUpCelebrationView.IsAnyOpen || CollectionCompleteCelebrationView.IsAnyOpen)
+        {candidate=null;HideAction();HideProgress();return;}
+
         CatActivity active = CatActivity.Active;
         if (active != null)
         {
@@ -92,7 +102,7 @@ public sealed class ActivityPromptController : MonoBehaviour
             return;
         }
 
-        SetActionText(candidate.ActionText);
+        SetActionText(BuildActionText(candidate, energySystem));
         SetGroup(actionGroup, true);
         if (actionButton != null)
         {
@@ -134,8 +144,10 @@ public sealed class ActivityPromptController : MonoBehaviour
 
     private void ShowProgress(string text)
     {
+        if (progressGroup != null && !string.IsNullOrWhiteSpace(text))
+            progressGroup.gameObject.SetActive(true);
         if (progressLabel != null)
-            progressLabel.text = text;
+            progressLabel.text = GameInteractionCopy.Text(text);
         SetGroup(progressGroup, !string.IsNullOrWhiteSpace(text));
     }
 
@@ -157,6 +169,20 @@ public sealed class ActivityPromptController : MonoBehaviour
             actionLabel.text = value;
         if (actionShadowLabel != null)
             actionShadowLabel.text = value;
+    }
+
+    public static string BuildActionText(CatActivity activity, EnergySystem energy)
+    {
+        if (activity == null)
+            return string.Empty;
+
+        if (activity.EnergyCost > 0f &&
+            (energy == null || !energy.CanSpendEnergy(activity.EnergyCost)))
+        {
+            return GameContentCopy.Text($"{Mathf.CeilToInt(activity.EnergyCost)} enerji gerekli",$"Need {Mathf.CeilToInt(activity.EnergyCost)} energy");
+        }
+
+        return GameInteractionCopy.Text(activity.ActionText);
     }
 
     private static void SetGroup(CanvasGroup group, bool visible)

@@ -17,6 +17,12 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     public bool IsReacting => routine != null;
 
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement != null)
+            animator = replacement;
+    }
+
     private void Awake()
     {
         ResolveReferences();
@@ -29,21 +35,25 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     public void PlayPounceReaction()
     {
+        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Hop);
         BeginReaction(OneShotRoutine(pounceState, 0.72f));
     }
 
     public void PlayPawSwatReaction()
     {
+        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Paw);
         BeginReaction(OneShotRoutine(pawSwatState, 0.58f));
     }
 
     public void PlayScratchReaction(float duration)
     {
+        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Scratch);
         BeginReaction(ScratchRoutine(Mathf.Max(0.5f, duration)));
     }
 
     public void PlayTunnelReaction(float duration)
     {
+        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Crawl);
         BeginReaction(ScratchRoutine(Mathf.Max(0.4f, duration), tunnelState));
     }
 
@@ -76,6 +86,9 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     private void FinishReaction()
     {
+        var activityAnimation = GetComponent<CatActivityAnimation>();
+        if (activityAnimation != null && activityAnimation.IsActive)
+            activityAnimation.SetPose(CatActivityPose.Sit);
         CrossFade(idleState, 0.12f);
         if (movement != null)
             movement.SetMovementLocked(this, false);
@@ -93,6 +106,8 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     private void CrossFade(string state, float duration)
     {
+        var activityAnimation = GetComponent<CatActivityAnimation>();
+        if (activityAnimation != null && activityAnimation.IsActive) return;
         if (animator == null || !animator.isActiveAndEnabled || string.IsNullOrEmpty(state))
             return;
         int hash = Animator.StringToHash("Base Layer." + state);

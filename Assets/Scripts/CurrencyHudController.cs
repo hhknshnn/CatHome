@@ -371,6 +371,9 @@ public sealed class CurrencyHudController : MonoBehaviour
 
     private bool IsBlockingModalActive()
     {
+        if (HomeUiFlow.IsHomeControlBlocked) return true;
+        if (TitleScreen.IsShowing || GamesHubPanel.IsAnyOpen || LeaderboardPanel.IsAnyOpen || SettingsPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen || RoomSelectorPanel.IsAnyOpen || CatBreedShopPanel.IsAnyOpen)
+            return true;
         if (!PetTutorialHint.IsOnboardingCompleted)
             return true;
 

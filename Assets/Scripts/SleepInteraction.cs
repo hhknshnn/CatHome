@@ -58,6 +58,12 @@ public sealed class SleepInteraction : MonoBehaviour
     public Transform TutorialBedTarget =>
         sleepPoint != null && sleepPoint.parent != null ? sleepPoint.parent : bedInteractionPoint;
 
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement != null)
+            animator = replacement;
+    }
+
     private void Reset()
     {
         catTransform = transform;
@@ -103,7 +109,7 @@ public sealed class SleepInteraction : MonoBehaviour
         if (IsSatisfiedEnergy(energySystem.CurrentEnergy, satisfiedActionThreshold))
         {
             LogDecisionOnce("SatisfiedRejected");
-            speechBubble?.Show("I'm not sleepy right now!");
+            speechBubble?.Show(GameContentCopy.Text("Şu an uykum yok!","I'm not sleepy right now!"));
             return true;
         }
 

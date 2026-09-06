@@ -21,6 +21,19 @@ public static class PremiumUiRefreshBuilder
         if (canvas != null)
         {
             StyleNeedsHud(canvas.transform);
+            StyleJoystick(canvas.transform);
+            var groups=new System.Collections.Generic.List<CanvasGroup>();
+            foreach(var rect in canvas.GetComponentsInChildren<RectTransform>(true))
+            {
+                if(rect.name!="FoodBar"&&rect.name!="ThirstUI"&&rect.name!="EnergyUI"&&rect.GetComponent<MobileJoystick>()==null)continue;
+                var group=rect.GetComponent<CanvasGroup>();if(group==null)group=rect.gameObject.AddComponent<CanvasGroup>();groups.Add(group);
+            }
+            var visibility=canvas.GetComponent<HomeHudVisibility>()??canvas.AddComponent<HomeHudVisibility>();visibility.Configure(groups.ToArray());
+            var notice=canvas.transform.Find("HomeRewardToast");
+            if(notice==null)notice=PremiumUiElements.Rect("HomeRewardToast",canvas.transform);
+            PremiumUiElements.Fill((RectTransform)notice);
+            var toast=notice.GetComponent<HomeRewardToast>()??notice.gameObject.AddComponent<HomeRewardToast>();
+            toast.EditorConfigure(premiumFont);
             StyleActionButton(canvas.transform.Find("ActionButton"), premiumFont);
             Transform activities = canvas.transform.Find("ActivityUIRoot");
             if (activities != null)
@@ -65,6 +78,25 @@ public static class PremiumUiRefreshBuilder
         StyleNamedActionButtons(scene, premiumFont);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
+    }
+
+    private static void StyleJoystick(Transform canvas)
+    {
+        var joystick=canvas.GetComponentInChildren<MobileJoystick>(true);
+        if(joystick==null)return;
+        var serialized=new SerializedObject(joystick);
+        var handle=serialized.FindProperty("handle").objectReferenceValue as RectTransform;
+        var background=joystick.GetComponent<Image>();if(background!=null)background.color=Color.clear;
+        var old=joystick.transform.Find("PremiumBase");if(old!=null)Object.DestroyImmediate(old.gameObject);
+        var face=PremiumUiElements.Panel("PremiumBase",joystick.transform,PremiumUiStyle.Ivory,0,0,172,172,86);
+        face.transform.SetAsFirstSibling();face.raycastTarget=false;
+        if(handle!=null)
+        {
+            handle.sizeDelta=new Vector2(70,70);
+            var image=handle.GetComponent<Image>();if(image!=null)image.color=Color.clear;
+            old=handle.Find("PremiumHandle");if(old!=null)Object.DestroyImmediate(old.gameObject);
+            var thumb=PremiumUiElements.Panel("PremiumHandle",handle,PremiumUiStyle.Teal,0,0,70,70,35);thumb.raycastTarget=false;
+        }
     }
 
     private static void StyleNamedActionButtons(Scene scene, TMP_FontAsset premiumFont)
@@ -179,212 +211,59 @@ public static class PremiumUiRefreshBuilder
 
     private static void StyleNeedBar(Transform root, Color fillColor)
     {
-        if (root == null)
-            return;
-
-        RectTransform rootRect = root as RectTransform;
-        if (rootRect != null)
-            rootRect.sizeDelta = new Vector2(NeedBarWidth, TopBarHeight);
-
-        Transform backgroundTransform = root.Find("Background");
-        Image background = backgroundTransform != null ? backgroundTransform.GetComponent<Image>() : null;
-        if (backgroundTransform != null)
+        if (root == null) return;
+        var rect = (RectTransform)root; rect.sizeDelta = new Vector2(NeedBarWidth, TopBarHeight);
+        // The value/fill objects are owned by the existing needs components.
+        // Reuse them so presentation changes never detach live hunger/thirst.
+        var background = EnsureNeedSurface(root, "Background");
+        PremiumUiStyle.ConfigureLightSurface(background, 23f, 2f);
+        background.raycastTarget = false; PremiumUiElements.Fill(background.rectTransform);
+        background.rectTransform.SetAsFirstSibling();
+        foreach (string name in new[] { "BackgroundShadow", "CapsuleDepth", "CapsuleRim", "IconDiscShadow", "IconDisc", "Frame", "FillTrackRim" })
         {
-            if (background != null)
-                Object.DestroyImmediate(background);
-
-            Transform obsoleteDepth = root.Find("CapsuleDepth");
-            if (obsoleteDepth != null)
-                Object.DestroyImmediate(obsoleteDepth.gameObject);
-            Transform obsoleteRim = root.Find("CapsuleRim");
-            if (obsoleteRim != null)
-                Object.DestroyImmediate(obsoleteRim.gameObject);
-
-            Shadow[] legacyEffects = backgroundTransform.GetComponents<Shadow>();
-            for (int i = 0; i < legacyEffects.Length; i++)
-                Object.DestroyImmediate(legacyEffects[i]);
-
-            LowPolyPanelGraphic depth = EnsureNeedSurface(root, "BackgroundShadow");
-            PremiumUiStyle.ConfigureShadowSurface(
-                depth, new Color32(68, 31, 96, 132), TopBarHeight * 0.5f);
-            depth.raycastTarget = false;
-            SetNeedCapsuleRect(depth.rectTransform, 4f);
-            depth.rectTransform.SetSiblingIndex(0);
-
-            LowPolyPanelGraphic capsule = backgroundTransform.GetComponent<LowPolyPanelGraphic>();
-            if (capsule == null)
-                capsule = backgroundTransform.gameObject.AddComponent<LowPolyPanelGraphic>();
-            Color capsuleTop = Color.Lerp(fillColor, Color.white, 0.28f);
-            Color capsuleBottom = Color.Lerp(fillColor, PremiumUiStyle.DeepInset, 0.16f);
-            capsule.ConfigurePremiumStyle(
-                capsuleTop,
-                capsuleBottom,
-                TopBarHeight * 0.5f,
-                3.8f,
-                new Color32(255, 255, 255, 195),
-                new Color32(65, 30, 92, 120),
-                new Color32(255, 213, 237, 68));
-            capsule.ConfigureCandyPolish(0.31f, 0.13f);
-            capsule.raycastTarget = false;
-            RectTransform capsuleRect = backgroundTransform as RectTransform;
-            SetNeedCapsuleRect(capsuleRect, 0f);
-            capsuleRect.SetSiblingIndex(1);
-
+            var old = root.Find(name); if (old != null) Object.DestroyImmediate(old.gameObject);
         }
-
-        Transform frameTransform = root.Find("Frame");
-        if (frameTransform != null)
-            frameTransform.gameObject.SetActive(false);
-
-        Transform fillAreaTransform = root.Find("Fill Area");
-        if (fillAreaTransform == null)
-            fillAreaTransform = root.Find("FillTrackMask/Fill Area");
-        Transform fillTransform = fillAreaTransform != null
-            ? fillAreaTransform.Find("Fill")
-            : null;
-        Image fill = fillTransform != null ? fillTransform.GetComponent<Image>() : null;
-        if (fill != null)
-            fill.color = fillColor;
-
-        LowPolyPanelGraphic trackRim = EnsureNeedSurface(root, "FillTrackRim");
-        PremiumUiStyle.ConfigureMetalSurface(
-            trackRim, PremiumUiStyle.CandyLemon, 12f, 3f);
-        trackRim.raycastTarget = false;
-        SetNeedContentRect(
-            trackRim.rectTransform, NeedContentX, NeedTrackY, NeedContentWidth, NeedTrackHeight);
-
-        LowPolyPanelGraphic trackMask = EnsureNeedSurface(root, "FillTrackMask");
-        trackMask.ConfigurePremiumStyle(
-            PremiumUiStyle.DeepInsetLift,
-            PremiumUiStyle.DeepInset,
-            10f,
-            1.5f,
-            new Color32(255, 255, 255, 45),
-            new Color32(20, 14, 49, 150),
-            Color.clear);
-        trackMask.ConfigureCandyPolish(0.06f, 0.02f);
-        trackMask.raycastTarget = false;
-        SetNeedContentRect(
-            trackMask.rectTransform,
-            NeedContentX,
-            NeedTrackY,
-            NeedContentWidth - 4f,
-            NeedTrackHeight - 4f);
-        Mask mask = trackMask.GetComponent<Mask>();
-        if (mask == null)
-            mask = trackMask.gameObject.AddComponent<Mask>();
-        mask.showMaskGraphic = true;
-
-        RectTransform fillArea = fillAreaTransform as RectTransform;
-        if (fillArea != null)
+        var area = root.Find("Fill Area") ?? root.Find("FillTrackMask/Fill Area");
+        var track = EnsureNeedSurface(root, "FillTrackMask");
+        PremiumUiStyle.ConfigureAccentSurface(track, PremiumUiStyle.Mint, PremiumUiStyle.Mint, 5f, 0f);
+        track.raycastTarget = false;
+        SetNeedContentRect(track.rectTransform, 25f, -17f, 166f, 9f);
+        var mask = track.GetComponent<Mask>() ?? track.gameObject.AddComponent<Mask>(); mask.showMaskGraphic = true;
+        if (area != null)
         {
-            fillArea.SetParent(trackMask.transform, false);
-            fillArea.anchorMin = Vector2.zero;
-            fillArea.anchorMax = Vector2.one;
-            fillArea.offsetMin = Vector2.zero;
-            fillArea.offsetMax = Vector2.zero;
+            area.SetParent(track.transform, false); PremiumUiElements.Fill((RectTransform)area);
+            var fill = area.Find("Fill");
+            if (fill != null && fill.GetComponent<Image>() != null)
+            {
+                var image = fill.GetComponent<Image>(); image.color = fillColor;
+                image.sprite = PremiumUiFactory.SolidSprite(); image.type = Image.Type.Filled;
+                image.fillMethod = Image.FillMethod.Horizontal; image.fillOrigin = 0;
+                PremiumUiElements.Fill(image.rectTransform);
+            }
         }
-        trackRim.rectTransform.SetSiblingIndex(2);
-        trackMask.rectTransform.SetSiblingIndex(3);
-
-        Transform icon = null;
         foreach (Transform child in root)
-            if (child.name.EndsWith("Icon")) { icon = child; break; }
-        if (icon != null)
         {
-            RectTransform iconRect = icon as RectTransform;
-            iconRect.anchorMin = iconRect.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRect.pivot = new Vector2(0.5f, 0.5f);
-            iconRect.sizeDelta = new Vector2(NeedGlyphSize, NeedGlyphSize);
-            iconRect.anchoredPosition = new Vector2(NeedIconX, 0f);
-            Image iconImage = icon.GetComponent<Image>();
-            if (iconImage != null)
-            {
-                iconImage.preserveAspect = true;
-                iconImage.raycastTarget = false;
-            }
-            Transform oldDiscShadow = root.Find("IconDiscShadow");
-            if (oldDiscShadow != null)
-                Object.DestroyImmediate(oldDiscShadow.gameObject);
-            Transform oldDisc = root.Find("IconDisc");
-            if (oldDisc != null)
-                Object.DestroyImmediate(oldDisc.gameObject);
-
-            LowPolyPanelGraphic discShadow = EnsureNeedSurface(root, "IconDiscShadow");
-            PremiumUiStyle.ConfigureShadowSurface(
-                discShadow, new Color32(68, 31, 96, 145), NeedDiscShadowSize * 0.5f);
-            RectTransform discShadowRect = discShadow.rectTransform;
-            discShadowRect.anchorMin = discShadowRect.anchorMax = new Vector2(0.5f, 0.5f);
-            discShadowRect.pivot = new Vector2(0.5f, 0.5f);
-            discShadowRect.sizeDelta = new Vector2(NeedDiscShadowSize, NeedDiscShadowSize);
-            discShadowRect.anchoredPosition = new Vector2(NeedIconX, 0f);
-            discShadow.raycastTarget = false;
-
-            GameObject discObject = new GameObject("IconDisc", typeof(RectTransform), typeof(CanvasRenderer));
-            RectTransform discRect = discObject.GetComponent<RectTransform>();
-            discRect.SetParent(root, false);
-            discRect.anchorMin = discRect.anchorMax = new Vector2(0.5f, 0.5f);
-            discRect.pivot = new Vector2(0.5f, 0.5f);
-            discRect.sizeDelta = new Vector2(NeedDiscSize, NeedDiscSize);
-            discRect.anchoredPosition = new Vector2(NeedIconX, 0f);
-            LowPolyPanelGraphic disc = discObject.AddComponent<LowPolyPanelGraphic>();
-            disc.ConfigurePremiumStyle(
-                Color.Lerp(fillColor, Color.white, 0.34f),
-                Color.Lerp(fillColor, PremiumUiStyle.DeepInset, 0.13f),
-                NeedDiscSize * 0.5f,
-                3.4f,
-                new Color32(255, 255, 255, 210),
-                new Color32(65, 30, 92, 125),
-                new Color32(255, 225, 239, 65));
-            disc.ConfigureCandyPolish(0.34f, 0.14f);
-            disc.raycastTarget = false;
-            GameObject glintObject = new GameObject(
-                "PremiumGlint", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            RectTransform glintRect = glintObject.GetComponent<RectTransform>();
-            glintRect.SetParent(discObject.transform, false);
-            glintRect.anchorMin = glintRect.anchorMax = new Vector2(0.5f, 0.5f);
-            glintRect.pivot = new Vector2(0.5f, 0.5f);
-            glintRect.sizeDelta = new Vector2(7f, 7f);
-            glintRect.anchoredPosition = new Vector2(16f, 15f);
-            glintRect.localRotation = Quaternion.Euler(0f, 0f, 45f);
-            Image glint = glintObject.GetComponent<Image>();
-            glint.color = new Color32(255, 255, 255, 220);
-            glint.raycastTarget = false;
-            discShadowRect.SetSiblingIndex(4);
-            discRect.SetSiblingIndex(5);
-            icon.SetAsLastSibling();
+            if (!child.name.EndsWith("Icon")) continue;
+            SetNeedContentRect((RectTransform)child, -91f, 0f, 34f, 34f);
+            var image = child.GetComponent<Image>(); if (image != null) { image.preserveAspect = true; image.raycastTarget = false; }
+            child.SetAsLastSibling(); break;
         }
-
-        TMP_Text[] labels = root.GetComponentsInChildren<TMP_Text>(true);
-        for (int i = 0; i < labels.Length; i++)
+        foreach (var label in root.GetComponentsInChildren<TMP_Text>(true))
         {
-            labels[i].color = labels[i].name.Contains("Shadow")
-                ? PremiumUiStyle.Shadow
-                : PremiumUiStyle.Ivory;
-            labels[i].characterSpacing = 0.5f;
-            if (labels[i].name.EndsWith("LabelFront"))
+            label.color = PremiumUiStyle.Ink; label.characterSpacing = .3f;
+            if (label.name.Contains("Shadow")) { label.gameObject.SetActive(false); continue; }
+            if (label.name.EndsWith("LabelFront"))
             {
-                labels[i].fontSize = 16f;
-                labels[i].alignment = TextAlignmentOptions.MidlineLeft;
-                SetNeedContentRect(
-                    labels[i].rectTransform, NeedContentX, NeedLabelY, NeedContentWidth, 22f);
+                label.fontSize = 19; label.alignment = TextAlignmentOptions.Left;
+                SetNeedContentRect(label.rectTransform, 2f, 10f, 116f, 28f);
+                PremiumUiElements.Localize(label, root.name == "FoodBar" ? "home.hunger" : root.name == "ThirstUI" ? "home.thirst" : "home.energy");
             }
-            else if (labels[i].name.EndsWith("LabelShadow"))
+            else if (label.name == "PercentageText")
             {
-                labels[i].gameObject.SetActive(false);
+                label.fontSize = 19; label.alignment = TextAlignmentOptions.Right;
+                SetNeedContentRect(label.rectTransform, 83f, 10f, 58f, 28f);
             }
-            else if (labels[i].name == "PercentageText")
-            {
-                labels[i].fontSize = 14f;
-                labels[i].alignment = TextAlignmentOptions.Center;
-                SetNeedContentRect(
-                    labels[i].rectTransform,
-                    NeedContentX,
-                    NeedTrackY,
-                    NeedContentWidth - 4f,
-                    NeedTrackHeight - 4f);
-                labels[i].transform.SetAsLastSibling();
-            }
+            label.transform.SetAsLastSibling();
         }
     }
 
@@ -440,6 +319,8 @@ public static class PremiumUiRefreshBuilder
         if (target == null)
             return;
 
+        if(target.name=="ActionButton" || target.name=="ActivityActionButton" || target.name=="ActivityProgressBadge")
+        { StyleContextAction(target,premiumFont); return; }
         Button button = target.GetComponent<Button>();
         if (button == null)
             button = target.GetComponentInChildren<Button>(true);
@@ -468,6 +349,30 @@ public static class PremiumUiRefreshBuilder
             if (!isShadow)
                 PremiumUiFactory.PolishText(labels[i], premiumFont);
         }
+    }
+
+    private static void StyleContextAction(Transform root,TMP_FontAsset font)
+    {
+        bool progress=root.name=="ActivityProgressBadge";
+        foreach(var graphic in root.GetComponentsInChildren<Graphic>(true))
+            if(!(graphic is TMP_Text))graphic.enabled=false;
+        foreach(var fx in root.GetComponentsInChildren<Shadow>(true))Object.DestroyImmediate(fx);
+        foreach(var press in root.GetComponents<LowPolyButtonPress>())Object.DestroyImmediate(press);
+        var old=root.Find("ContextFace");
+        var surface=old!=null?old.GetComponent<LowPolyPanelGraphic>():PremiumUiElements.Panel("ContextFace",root,progress?PremiumUiStyle.Mint:PremiumUiStyle.Coral,0,0,1,1,24,!progress);
+        surface.enabled=true;surface.SetPremiumBaseColor(progress?PremiumUiStyle.Mint:PremiumUiStyle.Coral);
+        var bounds=(RectTransform)root;bounds.anchorMin=bounds.anchorMax=new Vector2(progress?.5f:1f,0f);bounds.pivot=new Vector2(.5f,.5f);
+        bounds.sizeDelta=progress?new Vector2(420,66):new Vector2(280,94);bounds.anchoredPosition=progress?new Vector2(0,190):new Vector2(-190,204);
+        PremiumUiElements.Fill(surface.rectTransform);
+        foreach(var label in root.GetComponentsInChildren<TMP_Text>(true))
+        {
+            if(label.name.ToUpperInvariant().Contains("SHADOW")){label.gameObject.SetActive(false);continue;}
+            label.transform.SetParent(surface.transform,false);PremiumUiElements.Fill(label.rectTransform,12);
+            label.font=font;label.fontSize=26;label.enableAutoSizing=true;label.fontSizeMin=20;label.fontSizeMax=26;
+            label.color=PremiumUiStyle.Ink;label.characterSpacing=.5f;label.alignment=TextAlignmentOptions.Center;
+        }
+        var button=root.GetComponent<Button>();
+        if(button!=null){button.targetGraphic=surface;PremiumUiFactory.PolishButton(button,true,font);}
     }
 
     private static GameObject FindRoot(Scene scene, string name)

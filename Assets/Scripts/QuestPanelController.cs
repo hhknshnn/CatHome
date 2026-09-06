@@ -83,6 +83,9 @@ public sealed class QuestPanelController : MonoBehaviour
 
     [Header("Content")]
     [SerializeField] private TMP_Text levelLabel;
+    [SerializeField] private Button chapterTab;
+    [SerializeField] private Button dailyTab;
+    private bool showDaily;
     [SerializeField] private TMP_Text walletLabel;
     [SerializeField] private GameObject messageRoot;
     [SerializeField] private TMP_Text messageLabel;
@@ -108,10 +111,10 @@ public sealed class QuestPanelController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float scrimTargetAlpha = 0.55f;
 
     [Header("Row state colours")]
-    [SerializeField] private Color activeTextColor = new Color32(84, 42, 53, 255);
-    [SerializeField] private Color mutedTextColor = new Color32(84, 42, 53, 140);
-    [SerializeField] private Color readyTextColor = new Color32(198, 86, 34, 255);
-    [SerializeField] private Color claimedTextColor = new Color32(72, 132, 78, 255);
+    [SerializeField] private Color activeTextColor = PremiumUiStyle.Ink;
+    [SerializeField] private Color mutedTextColor = PremiumUiStyle.Muted;
+    [SerializeField] private Color readyTextColor = PremiumUiStyle.Teal;
+    [SerializeField] private Color claimedTextColor = PremiumUiStyle.Teal;
 
     // Player-facing state strings. Kept in one place so the presentation of the
     // authoritative QuestState never drifts between rows.
@@ -318,31 +321,18 @@ public sealed class QuestPanelController : MonoBehaviour
 
         UpdateWalletLabel();
 
-        switch (status)
+        bool daily=showDaily || status==QuestBoardStatus.AllChaptersCompleted;
+        PaintTab(chapterTab,!daily); PaintTab(dailyTab,daily);
+        if(daily)
         {
-            case QuestBoardStatus.AllChaptersCompleted:
-                DailyRetentionService.CaptureDailyQuests(snapshots);
-                if (snapshots.Count > 0)
-                {
-                    SetLevelHeading("DAILY QUESTS");
-                    ShowRows();
-                    return;
-                }
-
-                SetLevelHeading("ALL CHAPTERS COMPLETE");
-                ShowMessage(AllChaptersCompletedText);
-                return;
-
-            case QuestBoardStatus.Unavailable:
-                SetLevelHeading("QUESTS");
-                ShowMessage(UnavailableText);
-                return;
+            snapshots.Clear(); DailyRetentionService.CaptureDailyQuests(snapshots);
+            SetLevelHeading(GameLanguageService.Text("quests.refresh_daily"));
         }
-
-        DailyRetentionService.CaptureDailyQuests(snapshots);
-        SetLevelHeading(FormatChapterHeading(
-            ProgressionService.CurrentChapterNumber,
-            levelName));
+        else
+        {
+            if(status==QuestBoardStatus.Unavailable) { ShowMessage(GameLanguageService.Text("quests.unavailable")); return; }
+            SetLevelHeading(GameLanguageService.Format("quests.chapter",ProgressionService.CurrentChapterNumber));
+        }
 
         if (snapshots.Count == 0)
         {
@@ -351,6 +341,14 @@ public sealed class QuestPanelController : MonoBehaviour
         }
 
         ShowRows();
+    }
+
+    private void SelectDaily(bool value) { showDaily=value; Refresh(); ResetScrollToTop(); }
+    private static void PaintTab(Button button,bool selected)
+    {
+        if(button==null)return;
+        if(button.targetGraphic is LowPolyPanelGraphic face) face.SetPremiumBaseColor(selected?PremiumUiStyle.Teal:PremiumUiStyle.Mint);
+        var label=button.GetComponentInChildren<TMP_Text>(true); if(label!=null) label.color=selected?Color.white:PremiumUiStyle.Ink;
     }
 
     private static string FormatChapterHeading(int chapterNumber, string chapterName)
@@ -373,11 +371,7 @@ public sealed class QuestPanelController : MonoBehaviour
         if (walletLabel == null)
             return;
 
-        walletLabel.text =
-            "Coins: " + Format(ProgressionService.Coins) +
-            "    Bond XP: " + Format(ProgressionService.BondXp) +
-            "    Diamonds: " + Format(ProgressionService.Diamonds) +
-            "    " + BondMilestoneService.FormatNextGiftLabel(ProgressionService.BondXp);
+        walletLabel.text = GameLanguageService.Format("quests.wallet",Format(ProgressionService.Coins),Format(ProgressionService.BondXp),Format(ProgressionService.Diamonds));
     }
 
     // Grouped with an invariant separator so a large amount reads the same on
@@ -471,17 +465,17 @@ public sealed class QuestPanelController : MonoBehaviour
                 break;
 
             case QuestState.Claimed:
-                SetText(row.status, ClaimedText, claimedTextColor);
+                SetText(row.status, GameLanguageService.Text("quests.claimed"), claimedTextColor);
                 SetClaimVisible(row, false, false);
                 break;
 
             case QuestState.Locked:
-                SetText(row.status, LockedText, mutedTextColor);
+                SetText(row.status, GameLanguageService.Text("quests.locked"), mutedTextColor);
                 SetClaimVisible(row, false, false);
                 break;
 
             default:
-                SetText(row.status, ActiveText, bodyColor);
+                SetText(row.status, GameLanguageService.Text("quests.active"), bodyColor);
                 SetClaimVisible(row, false, false);
                 break;
         }
@@ -496,11 +490,11 @@ public sealed class QuestPanelController : MonoBehaviour
 
         // Zero rewards are omitted entirely so a row never advertises "+0 coins".
         if (snapshot.RewardCoins > 0)
-            AppendReward(snapshot.RewardCoins, "COINS");
+            AppendReward(snapshot.RewardCoins, GameLanguageService.Text("currency.coins"));
         if (snapshot.RewardBondXp > 0)
-            AppendReward(snapshot.RewardBondXp, "BOND XP");
+            AppendReward(snapshot.RewardBondXp, GameLanguageService.Text("currency.bond"));
         if (snapshot.RewardDiamonds > 0)
-            AppendReward(snapshot.RewardDiamonds, "DIAMONDS");
+            AppendReward(snapshot.RewardDiamonds, GameLanguageService.Text("diamonds.units"));
 
         return rewardBuilder.ToString();
     }
@@ -894,6 +888,8 @@ public sealed class QuestPanelController : MonoBehaviour
             }
         }
 
+        if(chapterTab!=null) chapterTab.onClick.AddListener(()=>SelectDaily(false));
+        if(dailyTab!=null) dailyTab.onClick.AddListener(()=>SelectDaily(true));
         listenersBound = true;
     }
 

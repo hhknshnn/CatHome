@@ -1,0 +1,2 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+CollectButton (x:800.00, y:296.00, width:320.00, height:96.00)

@@ -20,9 +20,9 @@ public static class StoreCatalogAssets
     {
         Custom(HomeStoreService.CozyPodBedId, "CozyPodBed", new Vector2(1.2f, .95f), .6f,
             new Vector3(-2.82f, 0f, 1.58f)),
-        Custom(HomeStoreService.ToyMouseId, "ToyMouse", new Vector2(.55f, 1.2f), .48f,
+        Custom(HomeStoreService.ToyMouseId, "ToyMouse", new Vector2(.44f, .78f), .34f,
             new Vector3(-1.82f, 0f, -2.08f)),
-        Custom(HomeStoreService.PlayTunnelId, "PlayTunnel", new Vector2(.58f, .9f), .44f,
+        Custom(HomeStoreService.PlayTunnelId, "PlayTunnel", new Vector2(.58f, .9f), .60f,
             new Vector3(2.55f, 0f, -.55f)),
         RoomAt(HomeStoreService.TvUnitId, "TvUnit", "Nightstand_1.prefab",
             new Vector2(1.82f, .58f), .58f, 4f, new Vector3(-3.34f, 0f, -.42f),
@@ -57,7 +57,7 @@ public static class StoreCatalogAssets
             new Vector2(1.9f, 1.15f), .08f, new Vector3(1.2f, 0f, .35f),
             0f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.BathroomLaundryHamperId, "BathroomLaundryHamper",
-            new Vector2(.82f, .82f), .92f, new Vector3(-2.9f, 0f, -1.8f),
+            new Vector2(.82f, .82f), .92f, new Vector3(-2.9f, 0f, -1.05f),
             12f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.BathroomLitterBoxId, "BathroomLitterBox",
             new Vector2(1.3f, 1.02f), .48f, new Vector3(2.9f, 0f, -1.72f),
@@ -67,10 +67,10 @@ public static class StoreCatalogAssets
             0f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.BathroomTowelStorageId, "BathroomTowelStorage",
             new Vector2(1.02f, .5f), 1.82f, new Vector3(-3.05f, 0f, .25f),
-            90f, HomeProductPlacementKind.WallEdge),
+            270f, HomeProductPlacementKind.WallEdge),
         Generated(HomeStoreService.BathroomMirrorId, "BathroomWallMirror",
             new Vector2(.92f, .16f), .78f, new Vector3(-3.28f, 0f, 1.55f),
-            90f, HomeProductPlacementKind.WallEdge, 1.58f),
+            270f, HomeProductPlacementKind.WallEdge, 1.58f),
         Generated(HomeStoreService.BathroomToiletId, "BathroomToilet",
             new Vector2(.94f, 1.18f), 1.56f, new Vector3(3.05f, 0f, -.25f),
             270f, HomeProductPlacementKind.WallEdge),
@@ -88,7 +88,7 @@ public static class StoreCatalogAssets
             new Vector2(2.2f, 1.15f), .08f, new Vector3(0f, 0f, -2.25f),
             0f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.KitchenFruitBasketId, "KitchenFruitBasket",
-            new Vector2(.82f, .82f), .72f, new Vector3(-3.3f, 0f, -1.95f),
+            new Vector2(.82f, .82f), .72f, new Vector3(-2.9f, 0f, -.55f),
             12f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.KitchenFeedingStationId, "KitchenFeedingStation",
             new Vector2(1.35f, .72f), .48f, new Vector3(3f, 0f, -1.95f),
@@ -97,8 +97,8 @@ public static class StoreCatalogAssets
             new Vector2(.72f, .66f), .82f, new Vector3(1.85f, 0f, -1.28f),
             330f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.KitchenPantryShelfId, "KitchenPantryShelf",
-            new Vector2(1.15f, .55f), 1.85f, new Vector3(-3.22f, 0f, .95f),
-            0f, HomeProductPlacementKind.WallEdge),
+            new Vector2(1.15f, .55f), 1.85f, new Vector3(-3.45f, 0f, .95f),
+            270f, HomeProductPlacementKind.WallEdge),
         Generated(HomeStoreService.KitchenDishCartId, "KitchenDishCart",
             new Vector2(.92f, .62f), 1.15f, new Vector3(-1.78f, 0f, -.35f),
             8f, HomeProductPlacementKind.Floor),
@@ -204,22 +204,35 @@ public static class StoreCatalogAssets
         Generated(HomeStoreService.BalconyHangingChairId, "BalconyHangingChair",
             new Vector2(.9f, .9f), 1.5f, new Vector3(-2.7f, 0f, 1.6f),
             0f, HomeProductPlacementKind.Floor),
+        // Hangs above the balcony door: its frame tops out at 2.2 and the wall at 3.
         Generated(HomeStoreService.BalconySunAwningId, "BalconySunAwning",
-            new Vector2(2.4f, 1.1f), 1.85f, new Vector3(0f, 0f, 2.2f),
-            180f, HomeProductPlacementKind.WallEdge),
+            new Vector2(2.4f, 1.1f), .71f, new Vector3(0f, 0f, 2.2f),
+            180f, HomeProductPlacementKind.WallEdge, 2.24f),
 
         Generated(HomeStoreService.PatioStoneRugId, "PatioStoneRug",
             new Vector2(2.0f, 1.2f), .08f, new Vector3(0f, 0f, .2f),
             0f, HomeProductPlacementKind.Floor),
+        // Right edge, but in FRONT of the swing. At z 1.5 the pot overlapped the
+        // swing footprint (z .65 to 1.35) and the shell's right corner planter
+        // (x 2.7 to 3.3, z 1.7 to 2.3), and the swing frame hid it from the room
+        // camera outright. The right-edge lane behind the swing is only .35 deep
+        // and the pot needs .75, so it moved forward instead of sideways: the
+        // -X approach the room's second orientation rule depends on is kept.
         Generated(HomeStoreService.PatioPottedFernsId, "PatioPottedFerns",
-            new Vector2(.8f, .6f), 1.1f, new Vector3(2.95f, 0f, 1.5f),
+            new Vector2(.8f, .6f), 1.1f, new Vector3(2.95f, 0f, -1.7f),
             12f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.PatioHerbTroughId, "PatioHerbTrough",
             new Vector2(1.6f, .35f), .5f, new Vector3(-1.2f, 0f, 2.5f),
             180f, HomeProductPlacementKind.WallEdge),
+        // Stands on its own two posts; it used to hang at 1.95 off a wall the
+        // Patio does not have. The back boundary here is a .63 low wall and a
+        // 1.00 hedge, and the only tall thing back there is PatioPergolaArch —
+        // a separate purchase, so the lights floated for anyone who owned them
+        // without it. The free back pocket is x 1.2 to 2.7 between the arch and
+        // the right corner planter, which is what sets the 1.40 footprint.
         Generated(HomeStoreService.PatioStringLightsId, "PatioStringLights",
-            new Vector2(1.6f, .3f), .3f, new Vector3(1.2f, 0f, 2.5f),
-            180f, HomeProductPlacementKind.WallEdge, 1.95f),
+            new Vector2(1.4f, .3f), 2.1f, new Vector3(1.95f, 0f, 2.45f),
+            180f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.PatioWaterFountainId, "PatioWaterFountain",
             new Vector2(.8f, .8f), .9f, new Vector3(2.9f, 0f, -.5f),
             0f, HomeProductPlacementKind.Floor),
@@ -255,7 +268,7 @@ public static class StoreCatalogAssets
             new Vector2(.95f, .95f), .55f, new Vector3(-1.6f, 0f, 1.7f),
             0f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.LoftRecordPlayerId, "LoftRecordPlayer",
-            new Vector2(.9f, .6f), .7f, new Vector3(1.6f, 0f, -1.4f),
+            new Vector2(.9f, .6f), .7f, new Vector3(-1.7f, 0f, -1.4f),
             0f, HomeProductPlacementKind.Floor),
         Generated(HomeStoreService.LoftStudyDeskId, "LoftStudyDesk",
             new Vector2(1.4f, .9f), .8f, new Vector3(2.4f, 0f, -1.6f),
@@ -271,7 +284,7 @@ public static class StoreCatalogAssets
             0f, HomeProductPlacementKind.Floor),
 
         Pet(HomeStoreService.CeramicBowlId, "CeramicBowl", "Bowl1 V3.prefab",
-            new Vector2(.65f, .55f), .18f, 1.4f),
+            new Vector2(.50f, .42f), .16f, 1.4f),
         Pet(HomeStoreService.CloudBedId, "CloudBed", "Bed5 V3.prefab",
             new Vector2(1.15f, .85f), .48f, 1.4f),
         Pet(HomeStoreService.CanopyBedId, "CanopyBed", "Bed3 V1.prefab",
@@ -287,16 +300,16 @@ public static class StoreCatalogAssets
         PetAt(HomeStoreService.BellCollarId, "BellCollar", "Collar2 V2.prefab",
             new Vector2(.48f, .44f), .16f, 1.7f, new Vector3(2.15f, 0f, -2.15f)),
         PetAt(HomeStoreService.KibbleBagId, "KibbleBag", "Food2 V1.prefab",
-            new Vector2(.62f, .52f), .55f, 1.35f, new Vector3(-2.55f, 0f, -.35f)),
+            new Vector2(.50f, .44f), .44f, 1.35f, new Vector3(-2.55f, 0f, -.35f)),
         RoomAt(HomeStoreService.NapPillowId, "NapPillow", "Pillow_Square_2.prefab",
             new Vector2(.72f, .58f), .18f, 1.6f, new Vector3(.2f, 0f, -2.18f)),
         RoomAt(HomeStoreService.CatnipPlantId, "CatnipPlanter", "PottedPlant_Small_1.prefab",
-            new Vector2(.7f, .7f), .58f, 3.2f, new Vector3(1.72f, 0f, 1.88f)),
+            new Vector2(.52f, .52f), .44f, 3.2f, new Vector3(1.72f, 0f, 1.88f)),
         RoomAt(HomeStoreService.CardboardHideoutId, "CardboardHideout", "Box_Open.prefab",
             new Vector2(.78f, .78f), .48f, 1.15f, new Vector3(2.38f, 0f, 1.72f)),
 
-        Room(HomeStoreService.ArmchairId, "ClassicArmchair", "Armchair_Classic.prefab",
-            new Vector2(1.4f, 1.05f), 1.12f, 4f),
+        RoomAt(HomeStoreService.ArmchairId, "ClassicArmchair", "Armchair_Classic.prefab",
+            new Vector2(1.05f, .79f), .84f, 4f, new Vector3(-1.92f,0f,1.86f)),
         Room(HomeStoreService.SmallPlantId, "TablePlant", "PottedPlant_Small_2.prefab",
             new Vector2(.72f, .76f), .58f, 4f),
         Room(HomeStoreService.MirrorId, "WallMirror", "Mirror.prefab",
@@ -419,6 +432,34 @@ public static class StoreCatalogAssets
             hungHeight);
     }
 
+    // CAT collection has an authored play area; hash positions previously overlapped
+    // the bookcase, side table, lamps and other toys when the collection was complete.
+    public static bool TryGetCatPose(string id,out Vector3 position,out float yaw)
+    {
+        yaw=0;position=Vector3.zero;
+        switch(id)
+        {
+            case "home.ball-basket":position=new Vector3(-2.95f,0,-2.1f);yaw=270;break;
+            case "home.scratch-post":position=new Vector3(3.25f,0,-.55f);yaw=90;break;
+            case "cat.cozy-pod-bed":position=new Vector3(-1.9f,0,1.65f);break;
+            case "cat.cloud-bed":position=new Vector3(1.55f,0,1.7f);break;
+            case "cat.canopy-bed":position=new Vector3(1.65f,0,-.35f);yaw=90;break;
+            case "cat.play-tunnel":position=new Vector3(-2.3f,0,-.4f);break;
+            case "cat.cardboard-hideout":position=new Vector3(1.35f,0,-2.2f);yaw=180;break;
+            case "cat.nap-pillow":position=new Vector3(-1.55f,0,-2.15f);yaw=180;break;
+            case "cat.toy-mouse":position=new Vector3(-.7f,0,-1.1f);break;
+            case "cat.collar":position=new Vector3(.10f,0,-1.15f);break;
+            case "cat.treat-jar":position=new Vector3(-.9f,0,.7f);yaw=180;break;
+            case "cat.kibble-bag":position=new Vector3(-1.4f,0,-.15f);break;
+            case "cat.ceramic-bowl":position=new Vector3(-2.2f,0,-1.95f);yaw=270;break;
+            case "cat.catnip-plant":position=new Vector3(3.15f,0,-1.2f);yaw=90;break;
+            case "cat.feather-toy":position=new Vector3(.8f,0,.65f);yaw=270;break;
+            case "cat.leash":position=new Vector3(-.1f,0,-2.25f);yaw=180;break;
+            case "cat.bell-collar":position=new Vector3(2.15f,0,-1.45f);yaw=90;break;
+            default:return false;
+        }
+        return true;
+    }
     private static Vector3 DefaultPosition(string id)
     {
         int hash = 17;
@@ -444,8 +485,8 @@ public readonly struct StoreCatalogAsset
         SourceAssetPath = sourceAssetPath;
         Footprint = footprint;
         Height = height;
-        DefaultPosition = defaultPosition;
-        DefaultYaw = defaultYaw;
+        DefaultPosition = StoreCatalogAssets.TryGetCatPose(productId,out var catPosition,out var catYaw) ? catPosition : defaultPosition;
+        DefaultYaw = StoreCatalogAssets.TryGetCatPose(productId,out _,out catYaw) ? catYaw : defaultYaw;
         PlacementKind = placementKind;
         VisualScale = visualScale;
         VisualOffset = visualOffset;

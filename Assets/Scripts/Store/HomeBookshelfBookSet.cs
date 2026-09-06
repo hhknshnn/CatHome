@@ -2,9 +2,8 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Owns the dependent bookshelf book set. The set stays hidden until it is dropped on the
-/// purchased tall bookshelf, then each colored book is arranged in sequence. Once installed,
-/// the set is parented to the bookshelf so moving the shelf also moves every book.
+/// Automatically installs owned books on the owned bookshelf in their designed order.
+/// Purchase animates the ten books into the three shelves; loading restores the same layout.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class HomeBookshelfBookSet : MonoBehaviour
@@ -51,7 +50,7 @@ public sealed class HomeBookshelfBookSet : MonoBehaviour
     }
     public bool IsInstalled =>
         HomeStoreService.IsOwned(productId) &&
-        HomeStoreService.TryGetWorldPlacement(productId, out _, out _);
+        HomeStoreService.IsOwned(bookshelfProductId);
 
     private void Awake()
     {
@@ -254,7 +253,7 @@ public sealed class HomeBookshelfBookSet : MonoBehaviour
             return;
 
         if (!HomeStoreService.IsOwned(productId) ||
-            !HomeStoreService.TryGetWorldPlacement(productId, out _, out float localYaw) ||
+            !HomeStoreService.IsOwned(bookshelfProductId) ||
             !TryFindBookshelf(out Transform target))
         {
             HideUninstalledSet();
@@ -263,11 +262,11 @@ public sealed class HomeBookshelfBookSet : MonoBehaviour
 
         if (animate)
         {
-            previewBookYaw = Mathf.Repeat(localYaw, 360f);
+            previewBookYaw = 0f;
             CommitPlacement(target);
         }
         else
-            SnapToBookshelfImmediate(target, localYaw);
+            SnapToBookshelfImmediate(target, 0f);
     }
 
     private bool TryFindBookshelf(out Transform target)
@@ -328,7 +327,7 @@ public sealed class HomeBookshelfBookSet : MonoBehaviour
         if (string.IsNullOrEmpty(changedProductId) ||
             changedProductId == productId || changedProductId == bookshelfProductId)
         {
-            RefreshState(false);
+            RefreshState(Application.isPlaying && changedProductId == productId);
         }
     }
 

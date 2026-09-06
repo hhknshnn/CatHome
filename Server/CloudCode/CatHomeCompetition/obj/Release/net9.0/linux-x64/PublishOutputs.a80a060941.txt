@@ -1,0 +1,8 @@
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\CatHomeCompetition.dll
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\CatHomeCompetition.deps.json
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\CatHomeCompetition.pdb
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\Unity.Services.CloudCode.Apis.dll
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\Unity.Services.CloudCode.Core.dll
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\HAKAN\AppData\Local\Temp\CatHomeCompetition\module-compilation\Newtonsoft.Json.dll

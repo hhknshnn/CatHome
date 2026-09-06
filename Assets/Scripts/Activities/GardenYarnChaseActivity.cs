@@ -28,6 +28,8 @@ public sealed class GardenYarnChaseActivity : CatActivity
 
     public int CatchCount => catches;
     public int CatchGoal => Mathf.Max(1, catchesToComplete);
+    public Transform YarnBall => yarnBall;
+    public Transform[] HopPoints => hopPoints;
     public override string ProgressLabel => IsRunning
         ? $"CHASE THE YARN  {catches}/{CatchGoal}"
         : string.Empty;
@@ -127,6 +129,30 @@ public sealed class GardenYarnChaseActivity : CatActivity
         Vector3 start = Cat.transform.position;
         Vector3 target = ballPoint - DirectionFromCat(ballPoint) * catchOffset;
         target.y = start.y;
+        if (!CatActivityMotion.IsFloorClear(target))
+        {
+            float nearest = float.PositiveInfinity;
+            Vector3 requested = target;
+            foreach (var point in CatActivityMotion.ReachableFloor(start))
+            {
+                float distance = (point - requested).sqrMagnitude;
+                if (distance < nearest) { nearest = distance; target = point; }
+            }
+        }
+        if (!CatActivityMotion.TryFloorPath(start, target, out var path)) yield break;
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            PlayCatPose(CatActivityPose.Walk);
+            while ((Cat.transform.position - path[i]).sqrMagnitude > .0001f)
+            {
+                FaceCatTo(path[i]);
+                Cat.transform.position = Vector3.MoveTowards(Cat.transform.position, path[i], 2.2f * Time.deltaTime);
+                yield return null;
+            }
+        }
+        start = Cat.transform.position;
+        FaceCatTo(target);
+        PlayCatPose(CatActivityPose.Hop);
         float elapsed = 0f;
         while (elapsed < pounceDuration && IsRunning)
         {

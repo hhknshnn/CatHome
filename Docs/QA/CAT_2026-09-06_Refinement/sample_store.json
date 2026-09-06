@@ -1,0 +1,177 @@
+{
+    "storeVersion": 8,
+    "ownedProductIds": [
+        "cat.bell-collar",
+        "cat.canopy-bed",
+        "cat.cardboard-hideout",
+        "cat.catnip-plant",
+        "cat.ceramic-bowl",
+        "cat.cloud-bed",
+        "cat.collar",
+        "cat.cozy-pod-bed",
+        "cat.feather-toy",
+        "cat.kibble-bag",
+        "cat.leash",
+        "cat.nap-pillow",
+        "cat.play-tunnel",
+        "cat.toy-mouse",
+        "cat.treat-jar",
+        "home.ball-basket",
+        "home.scratch-post",
+        "room.armchair",
+        "room.bookshelf",
+        "room.colorful-book-set",
+        "room.floor-lamp",
+        "room.game-console",
+        "room.modern-painting",
+        "room.stereo",
+        "room.tall-plant",
+        "room.tv-console",
+        "room.tv-unit"
+    ],
+    "storedProductIds": [
+        "cat.bell-collar",
+        "cat.canopy-bed",
+        "cat.cardboard-hideout",
+        "cat.catnip-plant",
+        "cat.ceramic-bowl",
+        "cat.cozy-pod-bed",
+        "cat.feather-toy",
+        "cat.kibble-bag",
+        "cat.leash",
+        "cat.nap-pillow",
+        "cat.treat-jar",
+        "home.scratch-post"
+    ],
+    "placements": [
+        {
+            "productId": "cat.bell-collar",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.canopy-bed",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.cardboard-hideout",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.catnip-plant",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.ceramic-bowl",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.cloud-bed",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": -1.7999999523162842,
+            "positionZ": 0.5,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.collar",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -1.7999999523162842,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.cozy-pod-bed",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.feather-toy",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": -1.7999999523162842,
+            "positionZ": -1.399999976158142,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.kibble-bag",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.leash",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.nap-pillow",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.play-tunnel",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 1.600000023841858,
+            "positionZ": -0.75,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.toy-mouse",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.30000001192092898,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "cat.treat-jar",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": 0.0,
+            "positionZ": -0.800000011920929,
+            "rotationY": 0.0
+        },
+        {
+            "productId": "home.ball-basket",
+            "slotIndex": 0,
+            "hasWorldPosition": true,
+            "positionX": -1.7999999523162842,
+            "positionZ": -1.399999976158142,
+            "rotationY": 270.0
+        }
+    ],
+    "currentRoomId": "living-room-01"
+}

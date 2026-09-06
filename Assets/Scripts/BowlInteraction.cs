@@ -120,6 +120,12 @@ public class BowlInteraction : MonoBehaviour
     public Transform FoodBowl => food != null ? food.Bowl : null;
     public Transform WaterBowl => water != null ? water.Bowl : null;
 
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement != null)
+            animator = replacement;
+    }
+
     private void Reset()
     {
         catTransform = transform;
@@ -282,8 +288,8 @@ public class BowlInteraction : MonoBehaviour
         if (IsSatisfied(selectedBowl))
         {
             speechBubble?.Show(ReferenceEquals(selectedBowl, food)
-                ? "I'm not hungry right now!"
-                : "I'm not thirsty right now!");
+                ? GameContentCopy.Text("Şu an aç değilim!","I'm not hungry right now!")
+                : GameContentCopy.Text("Şu an susamadım!","I'm not thirsty right now!"));
             return;
         }
 
@@ -527,6 +533,7 @@ public class BowlInteraction : MonoBehaviour
 
     private void SetButtonText(string text)
     {
+        text=GameInteractionCopy.Text(text);
         if (buttonText != null && buttonText.text != text)
             buttonText.text = text;
 
@@ -536,6 +543,14 @@ public class BowlInteraction : MonoBehaviour
 
     private void ApplyButtonAppearance(BowlSetup bowl)
     {
+        if(interactionButton!=null && interactionButton.targetGraphic is LowPolyPanelGraphic surface)
+        {
+            surface.SetPremiumBaseColor(PremiumUiStyle.Coral);
+            if(buttonText!=null)buttonText.color=PremiumUiStyle.Ink;
+            if(buttonShadowText!=null)buttonShadowText.gameObject.SetActive(false);
+            return;
+        }
+
         bool isWater = ReferenceEquals(bowl, water);
         Color textColor = isWater ? drinkButtonTextColor : eatButtonTextColor;
         Color shadowColor = isWater ? drinkButtonShadowColor : eatButtonShadowColor;
@@ -565,6 +580,14 @@ public class BowlInteraction : MonoBehaviour
 
     private void ApplySleepButtonAppearance()
     {
+        if(interactionButton!=null && interactionButton.targetGraphic is LowPolyPanelGraphic surface)
+        {
+            surface.SetPremiumBaseColor(PremiumUiStyle.Coral);
+            if(buttonText!=null)buttonText.color=PremiumUiStyle.Ink;
+            if(buttonShadowText!=null)buttonShadowText.gameObject.SetActive(false);
+            return;
+        }
+
         if (buttonText != null)
             buttonText.color = sleepButtonTextColor;
 

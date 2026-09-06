@@ -310,11 +310,11 @@ public sealed class RoomSelectorPanel : MonoBehaviour
             if (card.statusText != null)
             {
                 card.statusText.text = current
-                    ? "YOUR CAT IS HERE"
-                    : unlocked ? "READY TO VISIT" : "UNLOCK IN SHOP • HOME";
+                    ? GameLanguageService.Format("rooms.progress", HomeStoreService.GetRoomOwnedCount(room.Id), HomeStoreService.GetRoomCollection(room.Id).Count)
+                    : GameLanguageService.Text(unlocked ? "rooms.ready" : "rooms.unlock_hint");
             }
             if (card.actionText != null)
-                card.actionText.text = current ? "CURRENT ROOM" : unlocked ? "VISIT" : "VIEW IN SHOP";
+                card.actionText.text = GameLanguageService.Text(current ? "rooms.current" : unlocked ? "rooms.visit" : "rooms.unlock");
             if (card.lockBadge != null)
                 card.lockBadge.SetActive(!unlocked);
             if (card.currentBadge != null)
@@ -322,8 +322,8 @@ public sealed class RoomSelectorPanel : MonoBehaviour
             if (card.face != null)
             {
                 Color color = current
-                    ? PremiumUiStyle.CandyMint
-                    : unlocked ? PremiumUiStyle.CandyAqua : PremiumUiStyle.CandyPeach;
+                    ? PremiumUiStyle.Mint
+                    : PremiumUiStyle.Ivory;
                 card.face.SetPremiumBaseColor(color);
             }
             if (card.button != null)
@@ -333,7 +333,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         if (state != PanelState.Travelling)
         {
             HomeRoomDefinition current = HomeRoomService.CurrentRoom;
-            SetFeedback("CURRENT HOME  •  " + current.DisplayName);
+            SetFeedback(GameLanguageService.Format("rooms.current_hint", current.DisplayName));
         }
     }
 

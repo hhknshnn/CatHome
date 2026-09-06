@@ -1,0 +1,6 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+DailyTab (x:607.60, y:740.00, width:208.00, height:58.00)
+CloseButton (x:1477.40, y:836.00, width:58.00, height:58.00)
+ClaimButton (x:1314.40, y:618.00, width:190.00, height:64.00)
+ClaimButton (x:1314.40, y:452.00, width:190.00, height:64.00)
+ChapterTab (x:383.60, y:740.00, width:208.00, height:58.00)

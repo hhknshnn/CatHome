@@ -18,7 +18,7 @@ public readonly struct HomeRoomDefinition
         int requiredHomeLevel)
     {
         Id = id;
-        DisplayName = displayName;
+        displayNameEnglish = displayName;
         ScenePath = scenePath;
         SpawnPointId = string.IsNullOrWhiteSpace(spawnPointId) ? "default" : spawnPointId;
         RequiredOwnershipId = requiredOwnershipId;
@@ -26,7 +26,8 @@ public readonly struct HomeRoomDefinition
     }
 
     public string Id { get; }
-    public string DisplayName { get; }
+    private readonly string displayNameEnglish;
+    public string DisplayName => GameContentCopy.RoomName(Id, displayNameEnglish);
     public string ScenePath { get; }
     public string SceneName => Path.GetFileNameWithoutExtension(ScenePath);
     public string SpawnPointId { get; }

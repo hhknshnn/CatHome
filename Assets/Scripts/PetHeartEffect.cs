@@ -52,6 +52,11 @@ public sealed class PetHeartEffect : MonoBehaviour
         public bool active;
     }
 
+    public void RebindSpawnPoint(Transform replacement)
+    {
+        spawnPoint = replacement;
+    }
+
     public void Play()
     {
         EnsureInitialized();

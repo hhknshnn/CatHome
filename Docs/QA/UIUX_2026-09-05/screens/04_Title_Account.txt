@@ -1,0 +1,37 @@
+ThirstLabelFront | 16 | THIRST
+AccountChoiceStatus | 17 | 
+ShortcutTitle | 18 | MUTLU KÖŞENİ SEÇ
+RunnerEnergyLabel | 17 | RUN 5/5  •  CATCH 5/5
+Label | 12,55 | YENİ OYUN
+Label | 25 | MAĞAZA
+Label | 12 | YAPIMCILAR
+PercentageText | 14 | 0%
+PercentageText | 14 | 0%
+Greeting | 18 | LOKIŞ SENİ BEKLİYOR
+AccountChoiceSubtitle | 22 | NASIL OYNAMAK İSTEDİĞİNİ SEÇ
+Label | 26 | MİSAFİR OLARAK DEVAM ET
+Label | 25 | OYUNLAR
+Label | 40 | DEVAM ET
+Label | 28 | SHOP
+Value | 25 | 657
+Label | 23 | GERİ
+PercentageText | 14 | 0%
+Value | 25 | 24
+GuestNote | 17 | HEMEN OYNA • BULUT KAYDI VE SIRALAMA İÇİN SONRA GİRİŞ YAP
+Label | 22 | 43 / 114 • TOPLANDI
+ExperiencePromise | 17 | İLGİLEN  •  DEKORE ET  •  OYNA
+AccountChoiceTitle | 34 | CAT HOME'UNU GÜVENDE TUT
+Label | 31 | GAMES
+Label | 15 | ÇIKIŞ
+HomeLevelText | 18 | HOME LV. 30
+Label | 22 | 657
+Value | 25 | 0
+Label | 29 | GOOGLE İLE GİRİŞ YAP
+Label | 25 | ODALAR
+GoogleBenefit | 18 | BULUT KAYDI • ÇEVRİMİÇİ SIRALAMA • BAŞKA CİHAZDA DEVAM
+Label | 22 | YUVA SV. 30
+CatName | 26 | LOKIŞ İÇİN SICAK BİR YUVA
+Label | 15 | AYARLAR
+EnergyLabelFront | 16 | ENERGY
+HungerLabelFront | 16 | HUNGER
+RoomProgressLabel | 19 | LIVING ROOM  •  0/10

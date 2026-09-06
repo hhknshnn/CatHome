@@ -1,0 +1,6 @@
+{
+  "$schema": "https://ugs-config-schemas.unity3d.com/v1/leaderboards.schema.json",
+  "Name": "cat-catch-all-time",
+  "SortOrder": "desc",
+  "UpdateType": "keepBest"
+}

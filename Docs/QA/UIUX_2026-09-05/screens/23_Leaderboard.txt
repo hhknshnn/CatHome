@@ -1,0 +1,48 @@
+Label | 28 | DAILY
+ThirstLabelFront | 16 | THIRST
+RankBadge | 14 | #1  •  GOLD PAW
+PlayerName | 20 | OPEN SPOT
+GoogleHint | 15 | GOOGLE CONNECTED
+RUN SCORES SUBMIT AUTOMATICALLY
+RunnerEnergyLabel | 17 | RUN 5/5  •  CATCH 5/5
+RankBadge | 14 | #2  •  SILVER PAW
+Label | 28 | CLOSE
+Rewards | 14 | DAILY  #1  200 COIN
+WEEKLY  #1  1000 COIN + 10 DIAMONDS
+TOP PLAYERS ALSO EARN PRIZES
+LeaderboardStatus | 15 | NO SCORES YET
+CatName | 22 | LOKIŞ
+LeaderboardEyebrow | 17 | WORLDWIDE COZY COMPETITION
+PercentageText | 14 | 0%
+Score | 14 | PLAY TO CLAIM
+PercentageText | 14 | 0%
+SelectedPeriod | 15 | DAILY — RESETS 00:00 UTC
+GlobalSummary | 14 | GLOBAL  •  0 PLAYERS
+Label | 28 | CAT CATCH
+Label | 28 | CAT RUNNER
+Label | 28 | REFRESH
+PlayerName | 20 | OPEN SPOT
+CatNamePrivacy | 14 | YOUR CAT'S NAME IS SHOWN
+NEVER YOUR EMAIL OR GOOGLE NAME
+Label | 28 | SHOP
+Value | 25 | 657
+SelectedGame | 28 | CAT RUNNER
+Score | 14 | PLAY TO CLAIM
+RewardTitle | 20 | PERIOD REWARDS
+PercentageText | 14 | 0%
+PlayerName | 20 | OPEN SPOT
+RankBadge | 14 | #3  •  BRONZE PAW
+Value | 25 | 24
+Label | 31 | GAMES
+HomeLevelText | 18 | HOME LV. 30
+LeaderboardTitle | 46 | LEADERBOARDS
+Value | 25 | 0
+Score | 14 | PLAY TO CLAIM
+Label | 28 | WEEKLY
+OwnRank | 19 | YOUR RANK  —     PLAY TO JOIN
+RowLabel | 17 | MORE GLOBAL RANKS WILL APPEAR HERE
+EnergyLabelFront | 16 | ENERGY
+HungerLabelFront | 16 | HUNGER
+RoomProgressLabel | 19 | LIVING ROOM  •  0/10
+Label | 28 | ALL-TIME
+CatNameTitle | 23 | YOUR CAT

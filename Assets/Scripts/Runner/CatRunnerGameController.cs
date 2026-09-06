@@ -616,7 +616,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private void RefreshWelcome()
     {
         if (welcomeBestScoreText != null)
-            welcomeBestScoreText.text = $"BEST SCORE   {BestScore:N0}";
+            welcomeBestScoreText.text = GameLanguageService.Format("games.best",BestScore.ToString("N0"));
         if (welcomeMissionsText != null)
             welcomeMissionsText.text = CatRunnerProgressService.GetDailyMissionSummary();
 
@@ -629,21 +629,23 @@ public sealed class CatRunnerGameController : MonoBehaviour
                 FindAnyObjectByType<CatRunnerLauncher>(FindObjectsInactive.Include);
             bool canReward = launcher != null && launcher.CanRequestRewardedEnergy();
             welcomeRewardedEnergyButton.gameObject.SetActive(!canStart && canReward);
+            if (welcomeStartButton != null)
+                welcomeStartButton.gameObject.SetActive(canStart || !canReward);
             welcomeRewardedEnergyButton.interactable = canReward;
         }
         if (welcomeEnergyText == null)
             return;
 
         if (RunnerEnergyService.IsUnlimited)
-            welcomeEnergyText.text = "UNLIMITED LIVES";
+            welcomeEnergyText.text = GameLanguageService.Text("games.unlimited");
         else if (canStart)
             welcomeEnergyText.text =
-                $"1 LIFE PER RUN   •   {RunnerEnergyService.CurrentEnergy}/{RunnerEnergyService.MaximumEnergy} READY";
+                GameLanguageService.Format("games.lives_ready",RunnerEnergyService.CurrentEnergy,RunnerEnergyService.MaximumEnergy);
         else
         {
             TimeSpan remaining = RunnerEnergyService.TimeUntilNextEnergy();
             int seconds = Mathf.Max(0, Mathf.CeilToInt((float)remaining.TotalSeconds));
-            welcomeEnergyText.text = $"NEXT LIFE   {seconds / 60:00}:{seconds % 60:00}";
+            welcomeEnergyText.text = GameLanguageService.Format("games.next_life",$"{seconds / 60:00}:{seconds % 60:00}");
         }
     }
 
@@ -785,13 +787,13 @@ public sealed class CatRunnerGameController : MonoBehaviour
         switch (tutorialStage)
         {
             case 0:
-                tutorialText.text = "DRAG LEFT OR RIGHT\nCHANGE LANES";
+                tutorialText.text = GameContentCopy.Text("Sağa veya sola sürükle\nŞerit değiştir", "Drag left or right\nChange lanes");
                 break;
             case 1:
-                tutorialText.text = "SWIPE UP\nJUMP OVER OBSTACLES";
+                tutorialText.text = GameContentCopy.Text("Yukarı kaydır\nEngellerin üzerinden atla", "Swipe up\nJump over obstacles");
                 break;
             default:
-                tutorialText.text = "SWIPE DOWN\nSLIDE • FAST-DROP IN AIR";
+                tutorialText.text = GameContentCopy.Text("Aşağı kaydır\nKayarak geç veya hızlı in", "Swipe down\nSlide or drop from a jump");
                 break;
         }
     }
@@ -843,6 +845,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         resultWasNewBest = score > previousBest;
         CatRunnerProgressService.SetPendingResult(latestResult, score);
         CatRunnerProgressService.RecordRunDistance(distance);
+        _ = CompetitionService.SubmitRunnerAsync(latestResult, comboScoreBonus, score);
         ProgressionService.RecordProgress(QuestType.PlayRunner);
         // Persist the recovery record before payout. Settlement happens on the
         // next frame, when EconomyService can atomically save both its processed
@@ -853,7 +856,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         RefreshDoubleCoinsButton();
 
         if (resultTitle != null)
-            resultTitle.text = "RUN COMPLETE!";
+            resultTitle.text = GameLanguageService.Text("runner.complete");
         if (resultMissionsText != null)
             resultMissionsText.text = CatRunnerProgressService.GetDailyMissionSummary();
         if (newBestBadge != null)
@@ -878,12 +881,12 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (!resultSettled)
         {
             if (resultTitle != null)
-                resultTitle.text = "REWARD RETRY NEEDED";
+                resultTitle.text = GameLanguageService.Text("games.reward_retry");
             Debug.LogWarning($"Cat Runner reward could not be settled: {settlement}", this);
         }
         else if (resultTitle != null)
         {
-            resultTitle.text = "RUN COMPLETE!";
+            resultTitle.text = GameLanguageService.Text("runner.complete");
         }
         CatHomeSaveSystem.SaveNow();
         RefreshRetryButton();
@@ -914,14 +917,10 @@ public sealed class CatRunnerGameController : MonoBehaviour
         int shownScore = Mathf.RoundToInt(score * amount);
         long shownBonus = (long)Math.Round(latestResult.BonusCoins * (double)amount);
         long shownTotal = (long)Math.Round(latestResult.TotalCoins * (double)amount);
-        resultDetails.text =
-            $"TIME   {FormatElapsed(latestResult.DurationSeconds)}      " +
-            $"STAGE   {GetCurtainNumber(latestResult.DurationSeconds)}\n" +
-            $"DISTANCE   {shownDistance} m      COINS   {shownCoins}\n" +
-            $"SCORE   {shownScore:N0}      BEST   {BestScore:N0}\n" +
-            $"MAX COMBO   x{maximumCombo}      HITS   " +
-            $"{latestResult.Collisions}/{MaximumCollisionHits}\n" +
-            $"HAPPY BONUS   +{shownBonus}      TOTAL   {shownTotal}";
+        var view=resultPanel!=null?resultPanel.GetComponent<MiniGameResultView>():null;
+        if(view!=null) view.Present(shownScore,shownTotal);
+        resultDetails.text=GameLanguageService.Format("runner.result_stats",FormatElapsed(latestResult.DurationSeconds),shownDistance,maximumCombo,latestResult.Collisions,BestScore.ToString("N0"),shownBonus);
+
     }
 
     private void CollectAndReturnHome()
@@ -952,7 +951,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (!RunnerEnergyService.TrySpendRunEnergy())
         {
             if (resultTitle != null)
-                resultTitle.text = "NO ENERGY";
+                resultTitle.text = GameLanguageService.Text("games.no_lives");
             resultActionLocked = false;
             RefreshRetryButton();
             return;
@@ -985,7 +984,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         }
 
         if (resultTitle != null)
-            resultTitle.text = "REWARD RETRY NEEDED";
+            resultTitle.text = GameLanguageService.Text("games.reward_retry");
         Debug.LogWarning($"Cat Runner reward could not be settled: {reward}", this);
         return false;
     }
@@ -1054,11 +1053,11 @@ public sealed class CatRunnerGameController : MonoBehaviour
             distanceLabel.text = Mathf.RoundToInt(distance) + " m";
         if (bonusLabel != null)
             bonusLabel.text =
-                $"STAGE {CurrentCurtainNumber}   •   HAPPY CAT +{CatRunnerSessionContext.CareBonusPercent}%";
+                GameContentCopy.Text($"Etap {CurrentCurtainNumber} · Mutluluk +%{CatRunnerSessionContext.CareBonusPercent}",$"Stage {CurrentCurtainNumber} · Happiness +{CatRunnerSessionContext.CareBonusPercent}%");
         if (chancesLabel != null)
-            chancesLabel.text = $"CHANCES  {ChancesRemaining}/{MaximumCollisionHits}";
+            chancesLabel.text = GameContentCopy.Text($"Hak {ChancesRemaining}/{MaximumCollisionHits}",$"Chances {ChancesRemaining}/{MaximumCollisionHits}");
         if (scoreLabel != null)
-            scoreLabel.text = $"SCORE  {CurrentScore:N0}";
+            scoreLabel.text = GameContentCopy.Text($"Skor {CurrentScore:N0}",$"Score {CurrentScore:N0}");
         if (comboLabel != null)
         {
             comboLabel.transform.parent.gameObject.SetActive(comboMultiplier > 1);
@@ -1127,14 +1126,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
             return;
 
         if (RunnerEnergyService.IsUnlimited)
-            label.text = "RUN AGAIN";
+            label.text = GameLanguageService.Text("runner.again");
         else if (canRetry)
-            label.text = $"RUN AGAIN  •  LIVES {RunnerEnergyService.CurrentEnergy}";
+            label.text = GameLanguageService.Format("runner.again_lives",RunnerEnergyService.CurrentEnergy);
         else
         {
             TimeSpan time = RunnerEnergyService.TimeUntilNextEnergy();
             int totalSeconds = Mathf.Max(0, Mathf.CeilToInt((float)time.TotalSeconds));
-            label.text = $"NEXT ENERGY  {totalSeconds / 60:00}:{totalSeconds % 60:00}";
+            label.text = GameLanguageService.Format("games.next_life",$"{totalSeconds / 60:00}:{totalSeconds % 60:00}");
         }
     }
 
@@ -1225,14 +1224,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
         SetButtonText(
             reducedMotionButton,
             CatRunnerProgressService.ReducedMotion
-                ? "REDUCED MOTION  ON"
-                : "REDUCED MOTION  OFF");
+                ? GameContentCopy.Text("Hareketi azalt · Açık","Reduced motion · On")
+                : GameContentCopy.Text("Hareketi azalt · Kapalı","Reduced motion · Off"));
         SetButtonText(
             soundButton,
-            CatRunnerProgressService.SoundEnabled ? "SOUND  ON" : "SOUND  OFF");
+            CatRunnerProgressService.SoundEnabled ? GameContentCopy.Text("Ses · Açık","Sound · On") : GameContentCopy.Text("Ses · Kapalı","Sound · Off"));
         SetButtonText(
             hapticsButton,
-            CatRunnerProgressService.HapticsEnabled ? "HAPTICS  ON" : "HAPTICS  OFF");
+            CatRunnerProgressService.HapticsEnabled ? GameContentCopy.Text("Titreşim · Açık","Haptics · On") : GameContentCopy.Text("Titreşim · Kapalı","Haptics · Off"));
     }
 
     private static void SetButtonText(Button button, string value)

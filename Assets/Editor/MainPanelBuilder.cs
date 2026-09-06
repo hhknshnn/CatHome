@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using U = PremiumUiElements;
 
 /// <summary>
 /// Idempotent Editor builder for the CP1 main-menu shell. It owns exactly one
@@ -21,7 +22,6 @@ using UnityEngine.UI;
 ///   MainPanelCanvas (Canvas overlay, sortingOrder 100 + MainPanelController)
 ///     Scrim               near-invisible full-screen outside-tap catcher
 ///     SafeArea            (SafeAreaRect)
-///       LightButton       top-right low-poly button, left of Shop
 ///       ShopButton        top-right low-poly button, left of the hamburger
 ///       MenuButton        top-right low-poly button (+ BadgeAnchor)
 ///       MenuList          drop-down list, pivot top-right, below the button
@@ -29,6 +29,7 @@ using UnityEngine.UI;
 ///         Row_REWARDS
 ///         Row_NOTIFICATIONS
 ///         Row_SETTINGS
+///         Row_MAIN MENU
 ///
 /// Running the menu item again reuses the existing "MainPanelCanvas" root: its
 /// children are cleared and rebuilt, so no duplicate Canvas, EventSystem,
@@ -48,14 +49,13 @@ public static class MainPanelBuilder
     // width ~22% and shrinks each row into a slim ~46-unit list item.
     private const float FallbackListWidth = 390f;
     private const float RowHeight = 68f;
-    private const float RowSpacing = 0f;
+    private const float RowSpacing = 16f;
     // Gap between the icon and the title inside each card's centered content group.
     private const float IconLabelGap = 18f;
     // Fixed footprint of the procedural section icon (authored in a centered space).
     private const float IconSize = 46f;
 
-    // Top-bar buttons (hamburger + shop). Both share one size, one top offset and
-    // one right margin so the shop button reads as a twin of the hamburger.
+    // Top-bar buttons (hamburger + room shop + cat shop) share one size and rhythm.
     private const float TopButtonWidth = 80f;
     private const float TopButtonHeight = 68f;
     private const float TopButtonTop = -22f;
@@ -63,13 +63,12 @@ public static class MainPanelBuilder
     // a little further from the screen corner and is comfortable to tap on mobile.
     private const float MenuButtonRightMargin = 44f;
     // Small, equal gap between the shop button and the hamburger.
-    private const float TopButtonGap = 14f;
+    private const float TopButtonGap = 16f;
     // Shop button is placed immediately left of the hamburger, right-aligned to it.
     private const float ShopButtonRightMargin =
         MenuButtonRightMargin + TopButtonWidth + TopButtonGap;
-    private const float LightButtonRightMargin =
-        ShopButtonRightMargin + TopButtonWidth + TopButtonGap;
-
+    private const float CatShopButtonRightMargin =
+        MenuButtonRightMargin + (TopButtonWidth + TopButtonGap) * 2f;
     private static readonly Color ScrimColor = new Color32(19, 30, 55, 215);
     private static readonly Color FrameOrange = new Color32(255, 105, 151, 255);
     private static readonly Color FrameShadow = PremiumUiStyle.Shadow;
@@ -93,12 +92,17 @@ public static class MainPanelBuilder
         new Color32(211, 240, 255, 255)
     };
 
-    private static readonly string[] RowIds = { "HOME STORE", "QUESTS", "CAT JOURNAL", "ROOMS", "SETTINGS" };
+    private static readonly string[] RowIds =
+    {
+        "HOME STORE", "QUESTS", "CAT JOURNAL", "ROOMS", "SETTINGS", "MAIN MENU"
+    };
 
     [MenuItem("Tools/Cat Home/Build Main Panel (CP1)")]
     public static void Build()
     {
-        Scene scene = SceneManager.GetActiveScene();
+        Scene scene = SceneManager.GetSceneByName("CatHome_UI");
+        if (!scene.IsValid() || !scene.isLoaded)
+            scene = SceneManager.GetActiveScene();
         EventSystem eventSystem = Object.FindAnyObjectByType<EventSystem>();
         if (eventSystem == null)
         {
@@ -164,8 +168,8 @@ public static class MainPanelBuilder
         // ----- Shop button (immediately left of the hamburger) -----
         ShopButtonParts shop = CreateShopButton(safeArea.transform);
 
-        // ----- Light level button (immediately left of Shop) -----
-        LightButtonParts light = CreateLightButton(safeArea.transform);
+        // ----- Cat shop button (occupies the old light-control slot) -----
+        CatShopButtonParts catShop = CreateCatShopButton(safeArea.transform);
 
         // ----- Compact drop-down list (below the button) -----
         ListParts list = CreateMenuList(safeArea.transform, font, out List<RowData> rowData);
@@ -179,9 +183,9 @@ public static class MainPanelBuilder
         Assign(serialized, "menuButton", menu.Button);
         Assign(serialized, "shopButtonGroup", shop.Group);
         Assign(serialized, "shopButton", shop.Button);
-        Assign(serialized, "lightButtonGroup", light.Group);
-        Assign(serialized, "lightButton", light.Button);
-        Assign(serialized, "lightButtonFace", light.FaceGraphic);
+        Assign(serialized, "catShopButtonGroup", catShop.Group);
+        Assign(serialized, "catShopButton", catShop.Button);
+        Assign(serialized, "catShopButtonIcon", catShop.Icon);
         Assign(serialized, "safeArea", safeAreaRect);
         Assign(serialized, "menuList", list.List);
         Assign(serialized, "menuListGroup", list.Group);
@@ -273,24 +277,26 @@ public static class MainPanelBuilder
         IconRect(face, "HandleTop", CreamBar, 17f, 3f, 0f, 16f);
 
         Button button = MakeButton(parts.Root, parts.FaceGraphic, parts.Face.GetComponent<RectTransform>());
+        parts.Root.SetActive(false); // General shop is available in the persistent bottom dock.
         return new ShopButtonParts(button, parts.Group);
     }
 
-    // ----- Player brightness button (twin of Shop, placed to its left) -----
-
-    private static LightButtonParts CreateLightButton(Transform parent)
+    private static CatShopButtonParts CreateCatShopButton(Transform parent)
     {
-        TopButtonParts parts = CreateTopButtonBase(parent, "LightButton", -LightButtonRightMargin);
-        Transform face = parts.Face.transform;
-
-        // Procedural cream bulb: octagonal globe, narrow neck and two base bars.
-        IconOctagon(face, "Bulb", CreamBar, 25f, 27f, 0f, 6f, 10f, 0f);
-        IconRect(face, "BulbNeck", CreamBar, 10f, 8f, 0f, -9f);
-        IconRect(face, "BulbBase1", CreamBar, 14f, 3f, 0f, -14f);
-        IconRect(face, "BulbBase2", CreamBar, 10f, 3f, 0f, -18f);
-
-        Button button = MakeButton(parts.Root, parts.FaceGraphic, parts.Face.GetComponent<RectTransform>());
-        return new LightButtonParts(button, parts.Group, parts.FaceGraphic);
+        var parts = CreateTopButtonBase(parent, "CatShopButton", 0);
+        var root = (RectTransform)parts.Root.transform;
+        root.anchorMin = root.anchorMax = new Vector2(0, 1); root.pivot = new Vector2(0, 1);
+        root.anchoredPosition = new Vector2(32, -22); root.sizeDelta = new Vector2(308, 86);
+        var iconRect = U.Rect("SelectedCatFace", parts.Face.transform); U.At(iconRect, -110, 0, 66, 66);
+        var icon = iconRect.gameObject.AddComponent<Image>(); icon.raycastTarget = false;
+        iconRect.gameObject.AddComponent<SelectedCatPortrait>().Refresh();
+        var font = FindFont();
+        var name = U.Label("CatName", parts.Face.transform, font, 28, PremiumUiStyle.Ink, 36, 15, 192, 38);
+        name.gameObject.AddComponent<CatIdentityLabel>();
+        var level = U.Label("HomeLevelText", parts.Face.transform, font, 18, PremiumUiStyle.Muted, 36, -19, 192, 30);
+        level.gameObject.AddComponent<HomeLevelBadgeLabel>();
+        var button = MakeButton(parts.Root, parts.FaceGraphic, (RectTransform)parts.Face.transform);
+        return new CatShopButtonParts(button, parts.Group, icon);
     }
 
     // Shared frame for a top-bar button: right-anchored root at the standard size,
@@ -316,24 +322,14 @@ public static class MainPanelBuilder
         LowPolyPanelGraphic faceGraphic = face.AddComponent<LowPolyPanelGraphic>();
         faceGraphic.color = FrameOrange;
         faceGraphic.raycastTarget = true;
-        PremiumUiStyle.ConfigureAccentSurface(
-            faceGraphic,
-            new Color32(255, 132, 178, 255),
-            FrameOrange,
-            34f,
-            5f);
-
-        LowPolyPanelGraphic rim = CreatePanel("Rim", face.transform, PremiumUiStyle.Champagne, 24f, 2f, false);
-        StretchWithOffsets(rim.rectTransform, 4f, 4f, -4f, -4f);
-        LowPolyPanelGraphic inner = CreatePanel("Inner", face.transform, new Color32(105, 218, 242, 255), 21f, 4f, false);
-        StretchWithOffsets(inner.rectTransform, 7f, 7f, -7f, -7f);
+        PremiumUiStyle.ConfigureLightSurface(faceGraphic, 25f, 2f);
 
         return new TopButtonParts(buttonRoot, group, face, faceGraphic);
     }
 
     private static void CreateBar(Transform parent, string name, Vector2 min, Vector2 max)
     {
-        Image bar = CreateImage(name, parent, CreamBar, false);
+        Image bar = CreateImage(name, parent, DarkBrownText, false);
         SetAnchors(bar.rectTransform, min, max);
     }
 
@@ -366,7 +362,7 @@ public static class MainPanelBuilder
         LowPolyPanelGraphic listRim = CreatePanel("ListRim", listRoot.transform, PremiumUiStyle.Champagne, 18f, 1.5f, false);
         IgnoreLayout(listRim.rectTransform);
         Stretch(listRim.rectTransform);
-        LowPolyPanelGraphic listFace = CreatePanel("ListFace", listRoot.transform, new Color32(247, 252, 255, 255), 15f, 4f, false);
+        LowPolyPanelGraphic listFace = CreatePanel("ListFace", listRoot.transform, PremiumUiStyle.Ivory, 15f, 4f, false);
         IgnoreLayout(listFace.rectTransform);
         StretchWithOffsets(listFace.rectTransform, 3f, 3f, -3f, -3f);
 
@@ -412,7 +408,7 @@ public static class MainPanelBuilder
         // divided by champagne hairlines rather than five unrelated buttons.
         LowPolyPanelGraphic frame = CreatePanel("Frame", rowRoot.transform, Color.clear, 8f, 1f, true);
         Stretch(frame.rectTransform);
-        Color cream = RowCreams[index % RowCreams.Length];
+        Color cream = PremiumUiStyle.Ivory;
         LowPolyPanelGraphic face = CreatePanel("Face", rowRoot.transform, cream, 7f, 1f, false);
         StretchWithOffsets(face.rectTransform, 2f, 2f, -2f, -2f);
         if (index < RowIds.Length - 1)
@@ -445,6 +441,8 @@ public static class MainPanelBuilder
         label.text = id;
         label.fontStyle = FontStyles.Bold;
         label.characterSpacing = 0.5f;
+        string key = id == "MAIN MENU" ? "menu.main_menu" : id == "HOME STORE" ? "title.shop" : id == "QUESTS" ? "menu.quests" : id == "CAT JOURNAL" ? "cat.title" : id == "ROOMS" ? "title.rooms" : id == "SETTINGS" ? "title.settings" : null;
+        if (key != null) GetOrAdd<LocalizedLabel>(label.gameObject).EditorConfigure(label,key);
 
         // Lets the controller pin the label to the shared title-area width (longest
         // title) so all four icons and titles align on the same x within their
@@ -514,6 +512,7 @@ public static class MainPanelBuilder
         switch (id)
         {
             case "HOME STORE": BuildRewardsIcon(t); break;
+            case "EDIT ROOM": BuildEditRoomIcon(t); break;
             case "QUESTS": BuildQuestsIcon(t); break;
             case "REWARDS": BuildRewardsIcon(t); break;
             case "CAT JOURNAL": BuildNotificationsIcon(t); break;
@@ -521,6 +520,7 @@ public static class MainPanelBuilder
             case "ROOMS": BuildRoomsIcon(t); break;
             case "NOTIFICATIONS": BuildNotificationsIcon(t); break;
             case "SETTINGS": BuildSettingsIcon(t); break;
+            case "MAIN MENU": BuildMainMenuIcon(t); break;
         }
     }
 
@@ -543,6 +543,17 @@ public static class MainPanelBuilder
             IconRect(t, "Check" + i, IconInk, 5f, 5f, -6f, y);
             IconRect(t, "Line" + i, IconInk, 10f, 2.6f, 4.5f, y);
         }
+    }
+
+    // Small room-edit tile: a cream chair silhouette with a diagonal mint pencil.
+    private static void BuildEditRoomIcon(Transform t)
+    {
+        IconBase(t);
+        IconRect(t, "ChairBack", IconLight, 20f, 14f, -2f, 4f);
+        IconRect(t, "ChairSeat", IconLight, 24f, 6f, -2f, -5f);
+        IconRect(t, "ChairLegL", IconInk, 3f, 9f, -9f, -10f);
+        IconRect(t, "ChairLegR", IconInk, 3f, 9f, 5f, -10f);
+        IconRect(t, "EditPencil", PremiumUiStyle.CandyMint, 5f, 27f, 10f, 3f, -35f);
     }
 
     // Gift box: cream box + lid, dark-brown ribbon and bow.
@@ -593,6 +604,20 @@ public static class MainPanelBuilder
         IconRect(t, "ToothSW", IconLight, 7f, 7f, -9.5f, -9.5f, 45f);
         IconOctagon(t, "GearBody", IconLight, 24f, 24f, 0f, 0f, 10f, 0f);
         IconOctagon(t, "Hub", IconInk, 9f, 9f, 0f, 0f, 4f, 0f);
+    }
+
+    // Home silhouette plus a small return arrow: distinct from ROOMS, which uses
+    // two coloured doorways to communicate room navigation.
+    private static void BuildMainMenuIcon(Transform t)
+    {
+        IconBase(t);
+        IconRect(t, "House", IconLight, 21f, 17f, 4f, -5f);
+        IconRect(t, "RoofLeft", IconLight, 16f, 5f, -1f, 5f, 36f);
+        IconRect(t, "RoofRight", IconLight, 16f, 5f, 9f, 5f, -36f);
+        IconRect(t, "Door", IconInk, 5f, 9f, 4f, -9f);
+        IconRect(t, "ArrowStem", PremiumUiStyle.Teal, 15f, 4f, -7f, 4f);
+        IconRect(t, "ArrowHeadA", PremiumUiStyle.Teal, 9f, 4f, -13f, 7f, -45f);
+        IconRect(t, "ArrowHeadB", PremiumUiStyle.Teal, 9f, 4f, -13f, 1f, 45f);
     }
 
     private static void IconRect(Transform parent, string name, Color color, float w, float h, float x, float y, float rotation = 0f)
@@ -707,6 +732,9 @@ public static class MainPanelBuilder
         RemoveDuplicateComponents<GraphicRaycaster>(root);
         RemoveDuplicateComponents<CanvasScaler>(root);
         RemoveDuplicateComponents<Canvas>(root);
+        BrightnessPanelView legacyBrightness = root.GetComponent<BrightnessPanelView>();
+        if (legacyBrightness != null)
+            Undo.DestroyObjectImmediate(legacyBrightness);
         return root;
     }
 
@@ -901,17 +929,17 @@ public static class MainPanelBuilder
         public CanvasGroup Group { get; }
     }
 
-    private readonly struct LightButtonParts
+    private readonly struct CatShopButtonParts
     {
-        public LightButtonParts(Button button, CanvasGroup group, Graphic faceGraphic)
+        public CatShopButtonParts(Button button, CanvasGroup group, Image icon)
         {
             Button = button;
             Group = group;
-            FaceGraphic = faceGraphic;
+            Icon = icon;
         }
         public Button Button { get; }
         public CanvasGroup Group { get; }
-        public Graphic FaceGraphic { get; }
+        public Image Icon { get; }
     }
 
     private readonly struct TopButtonParts

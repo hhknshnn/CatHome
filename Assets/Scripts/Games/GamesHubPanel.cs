@@ -13,13 +13,16 @@ public sealed class GamesHubPanel : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button runnerButton;
     [SerializeField] private Button catchButton;
+    [SerializeField] private Button leaderboardButton;
     [SerializeField] private TMP_Text runnerLivesText;
     [SerializeField] private TMP_Text catchLivesText;
     [SerializeField] private CatRunnerLauncher runnerLauncher;
     [SerializeField] private CatCatchLauncher catchLauncher;
+    [SerializeField] private LeaderboardPanel leaderboardPanel;
 
     private static GamesHubPanel activeInstance;
     private bool open;
+    private CatMovement movement;
 
     public static bool IsAnyOpen =>
         activeInstance != null && activeInstance.open;
@@ -31,18 +34,23 @@ public sealed class GamesHubPanel : MonoBehaviour
         Bind(GetComponent<Button>(), Hide);
         Bind(runnerButton, PlayRunner);
         Bind(catchButton, PlayCatch);
+        Bind(leaderboardButton, ShowLeaderboards);
         HideImmediate();
     }
 
     private void OnDestroy()
     {
+        if(movement!=null)movement.ReleaseInputBlock(this);
         if (activeInstance == this)
             activeInstance = null;
         Unbind(closeButton, Hide);
         Unbind(GetComponent<Button>(), Hide);
         Unbind(runnerButton, PlayRunner);
         Unbind(catchButton, PlayCatch);
+        Unbind(leaderboardButton, ShowLeaderboards);
     }
+
+    private void OnDisable() => HideImmediate();
 
     private void Update()
     {
@@ -54,6 +62,7 @@ public sealed class GamesHubPanel : MonoBehaviour
     public void Show()
     {
         open = true;
+        movement=FindAnyObjectByType<CatMovement>();if(movement!=null)movement.AcquireInputBlock(this);
         if (rootGroup != null)
         {
             rootGroup.alpha = 1f;
@@ -72,6 +81,7 @@ public sealed class GamesHubPanel : MonoBehaviour
     private void HideImmediate()
     {
         open = false;
+        if(movement!=null)movement.ReleaseInputBlock(this);
         if (rootGroup != null)
         {
             rootGroup.alpha = 0f;
@@ -94,6 +104,13 @@ public sealed class GamesHubPanel : MonoBehaviour
             catchLauncher.Launch();
     }
 
+    private void ShowLeaderboards()
+    {
+        HideImmediate();
+        if (leaderboardPanel != null)
+            leaderboardPanel.Show();
+    }
+
     private void RefreshLives()
     {
         RunnerEnergyService.Refresh();
@@ -101,14 +118,14 @@ public sealed class GamesHubPanel : MonoBehaviour
         if (runnerLivesText != null)
         {
             runnerLivesText.text = RunnerEnergyService.IsUnlimited
-                ? "LIVES  UNLIMITED"
-                : $"LIVES  {RunnerEnergyService.CurrentEnergy}/{RunnerEnergyService.MaximumEnergy}";
+                ? GameLanguageService.Text("games.unlimited")
+                : GameLanguageService.Format("games.life_count",RunnerEnergyService.CurrentEnergy,RunnerEnergyService.MaximumEnergy);
         }
         if (catchLivesText != null)
         {
             catchLivesText.text = CatchLivesService.IsUnlimited
-                ? "LIVES  UNLIMITED"
-                : $"LIVES  {CatchLivesService.CurrentLives}/{CatchLivesService.MaximumLives}";
+                ? GameLanguageService.Text("games.unlimited")
+                : GameLanguageService.Format("games.life_count",CatchLivesService.CurrentLives,CatchLivesService.MaximumLives);
         }
     }
 
@@ -135,7 +152,9 @@ public sealed class GamesHubPanel : MonoBehaviour
         TMP_Text runnerLives,
         TMP_Text catchLives,
         CatRunnerLauncher launcher,
-        CatCatchLauncher catchLaunch)
+        CatCatchLauncher catchLaunch,
+        Button rankings,
+        LeaderboardPanel rankingsPanel)
     {
         rootGroup = group;
         closeButton = close;
@@ -145,6 +164,8 @@ public sealed class GamesHubPanel : MonoBehaviour
         catchLivesText = catchLives;
         runnerLauncher = launcher;
         catchLauncher = catchLaunch;
+        leaderboardButton = rankings;
+        leaderboardPanel = rankingsPanel;
         HideImmediate();
     }
 #endif

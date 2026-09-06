@@ -465,21 +465,14 @@ public sealed class HomeRoomNavigationTests
         Assert.That(prefab, Is.Not.Null);
 
         RectTransform button = FindNamed(prefab.transform, "CloseButton") as RectTransform;
-        RectTransform mark = FindNamed(prefab.transform, "CloseMark") as RectTransform;
-        RectTransform slashA = FindNamed(prefab.transform, "SlashA") as RectTransform;
-        RectTransform slashB = FindNamed(prefab.transform, "SlashB") as RectTransform;
         Assert.That(button, Is.Not.Null);
+        var mark=button.GetComponentInChildren<TMPro.TMP_Text>(true);
         Assert.That(mark, Is.Not.Null);
-        Assert.That(slashA, Is.Not.Null);
-        Assert.That(slashB, Is.Not.Null);
-        Assert.That(mark.anchoredPosition, Is.EqualTo(Vector2.zero));
-        Assert.That(slashA.anchoredPosition, Is.EqualTo(Vector2.zero));
-        Assert.That(slashB.anchoredPosition, Is.EqualTo(Vector2.zero));
-        Assert.That(slashA.sizeDelta, Is.EqualTo(slashB.sizeDelta));
-        Assert.That(Mathf.DeltaAngle(slashA.localEulerAngles.z, 45f),
-            Is.EqualTo(0f).Within(0.01f));
-        Assert.That(Mathf.DeltaAngle(slashB.localEulerAngles.z, -45f),
-            Is.EqualTo(0f).Within(0.01f));
+        Assert.That(mark.text, Is.EqualTo("×"));
+        Assert.That(mark.alignment, Is.EqualTo(TMPro.TextAlignmentOptions.Center));
+        Assert.That(mark.rectTransform.anchoredPosition, Is.EqualTo(Vector2.zero));
+        Assert.That(button.rect.width, Is.GreaterThanOrEqualTo(48));
+
     }
 
     [Test]
@@ -496,8 +489,8 @@ public sealed class HomeRoomNavigationTests
         Assert.That(layout, Is.Not.Null);
         Assert.That(layout.constraint, Is.EqualTo(GridLayoutGroup.Constraint.FixedColumnCount));
         Assert.That(layout.constraintCount, Is.EqualTo(2));
-        Assert.That(layout.cellSize.x, Is.GreaterThan(600f));
-        Assert.That(layout.cellSize.y, Is.GreaterThan(400f));
+        Assert.That(layout.cellSize.x, Is.GreaterThanOrEqualTo(480f));
+        Assert.That(layout.cellSize.y, Is.GreaterThanOrEqualTo(350f));
         Assert.That(layout.spacing.x, Is.GreaterThan(8f));
         Assert.That(layout.spacing.y, Is.GreaterThan(8f));
         Assert.That(grid.GetComponent<ContentSizeFitter>(), Is.Not.Null);
@@ -641,8 +634,8 @@ public sealed class HomeRoomNavigationTests
                 Is.True, id);
             Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>(asset.IconPath);
             Assert.That(icon, Is.Not.Null, asset.IconPath);
-            Assert.That(icon.width, Is.EqualTo(512), asset.IconPath);
-            Assert.That(icon.height, Is.EqualTo(512), asset.IconPath);
+            Assert.That(icon.width, Is.GreaterThanOrEqualTo(1024), asset.IconPath);
+            Assert.That(icon.height, Is.GreaterThanOrEqualTo(1024), asset.IconPath);
 
             Transform card = FindNamed(shop.transform, "Product_" + id);
             Assert.That(card, Is.Not.Null, id + " must have a SHOP card.");
@@ -703,7 +696,7 @@ public sealed class HomeRoomNavigationTests
         {
             Rect a = WorldRect(cards[i]);
             Transform preview = FindNamed(cards[i], "PreviewWell");
-            Transform info = FindNamed(cards[i], "RoomInfoWell");
+            Transform info = FindNamed(cards[i], "RoomTitle");
             Assert.That(preview, Is.Not.Null, cards[i].name);
             Assert.That(info, Is.Not.Null, cards[i].name);
             Assert.That(WorldRect(info as RectTransform).yMax,

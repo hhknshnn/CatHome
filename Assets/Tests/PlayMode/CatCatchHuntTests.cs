@@ -74,14 +74,21 @@ public sealed class CatCatchHuntTests
     [UnityTest]
     public IEnumerator CatStaysOnTheFloorWhileHunting()
     {
+        // Resolve the arena's OWN floor, never a GameObject called "Floor"
+        // somewhere in the session. The Cat Catch scene loads additively on top
+        // of whatever is already open, `CatCatchRoot` is parked at world
+        // (40, 1000, 0) so it never sits inside the home, and the Living Room
+        // authors a floor object called exactly "Floor" at y 0. A global
+        // GameObject.Find therefore measured the wrong floor whenever the Living
+        // Room happened to be the room left loaded by the previous fixture, and
+        // the test failed with "the cat flew above the arena" at y 1000.47 -
+        // which is simply the cat standing correctly on the parked arena.
         float floorTop = float.NegativeInfinity;
-        GameObject floor = GameObject.Find("Floor");
-        if (floor != null)
-        {
-            Collider collider = floor.GetComponent<Collider>();
-            if (collider != null)
-                floorTop = collider.bounds.max.y;
-        }
+        Transform floor = player.transform.root.Find("CatchArena/Floor");
+        Assert.That(floor, Is.Not.Null, "The Cat Catch arena has no floor.");
+        Collider collider = floor.GetComponent<Collider>();
+        if (collider != null)
+            floorTop = collider.bounds.max.y;
 
         float until = Time.time + 5f;
         float lowest = float.PositiveInfinity;

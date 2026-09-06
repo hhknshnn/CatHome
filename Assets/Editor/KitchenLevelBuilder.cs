@@ -21,13 +21,14 @@ public static class KitchenLevelBuilder
     private const string SharedVolumePath =
         "Assets/Art/PremiumWorld/CatHomeRoom_PremiumVolume.asset";
 
-    private static readonly Color Cream = new Color32(255, 247, 224, 255);
-    private static readonly Color Aqua = new Color32(67, 220, 211, 255);
-    private static readonly Color Mint = new Color32(126, 235, 190, 255);
-    private static readonly Color Coral = new Color32(255, 120, 130, 255);
-    private static readonly Color Peach = new Color32(255, 177, 120, 255);
-    private static readonly Color Lilac = new Color32(188, 143, 235, 255);
-    private static readonly Color Lemon = new Color32(255, 222, 94, 255);
+    private static readonly Color Cream = new Color32(255, 250, 236, 255);
+    private static readonly Color Pearl = new Color32(255, 253, 246, 255);
+    private static readonly Color Aqua = new Color32(145, 231, 222, 255);
+    private static readonly Color Mint = new Color32(184, 242, 211, 255);
+    private static readonly Color Coral = new Color32(255, 181, 176, 255);
+    private static readonly Color Peach = new Color32(255, 214, 184, 255);
+    private static readonly Color Lilac = new Color32(218, 195, 243, 255);
+    private static readonly Color Lemon = new Color32(255, 232, 139, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(155, 232, 255, 255);
     private const float LivingCameraFieldOfView = 47f;
@@ -112,6 +113,7 @@ public static class KitchenLevelBuilder
         Transform setup = CreateSceneRoot(kitchen, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(kitchen, HomeRoomService.KitchenId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -161,6 +163,7 @@ public static class KitchenLevelBuilder
         return new Dictionary<string, Material>(StringComparer.Ordinal)
         {
             ["Cream"] = EnsureMaterial("Kitchen_Cream", Cream, .03f, .54f),
+            ["Pearl"] = EnsureMaterial("Kitchen_Pearl", Pearl, .04f, .72f),
             ["Aqua"] = EnsureMaterial("Kitchen_Aqua", Aqua, .02f, .62f),
             ["Mint"] = EnsureMaterial("Kitchen_Mint", Mint, .02f, .58f),
             ["Coral"] = EnsureMaterial("Kitchen_Coral", Coral, .02f, .58f),
@@ -170,7 +173,11 @@ public static class KitchenLevelBuilder
             ["Ink"] = EnsureMaterial("Kitchen_Ink", Ink, .05f, .36f),
             ["Sky"] = EnsureMaterial("Kitchen_Sky", Sky, .08f, .74f),
             ["Gold"] = EnsureMaterial(
-                "Kitchen_Gold", new Color32(255, 191, 57, 255), .58f, .75f)
+                "Kitchen_Gold", new Color32(244, 190, 73, 255), .52f, .76f),
+            ["AquaAccent"] = EnsureMaterial(
+                "Kitchen_AquaAccent", new Color32(49, 205, 195, 255), .04f, .67f),
+            ["CoralAccent"] = EnsureMaterial(
+                "Kitchen_CoralAccent", new Color32(255, 121, 143, 255), .03f, .64f)
         };
     }
 
@@ -222,9 +229,9 @@ public static class KitchenLevelBuilder
                     tiles,
                     HomeRoomShellMetrics.FloorTilePosition(x, z),
                     new Vector3(
-                        HomeRoomShellMetrics.FloorTileSize,
+                        HomeRoomShellMetrics.FloorTileSize - .04f,
                         HomeRoomShellMetrics.FloorTileThickness,
-                        HomeRoomShellMetrics.FloorTileSize),
+                        HomeRoomShellMetrics.FloorTileSize - .04f),
                     material,
                     false);
                 tile.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
@@ -249,35 +256,76 @@ public static class KitchenLevelBuilder
             materials["Cream"], true);
         CreateBlock("RightWall_CoralWainscot", walls,
             HomeRoomShellMetrics.RightWainscotPosition,
-            HomeRoomShellMetrics.SideWainscotScale, materials["Coral"], false);
+            HomeRoomShellMetrics.SideWainscotScale, materials["Peach"], false);
 
         CreateBlock("BackBaseboard", walls,
             HomeRoomShellMetrics.BackBaseboardPosition,
-            HomeRoomShellMetrics.BackBaseboardScale, materials["Gold"], false);
+            HomeRoomShellMetrics.BackBaseboardScale, materials["Pearl"], false);
         CreateBlock("LeftBaseboard", walls,
             HomeRoomShellMetrics.LeftBaseboardPosition,
-            HomeRoomShellMetrics.SideBaseboardScale, materials["Gold"], false);
+            HomeRoomShellMetrics.SideBaseboardScale, materials["Pearl"], false);
         CreateBlock("RightBaseboard", walls,
             HomeRoomShellMetrics.RightBaseboardPosition,
-            HomeRoomShellMetrics.SideBaseboardScale, materials["Gold"], false);
+            HomeRoomShellMetrics.SideBaseboardScale, materials["Pearl"], false);
 
         Transform ribbon = CreateChild(walls, "Candy Backsplash Ribbon");
+        CreateBlock("PearlPictureRail", ribbon,
+            new Vector3(0f, RibbonCenterY,
+                HomeRoomShellMetrics.BackWallDecorZ(.13f)),
+            new Vector3(7.66f, .16f, .09f), materials["Pearl"], false);
+        CreateBlock("GoldRailInset", ribbon,
+            new Vector3(0f, RibbonCenterY - .075f,
+                HomeRoomShellMetrics.BackWallDecorZ(.19f)),
+            new Vector3(7.48f, .035f, .035f), materials["Gold"], false);
         for (int i = 0; i < RibbonTileCount; i++)
         {
-            Material material = i % 4 == 0 ? materials["Coral"]
-                : i % 4 == 1 ? materials["Lemon"]
-                : i % 4 == 2 ? materials["Lilac"] : materials["Mint"];
+            Material material = i % 4 == 0 ? materials["CoralAccent"]
+                : i % 4 == 1 ? materials["Gold"]
+                : i % 4 == 2 ? materials["Lilac"] : materials["AquaAccent"];
             CreateBlock("RibbonTile_" + (i + 1).ToString("00"), ribbon,
                 new Vector3(
                     RibbonStartX + i * RibbonStepX,
                     RibbonCenterY,
-                    HomeRoomShellMetrics.BackWallDecorZ(.15f)),
-                new Vector3(.38f, .3f, .08f), material, false);
+                    HomeRoomShellMetrics.BackWallDecorZ(.2f)),
+                new Vector3(.25f, .1f, .035f), material, false);
         }
 
+        BuildFloorInlay(parent, materials);
+        BuildCrownMoulding(walls, materials);
         BuildDoorway(walls, materials);
         BuildSunriseWindow(walls, materials);
         BuildPawWallMedallion(walls, materials);
+    }
+
+    private static void BuildFloorInlay(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform inlay = CreateChild(parent, "Sunshine Floor Inlay");
+        const float y = .036f;
+        CreateBlock("BackGoldInlay", inlay, new Vector3(0f, y, 2.68f),
+            new Vector3(7.48f, .018f, .045f), materials["Gold"], false);
+        CreateBlock("LeftGoldInlay", inlay, new Vector3(-3.68f, y, 0f),
+            new Vector3(.045f, .018f, 5.42f), materials["Gold"], false);
+        CreateBlock("RightGoldInlay", inlay, new Vector3(3.68f, y, 0f),
+            new Vector3(.045f, .018f, 5.42f), materials["Gold"], false);
+    }
+
+    private static void BuildCrownMoulding(
+        Transform parent, IReadOnlyDictionary<string, Material> materials)
+    {
+        Transform crown = CreateChild(parent, "Kitchen Crown Moulding");
+        CreateBlock("BackPearlCrown", crown, new Vector3(0f, 2.82f, 2.68f),
+            new Vector3(7.72f, .16f, .18f), materials["Pearl"], false);
+        CreateBlock("BackGoldInset", crown, new Vector3(0f, 2.73f, 2.57f),
+            new Vector3(7.46f, .035f, .04f), materials["Gold"], false);
+        CreateBlock("LeftPearlCrown", crown, new Vector3(-3.68f, 2.82f, 0f),
+            new Vector3(.18f, .16f, 5.7f), materials["Pearl"], false);
+        CreateBlock("RightPearlCrown", crown, new Vector3(3.68f, 2.82f, 0f),
+            new Vector3(.18f, .16f, 5.7f), materials["Pearl"], false);
+        CreateBlock("LeftGoldInset", crown, new Vector3(-3.57f, 2.73f, 0f),
+            new Vector3(.04f, .035f, 5.45f), materials["Gold"], false);
+        CreateBlock("RightGoldInset", crown, new Vector3(3.57f, 2.73f, 0f),
+            new Vector3(.04f, .035f, 5.45f), materials["Gold"], false);
     }
 
     private static void BuildDoorway(
@@ -287,19 +335,25 @@ public static class KitchenLevelBuilder
         const float x = DoorwayCenterX;
         CreateBlock("DoorPanel", door,
             new Vector3(x, .95f, HomeRoomShellMetrics.BackWallDecorZ(.2f)),
-            new Vector3(1.45f, 1.9f, .13f), materials["Mint"], false);
+            new Vector3(1.48f, 1.92f, .13f), materials["Pearl"], false);
         CreateBlock("DoorInset", door,
             new Vector3(x, .99f, HomeRoomShellMetrics.BackWallDecorZ(.3f)),
-            new Vector3(1.15f, 1.64f, .08f), materials["Cream"], false);
+            new Vector3(1.15f, 1.64f, .08f), materials["Peach"], false);
+        CreateBlock("DoorInnerPearl", door,
+            new Vector3(x, 1f, HomeRoomShellMetrics.BackWallDecorZ(.37f)),
+            new Vector3(.93f, 1.42f, .035f), materials["Pearl"], false);
         CreateBlock("DoorTop", door,
             new Vector3(x, 1.98f, HomeRoomShellMetrics.BackWallDecorZ(.27f)),
-            new Vector3(1.72f, .24f, .24f), materials["Aqua"], false);
+            new Vector3(1.72f, .24f, .24f), materials["AquaAccent"], false);
         CreateBlock("DoorLeft", door,
             new Vector3(x - .77f, 1.03f, HomeRoomShellMetrics.BackWallDecorZ(.27f)),
-            new Vector3(.24f, 2.06f, .24f), materials["Aqua"], false);
+            new Vector3(.24f, 2.06f, .24f), materials["AquaAccent"], false);
         CreateBlock("DoorRight", door,
             new Vector3(x + .77f, 1.03f, HomeRoomShellMetrics.BackWallDecorZ(.27f)),
-            new Vector3(.24f, 2.06f, .24f), materials["Aqua"], false);
+            new Vector3(.24f, 2.06f, .24f), materials["AquaAccent"], false);
+        CreateBlock("DoorGoldHeader", door,
+            new Vector3(x, 2.06f, HomeRoomShellMetrics.BackWallDecorZ(.41f)),
+            new Vector3(.58f, .055f, .035f), materials["Gold"], false);
         CreateSphere("DoorKnob", door,
             new Vector3(x - .48f, .89f, HomeRoomShellMetrics.BackWallDecorZ(.43f)),
             Vector3.one * .13f, materials["Gold"], false);
@@ -313,19 +367,40 @@ public static class KitchenLevelBuilder
         const float y = WindowCenterY;
         CreateBlock("WindowFrame", window,
             new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.2f)),
-            new Vector3(2f, 1.35f, .15f), materials["Coral"], false);
+            new Vector3(2.18f, 1.52f, .16f), materials["Pearl"], false);
+        CreateBlock("WindowGoldInset", window,
+            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.28f)),
+            new Vector3(2.02f, 1.36f, .08f), materials["Gold"], false);
         CreateBlock("SkyGlass", window,
-            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.3f)),
-            new Vector3(1.68f, 1.01f, .08f), materials["Sky"], false);
+            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.36f)),
+            new Vector3(1.82f, 1.16f, .06f), materials["Sky"], false);
         CreateBlock("WindowVertical", window,
-            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.38f)),
-            new Vector3(.11f, 1.03f, .08f), materials["Cream"], false);
+            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.43f)),
+            new Vector3(.09f, 1.18f, .055f), materials["Pearl"], false);
         CreateBlock("WindowHorizontal", window,
-            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.39f)),
-            new Vector3(1.7f, .11f, .08f), materials["Cream"], false);
+            new Vector3(x, y, HomeRoomShellMetrics.BackWallDecorZ(.44f)),
+            new Vector3(1.84f, .09f, .055f), materials["Pearl"], false);
         CreateSphere("Sun", window,
-            new Vector3(x + .46f, y + .29f, HomeRoomShellMetrics.BackWallDecorZ(.45f)),
-            Vector3.one * .2f, materials["Lemon"], false);
+            new Vector3(x + .48f, y + .3f, HomeRoomShellMetrics.BackWallDecorZ(.49f)),
+            Vector3.one * .19f, materials["Lemon"], false);
+        CreateSphere("CloudLeft", window,
+            new Vector3(x - .48f, y + .22f, HomeRoomShellMetrics.BackWallDecorZ(.5f)),
+            new Vector3(.28f, .12f, .05f), materials["Pearl"], false);
+        CreateSphere("CloudRight", window,
+            new Vector3(x - .22f, y + .2f, HomeRoomShellMetrics.BackWallDecorZ(.5f)),
+            new Vector3(.22f, .1f, .05f), materials["Pearl"], false);
+        CreateSphere("MintHill", window,
+            new Vector3(x - .42f, y - .48f, HomeRoomShellMetrics.BackWallDecorZ(.49f)),
+            new Vector3(.72f, .23f, .05f), materials["Mint"], false);
+        CreateSphere("PeachHill", window,
+            new Vector3(x + .42f, y - .5f, HomeRoomShellMetrics.BackWallDecorZ(.5f)),
+            new Vector3(.72f, .2f, .05f), materials["Peach"], false);
+        CreateBlock("PearlSill", window,
+            new Vector3(x, y - .8f, HomeRoomShellMetrics.BackWallDecorZ(.34f)),
+            new Vector3(2.35f, .13f, .28f), materials["Pearl"], false);
+        CreateBlock("GoldSillInset", window,
+            new Vector3(x, y - .72f, HomeRoomShellMetrics.BackWallDecorZ(.48f)),
+            new Vector3(2.02f, .035f, .035f), materials["Gold"], false);
     }
 
     private static void BuildPawWallMedallion(
@@ -334,9 +409,15 @@ public static class KitchenLevelBuilder
         Transform paw = CreateChild(parent, "Kitchen Paw Medallion");
         const float x = MedallionCenterX;
         const float y = MedallionCenterY;
-        float z = HomeRoomShellMetrics.BackWallDecorZ(.23f);
+        float z = HomeRoomShellMetrics.BackWallDecorZ(.45f);
+        CreateCylinder("MedallionGoldRim", paw, new Vector3(x, y, z + .14f),
+            Quaternion.Euler(90f, 0f, 0f), new Vector3(.95f, .035f, .95f),
+            materials["Gold"], false);
+        CreateCylinder("MedallionPearlFace", paw, new Vector3(x, y, z + .08f),
+            Quaternion.Euler(90f, 0f, 0f), new Vector3(.79f, .03f, .79f),
+            materials["Pearl"], false);
         CreateSphere("PawPad", paw, new Vector3(x, y, z),
-            new Vector3(.28f, .23f, .08f), materials["Lilac"], false);
+            new Vector3(.28f, .23f, .06f), materials["Lilac"], false);
         Vector3[] toes =
         {
             new Vector3(x - .24f, y + .26f, z), new Vector3(x - .07f, y + .38f, z),
@@ -345,7 +426,7 @@ public static class KitchenLevelBuilder
         for (int i = 0; i < toes.Length; i++)
         {
             CreateSphere("PawToe_" + (i + 1), paw, toes[i],
-                new Vector3(.1f, .11f, .07f), materials["Coral"], false);
+                new Vector3(.1f, .11f, .055f), materials["CoralAccent"], false);
         }
     }
 
@@ -373,13 +454,15 @@ public static class KitchenLevelBuilder
         Light key = keyObject.GetComponent<Light>();
         key.type = LightType.Directional;
         key.color = new Color32(255, 246, 218, 255);
-        key.intensity = 1.02f;
+        key.intensity = .9f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .52f;
+        key.shadowStrength = .58f;
 
         BuildFillLight(parent, "Aqua Fill", new Vector3(-3.4f, 2.9f, -1.5f),
-            new Color32(116, 244, 233, 255), .82f, 8.5f);
-        BuildFillLight(parent, "Peach Fill", new Vector3(3.5f, 2.25f, .4f),
-            new Color32(255, 167, 135, 255), .54f, 7.5f);
+            new Color32(116, 244, 233, 255), .72f, 8.5f);
+        BuildFillLight(parent, "Peach Fill", new Vector3(3.7f, 3.1f, -.8f),
+            new Color32(255, 179, 151, 255), .4f, 7f);
 
         VolumeProfile profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(SharedVolumePath);
         if (profile != null)
@@ -577,6 +660,21 @@ public static class KitchenLevelBuilder
         if (!collider)
             UnityEngine.Object.DestroyImmediate(sphere.GetComponent<Collider>());
         return sphere;
+    }
+
+    private static GameObject CreateCylinder(string name, Transform parent, Vector3 position,
+        Quaternion rotation, Vector3 scale, Material material, bool collider)
+    {
+        GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        cylinder.name = name;
+        cylinder.transform.SetParent(parent, false);
+        cylinder.transform.localPosition = position;
+        cylinder.transform.localRotation = rotation;
+        cylinder.transform.localScale = scale;
+        cylinder.GetComponent<Renderer>().sharedMaterial = material;
+        if (!collider)
+            UnityEngine.Object.DestroyImmediate(cylinder.GetComponent<Collider>());
+        return cylinder;
     }
 
     private static Transform CreateSceneRoot(Scene scene, string name)

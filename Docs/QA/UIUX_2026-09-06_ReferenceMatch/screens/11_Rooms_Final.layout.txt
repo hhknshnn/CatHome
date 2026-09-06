@@ -1,0 +1,6 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+RoomCard_bathroom-01 (x:1202.00, y:532.08, width:447.04, height:320.32)
+RoomCard_bedroom-01 (x:1202.00, y:192.40, width:447.04, height:320.32)
+CloseButton (x:1629.68, y:875.28, width:51.04, height:51.04)
+RoomCard_kitchen-01 (x:733.84, y:192.40, width:447.04, height:320.32)
+RoomCard_living-room-01 (x:733.84, y:532.08, width:447.04, height:320.32)

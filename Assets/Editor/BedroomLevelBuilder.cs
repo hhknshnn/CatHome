@@ -21,13 +21,13 @@ public static class BedroomLevelBuilder
     private const string SharedVolumePath =
         "Assets/Art/PremiumWorld/CatHomeRoom_PremiumVolume.asset";
 
-    private static readonly Color Cream = new Color32(255, 247, 224, 255);
-    private static readonly Color Aqua = new Color32(67, 220, 211, 255);
-    private static readonly Color Mint = new Color32(126, 235, 190, 255);
-    private static readonly Color Coral = new Color32(255, 120, 130, 255);
-    private static readonly Color Peach = new Color32(255, 177, 120, 255);
-    private static readonly Color Lilac = new Color32(188, 143, 235, 255);
-    private static readonly Color Lemon = new Color32(255, 222, 94, 255);
+    private static readonly Color Cream = new Color32(255, 250, 236, 255);
+    private static readonly Color Aqua = new Color32(145, 231, 222, 255);
+    private static readonly Color Mint = new Color32(184, 242, 211, 255);
+    private static readonly Color Coral = new Color32(255, 181, 176, 255);
+    private static readonly Color Peach = new Color32(255, 214, 184, 255);
+    private static readonly Color Lilac = new Color32(218, 195, 243, 255);
+    private static readonly Color Lemon = new Color32(255, 232, 139, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(155, 232, 255, 255);
     private const float LivingCameraFieldOfView = 47f;
@@ -112,6 +112,7 @@ public static class BedroomLevelBuilder
         Transform setup = CreateSceneRoot(bedroom, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(bedroom, HomeRoomService.BedroomId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -389,6 +390,7 @@ public static class BedroomLevelBuilder
         key.color = new Color32(255, 246, 218, 255);
         key.intensity = 1.02f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .52f;
 
         BuildFillLight(parent, "Aqua Fill", new Vector3(-3.4f, 2.9f, -1.5f),
             new Color32(116, 244, 233, 255), .9f, 8.5f);

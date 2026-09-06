@@ -1,0 +1,68 @@
+Description | 20 | A sculptural indoor plant for softening a bare corner.
+SectionTitle | 1 | LIVING ROOM FURNITURE & DECOR
+ThirstLabelFront | 16 | THIRST
+ProductTitle | 31 | CLASSIC ARMCHAIR
+ProductTitle | 31 | GAME CONSOLE SET
+Description | 20 | A modern game console with a classic controller for the living-room play corner.
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+Feedback | 16 | READING 0/6  •  MEDIA 0/4  •  NEXT FLOOR LAMP  •  FREE TEST
+SpecialPrice | 21 | FREE TEST
+Description | 20 | Ten colorful books arranged across all three shelves. Drag the set directly onto the bookshelf.
+Category | 15 | READING  •  FLOOR
+ActionLabel | 19 | GET
+Description | 20 | A clean modern television that can only be installed on the TV unit.
+ActionLabel | 19 | GET
+Description | 20 | A bold framed print that brings color to an empty wall.
+ProductTitle | 31 | MODERN TELEVISION
+PercentageText | 14 | 0%
+OwnedCount | 17 | 0 OF 10  •  COLLECTED
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+HomeLevelText | 18 | HOME LV. 30
+Category | 15 | READING  •  WALL
+ActionLabel | 19 | GET
+Category | 15 | READING  •  WALL
+SpecialPrice | 21 | FREE TEST
+PercentageText | 14 | 0%
+Description | 20 | An empty tall bookshelf. Place it first, then add the colorful book set.
+Label | 23 | HOME
+ActionLabel | 19 | GET
+Description | 20 | A comfortable reading chair for an open corner near a lamp.
+Description | 20 | A wide low furniture unit designed to support the television.
+Label | 23 | ROOM
+SpecialPrice | 21 | FREE TEST
+ProductTitle | 31 | SPEAKER SYSTEM
+Category | 15 | READING  •  BOOKSHELF
+ProductTitle | 31 | MODERN PAINTING
+SpecialPrice | 21 | FREE TEST
+Description | 20 | A stereo main unit with two matching speakers for a fuller living-room sound setup.
+Intro | 20 | Build a happy cat, a personal room and a growing home.
+ActionLabel | 19 | GET
+ActionLabel | 19 | GET
+Category | 15 | MEDIA  •  FLOOR
+Category | 15 | MEDIA  •  FLOOR
+PercentageText | 14 | 0%
+ProductTitle | 31 | TV UNIT
+SpecialPrice | 21 | FREE TEST
+Subtitle | 16 | MAKE EVERY ROOM YOUR CAT'S FAVORITE PLACE
+Description | 20 | A warm floor lamp that fits beside a sofa, bed or reading corner.
+SpecialPrice | 21 | FREE TEST
+ActionLabel | 19 | GET
+SpecialPrice | 21 | FREE TEST
+SpecialPrice | 21 | FREE TEST
+CollectionLabel | 11 | COLLECTION PROGRESS
+Label | 23 | CAT
+Balance | 26 | 657
+ProductTitle | 31 | COLORFUL BOOK SET
+ProductTitle | 31 | TALL HOUSEPLANT
+Category | 15 | READING  •  FLOOR
+Category | 15 | MEDIA  •  TV UNIT
+Title | 48 | HOME STORE
+Category | 15 | READING  •  FLOOR
+EnergyLabelFront | 16 | ENERGY
+HungerLabelFront | 16 | HUNGER
+Category | 15 | MEDIA  •  WALL
+ProductTitle | 31 | TALL BOOKSHELF
+ProductTitle | 31 | FLOOR LAMP
+ActionLabel | 19 | GET

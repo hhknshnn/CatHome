@@ -31,14 +31,18 @@ public sealed class PremiumVisualInvariantTests
     }
 
     [Test]
-    public void PremiumPalette_RemainsBrightAndColourful()
+    public void PremiumPalette_KeepsLightSurfacesAndReadableText()
     {
-        AssertCandyColour(PremiumUiStyle.CandySky, "CandySky");
-        AssertCandyColour(PremiumUiStyle.CandyAqua, "CandyAqua");
-        AssertCandyColour(PremiumUiStyle.CandyMint, "CandyMint");
-        AssertCandyColour(PremiumUiStyle.CandyPink, "CandyPink");
-        AssertCandyColour(PremiumUiStyle.CandyLemon, "CandyLemon");
-        AssertCandyColour(PremiumUiStyle.CandyGrape, "CandyGrape");
+        Assert.That(Luminance(PremiumUiStyle.Ivory),Is.GreaterThan(.8f));
+        Assert.That(Luminance(PremiumUiStyle.Mint),Is.GreaterThan(.7f));
+        foreach(var surface in new[]{PremiumUiStyle.Ivory,PremiumUiStyle.Mint,PremiumUiStyle.Coral})
+            Assert.That((Luminance(surface)+.05f)/(Luminance(PremiumUiStyle.Ink)+.05f),Is.GreaterThanOrEqualTo(4.5f));
+        Assert.That(1.05f/(Luminance(PremiumUiStyle.Teal)+.05f),Is.GreaterThanOrEqualTo(3f));
+    }
+    private static float Luminance(Color color)
+    {
+        Color linear=color.linear;
+        return .2126f*linear.r+.7152f*linear.g+.0722f*linear.b;
     }
 
     [Test]

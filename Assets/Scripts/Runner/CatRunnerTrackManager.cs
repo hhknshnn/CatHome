@@ -154,7 +154,11 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         // appearing to ride forward with the scrolling floor.
         ScrollObjects(runnerDistance * ObjectApproachSpeedMultiplier);
 
-        int scheduledCoins = CatRunnerGameController.GetScheduledCoinCount(game.ElapsedSeconds);
+        // TrackManager runs before CatRunnerGameController (execution order -50).
+        // Include the current frame's delta so the pool reaches the same schedule the
+        // controller will expose after its Update, even during low-FPS or accelerated QA.
+        int scheduledCoins = CatRunnerGameController.GetScheduledCoinCount(
+            game.ElapsedSeconds + Time.deltaTime);
         while (spawnedCoins < scheduledCoins)
         {
             SpawnCoinPickup();

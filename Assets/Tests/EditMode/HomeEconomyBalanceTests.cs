@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CatHome.Economy;
 using NUnit.Framework;
 
 /// <summary>
@@ -89,6 +90,39 @@ public sealed class HomeEconomyBalanceTests
             Assert.That(rebatePercent, Is.InRange(3d, 5d),
                 RoomIds[i] + " completion reward is out of the intended rebate band.");
             Assert.That(milestone.BondXp, Is.EqualTo(15L), RoomIds[i]);
+        }
+    }
+
+    [Test]
+    public void NextRoomGoal_UsesCanonicalOrderAndReportsOnlyTheWalletShortfall()
+    {
+        HomeProgressionService.ApplySavedState(HomeProgressionSaveState.CreateDefault());
+        EconomyService.ApplyLegacyBalances(200L, 0L);
+        HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
+        try
+        {
+            Assert.That(HomeStoreService.TryGetNextRoomPurchaseGoal(
+                HomeRoomService.LivingRoomId,
+                out HomeStorePurchaseGoal first), Is.True);
+            Assert.That(first.Product.Id, Is.EqualTo(HomeStoreService.FloorLampId));
+            Assert.That(first.Product.CoinPrice, Is.EqualTo(500L));
+            Assert.That(first.CoinBalance, Is.EqualTo(200L));
+            Assert.That(first.MissingCoins, Is.EqualTo(300L));
+            Assert.That(first.CanAfford, Is.False);
+
+            EconomyService.AddCurrency(CurrencyType.Coin, 300L, EconomySource.Debug);
+            Assert.That(HomeStoreService.TryGetNextRoomPurchaseGoal(
+                HomeRoomService.LivingRoomId,
+                out HomeStorePurchaseGoal ready), Is.True);
+            Assert.That(ready.Product.Id, Is.EqualTo(HomeStoreService.FloorLampId));
+            Assert.That(ready.MissingCoins, Is.Zero);
+            Assert.That(ready.CanAfford, Is.True);
+        }
+        finally
+        {
+            HomeProgressionService.ApplySavedState(HomeProgressionSaveState.CreateDefault());
+            EconomyService.ApplyLegacyBalances(0L, 0L);
+            HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
         }
     }
 

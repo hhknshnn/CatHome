@@ -1,0 +1,2 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+CloseButton (x:1502.00, y:850.00, width:60.00, height:60.00)

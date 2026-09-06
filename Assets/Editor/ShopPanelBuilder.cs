@@ -8,6 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using U = PremiumUiElements;
 
 /// <summary>Idempotently authors the real, coin-backed home store UI.</summary>
 public static class ShopPanelBuilder
@@ -18,8 +19,8 @@ public static class ShopPanelBuilder
     private const string PrefabPath = PrefabFolder + "/ShopPanel.prefab";
     private const string ProductIconFolder = "Assets/Art/StoreProducts/Icons";
     private const int SortingOrder = 110;
-    private const float PanelHeight = 840f;
-    private const float PanelWidth = 1320f;
+    private const float PanelHeight = 930f;
+    private const float PanelWidth = 1720f;
     private const float HomeLevelBadgeWidth = 210f;
     private const float HomeLevelBadgeHeight = 54f;
     // Anchored to the panel's top-right corner, inside the pink header to the right
@@ -121,10 +122,16 @@ public static class ShopPanelBuilder
         safeAreaObject.AddComponent<SafeAreaRect>();
 
         PanelData panel = BuildPanel(safeArea.transform, font);
+        var mainContent=U.Rect("StoreContent",panel.Rect);U.Fill(mainContent);
+        // Preserve drawing order: moving children in reverse puts the backdrop over every card.
+        while(panel.Rect.childCount>1)panel.Rect.GetChild(0).SetParent(mainContent,false);
+        var contentGroup=mainContent.gameObject.AddComponent<CanvasGroup>();
         PurchaseDialogData purchase = BuildPurchaseDialog(panel.Rect, font);
         DiamondConfirmationData diamondConfirmation =
             BuildDiamondConfirmation(panel.Rect, font);
         DiamondStorePanel diamondStore = BuildDiamondStore(panel.Rect, font);
+        root.AddComponent<ModalContentGate>().Configure(contentGroup,purchase.Group,diamondConfirmation.Group,diamondStore.GetComponent<CanvasGroup>());
+        purchase.Group.gameObject.AddComponent<ModalContentGate>().Configure(purchase.Group,diamondConfirmation.Group,diamondStore.GetComponent<CanvasGroup>());
         PlacementData placement = BuildPlacementToolbar(safeArea.transform, font);
 
         SerializedObject serialized = new SerializedObject(controller);
@@ -144,6 +151,11 @@ public static class ShopPanelBuilder
         Assign(serialized, "productScrollRect", panel.ProductScrollRect);
         Assign(serialized, "purchaseGroup", purchase.Group);
         Assign(serialized, "purchaseIcon", purchase.Icon);
+        Assign(serialized, "requestedProductRoot", panel.Rect.Find("PurchaseDialog/DialogFace/RequestedProduct").gameObject);
+        Assign(serialized, "requestedProductIcon", panel.Rect.Find("PurchaseDialog/DialogFace/RequestedProduct/Icon").GetComponent<RawImage>());
+        Assign(serialized, "requestedProductLabel", panel.Rect.Find("PurchaseDialog/DialogFace/RequestedProduct/Label").GetComponent<TMP_Text>());
+        Assign(serialized, "purchasePlacementText", panel.Rect.Find("PurchaseDialog/DialogFace/PlacementInfo/Label").GetComponent<TMP_Text>());
+        Assign(serialized, "diamondConfirmationIcon", panel.Rect.Find("DiamondConfirmation/ConfirmationFace/ProductPreview").GetComponent<RawImage>());
         Assign(serialized, "purchaseTitleText", purchase.Title);
         Assign(serialized, "purchaseMessageText", purchase.Message);
         Assign(serialized, "purchaseCoinButton", purchase.CoinButton);
@@ -151,6 +163,7 @@ public static class ShopPanelBuilder
         Assign(serialized, "purchaseDiamondButton", purchase.DiamondButton);
         Assign(serialized, "purchaseDiamondButtonText", purchase.DiamondButtonText);
         Assign(serialized, "purchaseCancelButton", purchase.CancelButton);
+        Assign(serialized, "purchaseLaterButton", panel.Rect.Find("PurchaseDialog/DialogFace/NotNow").GetComponent<Button>());
         Assign(serialized, "diamondConfirmationGroup", diamondConfirmation.Group);
         Assign(serialized, "diamondConfirmationTitle", diamondConfirmation.Title);
         Assign(serialized, "diamondConfirmationMessage", diamondConfirmation.Message);
@@ -166,9 +179,9 @@ public static class ShopPanelBuilder
         Assign(serialized, "placementNextButton", placement.Next);
         Assign(serialized, "placementConfirmButton", placement.Confirm);
         Assign(serialized, "placementCancelButton", placement.Cancel);
-        serialized.FindProperty("widthFraction").floatValue = 0.76f;
-        serialized.FindProperty("minWidth").floatValue = 1320f;
-        serialized.FindProperty("maxWidth").floatValue = 1420f;
+        serialized.FindProperty("widthFraction").floatValue = 0.9f;
+        serialized.FindProperty("minWidth").floatValue = 1460f;
+        serialized.FindProperty("maxWidth").floatValue = 1720f;
         serialized.FindProperty("safeAreaMargin").floatValue = 34f;
         AssignTabs(serialized, panel.Tabs);
         AssignCards(serialized, panel.Cards);
@@ -190,297 +203,84 @@ public static class ShopPanelBuilder
 
     private static PanelData BuildPanel(Transform parent, TMP_FontAsset font)
     {
-        GameObject panelObject = CreateRect("Panel", parent);
-        RectTransform panelRect = panelObject.GetComponent<RectTransform>();
-        panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.pivot = new Vector2(0.5f, 0.5f);
-        panelRect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
-        panelRect.anchoredPosition = Vector2.zero;
-        CanvasGroup panelGroup = panelObject.AddComponent<CanvasGroup>();
-        panelGroup.alpha = 0f;
-
-        LowPolyPanelGraphic shadow = CreatePanel("Shadow", panelObject.transform, new Color32(4, 10, 15, 102), 42f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(shadow.rectTransform, 6f);
-        LowPolyPanelGraphic ambientShadow = CreatePanel("AmbientShadow", panelObject.transform, new Color32(4, 10, 15, 40), 48f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(ambientShadow.rectTransform, 12f);
-        LowPolyPanelGraphic frame = CreatePanel("Frame", panelObject.transform, Gold, 46f, 2f, true);
-        Stretch(frame.rectTransform);
-        LowPolyPanelGraphic face = CreatePanel("Face", panelObject.transform, CandyPink, 42f, 2f, false);
-        StretchWithOffsets(face.rectTransform, 3f, 3f, -3f, -3f);
-        LowPolyPanelGraphic innerRim = CreatePanel("InnerRim", panelObject.transform, Gold, 35f, 1.5f, false);
-        StretchWithOffsets(innerRim.rectTransform, 8f, 8f, -8f, -8f);
-        LowPolyPanelGraphic innerFace = CreatePanel(
-            "InnerFace", panelObject.transform, CandyCream, 32f, 2f, false);
-        StretchWithOffsets(innerFace.rectTransform, 10f, 10f, -10f, -10f);
-
-        BuildHeader(panelObject.transform, font, out Button closeButton);
-        BuildSummary(
-            panelObject.transform,
-            font,
-            out TMP_Text balanceText,
-            out TMP_Text ownedCountText,
-            out TMP_Text homeLevelText);
-
-        var tabs = new List<TabData>(3)
-        {
-            BuildTab(panelObject.transform, font, HomeStoreCategory.Cat, "CAT", -408f),
-            BuildTab(panelObject.transform, font, HomeStoreCategory.Room, "ROOM", 0f),
-            BuildTab(panelObject.transform, font, HomeStoreCategory.Home, "HOME", 408f)
+        var panel = U.Rect("Panel", parent); U.At(panel, 0, 0, PanelWidth, PanelHeight);
+        var group = panel.gameObject.AddComponent<CanvasGroup>(); group.alpha = 0f;
+        var face = U.Panel("Surface", panel, PremiumUiStyle.Ivory, 0, 0, PanelWidth, PanelHeight, 32f, true);
+        U.Fill(face.rectTransform);
+        var title = U.Label("Title", panel, font, 48f, Ink, -550, 380, 520, 70);
+        U.Localize(title, "shop.title");
+        var subtitle = U.Label("Subtitle", panel, font, 22f, Muted, -510, 324, 600, 42);
+        U.Localize(subtitle, "shop.subtitle");
+        var close = U.Action("CloseButton", panel, font, null, PremiumUiStyle.WarmIvory,
+            790, 382, 60, 60, out var closeText); closeText.text = "×"; closeText.fontSize = 34f;
+        var wallet = U.Panel("Wallet", panel, PremiumUiStyle.WarmIvory, 568, 380, 310, 64, 24f);
+        var coin = U.Rect("CoinIcon", wallet.transform); U.At(coin, -122, 0, 42, 42); BuildShinyCoinIcon(coin);
+        var balance = U.Label("Balance", wallet.transform, font, 25, Ink, -63, 0, 76, 46);
+        var diamond = U.Rect("DiamondIcon", wallet.transform); U.At(diamond, 35, 0, 42, 42); BuildShinyDiamondIcon(diamond);
+        var diamonds = U.Label("DiamondBalance", wallet.transform, font, 25, Ink, 102, 0, 78, 46);
+        diamonds.gameObject.AddComponent<CurrencyBalanceLabel>().Configure(CurrencyType.Diamond);
+        var tabs = new List<TabData> {
+            BuildTab(panel, font, HomeStoreCategory.Cat, "CAT", -530f),
+            BuildTab(panel, font, HomeStoreCategory.Room, "ROOM", -170f),
+            BuildTab(panel, font, HomeStoreCategory.Home, "HOME", 190f)
         };
-
-        TMP_Text section = CreateText("SectionTitle", panelObject.transform, font, 1f, Color.clear, TextAlignmentOptions.MidlineLeft);
-        section.text = string.Empty;
-        section.raycastTarget = false;
-        SetRect(section.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(58f, 89f), new Vector2(1f, 1f));
-
-        ScrollRect productScroll = BuildProductScroll(panelObject.transform);
-        Transform productParent = productScroll.content;
-
+        var section = U.Label("SectionTitle", panel, font, 24, Ink, -550, 182, 520, 42);
+        var owned = U.Label("OwnedCount", panel, font, 21, Muted, 490, 182, 540, 42, TextAlignmentOptions.Right);
+        var homeLevel = U.Label("HomeLevelText", panel, font, 20, Muted, 660, 254, 260, 42, TextAlignmentOptions.Right);
+        homeLevel.gameObject.AddComponent<HomeLevelBadgeLabel>();
+        var scroll = BuildProductScroll(panel);
         var products = new List<HomeStoreProduct>(HomeStoreService.Products.Count);
-        for (int i = 0; i < HomeStoreService.Products.Count; i++)
-            products.Add(HomeStoreService.Products[i]);
+        for (int i = 0; i < HomeStoreService.Products.Count; i++) products.Add(HomeStoreService.Products[i]);
         products.Sort(CompareCatalogProducts);
-
-        var cards = new List<ProductCardData>(products.Count);
-        for (int i = 0; i < products.Count; i++)
+        var cards = new List<ProductCardData>();
+        foreach (var product in products)
         {
-            HomeStoreProduct product = products[i];
-            cards.Add(BuildProductCard(
-                productParent,
-                font,
-                product.Id,
-                0f,
-                GetProductAccent(product),
-                StoreCatalogAssets.GetIconPath(product.Id),
-                GetFallbackIcon(product)));
+            var card = BuildProductCard(scroll.content, font, product.Id, 0f,
+                GetProductAccent(product), StoreCatalogAssets.GetIconPath(product.Id), GetFallbackIcon(product));
+            card.Group.gameObject.SetActive(product.StoreCategory == HomeStoreCategory.Cat);
+            cards.Add(card);
         }
-
-        for (int i = 0; i < cards.Count; i++)
-        {
-            if (HomeStoreService.TryGetProduct(cards[i].ProductId, out HomeStoreProduct product))
-                cards[i].Group.gameObject.SetActive(product.StoreCategory == HomeStoreCategory.Cat);
-        }
-
-        LowPolyPanelGraphic footer = CreatePanel("Footer", panelObject.transform, CandyPink, 10f, 2f, false);
-        SetRect(footer.rectTransform, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(0.5f, 0.5f), new Vector2(0f, -374f), new Vector2(-150f, 40f));
-        TMP_Text feedback = CreateText("Feedback", footer.transform, font, 16f, WarmCream, TextAlignmentOptions.Center);
-        StretchWithOffsets(feedback.rectTransform, 18f, 3f, -18f, -3f);
-        feedback.text = "EARN COINS IN CAT RUNNER  •  PURCHASES STAY IN YOUR HOME";
-        feedback.fontStyle = FontStyles.Bold;
-        feedback.characterSpacing = 2.2f;
-        CreateFooterOrnament(footer.transform, -410f);
-        CreateFooterOrnament(footer.transform, 410f);
-
-        return new PanelData(
-            panelRect,
-            panelGroup,
-            closeButton,
-            balanceText,
-            ownedCountText,
-            homeLevelText,
-            section,
-            feedback,
-            productScroll,
-            tabs,
-            cards);
+        var feedback = U.Label("Feedback", panel, font, 20, Muted, 0, -415, 1510, 46, TextAlignmentOptions.Center);
+        return new PanelData(panel, group, close, balance, owned, homeLevel, section, feedback, scroll, tabs, cards);
     }
 
     private static PurchaseDialogData BuildPurchaseDialog(Transform parent, TMP_FontAsset font)
     {
-        GameObject root = CreateRect("PurchaseDialog", parent);
-        RectTransform rootRect = root.GetComponent<RectTransform>();
-        Stretch(rootRect);
-        CanvasGroup group = root.AddComponent<CanvasGroup>();
-        group.alpha = 0f;
-        group.interactable = false;
-        group.blocksRaycasts = false;
+        var root = U.Rect("PurchaseDialog", parent); U.Fill(root);
+        var group = root.gameObject.AddComponent<CanvasGroup>();
+        group.alpha = 0f; group.interactable = group.blocksRaycasts = false;
+        var blocker = U.Panel("DialogBlocker", root, new Color32(41, 58, 59, 180), 0, 0, 1, 1, 0, true);
+        U.Fill(blocker.rectTransform);
+        PremiumUiStyle.ConfigureShadowSurface(blocker, new Color32(41, 58, 59, 180), 0);
+        var face = U.Panel("DialogFace", root, PremiumUiStyle.Ivory, 0, 0, 1220, 720, 36, true);
+        var iconRect = U.Rect("DialogProductIcon", face.transform); U.At(iconRect, -318, 22, 492, 492);
+        var icon = iconRect.gameObject.AddComponent<RawImage>(); icon.raycastTarget = false;
+        var requested=U.Panel("RequestedProduct",face.transform,PremiumUiStyle.Mint,-318,-266,492,110,20);
+        var requestImage=U.Rect("Icon",requested.transform); U.At(requestImage,-186,0,90,90);
+        requestImage.gameObject.AddComponent<RawImage>().raycastTarget=false;
+        U.Label("Label",requested.transform,font,20,Ink,58,0,340,88);
+        requested.gameObject.SetActive(false);
+        var title = U.Label("DialogTitle", face.transform, font, 43, Ink, 235, 226, 570, 88);
+        var message = U.Label("DialogMessage", face.transform, font, 24, Muted, 235, 122, 570, 112);
+        var info = U.Panel("PlacementInfo", face.transform, PremiumUiStyle.Mint, 235, 6, 570, 72, 20);
+        var infoText = U.Label("Label", info.transform, font, 21, Ink, 0, 0, 530, 54);
+        infoText.text=GameLanguageService.Text("shop.placement");
+        var coins = U.Action("CoinPurchaseButton", face.transform, font, null, PremiumUiStyle.ChampagneLight,
+            235, -98, 570, 84, out var coinText);
+        var coinIcon = U.Rect("CoinIcon", coins.transform); U.At(coinIcon, -232, 0, 52, 52); BuildShinyCoinIcon(coinIcon);
+        U.Fill(coinText.rectTransform);
+        coinText.rectTransform.offsetMin = new Vector2(78, 12); coinText.rectTransform.offsetMax = new Vector2(-22, -12);
+        var diamonds = U.Action("DiamondPurchaseButton", face.transform, font, null, PremiumUiStyle.CandySky,
+            235, -202, 570, 84, out var diamondText);
+        var diamondIcon = U.Rect("DiamondIcon", diamonds.transform); U.At(diamondIcon, -232, 0, 52, 52); BuildShinyDiamondIcon(diamondIcon);
+        U.Fill(diamondText.rectTransform);
+        diamondText.rectTransform.offsetMin = new Vector2(78, 12); diamondText.rectTransform.offsetMax = new Vector2(-22, -12);
+        var close = U.Action("DialogClose", face.transform, font, null, PremiumUiStyle.WarmIvory,
+            551, 304, 58, 58, out var closeText); closeText.text = "×"; closeText.fontSize = 34;
+        var cancel = U.Action("NotNow", face.transform, font, "common.not_now", PremiumUiStyle.Ivory,
+            235, -296, 240, 60, out var cancelText);
 
-        LowPolyPanelGraphic blocker = CreatePanel(
-            "DialogBlocker",
-            root.transform,
-            new Color32(55, 28, 91, 218),
-            0f,
-            0f,
-            true);
-        Stretch(blocker.rectTransform);
-        BuildPurchaseBackdrop(root.transform);
-
-        LowPolyPanelGraphic shadow = CreatePanel(
-            "DialogShadow",
-            root.transform,
-            new Color32(2, 5, 8, 175),
-            32f,
-            0f,
-            false);
-        PremiumUiStyle.SetCenteredShadowRect(
-            shadow.rectTransform,
-            new Vector2(0.5f, 0.5f),
-            Vector2.zero,
-            new Vector2(760f, 454f),
-            5f);
-
-        LowPolyPanelGraphic glow = CreatePanel(
-            "DialogCandyGlow",
-            root.transform,
-            new Color32(245, 104, 157, 58),
-            36f,
-            0f,
-            false);
-        SetRect(glow.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(778f, 472f));
-
-        LowPolyPanelGraphic frame = CreatePanel(
-            "DialogFrame",
-            root.transform,
-            Gold,
-            31f,
-            3f,
-            false);
-        SetRect(frame.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 454f));
-        LowPolyPanelGraphic face = CreatePanel(
-            "DialogFace",
-            frame.transform,
-            CandyAqua,
-            27f,
-            2f,
-            false);
-        StretchWithOffsets(face.rectTransform, 4f, 4f, -4f, -4f);
-
-        LowPolyPanelGraphic ribbon = CreatePanel(
-            "PurrfectRibbon", face.transform, CandyPink, 14f, 2f, false);
-        SetRect(ribbon.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(0f, 1f), new Vector2(34f, -15f), new Vector2(244f, 38f));
-        LowPolyPanelGraphic ribbonShadow = CreatePanel(
-            "PurrfectRibbonShadow", ribbon.transform, PremiumUiStyle.SoftShadow, 14f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(ribbonShadow.rectTransform, 4f);
-        ribbonShadow.rectTransform.SetAsFirstSibling();
-        RectTransform ribbonPaw = CreateRect("RibbonPaw", ribbon.transform).GetComponent<RectTransform>();
-        SetRect(ribbonPaw, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(15f, 0f), new Vector2(27f, 27f));
-        CreatePawMark(ribbonPaw, Cream, 0.55f);
-        TMP_Text eyebrow = CreateText(
-            "Eyebrow",
-            ribbon.transform,
-            font,
-            15f,
-            Cream,
-            TextAlignmentOptions.Center);
-        eyebrow.text = "PURRFECT PICK!";
-        eyebrow.fontStyle = FontStyles.Bold;
-        eyebrow.characterSpacing = 1.4f;
-        StretchWithOffsets(eyebrow.rectTransform, 40f, 2f, -10f, -2f);
-        CreateSparkle(face.transform, "HeaderSparkleGold", new Vector2(294f, 188f), 16f, CoinHighlight);
-        CreateSparkle(face.transform, "HeaderSparkleBlue", new Vector2(323f, 175f), 10f, DiamondHighlight);
-
-        LowPolyPanelGraphic closeFace = CreatePanel(
-            "DialogClose",
-            face.transform,
-            CandyLilac,
-            19f,
-            2f,
-            true);
-        SetRect(closeFace.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(1f, 1f), new Vector2(-22f, -18f), new Vector2(50f, 50f));
-        Button closeButton = MakeButton(closeFace.gameObject, closeFace);
-        TMP_Text closeLabel = CreateText(
-            "CloseLabel", closeFace.transform, font, 25f, Gold, TextAlignmentOptions.Center);
-        closeLabel.text = "×";
-        closeLabel.fontStyle = FontStyles.Bold;
-        Stretch(closeLabel.rectTransform);
-
-        LowPolyPanelGraphic iconFrame = CreatePanel(
-            "DialogIconFrame",
-            face.transform,
-            Gold,
-            24f,
-            2f,
-            false);
-        SetRect(iconFrame.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(34f, -12f), new Vector2(244f, 294f));
-        LowPolyPanelGraphic iconFace = CreatePanel(
-            "DialogIconFace",
-            iconFrame.transform,
-            new Color32(82, 42, 123, 255),
-            20f,
-            2f,
-            false);
-        StretchWithOffsets(iconFace.rectTransform, 4f, 4f, -4f, -4f);
-        CreateSparkle(iconFace.transform, "ProductSparkleA", new Vector2(-87f, 119f), 13f, CoinHighlight);
-        CreateSparkle(iconFace.transform, "ProductSparkleB", new Vector2(91f, -120f), 10f, DiamondHighlight);
-        GameObject iconObject = CreateRect("DialogProductIcon", iconFace.transform);
-        EnsureCanvasRenderer(iconObject);
-        RawImage icon = iconObject.AddComponent<RawImage>();
-        icon.color = Color.white;
-        icon.raycastTarget = false;
-        StretchWithOffsets(icon.rectTransform, 12f, 12f, -12f, -12f);
-
-        TMP_Text title = CreateText(
-            "DialogTitle",
-            face.transform,
-            font,
-            31f,
-            Ink,
-            TextAlignmentOptions.MidlineLeft);
-        title.fontStyle = FontStyles.Bold;
-        SetRect(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(0f, 1f), new Vector2(310f, -70f), new Vector2(400f, 54f));
-
-        TMP_Text message = CreateText(
-            "DialogMessage",
-            face.transform,
-            font,
-            18f,
-            Ink,
-            TextAlignmentOptions.TopLeft);
-        message.textWrappingMode = TextWrappingModes.Normal;
-        SetRect(message.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-            new Vector2(0f, 1f), new Vector2(310f, -132f), new Vector2(400f, 76f));
-
-        CreatePurchaseButton(
-            face.transform,
-            font,
-            "CoinPurchaseButton",
-            new Vector2(310f, -238f),
-            false,
-            out Button coinButton,
-            out TMP_Text coinText);
-        CreatePurchaseButton(
-            face.transform,
-            font,
-            "DiamondPurchaseButton",
-            new Vector2(310f, -326f),
-            true,
-            out Button diamondButton,
-            out TMP_Text diamondText);
-
-        LowPolyPanelGraphic ratePill = CreatePanel(
-            "ExchangeRatePill", face.transform, PremiumUiStyle.Night, 12f, 1.5f, false);
-        SetRect(ratePill.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
-            new Vector2(0.5f, 0f), new Vector2(0f, 16f), new Vector2(660f, 30f));
-        TMP_Text rate = CreateText(
-            "ExchangeRate",
-            ratePill.transform,
-            font,
-            13f,
-            DiamondHighlight,
-            TextAlignmentOptions.Center);
-        rate.text = "1 DIAMOND = 100 COINS  •  DIAMONDS WORK ACROSS CAT HOME";
-        rate.fontStyle = FontStyles.Bold;
-        StretchWithOffsets(rate.rectTransform, 10f, 1f, -10f, -1f);
-
-        return new PurchaseDialogData(
-            group,
-            icon,
-            title,
-            message,
-            coinButton,
-            coinText,
-            diamondButton,
-            diamondText,
-            closeButton);
+        return new PurchaseDialogData(group, icon, title, message, coins, coinText, diamonds, diamondText, close);
     }
 
     private static void BuildPurchaseBackdrop(Transform parent)
@@ -523,62 +323,14 @@ public static class ShopPanelBuilder
         group.interactable = false;
         group.blocksRaycasts = false;
 
-        LowPolyPanelGraphic blocker = CreatePanel(
-            "ConfirmationBlocker", root.transform, new Color32(57, 29, 99, 224), 0f, 0f, true);
-        Stretch(blocker.rectTransform);
-
-        LowPolyPanelGraphic glow = CreatePanel(
-            "ConfirmationGlow", root.transform, new Color32(62, 214, 255, 95), 44f, 0f, false);
-        SetRect(glow.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f),
-            new Vector2(.5f, .5f), Vector2.zero, new Vector2(650f, 390f));
-        LowPolyPanelGraphic frame = CreatePanel(
-            "ConfirmationFrame", root.transform, DiamondHighlight, 38f, 3f, false);
-        SetRect(frame.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f),
-            new Vector2(.5f, .5f), Vector2.zero, new Vector2(630f, 370f));
-        LowPolyPanelGraphic face = CreatePanel(
-            "ConfirmationFace", frame.transform, CandyLilac, 34f, 2f, false);
-        StretchWithOffsets(face.rectTransform, 5f, 5f, -5f, -5f);
-
-        RectTransform diamond = CreateRect("DiamondEmblem", face.transform).GetComponent<RectTransform>();
-        SetRect(diamond, new Vector2(.5f, 1f), new Vector2(.5f, 1f),
-            new Vector2(.5f, .5f), new Vector2(0f, -72f), new Vector2(86f, 86f));
-        BuildShinyDiamondIcon(diamond);
-        CreateSparkle(face.transform, "ConfirmGlintA", new Vector2(-210f, 125f), 18f, CoinHighlight);
-        CreateSparkle(face.transform, "ConfirmGlintB", new Vector2(220f, 104f), 14f, DiamondHighlight);
-
-        TMP_Text title = CreateText(
-            "ConfirmationTitle", face.transform, font, 31f, Cream, TextAlignmentOptions.Center);
-        SetRect(title.rectTransform, new Vector2(.5f, 1f), new Vector2(.5f, 1f),
-            new Vector2(.5f, .5f), new Vector2(0f, -138f), new Vector2(520f, 48f));
-        title.text = "CONFIRM PURCHASE";
-        title.fontStyle = FontStyles.Bold;
-
-        TMP_Text message = CreateText(
-            "ConfirmationMessage", face.transform, font, 18f, WarmCream, TextAlignmentOptions.Center);
-        SetRect(message.rectTransform, new Vector2(.5f, 1f), new Vector2(.5f, 1f),
-            new Vector2(.5f, .5f), new Vector2(0f, -196f), new Vector2(520f, 58f));
-        message.textWrappingMode = TextWrappingModes.Normal;
-
-        LowPolyPanelGraphic confirmFace = CreatePanel(
-            "ConfirmButton", face.transform, DiamondBlue, 22f, 3f, true);
-        SetRect(confirmFace.rectTransform, new Vector2(.5f, 0f), new Vector2(.5f, 0f),
-            new Vector2(.5f, .5f), new Vector2(82f, 61f), new Vector2(344f, 70f));
-        Button confirm = MakeButton(confirmFace.gameObject, confirmFace);
-        TMP_Text confirmText = CreateText(
-            "Label", confirmFace.transform, font, 18f, Cream, TextAlignmentOptions.Center);
-        Stretch(confirmText.rectTransform);
-        confirmText.fontStyle = FontStyles.Bold;
-
-        LowPolyPanelGraphic cancelFace = CreatePanel(
-            "CancelButton", face.transform, new Color32(255, 105, 145, 255), 22f, 3f, true);
-        SetRect(cancelFace.rectTransform, new Vector2(.5f, 0f), new Vector2(.5f, 0f),
-            new Vector2(.5f, .5f), new Vector2(-180f, 61f), new Vector2(154f, 70f));
-        Button cancel = MakeButton(cancelFace.gameObject, cancelFace);
-        TMP_Text cancelText = CreateText(
-            "Label", cancelFace.transform, font, 18f, Cream, TextAlignmentOptions.Center);
-        Stretch(cancelText.rectTransform);
-        cancelText.text = "NOT YET";
-        cancelText.fontStyle = FontStyles.Bold;
+        var blocker=CreateImage("ConfirmationBlocker",root.transform,new Color32(41,58,59,185),true); U.Fill(blocker.rectTransform);
+        var face=U.Panel("ConfirmationFace",root.transform,PremiumUiStyle.Ivory,0,0,940,520,32,true);
+        var iconRect=U.Rect("ProductPreview",face.transform); U.At(iconRect,-296,25,236,236);
+        var icon=iconRect.gameObject.AddComponent<RawImage>(); icon.raycastTarget=false;
+        var title=U.Label("ConfirmationTitle",face.transform,font,34,Ink,116,161,576,82);
+        var message=U.Label("ConfirmationMessage",face.transform,font,25,Ink,116,40,576,134);
+        var confirm=U.Action("ConfirmButton",face.transform,font,null,PremiumUiStyle.CandySky,207,-157,394,82,out var confirmText);
+        var cancel=U.Action("CancelButton",face.transform,font,"common.cancel",PremiumUiStyle.Mint,-207,-157,394,82,out var cancelText);
 
         return new DiamondConfirmationData(
             group, title, message, confirmText, confirm, cancel);
@@ -593,121 +345,31 @@ public static class ShopPanelBuilder
         group.interactable = false;
         group.blocksRaycasts = false;
 
-        LowPolyPanelGraphic blocker = CreatePanel(
-            "DiamondStoreBlocker", root.transform, new Color32(57, 29, 99, 232), 0f, 0f, true);
-        Stretch(blocker.rectTransform);
-        BuildPurchaseBackdrop(root.transform);
-
-        LowPolyPanelGraphic frame = CreatePanel(
-            "DiamondStoreFrame", root.transform, DiamondHighlight, 42f, 4f, false);
-        SetRect(frame.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f),
-            new Vector2(.5f, .5f), Vector2.zero, new Vector2(1060f, 720f));
-        LowPolyPanelGraphic face = CreatePanel(
-            "DiamondStoreFace", frame.transform, CandySky, 38f, 2f, false);
-        StretchWithOffsets(face.rectTransform, 5f, 5f, -5f, -5f);
-
-        TMP_Text title = CreateText(
-            "Title", face.transform, font, 46f, Cream, TextAlignmentOptions.Center);
-        SetRect(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-            new Vector2(.5f, 1f), new Vector2(0f, -34f), new Vector2(-180f, 64f));
-        title.text = "DIAMOND TREASURE";
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 1.5f;
-
-        TMP_Text subtitle = CreateText(
-            "Subtitle", face.transform, font, 17f, WarmCream, TextAlignmentOptions.Center);
-        SetRect(subtitle.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-            new Vector2(.5f, 1f), new Vector2(0f, -92f), new Vector2(-160f, 30f));
-        subtitle.text = "ONE WALLET FOR EVERY CAT HOME ADVENTURE";
-
-        LowPolyPanelGraphic closeFace = CreatePanel(
-            "CloseButton", face.transform, CandyPink, 25f, 2f, true);
-        SetRect(closeFace.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(1f, 1f), new Vector2(-24f, -22f), new Vector2(58f, 58f));
-        Button close = MakeButton(closeFace.gameObject, closeFace);
-        TMP_Text closeText = CreateText(
-            "Label", closeFace.transform, font, 26f, Cream, TextAlignmentOptions.Center);
-        Stretch(closeText.rectTransform);
-        closeText.text = "X";
-        closeText.fontStyle = FontStyles.Bold;
-
-        LowPolyPanelGraphic wallet = CreatePanel(
-            "Wallet", face.transform, CandyLilac, 20f, 2f, false);
-        SetRect(wallet.rectTransform, new Vector2(.5f, 1f), new Vector2(.5f, 1f),
-            new Vector2(.5f, 1f), new Vector2(0f, -133f), new Vector2(330f, 58f));
-        RectTransform walletIcon = CreateRect("Icon", wallet.transform).GetComponent<RectTransform>();
-        SetRect(walletIcon, new Vector2(0f, .5f), new Vector2(0f, .5f),
-            new Vector2(.5f, .5f), new Vector2(34f, 0f), new Vector2(44f, 44f));
-        BuildShinyDiamondIcon(walletIcon);
-        TMP_Text balance = CreateText(
-            "Balance", wallet.transform, font, 22f, Cream, TextAlignmentOptions.MidlineLeft);
-        StretchWithOffsets(balance.rectTransform, 72f, 0f, -12f, 0f);
-        balance.text = "0 DIAMONDS";
-        balance.fontStyle = FontStyles.Bold;
-
-        int count = DiamondPackCatalog.Packs.Count;
-        string[] ids = new string[count];
-        Button[] buttons = new Button[count];
-        TMP_Text[] amounts = new TMP_Text[count];
-        GameObject[] badges = new GameObject[count];
-        for (int i = 0; i < count; i++)
+        var blocker=CreateImage("DiamondStoreBlocker",root.transform,new Color32(41,58,59,185),true); U.Fill(blocker.rectTransform);
+        var face=U.Panel("DiamondStoreFace",root.transform,PremiumUiStyle.Ivory,0,0,1280,820,32,true);
+        U.Localize(U.Label("Title",face.transform,font,46,Ink,-225,333,700,66),"diamonds.title");
+        U.Localize(U.Label("Subtitle",face.transform,font,22,Muted,-125,276,900,38),"diamonds.subtitle");
+        var close=U.Action("CloseButton",face.transform,font,null,PremiumUiStyle.WarmIvory,572,340,60,60,out var closeLabel); closeLabel.text="×"; closeLabel.fontSize=34;
+        var wallet=U.Panel("Wallet",face.transform,PremiumUiStyle.Mint,423,263,306,58,22);
+        var walletIcon=U.Rect("Icon",wallet.transform); U.At(walletIcon,-112,0,42,42); BuildShinyDiamondIcon(walletIcon);
+        var balance=U.Label("Balance",wallet.transform,font,24,Ink,22,0,226,40);
+        int count=DiamondPackCatalog.Packs.Count;
+        string[] ids=new string[count]; Button[] buttons=new Button[count]; TMP_Text[] amounts=new TMP_Text[count]; GameObject[] badges=new GameObject[count];
+        for(int i=0;i<count;i++)
         {
-            DiamondPackDefinition pack = DiamondPackCatalog.Packs[i];
-            ids[i] = pack.ProductId;
-            int row = i / 3;
-            int column = i % 3;
-            float x = -330f + column * 330f;
-            float y = 74f - row * 222f;
-
-            LowPolyPanelGraphic cardGlow = CreatePanel(
-                "PackGlow_" + pack.DiamondAmount, face.transform,
-                new Color32(95, 225, 255, 95), 28f, 0f, false);
-            SetRect(cardGlow.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f),
-                new Vector2(.5f, .5f), new Vector2(x, y - 4f), new Vector2(286f, 196f));
-            LowPolyPanelGraphic card = CreatePanel(
-                "Pack_" + pack.DiamondAmount, face.transform,
-                row == 0 ? CandyLilac : CandyPink,
-                25f, 3f, true);
-            SetRect(card.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f),
-                new Vector2(.5f, .5f), new Vector2(x, y), new Vector2(276f, 186f));
-            buttons[i] = MakeButton(card.gameObject, card);
-
-            RectTransform icon = CreateRect("Diamond", card.transform).GetComponent<RectTransform>();
-            SetRect(icon, new Vector2(.5f, 1f), new Vector2(.5f, 1f),
-                new Vector2(.5f, .5f), new Vector2(0f, -54f), new Vector2(76f, 76f));
-            BuildShinyDiamondIcon(icon);
-            amounts[i] = CreateText(
-                "Amount", card.transform, font, 29f, Cream, TextAlignmentOptions.Center);
-            SetRect(amounts[i].rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f),
-                new Vector2(.5f, 0f), new Vector2(0f, 54f), new Vector2(-20f, 42f));
-            amounts[i].text = pack.DiamondAmount.ToString("N0");
-            amounts[i].fontStyle = FontStyles.Bold;
-            TMP_Text action = CreateText(
-                "Action", card.transform, font, 14f, DiamondHighlight, TextAlignmentOptions.Center);
-            SetRect(action.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f),
-                new Vector2(.5f, 0f), new Vector2(0f, 20f), new Vector2(-20f, 25f));
-            action.text = "GET PACK";
-            action.fontStyle = FontStyles.Bold;
-
-            LowPolyPanelGraphic badge = CreatePanel(
-                "BestMatch", card.transform, CoinGold, 10f, 1f, false);
-            SetRect(badge.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f),
-                new Vector2(1f, 1f), new Vector2(-8f, -8f), new Vector2(104f, 28f));
-            TMP_Text badgeText = CreateText(
-                "Label", badge.transform, font, 11f, Ink, TextAlignmentOptions.Center);
-            Stretch(badgeText.rectTransform);
-            badgeText.text = "BEST MATCH";
-            badgeText.fontStyle = FontStyles.Bold;
-            badges[i] = badge.gameObject;
-            badge.gameObject.SetActive(false);
+            var pack=DiamondPackCatalog.Packs[i]; ids[i]=pack.ProductId;
+            float x=-392+(i%3)*392; float y=108-(i/3)*240;
+            var card=U.Panel("Pack_"+pack.DiamondAmount,face.transform,PremiumUiStyle.WarmIvory,x,y,364,216,24);
+            var icon=U.Rect("Diamond",card.transform); U.At(icon,-112,34,72,72); BuildShinyDiamondIcon(icon);
+            amounts[i]=U.Label("Amount",card.transform,font,40,Ink,40,42,200,62);
+            U.Localize(U.Label("Units",card.transform,font,20,Muted,40,-3,200,34),"diamonds.units");
+            buttons[i]=U.Action("BuyPack",card.transform,font,null,PremiumUiStyle.Mint,0,-67,320,58,out var priceLabel);
+            priceLabel.fontSize=20; priceLabel.text=GameLanguageService.Text("diamonds.unavailable");
+            var badge=U.Panel("BestMatch",card.transform,PremiumUiStyle.Teal,58,89,218,34,14);
+            var badgeLabel=U.Label("Label",badge.transform,font,15,Color.white,0,0,202,28,TextAlignmentOptions.Center); U.Localize(badgeLabel,"diamonds.recommended");
+            badges[i]=badge.gameObject; badge.gameObject.SetActive(false);
         }
-
-        TMP_Text feedback = CreateText(
-            "Feedback", face.transform, font, 14f, Cream, TextAlignmentOptions.Center);
-        SetRect(feedback.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f),
-            new Vector2(.5f, 0f), new Vector2(0f, 12f), new Vector2(-90f, 28f));
-        feedback.text = "CHOOSE A DIAMOND PACK";
-        feedback.fontStyle = FontStyles.Bold;
+        var feedback=U.Label("Feedback",face.transform,font,21,Muted,0,-339,1140,58,TextAlignmentOptions.Center);
 
         DiamondStorePanel panel = root.AddComponent<DiamondStorePanel>();
         panel.EditorConfigure(group, close, balance, feedback, ids, buttons, amounts, badges);
@@ -763,6 +425,36 @@ public static class ShopPanelBuilder
 
     private static Color GetProductAccent(HomeStoreProduct product)
     {
+        string designSet = HomeStoreService.GetRoomDesignSetLabel(product.Id);
+        if (designSet == "READING" || designSet == "CARE")
+            return Purple;
+        if (designSet == "MEDIA" || designSet == "SPA")
+            return Teal;
+        if (designSet == "CAFE")
+            return Orange;
+        if (designSet == "CHEF")
+            return Teal;
+        if (designSet == "COZY")
+            return Purple;
+        if (designSet == "ROYAL")
+            return Pink;
+        if (designSet == "NATURE")
+            return Teal;
+        if (designSet == "PATIO")
+            return Orange;
+        if (designSet == "SUNNY")
+            return Orange;
+        if (designSet == "LOUNGE")
+            return Purple;
+        if (designSet == "OASIS")
+            return Teal;
+        if (designSet == "GATHER")
+            return Orange;
+        if (designSet == "NOOK")
+            return Purple;
+        if (designSet == "STUDIO")
+            return Teal;
+
         switch (product.StoreCategory)
         {
             case HomeStoreCategory.Room:
@@ -812,7 +504,7 @@ public static class ShopPanelBuilder
         GameObject scrollObject = CreateRect("ProductScroll", parent);
         RectTransform scrollRect = scrollObject.GetComponent<RectTransform>();
         SetRect(scrollRect, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(0.5f, 0.5f), new Vector2(0f, -134f), new Vector2(-144f, 420f));
+            new Vector2(0.5f, 0.5f), new Vector2(0f, -118f), new Vector2(-112f, 536f));
 
         var viewportObject = CreateRect("Viewport", scrollObject.transform);
         RectTransform viewport = viewportObject.GetComponent<RectTransform>();
@@ -827,14 +519,14 @@ public static class ShopPanelBuilder
         content.anchoredPosition = Vector2.zero;
         content.sizeDelta = Vector2.zero;
 
-        VerticalLayoutGroup layout = contentObject.AddComponent<VerticalLayoutGroup>();
-        layout.padding = new RectOffset(4, 4, 2, 2);
-        layout.spacing = 10f;
-        layout.childAlignment = TextAnchor.UpperCenter;
-        layout.childControlWidth = true;
-        layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
+        var layout = contentObject.AddComponent<GridLayoutGroup>();
+        layout.padding = new RectOffset(4, 4, 4, 4);
+        layout.spacing = new Vector2(20f, 24f);
+        layout.childAlignment = TextAnchor.UpperLeft;
+        layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        layout.constraintCount = 4;
+        layout.cellSize = new Vector2(364, 480);
+        contentObject.AddComponent<ResponsiveCardGrid>();
 
         ContentSizeFitter fitter = contentObject.AddComponent<ContentSizeFitter>();
         fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
@@ -888,35 +580,15 @@ public static class ShopPanelBuilder
         return scroll;
     }
 
-    private static TabData BuildTab(
-        Transform parent,
-        TMP_FontAsset font,
-        HomeStoreCategory category,
-        string label,
-        float centerX)
+    private static TabData BuildTab(Transform parent, TMP_FontAsset font,
+        HomeStoreCategory category, string label, float centerX)
     {
         bool selected = category == HomeStoreCategory.Cat;
-        Color color = selected ? CandyCream : CandyLilac;
-        LowPolyPanelGraphic tabRim = CreatePanel("Tab_" + label + "Rim", parent, Gold, 20f, 2f, false);
-        SetRect(tabRim.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0.5f, 0.5f), new Vector2(centerX, 140f), new Vector2(374f, 66f));
-        LowPolyPanelGraphic face = CreatePanel("Tab_" + label, parent, color, 17f, 2f, true);
-        SetRect(face.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            new Vector2(0.5f, 0.5f), new Vector2(centerX, 137f), new Vector2(366f, 58f));
-        Button button = MakeButton(face.gameObject, face);
-        TMP_Text text = CreateText("Label", face.transform, font, 23f,
-            selected ? Ink : PremiumUiStyle.ChampagneLight,
-            TextAlignmentOptions.Center);
-        Stretch(text.rectTransform);
-        text.text = label;
-        text.fontStyle = FontStyles.Bold;
-        text.characterSpacing = 0.5f;
-        RectTransform marker = CreateRect("SelectedMarker", face.transform).GetComponent<RectTransform>();
-        SetRect(marker, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(27f, 0f), new Vector2(28f, 28f));
-        CreatePawMark(marker, PremiumUiStyle.Coral, 0.76f);
-        marker.gameObject.SetActive(selected);
-        return new TabData(category, button, face, text, marker.gameObject);
+        var button = U.Action("Tab_" + label, parent, font,
+            category == HomeStoreCategory.Cat ? "shop.cat" : category == HomeStoreCategory.Room ? "shop.room" : "shop.home",
+            selected ? PremiumUiStyle.Teal : PremiumUiStyle.Mint, centerX, 254, 336, 64, out var text);
+        var marker = U.Rect("SelectedMarker", button.transform); marker.gameObject.SetActive(false);
+        return new TabData(category, button, button.targetGraphic, text, marker.gameObject);
     }
 
     private static void BuildHeader(Transform parent, TMP_FontAsset font, out Button closeButton)
@@ -992,10 +664,63 @@ public static class ShopPanelBuilder
 
         Button previous = CreateToolbarButton(root.transform, font, "RotateLeft", "-45°", Teal, -500f, 84f);
         Button next = CreateToolbarButton(root.transform, font, "RotateRight", "+45°", Teal, -400f, 84f);
-        Button confirm = CreateToolbarButton(root.transform, font, "ConfirmPlacement", "PLACE HERE", CandyAqua, -160f, 230f);
-        Button cancel = CreateToolbarButton(root.transform, font, "CancelPlacement", "CANCEL", PremiumUiStyle.Disabled, -10f, 140f);
+        Button confirm = CreateToolbarButton(root.transform, font, "ConfirmPlacement", "PLACE HERE", CandyAqua, -160f, 224f);
+        Button cancel = CreateToolbarButton(root.transform, font, "CancelPlacement", "CANCEL", PremiumUiStyle.Disabled, -10f, 134f);
 
+        PolishPlacementToolbar(root.transform);
         return new PlacementData(group, title, counter, previous, next, confirm, cancel);
+    }
+
+    public static void PolishPlacementToolbar(Transform root)
+    {
+        var background = root.Find("Background").GetComponent<LowPolyPanelGraphic>();
+        PremiumUiStyle.ConfigureLightSurface(background, 28f, 2.4f);
+        background.ConfigureElevation(true);
+        background.ConfigureReferenceFinish(true);
+        var accent = root.Find("Accent");
+        if (accent != null) accent.gameObject.SetActive(false);
+        foreach (var label in root.GetComponentsInChildren<TMP_Text>(true))
+        {
+            PremiumTypography.Apply(label);
+            label.color = label.name == "PlacementCounter" ? PremiumUiStyle.Muted : PremiumUiStyle.Ink;
+            if (label.name == "PlacementCounter")
+                label.rectTransform.sizeDelta = new Vector2(400f, 48f);
+        }
+        foreach (var button in root.GetComponentsInChildren<Button>(true))
+        {
+            bool primary = button.name == "ConfirmPlacement";
+            if (primary || button.name == "CancelPlacement")
+                ((RectTransform)button.transform).SetSizeWithCurrentAnchors(
+                    RectTransform.Axis.Horizontal, primary ? 224f : 134f);
+            var surface = button.targetGraphic as LowPolyPanelGraphic;
+            if (surface.transform == button.transform)
+            {
+                // The touch/layout root stays still; only the visual child animates.
+                var visual = CreatePanel("PlacementButtonVisual", button.transform,
+                    primary ? PremiumUiStyle.Coral : PremiumUiStyle.Mint, 28f, 2.4f, true);
+                Stretch(visual.rectTransform);
+                surface.enabled = false;
+                surface.raycastTarget = false;
+                button.targetGraphic = visual;
+                surface = visual;
+            }
+            foreach (var label in button.GetComponentsInChildren<TMP_Text>(true))
+                if (label.transform.parent != surface.transform)
+                    label.transform.SetParent(surface.transform, false);
+            PremiumUiStyle.ConfigureSurface(surface,
+                primary ? PremiumUiStyle.Coral : PremiumUiStyle.Mint, 28f, 2.4f);
+            surface.ConfigureElevation(true);
+            surface.ConfigureReferenceFinish(true);
+            PremiumUiFactory.PolishButton(button, primary, PremiumTypography.Emphasis);
+            var text = button.GetComponentInChildren<TMP_Text>(true);
+            text.color = primary ? PremiumUiStyle.Ivory : PremiumUiStyle.Ink;
+            text.fontSize = 23f;
+            if (primary || button.name == "CancelPlacement")
+                U.Localize(text, primary ? "shop.place" : "shop.cancel_placement");
+            EditorUtility.SetDirty(button);
+        }
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+            EditorUtility.SetDirty(component);
     }
 
     private static Button CreateToolbarButton(
@@ -1107,159 +832,47 @@ public static class ShopPanelBuilder
         return homeLevelText;
     }
 
-    private static ProductCardData BuildProductCard(
-        Transform parent,
-        TMP_FontAsset font,
-        string productId,
-        float centerY,
-        Color accent,
-        string previewAssetPath,
-        Action<Transform> buildIcon)
+    private static ProductCardData BuildProductCard(Transform parent, TMP_FontAsset font,
+        string productId, float centerY, Color accent, string previewAssetPath, Action<Transform> buildIcon)
     {
-        GameObject cardObject = CreateRect("Product_" + productId, parent);
-        RectTransform cardRect = cardObject.GetComponent<RectTransform>();
-        cardRect.anchorMin = new Vector2(0f, 1f);
-        cardRect.anchorMax = new Vector2(1f, 1f);
-        cardRect.pivot = new Vector2(0.5f, 1f);
-        cardRect.anchoredPosition = Vector2.zero;
-        cardRect.sizeDelta = new Vector2(0f, 202f);
-        LayoutElement layout = cardObject.AddComponent<LayoutElement>();
-        layout.preferredHeight = 202f;
-        layout.flexibleWidth = 1f;
-        CanvasGroup group = cardObject.AddComponent<CanvasGroup>();
-        group.alpha = 0f;
+        var root = U.Rect("Product_" + productId, parent); U.At(root, 0, 0, 364, 480);
+        var group = root.gameObject.AddComponent<CanvasGroup>(); group.alpha = 0f;
+        var face = U.Panel("Card", root, PremiumUiStyle.Ivory, 0, 0, 364, 480, 22, false); U.Fill(face.rectTransform);
+        var preview = U.Rect("Preview", root); U.At(preview, 0, 104, 254, 254);
+        if (!BuildProductRender(preview, previewAssetPath)) buildIcon(preview);
+        var previewImage = preview.GetComponentInChildren<RawImage>(true);
+        if (HomeStoreService.TryGetProduct(productId, out var product) && product.StoreCategory == HomeStoreCategory.Home)
+        {
+            U.At(preview, 0, 102, 304, 171);
+            if (previewImage != null) previewImage.uvRect = new Rect(0, 0, 1, 1);
+        }
+        var title = U.Label("ProductTitle", root, font, 27, Ink, 0, -51, 320, 70);
+        CardRow(title.rectTransform, -51, 70, 20);
+        var category = U.Label("Category", root, font, 18, Muted, 0, 0, 1, 1); category.gameObject.SetActive(false);
+        var description = U.Label("Description", root, font, 20, Muted, 0, 0, 1, 1); description.gameObject.SetActive(false);
+        var currency = U.Rect("CurrencyPriceGroup", root); U.At(currency, 0, -117, 270, 50);
+        var coin = U.Rect("CoinPriceIcon", currency); U.At(coin, -106, 0, 40, 40); BuildShinyCoinIcon(coin);
+        var coinPrice = U.Label("CoinPrice", currency, font, 25, Ink, -45, 0, 80, 44);
+        var diamond = U.Rect("DiamondPriceIcon", currency); U.At(diamond, 32, 0, 40, 40); BuildShinyDiamondIcon(diamond);
+        var diamondPrice = U.Label("DiamondPrice", currency, font, 25, Ink, 93, 0, 78, 44);
+        var price = U.Label("SpecialPrice", root, font, 22, Muted, 0, -117, 290, 50, TextAlignmentOptions.Center);
+        var button = U.Action("BuyButton", root, font, null, PremiumUiStyle.Mint,
+            0, -195, 318, 62, out var action); CardRow((RectTransform)button.transform, -195, 62, 18);
+        U.Fill(((LowPolyPanelGraphic)button.targetGraphic).rectTransform);
+        U.Fill(action.rectTransform, 12);
+        var badge = U.Panel("OwnedBadge", root, PremiumUiStyle.Mint, 92, 208, 126, 32, 12);
+        var badgeText = U.Label("OwnedText", badge.transform, font, 16, Ink, 0, 0, 116, 28, TextAlignmentOptions.Center);
+        U.Localize(badgeText, "shop.owned"); badge.gameObject.SetActive(false);
+        return new ProductCardData(productId, button, group, category, title, description,
+            price, currency.gameObject, coinPrice, diamondPrice, previewImage, action,
+            button.targetGraphic, badge.gameObject);
+    }
 
-        LowPolyPanelGraphic cardShadow = CreatePanel("CardShadow", cardObject.transform, PremiumUiStyle.SoftShadow, 18f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(cardShadow.rectTransform, 3f);
-        LowPolyPanelGraphic cardRim = CreatePanel("CardRim", cardObject.transform, Gold, 18f, 1.5f, false);
-        Stretch(cardRim.rectTransform);
-        LowPolyPanelGraphic card = CreatePanel("Card", cardObject.transform, CardCream, 15f, 1.5f, true);
-        StretchWithOffsets(card.rectTransform, 2f, 2f, -2f, -2f);
-        Image rail = CreateImage("AccentRail", cardObject.transform, accent, false);
-        SetRect(rail.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f),
-            new Vector2(0f, 0.5f), new Vector2(11f, 0f), new Vector2(8f, -34f));
-
-        LowPolyPanelGraphic previewFrame = CreatePanel("PreviewFrame", cardObject.transform, Gold, 19f, 1.5f, false);
-        SetRect(previewFrame.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(28f, 0f), new Vector2(190f, 174f));
-        LowPolyPanelGraphic preview = CreatePanel("Preview", previewFrame.transform, PremiumUiStyle.Navy, 15f, 2f, false);
-        StretchWithOffsets(preview.rectTransform, 3f, 3f, -3f, -3f);
-        GetOrAdd<RectMask2D>(preview.gameObject);
-        if (!BuildProductRender(preview.transform, previewAssetPath))
-            buildIcon(preview.transform);
-        RawImage previewImage = preview.GetComponentInChildren<RawImage>(true);
-
-        TMP_Text category = CreateText("Category", cardObject.transform, font, 15f, accent, TextAlignmentOptions.MidlineLeft);
-        category.fontStyle = FontStyles.Bold;
-        category.characterSpacing = 2f;
-        SetRect(category.rectTransform, new Vector2(0f, 0.5f), new Vector2(0.72f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(238f, 66f), new Vector2(-12f, 26f));
-        LowPolyPanelGraphic categoryPill = CreatePanel("CategoryPill", cardObject.transform,
-            Color.Lerp(accent, PremiumUiStyle.Ivory, 0.82f), 12f, 1f, false);
-        SetRect(categoryPill.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(230f, 64f), new Vector2(170f, 28f));
-        category.transform.SetParent(categoryPill.transform, false);
-        Stretch(category.rectTransform);
-        category.alignment = TextAlignmentOptions.Center;
-        category.characterSpacing = 0.4f;
-
-        TMP_Text title = CreateText("ProductTitle", cardObject.transform, font, 31f, Ink, TextAlignmentOptions.MidlineLeft);
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 0.2f;
-        SetRect(title.rectTransform, new Vector2(0f, 0.5f), new Vector2(0.73f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(238f, 25f), new Vector2(-12f, 39f));
-
-        TMP_Text description = CreateText("Description", cardObject.transform, font, 20f, new Color32(82, 80, 78, 255), TextAlignmentOptions.TopLeft);
-        description.textWrappingMode = TextWrappingModes.Normal;
-        SetRect(description.rectTransform, new Vector2(0f, 0.5f), new Vector2(0.76f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(238f, -24f), new Vector2(-12f, 68f));
-
-        LowPolyPanelGraphic priceRim = CreatePanel("PricePillRim", cardObject.transform, Gold, 24f, 1.5f, false);
-        SetRect(priceRim.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(1f, 0.5f), new Vector2(-30f, 48f), new Vector2(268f, 54f));
-        LowPolyPanelGraphic pricePill = CreatePanel("PricePill", priceRim.transform, PremiumUiStyle.WarmIvory, 21f, 1.5f, false);
-        StretchWithOffsets(pricePill.rectTransform, 2f, 2f, -2f, -2f);
-
-        RectTransform currencyGroup = CreateRect("CurrencyPriceGroup", pricePill.transform).GetComponent<RectTransform>();
-        Stretch(currencyGroup);
-        RectTransform coinIcon = CreateRect("CoinPriceIcon", currencyGroup).GetComponent<RectTransform>();
-        SetRect(coinIcon, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(10f, 0f), new Vector2(38f, 38f));
-        BuildShinyCoinIcon(coinIcon);
-        TMP_Text coinPrice = CreateText("CoinPrice", currencyGroup, font, 20f, Ink, TextAlignmentOptions.Center);
-        coinPrice.fontStyle = FontStyles.Bold;
-        SetRect(coinPrice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f),
-            new Vector2(0f, 0.5f), new Vector2(49f, 0f), new Vector2(76f, 0f));
-
-        Image divider = CreateImage("CurrencyDivider", currencyGroup, new Color32(57, 191, 255, 120), false);
-        SetRect(divider.rectTransform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(132f, 0f), new Vector2(2f, 27f));
-
-        RectTransform diamondIcon = CreateRect("DiamondPriceIcon", currencyGroup).GetComponent<RectTransform>();
-        SetRect(diamondIcon, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f),
-            new Vector2(0f, 0.5f), new Vector2(143f, 0f), new Vector2(38f, 38f));
-        BuildShinyDiamondIcon(diamondIcon);
-        TMP_Text diamondPrice = CreateText("DiamondPrice", currencyGroup, font, 20f, DiamondBlueDark, TextAlignmentOptions.Center);
-        diamondPrice.fontStyle = FontStyles.Bold;
-        SetRect(diamondPrice.rectTransform, new Vector2(0f, 0f), new Vector2(0f, 1f),
-            new Vector2(0f, 0.5f), new Vector2(182f, 0f), new Vector2(72f, 0f));
-
-        TMP_Text price = CreateText("SpecialPrice", pricePill.transform, font, 21f, Ink, TextAlignmentOptions.Center);
-        price.fontStyle = FontStyles.Bold;
-        StretchWithOffsets(price.rectTransform, 8f, 0f, -8f, 0f);
-        HomeStoreProduct cardProduct;
-        bool showsCurrency = HomeStoreService.TryGetProduct(productId, out cardProduct) &&
-                             cardProduct.IsAvailable &&
-                             (cardProduct.SupportsCoins || cardProduct.SupportsDiamonds);
-        currencyGroup.gameObject.SetActive(showsCurrency);
-        price.gameObject.SetActive(!showsCurrency);
-
-        LowPolyPanelGraphic actionFace = CreatePanel("BuyButton", cardObject.transform, PremiumUiStyle.CoralLift, 28f, 2f, true);
-        SetRect(actionFace.rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(1f, 0.5f), new Vector2(-30f, -38f), new Vector2(268f, 64f));
-        Button button = MakeButton(actionFace.gameObject, actionFace);
-        Image actionGloss = CreateImage("ButtonGloss", actionFace.transform, new Color32(255, 255, 255, 45), false);
-        SetRect(actionGloss.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-            new Vector2(0.5f, 1f), new Vector2(0f, -4f), new Vector2(-24f, 18f));
-        TMP_Text action = CreateText("ActionLabel", actionFace.transform, font, 19f, Cream, TextAlignmentOptions.Center);
-        StretchWithOffsets(action.rectTransform, 8f, 0f, -32f, 0f);
-        action.text = "BUY";
-        action.fontStyle = FontStyles.Normal;
-        action.fontWeight = FontWeight.Regular;
-        action.characterSpacing = 1.35f;
-        action.enableAutoSizing = true;
-        action.fontSizeMin = 13f;
-        action.fontSizeMax = 19f;
-        action.extraPadding = true;
-        RectTransform paw = CreateRect("PawMark", actionFace.transform).GetComponent<RectTransform>();
-        SetRect(paw, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f),
-            new Vector2(1f, 0.5f), new Vector2(-13f, 0f), new Vector2(28f, 28f));
-        CreatePawMark(paw, PremiumUiStyle.ChampagneLight, 0.75f);
-
-        LowPolyPanelGraphic ownedBadge = CreatePanel("OwnedBadge", cardObject.transform, Teal, 9f, 2f, false);
-        SetRect(ownedBadge.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(1f, 1f), new Vector2(-21f, -14f), new Vector2(92f, 28f));
-        TMP_Text ownedText = CreateText("OwnedText", ownedBadge.transform, font, 14f, Cream, TextAlignmentOptions.Center);
-        Stretch(ownedText.rectTransform);
-        ownedText.text = "AT HOME";
-        ownedText.fontStyle = FontStyles.Bold;
-        ownedBadge.gameObject.SetActive(false);
-
-        return new ProductCardData(
-            productId,
-            button,
-            group,
-            category,
-            title,
-            description,
-            price,
-            currencyGroup.gameObject,
-            coinPrice,
-            diamondPrice,
-            previewImage,
-            action,
-            actionFace,
-            ownedBadge.gameObject);
+    private static void CardRow(RectTransform rect, float y, float height, float inset)
+    {
+        rect.anchorMin = new Vector2(0, .5f); rect.anchorMax = new Vector2(1, .5f);
+        rect.pivot = new Vector2(.5f, .5f); rect.anchoredPosition = new Vector2(0, y);
+        rect.sizeDelta = new Vector2(-inset * 2f, height);
     }
 
     private static void BuildBallBasketIcon(Transform parent)

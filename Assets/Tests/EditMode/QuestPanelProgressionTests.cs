@@ -20,6 +20,8 @@ public sealed class QuestPanelProgressionTests
 
     private readonly List<QuestSnapshot> snapshots = new List<QuestSnapshot>();
 
+    private TestLanguageScope language;
+
     [SetUp]
     public void SetUp()
     {
@@ -30,6 +32,8 @@ public sealed class QuestPanelProgressionTests
         if (UnityEngine.Application.isPlaying)
             Assert.Ignore("QuestPanelProgressionTests run in EditMode only; the local save is never written.");
 
+        language = new TestLanguageScope(GameLanguage.English);
+
         // Level 1, empty wallet, no recorded quest progress.
         ProgressionService.ApplySavedState(0, 0, 0, 1, new QuestProgressEntry[0]);
         snapshots.Clear();
@@ -38,6 +42,7 @@ public sealed class QuestPanelProgressionTests
     [TearDown]
     public void TearDown()
     {
+        language?.Dispose();
         ProgressionService.ApplySavedState(0, 0, 0, 1, new QuestProgressEntry[0]);
     }
 

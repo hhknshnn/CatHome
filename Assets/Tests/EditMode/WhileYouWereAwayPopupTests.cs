@@ -4,6 +4,10 @@ using UnityEngine;
 
 public sealed class WhileYouWereAwayPopupTests
 {
+    private TestLanguageScope language;
+    [SetUp] public void SetUp(){language=new TestLanguageScope(GameLanguage.English);}
+    [TearDown] public void TearDown(){language.Dispose();}
+
     [Test]
     public void FourHourNeedRate_DepletesExactlyOneHundredPoints()
     {
@@ -58,7 +62,7 @@ public sealed class WhileYouWereAwayPopupTests
     {
         var summary = CreateSummary(TimeSpan.FromHours(1), true, 35f, 100f);
         Assert.AreEqual(
-            "YOUR CAT HAD A COZY NAP\nAND RESTORED 65% ENERGY!",
+            GameLanguageService.Format("return.nap",65),
             WhileYouWereAwayPopup.SelectSummaryCopy(summary)
         );
     }
@@ -67,7 +71,7 @@ public sealed class WhileYouWereAwayPopupTests
     public void SleepingAtFullEnergy_DoesNotClaimRestoration()
     {
         var summary = CreateSummary(TimeSpan.FromHours(1), true, 100f, 100f);
-        StringAssert.DoesNotContain("RESTORED", WhileYouWereAwayPopup.SelectSummaryCopy(summary));
+        StringAssert.DoesNotContain("restored", WhileYouWereAwayPopup.SelectSummaryCopy(summary));
     }
 
     [Test]
@@ -75,7 +79,7 @@ public sealed class WhileYouWereAwayPopupTests
     {
         var summary = CreateSummary(TimeSpan.FromHours(1), false, 80f, 55f);
         Assert.AreEqual(
-            "YOUR CAT MISSED YOU\nAND GOT A LITTLE TIRED.",
+            GameLanguageService.Text("return.missed"),
             WhileYouWereAwayPopup.SelectSummaryCopy(summary)
         );
     }
@@ -85,7 +89,7 @@ public sealed class WhileYouWereAwayPopupTests
     {
         var summary = CreateSummary(TimeSpan.FromHours(1), false, 80f, 80f);
         Assert.AreEqual(
-            "YOUR CAT MISSED YOU\nWHILE YOU WERE AWAY.",
+            GameLanguageService.Text("return.missed"),
             WhileYouWereAwayPopup.SelectSummaryCopy(summary)
         );
     }
@@ -126,7 +130,7 @@ public sealed class WhileYouWereAwayPopupTests
             Assert.AreEqual(new Vector2(0.5f, 0.5f), layout.anchorMin);
             Assert.AreEqual(layout.anchorMin, layout.anchorMax);
             Assert.AreEqual(Vector2.zero, layout.anchoredPosition);
-            Assert.AreEqual(new Vector2(1040f, 760f), layout.sizeDelta);
+            Assert.AreEqual(new Vector2(980f, 680f), layout.sizeDelta);
             Assert.AreEqual(Vector3.one, layout.localScale);
             Assert.AreNotEqual(Vector2.zero, visual.anchoredPosition,
                 "Only the AnimationContainer should move during the entrance.");
@@ -153,13 +157,13 @@ public sealed class WhileYouWereAwayPopupTests
 
             float expectedScale = WhileYouWereAwayPopupFx.CalculateFitScale(
                 safeSize,
-                new Vector2(1040f, 760f),
+                new Vector2(980f, 680f),
                 new Vector2(44f, 34f));
             Assert.AreEqual(expectedScale, layout.localScale.x, 0.0001f);
             Assert.AreEqual(expectedScale, layout.localScale.y, 0.0001f);
             Assert.AreEqual(Vector2.zero, layout.anchoredPosition);
-            Assert.LessOrEqual(1040f * expectedScale, safeSize.x - 88f + 0.01f);
-            Assert.LessOrEqual(760f * expectedScale, safeSize.y - 68f + 0.01f);
+            Assert.LessOrEqual(980f * expectedScale, safeSize.x - 88f + 0.01f);
+            Assert.LessOrEqual(680f * expectedScale, safeSize.y - 68f + 0.01f);
         }
         finally
         {

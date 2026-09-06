@@ -20,6 +20,7 @@ public static class PremiumWorldVisualBuilder
     private const string MaterialFolder = ProfileFolder + "/Materials";
     private const string RootName = "PremiumWorldPresentation";
     private const string ArchitectureName = "CandyRoomArchitecture";
+    private const string Home2ComfortName = "Home2ComfortDetails";
 
     [MenuItem("Tools/Cat Home/Visuals/Apply Premium Home Finish")]
     public static void Build()
@@ -61,7 +62,10 @@ public static class PremiumWorldVisualBuilder
 
         RebuildFillLights(root.transform);
         RebuildArchitecturalFinish(scene, root.transform);
+        HomeRoomShellVisualPolishBuilder.Apply(scene, HomeRoomService.LivingRoomId, root.transform);
         RecolorLivingRoomFurniture(scene);
+        RebuildHome2ComfortDetails(root.transform);
+        HomeRoomGameplaySafetyBuilder.ApplyToScene(scene);
         EditorUtility.SetDirty(cameraData);
         EditorUtility.SetDirty(volume);
         EditorSceneManager.MarkSceneDirty(scene);
@@ -69,7 +73,7 @@ public static class PremiumWorldVisualBuilder
         AssetDatabase.SaveAssets();
         Debug.Log(
             "Premium home finish applied: candy colour grade, polished room trim, " +
-            "ambient wall sparkles, SMAA, bloom and soft room fill lights.");
+            "Home 2.0 comfort details, ambient wall sparkles, SMAA, bloom and soft room fill lights.");
     }
 
     public static void BuildSilently() => Build();
@@ -258,6 +262,16 @@ public static class PremiumWorldVisualBuilder
         EditorUtility.SetDirty(ambientFx);
     }
 
+    private static bool IsPremiumFurniture(Transform transform)
+    {
+        for (Transform current = transform; current != null; current = current.parent)
+        {
+            if (current.name.EndsWith("_PremiumModel", StringComparison.Ordinal))
+                return true;
+        }
+        return false;
+    }
+
     private static void RecolorLivingRoomFurniture(Scene scene)
     {
         Material cream = GetOrCreateLitMaterial(
@@ -295,6 +309,12 @@ public static class PremiumWorldVisualBuilder
                 if (renderer.GetComponentInParent<CatMovement>() != null ||
                     renderer.GetComponentInParent<Camera>() != null)
                     continue;
+                // Store products and premium furniture already carry the shared
+                // CH_* materials. Flattening them to one pastel by name would
+                // undo every multi-material premium model in the room.
+                if (renderer.GetComponentInParent<HomeProductPlacement>() != null ||
+                    IsPremiumFurniture(renderer.transform))
+                    continue;
                 string name = renderer.gameObject.name;
                 if (name.IndexOf("Sofa", StringComparison.OrdinalIgnoreCase) >= 0 ||
                     name.IndexOf("Couch", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -319,6 +339,56 @@ public static class PremiumWorldVisualBuilder
                     renderer.sharedMaterial = cream;
             }
         }
+    }
+
+    /// <summary>
+    /// A restrained first Home 2.0 art pass for the player's most-seen room.
+    /// It layers tactile accents over the protected base sofa/table/rug instead
+    /// of replacing their authored colliders, positions or save contracts.
+    /// </summary>
+    private static void RebuildHome2ComfortDetails(Transform root)
+    {
+        RemoveChild(root, Home2ComfortName);
+        Transform details = CreateGroup(root, Home2ComfortName);
+
+        Material cream = GetOrCreateLitMaterial(
+            "Home2PearlFabric", new Color32(255, 244, 220, 255), 0.46f);
+        Material mint = GetOrCreateLitMaterial(
+            "Home2MintFabric", new Color32(112, 229, 188, 255), 0.5f);
+        Material lilac = GetOrCreateLitMaterial(
+            "Home2LilacFabric", new Color32(203, 166, 241, 255), 0.5f);
+        Material gold = GetOrCreateLitMaterial(
+            "Home2SoftGold", new Color32(250, 197, 78, 255), 0.62f, 0.08f);
+        Material coral = GetOrCreateLitMaterial(
+            "Home2CoralAccent", new Color32(255, 130, 153, 255), 0.52f);
+
+        Transform sofa = CreateGroup(details, "SofaComfortSet");
+        GameObject leftCushion = CreateSphere(sofa, "MintCushion",
+            new Vector3(-0.48f, 0.77f, 2.02f), new Vector3(0.38f, 0.23f, 0.16f), mint);
+        leftCushion.transform.localRotation = Quaternion.Euler(0f, 8f, 10f);
+        GameObject rightCushion = CreateSphere(sofa, "LilacCushion",
+            new Vector3(0.48f, 0.77f, 2.02f), new Vector3(0.38f, 0.23f, 0.16f), lilac);
+        rightCushion.transform.localRotation = Quaternion.Euler(0f, -8f, -10f);
+        CreateBox(sofa, "PearlSeatBand", new Vector3(0f, 0.34f, 1.82f),
+            new Vector3(1.55f, 0.035f, 0.075f), cream);
+
+        Transform rug = CreateGroup(details, "RugGoldStitch");
+        CreateBox(rug, "FrontStitch", new Vector3(-0.04f, 0.018f, -1.53f),
+            new Vector3(4.58f, 0.012f, 0.035f), gold);
+        CreateBox(rug, "BackStitch", new Vector3(-0.04f, 0.018f, 1.53f),
+            new Vector3(4.58f, 0.012f, 0.035f), gold);
+        CreateBox(rug, "LeftStitch", new Vector3(-2.29f, 0.018f, 0f),
+            new Vector3(0.035f, 0.012f, 2.96f), gold);
+        CreateBox(rug, "RightStitch", new Vector3(2.21f, 0.018f, 0f),
+            new Vector3(0.035f, 0.012f, 2.96f), gold);
+        CreatePawMotif(rug, "RugPaw", new Vector3(-1.34f, 0.032f, -0.58f),
+            Quaternion.Euler(90f, 0f, 0f), coral, cream, 0.7f);
+
+        Transform table = CreateGroup(details, "CoffeeTableStyling");
+        CreateBox(table, "PearlRunner", new Vector3(0f, 0.493f, 0.56f),
+            new Vector3(0.66f, 0.018f, 0.22f), cream);
+        CreateSphere(table, "MintCenterpiece", new Vector3(0f, 0.53f, 0.56f),
+            new Vector3(0.12f, 0.045f, 0.12f), mint);
     }
 
     private static void CreateBackWainscot(

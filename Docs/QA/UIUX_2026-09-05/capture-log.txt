@@ -1,0 +1,39 @@
+01_Title captured
+02_Title_Credits captured
+03_Title_NewGame captured
+04_Title_Account captured
+05_Title_Settings captured
+06_Title_Privacy captured
+07_OfflineReturn captured
+08_Home captured
+09_Hamburger captured
+10_Quests captured
+11_CatJournal captured
+12_CatBreeds captured
+13_Rooms captured
+14_GamesHub captured
+15_Home_Settings captured
+First pass complete
+16_Shop_CAT captured
+17_Shop_ROOM captured
+18_Shop_HOME captured
+19_Buy_CoinsAvailable captured
+20_Buy_Prerequisite captured
+21_DiamondPacks captured
+22_DiamondConfirm_Preview captured
+23_Leaderboard captured
+07_OfflineReturn captured
+Commerce pass complete; no purchases, rewards, account changes. Offline and diamond confirm are visual fixtures.
+25_Runner_HUD_Preview captured
+26_Runner_Tutorial_Preview captured
+27_Runner_Pause_Preview captured
+28_Runner_Result_Preview captured
+29_Runner_NoEnergy_Preview captured
+Runner UI fixtures complete. No run, energy spend, reward or recovery record created.
+31_Catch_HUD_Preview captured
+32_Catch_Tutorial_Preview captured
+33_Catch_Pause_Preview captured
+34_Catch_Result_Preview captured
+35_Catch_NoLives_Preview captured
+Catch UI fixtures complete. No hunt, life spend or reward created.
+Onboarding and celebration visual fixtures complete; no tutorial reset or reward claim.

@@ -21,18 +21,37 @@ public sealed class StoreProductDisplay : MonoBehaviour
     private void OnEnable()
     {
         HomeStoreService.OwnershipChanged += HandleOwnershipChanged;
+        HomeStoreService.StorageChanged += HandleStorageChanged;
         Refresh();
     }
 
     private void OnDisable()
     {
         HomeStoreService.OwnershipChanged -= HandleOwnershipChanged;
+        HomeStoreService.StorageChanged -= HandleStorageChanged;
     }
 
     public void Refresh()
     {
         if (visualRoot != null)
-            visualRoot.SetActive(HomeStoreService.IsOwned(productId));
+        {
+            visualRoot.SetActive(
+                HomeStoreService.IsOwned(productId) &&
+                !HomeStoreService.IsStored(productId));
+            // CatActivity can reveal the same content earlier in OwnershipChanged.
+            // Always check the cat after visibility resolves, regardless of listener order.
+            if (visualRoot.activeSelf && HomeStoreService.IsFixedRoomProduct(productId))
+                CatActivityMotion.KeepCatClearAfterPurchase(gameObject.scene);
+        }
+    }
+
+    private void HandleStorageChanged(string changedProductId)
+    {
+        if (string.IsNullOrEmpty(changedProductId) ||
+            string.Equals(changedProductId, productId, StringComparison.Ordinal))
+        {
+            Refresh();
+        }
     }
 
     private void HandleOwnershipChanged(string changedProductId)

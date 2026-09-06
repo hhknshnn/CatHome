@@ -1,0 +1,6 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+SoundButton (x:596.00, y:479.00, width:728.00, height:64.00)
+ReducedMotionButton (x:596.00, y:563.00, width:728.00, height:64.00)
+PauseExitButton (x:596.00, y:234.00, width:728.00, height:72.00)
+HapticsButton (x:596.00, y:395.00, width:728.00, height:64.00)
+ResumeButton (x:596.00, y:670.00, width:728.00, height:86.00)

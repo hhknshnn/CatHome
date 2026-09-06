@@ -76,10 +76,10 @@ public sealed class MainPanelController : MonoBehaviour
     [SerializeField] private CanvasGroup shopButtonGroup;
     [SerializeField] private Button shopButton;
 
-    [Header("Light Button (top bar, left of Shop)")]
-    [SerializeField] private CanvasGroup lightButtonGroup;
-    [SerializeField] private Button lightButton;
-    [SerializeField] private Graphic lightButtonFace;
+    [Header("Cat Shop Button (top bar, left of Shop)")]
+    [SerializeField] private CanvasGroup catShopButtonGroup;
+    [SerializeField] private Button catShopButton;
+    [SerializeField] private Image catShopButtonIcon;
 
     [Header("Compact List")]
     [SerializeField] private RectTransform safeArea;
@@ -123,15 +123,18 @@ public sealed class MainPanelController : MonoBehaviour
     private CatJournalPanel catJournalPanel;
     private SettingsPanel settingsPanel;
     private RoomSelectorPanel roomSelectorPanel;
-    private BrightnessPanelView brightnessView;
+    private HomeEditModeController homeEditMode;
+    private CatBreedShopPanel catBreedShopPanel;
 
     /// <summary>Row id authored by MainPanelBuilder for the quest entry point.</summary>
     private const string QuestsRowId = "QUESTS";
     private const string StoreRowId = "HOME STORE";
     private const string RoomsRowId = "ROOMS";
+    private const string EditRoomRowId = "EDIT ROOM";
     private const string LegacyRoomsRowId = "INVENTORY";
     private const string JournalRowId = "CAT JOURNAL";
     private const string SettingsRowId = "SETTINGS";
+    private const string MainMenuRowId = "MAIN MENU";
 
     // Deterministic animation clock in [0, openCloseDuration]. Every visual is a
     // pure function of this value, so reversing direction mid-animation simply
@@ -149,8 +152,6 @@ public sealed class MainPanelController : MonoBehaviour
     {
         ResolveSceneReferences();
 
-        EnsureLightButton();
-        EnsureBrightnessView();
         EnsureRoomsRowCompatibility();
         BindListeners();
 
@@ -183,14 +184,12 @@ public sealed class MainPanelController : MonoBehaviour
             shopButtonGroup.blocksRaycasts = false;
         }
 
-        if (lightButtonGroup != null)
+        if (catShopButtonGroup != null)
         {
-            lightButtonGroup.alpha = 0f;
-            lightButtonGroup.interactable = false;
-            lightButtonGroup.blocksRaycasts = false;
+            catShopButtonGroup.alpha = 0f;
+            catShopButtonGroup.interactable = false;
+            catShopButtonGroup.blocksRaycasts = false;
         }
-        RefreshLightButtonVisual();
-
         state = PanelState.Closed;
     }
 
@@ -209,6 +208,17 @@ public sealed class MainPanelController : MonoBehaviour
     {
         if (rows == null)
             return;
+        var retained = new System.Collections.Generic.List<MenuRow>();
+        foreach (MenuRow row in rows)
+        {
+            if (row.id == EditRoomRowId)
+            {
+                if (row.group != null) row.group.gameObject.SetActive(false);
+                else if (row.button != null) row.button.gameObject.SetActive(false);
+            }
+            else retained.Add(row);
+        }
+        rows = retained.ToArray();
         for (int i = 0; i < rows.Length; i++)
         {
             if (!string.Equals(rows[i].id, LegacyRoomsRowId, StringComparison.Ordinal))
@@ -221,68 +231,9 @@ public sealed class MainPanelController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Compatibility path for scenes/prefabs authored before the LightButton field existed.
-    /// The normal editor builder serializes the complete button; this creates the same sibling
-    /// once at startup so upgrading the scripts never leaves an older prefab without the feature.
-    /// </summary>
-    private void EnsureLightButton()
-    {
-        if (lightButton != null || shopButton == null)
-            return;
-
-        GameObject root = Instantiate(shopButton.gameObject, shopButton.transform.parent);
-        root.name = "LightButton";
-
-        RectTransform rect = root.GetComponent<RectTransform>();
-        RectTransform shopRect = shopButton.GetComponent<RectTransform>();
-        if (rect != null && shopRect != null)
-            rect.anchoredPosition = shopRect.anchoredPosition - new Vector2(shopRect.rect.width + 14f, 0f);
-
-        lightButton = root.GetComponent<Button>();
-        lightButtonGroup = root.GetComponent<CanvasGroup>();
-        Transform face = root.transform.Find("Face");
-        lightButtonFace = face != null ? face.GetComponent<Graphic>() : null;
-
-        if (face == null)
-            return;
-
-        // Hide the cloned bag glyph and replace it with a procedural bulb.
-        for (int i = 0; i < face.childCount; i++)
-            face.GetChild(i).gameObject.SetActive(false);
-
-        AddLightIconPart(face, "Bulb", new Vector2(25f, 27f), new Vector2(0f, 6f), true);
-        AddLightIconPart(face, "BulbNeck", new Vector2(10f, 8f), new Vector2(0f, -9f), false);
-        AddLightIconPart(face, "BulbBase1", new Vector2(14f, 3f), new Vector2(0f, -14f), false);
-        AddLightIconPart(face, "BulbBase2", new Vector2(10f, 3f), new Vector2(0f, -18f), false);
-    }
-
-    private static void AddLightIconPart(
-        Transform parent,
-        string name,
-        Vector2 size,
-        Vector2 position,
-        bool lowPoly)
-    {
-        GameObject part = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer));
-        RectTransform rect = part.GetComponent<RectTransform>();
-        rect.SetParent(parent, false);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
-        rect.anchoredPosition = position;
-
-        Graphic graphic;
-        if (lowPoly)
-            graphic = part.AddComponent<LowPolyPanelGraphic>();
-        else
-            graphic = part.AddComponent<Image>();
-        graphic.color = new Color32(255, 243, 222, 255);
-        graphic.raycastTarget = false;
-    }
-
     private void Start()
     {
+        ResolveSceneReferences();
         Canvas.ForceUpdateCanvases();
         ApplyListWidth();
         started = true;
@@ -292,6 +243,9 @@ public sealed class MainPanelController : MonoBehaviour
     {
         // Re-bind in case the object was toggled off/on after Awake.
         BindListeners();
+        CatBreedService.Changed -= RefreshCatShopIcon;
+        CatBreedService.Changed += RefreshCatShopIcon;
+        RefreshCatShopIcon();
     }
 
     private void Update()
@@ -306,9 +260,6 @@ public sealed class MainPanelController : MonoBehaviour
         // the popup keeps its own owner-based input block.
         if ((state == PanelState.Open || state == PanelState.Opening) && modalActive)
             ForceHideImmediate();
-        if (brightnessView != null && brightnessView.IsOpen && modalActive)
-            CloseBrightnessPanel();
-
         // Keep the list width correct across rotations / aspect changes while
         // it is on screen or animating.
         if (state != PanelState.Closed)
@@ -333,7 +284,6 @@ public sealed class MainPanelController : MonoBehaviour
             return;
         }
 
-        CloseBrightnessPanel();
         AcquireInputBlock();
         ApplyListWidth();
 
@@ -394,6 +344,12 @@ public sealed class MainPanelController : MonoBehaviour
             return;
         }
 
+        if (string.Equals(id, EditRoomRowId, System.StringComparison.Ordinal))
+        {
+            OnEditRoomSelected();
+            return;
+        }
+
         if (string.Equals(id, JournalRowId, System.StringComparison.Ordinal))
         {
             OnJournalSelected();
@@ -403,6 +359,12 @@ public sealed class MainPanelController : MonoBehaviour
         if (string.Equals(id, SettingsRowId, System.StringComparison.Ordinal))
         {
             OnSettingsSelected();
+            return;
+        }
+
+        if (string.Equals(id, MainMenuRowId, System.StringComparison.Ordinal))
+        {
+            OnMainMenuSelected();
             return;
         }
 
@@ -419,8 +381,6 @@ public sealed class MainPanelController : MonoBehaviour
     /// </summary>
     private void OnQuestsSelected()
     {
-        CloseBrightnessPanel();
-
         if (questPanel == null)
             questPanel = FindAnyObjectByType<QuestPanelController>(FindObjectsInactive.Include);
 
@@ -442,7 +402,6 @@ public sealed class MainPanelController : MonoBehaviour
 
     private void OnRoomsSelected()
     {
-        CloseBrightnessPanel();
         if (roomSelectorPanel == null)
             roomSelectorPanel = FindAnyObjectByType<RoomSelectorPanel>(FindObjectsInactive.Include);
         if (roomSelectorPanel == null)
@@ -457,26 +416,10 @@ public sealed class MainPanelController : MonoBehaviour
         roomSelectorPanel.RequestOpen();
     }
 
-    private void OnJournalSelected()
-    {
-        CloseBrightnessPanel();
-        if (catJournalPanel == null)
-            catJournalPanel = FindAnyObjectByType<CatJournalPanel>(FindObjectsInactive.Include);
-        if (catJournalPanel == null)
-        {
-            Debug.LogWarning(
-                "MainPanelController: CAT JOURNAL needs CatJournalPanelCanvas. " +
-                "Build it via Tools > Cat Home > UI > Build Cat Journal Panel.",
-                this);
-            return;
-        }
-
-        catJournalPanel.RequestOpen();
-    }
+    private void OnJournalSelected() => OnCatShopSelected();
 
     private void OnSettingsSelected()
     {
-        CloseBrightnessPanel();
         if (settingsPanel == null)
             settingsPanel = FindAnyObjectByType<SettingsPanel>(FindObjectsInactive.Include);
         if (settingsPanel == null)
@@ -491,11 +434,30 @@ public sealed class MainPanelController : MonoBehaviour
         settingsPanel.RequestOpen();
     }
 
+    private void OnMainMenuSelected()
+    {
+        ForceHideImmediate();
+        CatHomeSaveSystem.SaveNow(true);
+
+        TitleScreen title = FindAnyObjectByType<TitleScreen>(FindObjectsInactive.Include);
+        if (title == null)
+        {
+            Debug.LogWarning("MainPanelController: MAIN MENU needs TitleScreenCanvas.", this);
+            return;
+        }
+
+        title.RequestShow();
+    }
+
+    private void OnEditRoomSelected()
+    {
+        ForceHideImmediate();
+    }
+
     // ----- Shop button callback -----
 
     private void OnShopSelected()
     {
-        CloseBrightnessPanel();
         // The shop lives on its own canvas above this one and owns all of its own
         // state; this panel only forwards the tap. If no shop exists in the scene
         // the button degrades to a single safe log, exactly as it did before.
@@ -512,99 +474,29 @@ public sealed class MainPanelController : MonoBehaviour
         shopPanel.Toggle();
     }
 
-    private void OnLightSelected()
+    private void OnCatShopSelected()
     {
-        if (brightnessView != null && brightnessView.IsOpen)
-            CloseBrightnessPanel();
-        else
-            OpenBrightnessPanel();
-    }
-
-    private void RefreshLightButtonVisual()
-    {
-        if (brightnessView != null)
+        if (catBreedShopPanel == null)
+            catBreedShopPanel = FindAnyObjectByType<CatBreedShopPanel>(
+                FindObjectsInactive.Include);
+        if (catBreedShopPanel == null)
         {
-            brightnessView.RefreshSelection();
+            Debug.LogWarning("MainPanelController: CAT SHOP panel is missing.", this);
             return;
         }
-
-        if (lightButtonFace == null)
-            return;
-
-        switch (PlayerLightingPreference.Current)
-        {
-            case PlayerLightingPreference.LightLevel.Low:
-                lightButtonFace.color = PremiumUiStyle.Navy;
-                break;
-            case PlayerLightingPreference.LightLevel.High:
-                lightButtonFace.color = PremiumUiStyle.Teal;
-                break;
-            default:
-                lightButtonFace.color = PremiumUiStyle.NavyLift;
-                break;
-        }
-    }
-
-    public event Action<PlayerLightingPreference.LightLevel> BrightnessLevelSelected;
-
-    public PlayerLightingPreference.LightLevel CurrentBrightnessLevel =>
-        PlayerLightingPreference.Current;
-
-    /// <summary>Safe tutorial hook: opens the selector without changing the saved level.</summary>
-    public void OpenBrightnessPanel()
-    {
-        if (brightnessView == null || IsBlockingModalActive())
-            return;
 
         if (IsOpen)
             ForceHideImmediate();
-        AcquireInputBlock();
-        brightnessView.SetPanelOpen(true);
-        SetScrimRaycasts(true);
+        catBreedShopPanel.RequestOpen();
     }
 
-    public void CloseBrightnessPanel()
+    private void RefreshCatShopIcon()
     {
-        if (brightnessView == null || !brightnessView.IsOpen)
+        if (catShopButtonIcon == null)
             return;
-
-        brightnessView.SetPanelOpen(false);
-        if (!IsOpen)
-        {
-            SetScrimRaycasts(false);
-            ReleaseInputBlock();
-        }
-    }
-
-    /// <summary>Safe tutorial hook; visual-only and does not alter selection or persistence.</summary>
-    public void HighlightLightButton(bool highlighted)
-    {
-        brightnessView?.SetLightButtonHighlighted(highlighted);
-    }
-
-    private void OnBrightnessSelected(PlayerLightingPreference.LightLevel level)
-    {
-        PlayerLightingPreference.SetLevel(level);
-        RefreshLightButtonVisual();
-        BrightnessLevelSelected?.Invoke(level);
-        CloseBrightnessPanel();
-    }
-
-    private void EnsureBrightnessView()
-    {
-        if (safeArea == null || lightButton == null)
-            return;
-
-        brightnessView = GetComponent<BrightnessPanelView>();
-        if (brightnessView == null)
-            brightnessView = gameObject.AddComponent<BrightnessPanelView>();
-        brightnessView.Configure(
-            safeArea,
-            lightButton.GetComponent<RectTransform>(),
-            lightButtonFace,
-            OnBrightnessSelected
-        );
-        brightnessView.SetTopBarVisible(false);
+        CatBreedCatalog.Entry selected = CatBreedService.SelectedEntry;
+        if (selected != null && selected.Portrait != null)
+            catShopButtonIcon.sprite = selected.Portrait;
     }
 
     // ----- Notification badge UI support (no gameplay binding in CP1) -----
@@ -871,13 +763,12 @@ public sealed class MainPanelController : MonoBehaviour
             shopButtonGroup.blocksRaycasts = show;
         }
 
-        if (lightButtonGroup != null)
+        if (catShopButtonGroup != null)
         {
-            lightButtonGroup.alpha = show ? 1f : 0f;
-            lightButtonGroup.interactable = show;
-            lightButtonGroup.blocksRaycasts = show;
+            catShopButtonGroup.alpha = show ? 1f : 0f;
+            catShopButtonGroup.interactable = show;
+            catShopButtonGroup.blocksRaycasts = show;
         }
-        brightnessView?.SetTopBarVisible(show);
     }
 
     private void SetMenuButtonInteractive(bool interactive)
@@ -892,6 +783,12 @@ public sealed class MainPanelController : MonoBehaviour
 
     private bool IsBlockingModalActive()
     {
+        if (HomeUiFlow.IsHomeControlBlocked) return true;
+        if (GamesHubPanel.IsAnyOpen || LeaderboardPanel.IsAnyOpen || SettingsPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen)
+            return true;
+        if (TitleScreen.IsShowing)
+            return true;
+
         // Onboarding not finished is treated as blocking: the menu button stays
         // hidden until the player has completed onboarding.
         if (!PetTutorialHint.IsOnboardingCompleted)
@@ -918,6 +815,12 @@ public sealed class MainPanelController : MonoBehaviour
             return true;
 
         if (RoomSelectorPanel.IsAnyOpen)
+            return true;
+
+        if (HomeEditModeController.IsAnyOpen)
+            return true;
+
+        if (CatBreedShopPanel.IsAnyOpen)
             return true;
 
         if (offlinePopup == null)
@@ -972,10 +875,10 @@ public sealed class MainPanelController : MonoBehaviour
             shopButton.onClick.AddListener(OnShopSelected);
         }
 
-        if (lightButton != null)
+        if (catShopButton != null)
         {
-            lightButton.onClick.RemoveListener(OnLightSelected);
-            lightButton.onClick.AddListener(OnLightSelected);
+            catShopButton.onClick.RemoveListener(OnCatShopSelected);
+            catShopButton.onClick.AddListener(OnCatShopSelected);
         }
 
         if (scrimButton != null)
@@ -1004,8 +907,8 @@ public sealed class MainPanelController : MonoBehaviour
             menuButton.onClick.RemoveListener(Toggle);
         if (shopButton != null)
             shopButton.onClick.RemoveListener(OnShopSelected);
-        if (lightButton != null)
-            lightButton.onClick.RemoveListener(OnLightSelected);
+        if (catShopButton != null)
+            catShopButton.onClick.RemoveListener(OnCatShopSelected);
         if (scrimButton != null)
             scrimButton.onClick.RemoveListener(OnScrimSelected);
 
@@ -1023,10 +926,10 @@ public sealed class MainPanelController : MonoBehaviour
 
     private void OnDisable()
     {
+        CatBreedService.Changed -= RefreshCatShopIcon;
         // Never leave the cat's input blocked because the menu was disabled
         // mid-animation.
         ReleaseInputBlock();
-        brightnessView?.SetPanelOpen(false);
     }
 
     private void OnDestroy()
@@ -1039,10 +942,7 @@ public sealed class MainPanelController : MonoBehaviour
 
     private void OnScrimSelected()
     {
-        if (brightnessView != null && brightnessView.IsOpen)
-            CloseBrightnessPanel();
-        else
-            RequestClose();
+        RequestClose();
     }
 
     private static float Smooth(float t)

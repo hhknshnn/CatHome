@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "com.coplaydev.unity-mcp": "file:com.coplaydev.unity-mcp-local",
-    "com.unity.ai.assistant": "2.16.0-pre.1",
     "com.unity.ai.inference": "2.6.1",
     "com.unity.ai.navigation": "2.0.12",
     "com.unity.collab-proxy": "2.12.4",
@@ -10,6 +9,12 @@
     "com.unity.inputsystem": "1.19.0",
     "com.unity.multiplayer.center": "1.0.1",
     "com.unity.render-pipelines.universal": "17.4.0",
+    "com.unity.services.authentication": "3.5.2",
+    "com.unity.services.cloudcode": "2.10.4",
+    "com.unity.services.cloudsave": "3.4.0",
+    "com.unity.services.deployment": "1.6.2",
+    "com.unity.services.leaderboards": "2.3.4",
+    "com.unity.services.tooling": "1.4.0",
     "com.unity.test-framework": "1.6.0",
     "com.unity.timeline": "1.8.12",
     "com.unity.ugui": "2.0.0",

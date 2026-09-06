@@ -80,6 +80,12 @@ public sealed class PetInteraction : MonoBehaviour
         speedParameterHash = Animator.StringToHash(speedAnimatorParameter);
     }
 
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement != null)
+            animator = replacement;
+    }
+
     private void Update()
     {
 #if ENABLE_INPUT_SYSTEM

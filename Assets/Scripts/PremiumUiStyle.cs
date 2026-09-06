@@ -9,133 +9,76 @@ public static class PremiumUiStyle
 {
     public const string PremiumFontAssetPath = "Assets/Fonts/Fredoka-SemiBold SDF.asset";
 
-    // Bright candy tokens are the default surface language. Night/Ink remain
-    // available for copy, masks and deliberately recessed wells; they are no
-    // longer the colour that a generic panel recipe paints across the screen.
-    public static readonly Color32 Night = new Color32(35, 27, 72, 255);
-    public static readonly Color32 Navy = new Color32(48, 119, 181, 255);
-    public static readonly Color32 NavyLift = new Color32(43, 195, 191, 255);
-    public static readonly Color32 Ink = new Color32(50, 35, 68, 255);
-    public static readonly Color32 Ivory = new Color32(255, 250, 235, 255);
-    public static readonly Color32 WarmIvory = new Color32(255, 236, 207, 255);
-    public static readonly Color32 Champagne = new Color32(255, 187, 43, 255);
-    public static readonly Color32 ChampagneLight = new Color32(255, 235, 119, 255);
-    public static readonly Color32 Coral = new Color32(246, 82, 132, 255);
-    public static readonly Color32 CoralLift = new Color32(255, 126, 91, 255);
-    public static readonly Color32 Teal = new Color32(39, 190, 180, 255);
-    public static readonly Color32 TealLift = new Color32(83, 224, 195, 255);
-    public static readonly Color32 Plum = new Color32(169, 75, 206, 255);
-    public static readonly Color32 Muted = new Color32(105, 86, 116, 255);
-    public static readonly Color32 Disabled = new Color32(148, 139, 159, 255);
-
-    public static readonly Color32 CandySky = new Color32(83, 184, 238, 255);
-    public static readonly Color32 CandyAqua = new Color32(41, 202, 194, 255);
-    public static readonly Color32 CandyMint = new Color32(84, 216, 161, 255);
-    public static readonly Color32 CandyPink = new Color32(246, 83, 143, 255);
-    public static readonly Color32 CandyPeach = new Color32(255, 132, 82, 255);
-    public static readonly Color32 CandyBerry = new Color32(187, 75, 196, 255);
-    public static readonly Color32 CandyGrape = new Color32(126, 86, 204, 255);
-    public static readonly Color32 CandyLemon = new Color32(255, 207, 61, 255);
-    public static readonly Color32 CandyCloud = new Color32(255, 246, 226, 255);
-    public static readonly Color32 DeepInset = new Color32(43, 31, 84, 255);
-    public static readonly Color32 DeepInsetLift = new Color32(70, 66, 137, 255);
-
-    public static readonly Color32 Shadow = new Color32(57, 27, 82, 112);
-    public static readonly Color32 SoftShadow = new Color32(75, 34, 104, 46);
+    // Approved September 2026 reference palette. Legacy token names remain
+    // available to builders; new layouts use surface / ink / action roles.
+    public static readonly Color32 Night = new Color32(41, 58, 59, 255);
+    public static readonly Color32 Navy = new Color32(41, 58, 59, 255);
+    public static readonly Color32 NavyLift = new Color32(64, 91, 89, 255);
+    public static readonly Color32 Ink = new Color32(36, 53, 54, 255);
+    public static readonly Color32 Ivory = new Color32(255, 249, 239, 255);
+    public static readonly Color32 WarmIvory = new Color32(249, 239, 220, 255);
+    public static readonly Color32 Mint = new Color32(221, 237, 227, 255);
+    public static readonly Color32 Rim = new Color32(211, 193, 155, 255);
+    public static readonly Color32 Champagne = new Color32(228, 173, 62, 255);
+    public static readonly Color32 ChampagneLight = new Color32(248, 215, 135, 255);
+    public static readonly Color32 Coral = new Color32(245, 120, 108, 255);
+    public static readonly Color32 CoralLift = new Color32(255, 153, 134, 255);
+    public static readonly Color32 Teal = new Color32(33, 143, 135, 255);
+    public static readonly Color32 TealLift = new Color32(71, 164, 153, 255);
+    public static readonly Color32 Plum = new Color32(153, 124, 170, 255);
+    public static readonly Color32 Muted = new Color32(95, 111, 105, 255);
+    public static readonly Color32 Disabled = new Color32(146, 151, 141, 255);
+    public static readonly Color32 CandySky = new Color32(126, 196, 220, 255);
+    public static readonly Color32 CandyAqua = Teal;
+    public static readonly Color32 CandyMint = new Color32(136, 192, 159, 255);
+    public static readonly Color32 CandyPink = new Color32(224, 158, 169, 255);
+    public static readonly Color32 CandyPeach = CoralLift;
+    public static readonly Color32 CandyBerry = Plum;
+    public static readonly Color32 CandyGrape = new Color32(146, 135, 188, 255);
+    public static readonly Color32 CandyLemon = ChampagneLight;
+    public static readonly Color32 CandyCloud = Ivory;
+    public static readonly Color32 DeepInset = new Color32(48, 75, 73, 255);
+    public static readonly Color32 DeepInsetLift = new Color32(64, 91, 89, 255);
+    public static readonly Color32 Shadow = new Color32(70, 63, 44, 38);
+    public static readonly Color32 SoftShadow = new Color32(70, 63, 44, 20);
     public static readonly Color32 WhiteHighlight = new Color32(255, 255, 255, 138);
-    // Alpha kept high enough that the continuous LowPolyPanelGraphic rim still
-    // reads on cream/peach parents — the old 116a rim vanished on the BR edge.
-    public static readonly Color32 DarkEdge = new Color32(64, 30, 91, 188);
-    public static readonly Color32 WarmFacet = new Color32(255, 196, 225, 62);
+    public static readonly Color32 DarkEdge = new Color32(104, 94, 70, 100);
+    public static readonly Color32 WarmFacet = new Color32(255, 242, 209, 18);
 
-    public static void ConfigureDarkSurface(
-        LowPolyPanelGraphic graphic,
-        float cornerCut,
-        float bevelWidth)
+    public static void ConfigureDarkSurface(LowPolyPanelGraphic graphic, float cornerCut, float bevelWidth)
     {
-        // Kept for builder compatibility: legacy callers used "dark surface"
-        // for their default shell. That default is now a glossy sky/aqua candy
-        // recipe. Truly recessed areas should call ConfigureDeepInsetSurface.
-        graphic.ConfigurePremiumStyle(
-            new Color32(91, 214, 228, 255),
-            new Color32(42, 151, 207, 255),
-            cornerCut,
-            bevelWidth,
-            new Color32(255, 255, 255, 190),
-            new Color32(55, 35, 112, 120),
-            new Color32(255, 206, 234, 76));
-        graphic.ConfigureCandyPolish(0.25f, 0.1f);
+        // Historical default-shell entry point. Surfaces now use warm ivory.
+        ConfigureLightSurface(graphic, cornerCut, bevelWidth);
     }
 
-    public static void ConfigureDeepInsetSurface(
-        LowPolyPanelGraphic graphic,
-        float cornerCut,
-        float bevelWidth)
+    public static void ConfigureDeepInsetSurface(LowPolyPanelGraphic graphic, float cornerCut, float bevelWidth)
     {
-        graphic.ConfigurePremiumStyle(
-            DeepInsetLift,
-            DeepInset,
-            cornerCut,
-            bevelWidth,
-            new Color32(255, 255, 255, 66),
-            new Color32(27, 19, 58, 170),
-            new Color32(112, 226, 255, 26));
-        graphic.ConfigureCandyPolish(0.08f, 0.035f);
+        ConfigureAccentSurface(graphic, DeepInsetLift, DeepInset, cornerCut, bevelWidth);
     }
 
-    public static void ConfigureLightSurface(
-        LowPolyPanelGraphic graphic,
-        float cornerCut,
-        float bevelWidth)
+    public static void ConfigureLightSurface(LowPolyPanelGraphic graphic, float cornerCut, float bevelWidth)
     {
-        graphic.ConfigurePremiumStyle(
-            new Color32(255, 253, 246, 255),
-            new Color32(255, 236, 210, 255),
-            cornerCut,
-            bevelWidth,
-            new Color32(255, 255, 255, 220),
-            new Color32(130, 72, 117, 78),
-            new Color32(255, 184, 214, 58));
-        graphic.ConfigureCandyPolish(0.22f, 0.075f);
+        graphic.ConfigurePremiumStyle(new Color32(255, 253, 247, 255), Ivory,
+            cornerCut, 2.4f, new Color32(255, 255, 255, 235),
+            new Color32(179, 153, 104, 148), new Color32(255, 242, 214, 18));
+        graphic.ConfigureCandyPolish(.055f, .025f);
     }
 
-    public static void ConfigureAccentSurface(
-        LowPolyPanelGraphic graphic,
-        Color top,
-        Color bottom,
-        float cornerCut,
-        float bevelWidth)
+    public static void ConfigureAccentSurface(LowPolyPanelGraphic graphic, Color top, Color bottom,
+        float cornerCut, float bevelWidth)
     {
-        Color candyTop = Color.Lerp(top, Color.white, 0.08f);
-        Color candyBottom = Color.Lerp(bottom, DeepInset, 0.025f);
-        graphic.ConfigurePremiumStyle(
-            candyTop,
-            candyBottom,
-            cornerCut,
-            Mathf.Max(3.5f, bevelWidth),
-            new Color32(255, 255, 255, 210),
-            DarkEdge,
-            WarmFacet);
-        graphic.ConfigureCandyPolish(0.28f, 0.1f);
+        graphic.ConfigurePremiumStyle(top, bottom, cornerCut, 3f,
+            new Color32(255, 255, 255, 150), DarkEdge, WarmFacet);
+        graphic.ConfigureCandyPolish(.08f, .035f);
     }
 
-    public static void ConfigureMetalSurface(
-        LowPolyPanelGraphic graphic,
-        Color baseColor,
-        float cornerCut,
-        float bevelWidth)
+    public static void ConfigureMetalSurface(LowPolyPanelGraphic graphic, Color baseColor,
+        float cornerCut, float bevelWidth)
     {
-        Color top = Color.Lerp(baseColor, Color.white, 0.48f);
-        Color bottom = Color.Lerp(baseColor, new Color32(221, 111, 25, 255), 0.28f);
-        graphic.ConfigurePremiumStyle(
-            top,
-            bottom,
-            cornerCut,
-            Mathf.Min(4f, bevelWidth),
-            new Color32(255, 249, 197, 235),
-            new Color32(128, 58, 18, 165),
-            new Color32(255, 247, 175, 72));
-        graphic.ConfigureCandyPolish(0.34f, 0.13f);
+        graphic.ConfigurePremiumStyle(Color.Lerp(baseColor, Color.white, .30f), baseColor,
+            cornerCut, Mathf.Min(2f, bevelWidth), new Color32(255, 253, 221, 200),
+            new Color32(137, 102, 49, 130), new Color32(255, 245, 192, 24));
+        graphic.ConfigureCandyPolish(.10f, .035f);
     }
 
     public static void ConfigureShadowSurface(

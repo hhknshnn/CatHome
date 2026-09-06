@@ -12,10 +12,10 @@ using UnityEngine.UI;
 public sealed class TopHudResponsiveLayout : MonoBehaviour
 {
     public const float TopBarTop = -22f;
-    public const float TopBarHeight = 68f;
+    public const float TopBarHeight = 88f;
     public const float TopBarCenterY = TopBarTop - TopBarHeight * 0.5f;
-    public const float NeedBarWidth = 316f;
-    public const float NeedSpacing = 348f;
+    public const float NeedBarWidth = 260f;
+    public const float NeedSpacing = 284f;
     public const float NeedHalfWidth = NeedBarWidth * 0.5f;
     private const float RightControlsWidth = 438f;
     private const float MinimumGap = 16f;
@@ -113,8 +113,10 @@ public sealed class TopHudResponsiveLayout : MonoBehaviour
             Mathf.Max(NeedHalfWidth, safeWidth * 0.5f - RightControlsWidth - MinimumGap);
         float groupHalfWidth = NeedSpacing + NeedHalfWidth;
         float layoutScale = Mathf.Clamp01(maximumHalfWidth / groupHalfWidth);
-
-        float targetScreenY = safe.yMax + TopBarCenterY * scaleFactor;
+        bool secondRow = safeWidth < 1760f;
+        if (secondRow)
+            layoutScale = Mathf.Min(1f, (safeWidth - 68f) / (groupHalfWidth * 2f));
+        float targetScreenY = safe.yMax + (secondRow ? -170f : TopBarCenterY) * scaleFactor;
         PositionNeed(hunger, safeCenterX - NeedSpacing * layoutScale, targetScreenY, layoutScale);
         PositionNeed(thirst, safeCenterX, targetScreenY, layoutScale);
         PositionNeed(energy, safeCenterX + NeedSpacing * layoutScale, targetScreenY, layoutScale);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CatHome.Economy;
 using TMPro;
 using UnityEngine;
@@ -27,6 +28,9 @@ public sealed class DiamondStorePanel : MonoBehaviour
     [SerializeField] private TMP_Text feedbackText;
     [SerializeField] private PackView[] packs = new PackView[0];
 
+    private readonly Dictionary<string,string> storePrices = new Dictionary<string,string>();
+    private bool awaitingPurchase;
+    private bool pricesLoading;
     private bool listenersBound;
     private long recommendedMinimum;
 
@@ -43,12 +47,14 @@ public sealed class DiamondStorePanel : MonoBehaviour
     {
         BindListeners();
         EconomyService.AnyBalanceChanged += Refresh;
+        GameLanguageService.Changed += Refresh;
         Refresh();
     }
 
     private void OnDisable()
     {
         EconomyService.AnyBalanceChanged -= Refresh;
+        GameLanguageService.Changed -= Refresh;
     }
 
     public void Open(long minimumDiamonds = 0L)
@@ -56,7 +62,7 @@ public sealed class DiamondStorePanel : MonoBehaviour
         recommendedMinimum = Math.Max(0L, minimumDiamonds);
         IsOpen = true;
         SetVisible(true);
-        SetFeedback("CHOOSE A DIAMOND PACK");
+        SetFeedback(GameLanguageService.Text(PurchaseRequested==null?"diamonds.store_unavailable":"diamonds.choose"));
         Refresh();
     }
 
@@ -73,8 +79,9 @@ public sealed class DiamondStorePanel : MonoBehaviour
         EconomyTransactionResult result =
             DiamondPackCatalog.GrantConfirmedPurchase(productId, transactionId);
         SetFeedback(result.IsSettled
-            ? "DIAMONDS ADDED TO YOUR WALLET!"
-            : "PURCHASE COULD NOT BE COMPLETED.");
+            ? GameLanguageService.Text("diamonds.complete")
+            : GameLanguageService.Text("diamonds.failed"));
+        awaitingPurchase=false;
         Refresh();
         return result;
     }
@@ -87,20 +94,24 @@ public sealed class DiamondStorePanel : MonoBehaviour
         if (string.IsNullOrEmpty(productId))
             return;
 
-        SetFeedback("CONNECTING TO YOUR DEVICE STORE...");
+        if (awaitingPurchase || !storePrices.ContainsKey(productId) || PurchaseRequested==null) return;
+        awaitingPurchase=true;
+        SetFeedback(GameLanguageService.Text("diamonds.connecting"));
+        Refresh();
         if (PurchaseRequested != null)
         {
             PurchaseRequested.Invoke(productId);
             return;
         }
 
-        SetFeedback("PACKAGE READY • STORE CONNECTION REQUIRED");
+        awaitingPurchase=false;
+        SetFeedback(GameLanguageService.Text("diamonds.store_unavailable"));
     }
 
     private void Refresh()
     {
         if (balanceText != null)
-            balanceText.text = EconomyService.Diamonds.ToString("N0") + " DIAMONDS";
+            balanceText.text = EconomyService.Diamonds.ToString("N0");
 
         if (packs == null)
             return;
@@ -114,6 +125,13 @@ public sealed class DiamondStorePanel : MonoBehaviour
                     ? definition.DiamondAmount.ToString("N0")
                     : "—";
 
+            if(packs[i].button!=null)
+            {
+                bool priced=storePrices.TryGetValue(packs[i].productId,out var price) && !string.IsNullOrWhiteSpace(price);
+                packs[i].button.interactable=found && priced && PurchaseRequested!=null && !awaitingPurchase;
+                var label=packs[i].button.GetComponentInChildren<TMP_Text>(true);
+                if(label!=null) label.text=priced?price:GameLanguageService.Text(pricesLoading?"diamonds.loading":"diamonds.unavailable");
+            }
             bool recommended = !recommendedAssigned && found &&
                                recommendedMinimum > 0L &&
                                definition.DiamondAmount >= recommendedMinimum;
@@ -123,6 +141,18 @@ public sealed class DiamondStorePanel : MonoBehaviour
                 recommendedAssigned = true;
         }
     }
+
+    // The platform supplies localized prices. Never fabricate regional amounts.
+    public void SetStoreProductPrice(string productId, string localizedPrice)
+    {
+        if(!DiamondPackCatalog.TryGet(productId,out var unused)) return;
+        if(string.IsNullOrWhiteSpace(localizedPrice)) storePrices.Remove(productId);
+        else storePrices[productId]=localizedPrice;
+        pricesLoading=false; Refresh();
+    }
+    public void SetPricesLoading(bool value) { pricesLoading=value; Refresh(); }
+    public void ReportPurchaseCancelled() { awaitingPurchase=false; SetFeedback(GameLanguageService.Text("diamonds.cancelled")); Refresh(); }
+    public void ReportPurchaseFailed() { awaitingPurchase=false; SetFeedback(GameLanguageService.Text("diamonds.failed")); Refresh(); }
 
     private void SetFeedback(string value)
     {

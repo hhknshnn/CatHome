@@ -2,8 +2,8 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Player-owned, persistent brightness preference. The time-of-day controllers remain the
-/// source of all authored lighting values; they only multiply those values by this setting.
+/// Legacy brightness preference retained so older saves and serialized callbacks keep loading.
+/// The selector was removed from the home HUD; lighting now uses one canonical multiplier.
 /// </summary>
 public static class PlayerLightingPreference
 {
@@ -15,6 +15,7 @@ public static class PlayerLightingPreference
     }
 
     public const string PlayerPrefsKey = "Player_LightLevel";
+    public const float CanonicalMultiplier = 1.10f;
     public static event Action<LightLevel> LevelChanged;
 
     private static bool loaded;
@@ -38,18 +39,7 @@ public static class PlayerLightingPreference
         }
     }
 
-    public static float Multiplier
-    {
-        get
-        {
-            switch (Current)
-            {
-                case LightLevel.Low: return 0.85f;
-                case LightLevel.High: return 1.30f;
-                default: return 1.10f;
-            }
-        }
-    }
+    public static float Multiplier => CanonicalMultiplier;
 
     /// <summary>
     /// Applies and persists an explicit level. Integer enum values are intentionally unchanged,

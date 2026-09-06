@@ -34,8 +34,8 @@ public static class BalconyLevelBuilder
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(150, 220, 255, 255);
     private static readonly Color SkyDeep = new Color32(120, 196, 245, 255);
-    private static readonly Color Deck = new Color32(214, 154, 92, 255);
-    private static readonly Color DeckLight = new Color32(232, 182, 128, 255);
+    private static readonly Color Deck = new Color32(230, 178, 116, 255);
+    private static readonly Color DeckLight = new Color32(247, 210, 160, 255);
     private static readonly Color Rail = new Color32(255, 248, 232, 255);
     private static readonly Color CityWarm = new Color32(214, 176, 214, 255);
     private static readonly Color CityCool = new Color32(160, 176, 224, 255);
@@ -110,6 +110,7 @@ public static class BalconyLevelBuilder
         Transform setup = CreateSceneRoot(balcony, "07 Level Setup");
 
         BuildRoomShell(environment, materials);
+        HomeRoomShellVisualPolishBuilder.Apply(balcony, HomeRoomService.BalconyId, environment);
         Camera camera = BuildPresentation(presentation);
         CareSet care = BuildEmptyCareArea(gameplay);
         CatMovement cat = CloneAndConfigureCat(
@@ -518,6 +519,7 @@ public static class BalconyLevelBuilder
         key.color = new Color32(255, 246, 210, 255);
         key.intensity = 1.05f;
         key.shadows = LightShadows.Soft;
+        key.shadowStrength = .46f;
 
         BuildFillLight(parent, "Sky Fill", new Vector3(-3.4f, 2.9f, -1.5f),
             new Color32(150, 220, 255, 255), .9f, 8.5f);

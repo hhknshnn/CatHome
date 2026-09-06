@@ -15,8 +15,8 @@ using UnityEngine.SceneManagement;
 public static class RoomPreviewCaptureBuilder
 {
     public const string PreviewFolder = "Assets/Art/RoomPreviews";
-    public const int PreviewWidth = 1280;
-    public const int PreviewHeight = 720;
+    public const int PreviewWidth = 1920;
+    public const int PreviewHeight = 1080;
 
     private static readonly string LivingPreviewPath =
         PreviewFolder + "/LivingRoomPreview.png";
@@ -199,7 +199,7 @@ public static class RoomPreviewCaptureBuilder
                 Light light = sceneLights[i];
                 if (light != null && light.type == LightType.Directional)
                 {
-                    light.intensity = outdoorShowroom ? 1.85f : 1.24f;
+                    light.intensity = outdoorShowroom ? 1.35f : 1.24f;
                     light.color = new Color32(255, 246, 216, 255);
                 }
             }
@@ -209,7 +209,7 @@ public static class RoomPreviewCaptureBuilder
             Light previewKey = previewKeyObject.GetComponent<Light>();
             previewKey.type = LightType.Point;
             previewKey.color = new Color32(255, 238, 201, 255);
-            previewKey.intensity = outdoorShowroom ? 5.5f : 3.2f;
+            previewKey.intensity = outdoorShowroom ? 2.4f : 3.2f;
             previewKey.range = 11f;
             previewKey.shadows = LightShadows.None;
 
@@ -219,9 +219,27 @@ public static class RoomPreviewCaptureBuilder
             Light previewFill = previewFillObject.GetComponent<Light>();
             previewFill.type = LightType.Point;
             previewFill.color = new Color32(151, 226, 255, 255);
-            previewFill.intensity = outdoorShowroom ? 2.5f : 1.45f;
+            previewFill.intensity = outdoorShowroom ? 1.2f : 1.45f;
             previewFill.range = 9f;
             previewFill.shadows = LightShadows.None;
+            // Indoor rooms already carry the measured gameplay light rig.
+            // Stacking the outdoor showroom treatment onto it bleaches the
+            // cream upholstery and turns the aqua/lilac walls almost white.
+            if (!outdoorShowroom)
+            {
+                previewKey.intensity = 0f;
+                previewFill.intensity = 0f;
+                RenderSettings.ambientMode = previousAmbientMode;
+                RenderSettings.ambientIntensity = previousAmbientIntensity;
+                RenderSettings.ambientSkyColor = previousAmbientSky;
+                RenderSettings.ambientEquatorColor = previousAmbientEquator;
+                RenderSettings.ambientGroundColor = previousAmbientGround;
+                for (int i = 0; i < sceneLights.Count; i++)
+                {
+                    sceneLights[i].intensity = previousLightIntensities[i];
+                    sceneLights[i].color = previousLightColors[i];
+                }
+            }
             Camera camera = FindCamera(scene);
             if (camera == null)
                 throw new InvalidOperationException("No camera in " + scenePath);
@@ -231,7 +249,7 @@ public static class RoomPreviewCaptureBuilder
             camera.enabled = true;
             var render = new RenderTexture(PreviewWidth, PreviewHeight, 24)
             {
-                antiAliasing = 2
+                antiAliasing = 4
             };
             Texture2D texture = null;
             try
@@ -243,8 +261,6 @@ public static class RoomPreviewCaptureBuilder
                 texture = new Texture2D(PreviewWidth, PreviewHeight, TextureFormat.RGB24, false);
                 texture.ReadPixels(new Rect(0f, 0f, PreviewWidth, PreviewHeight), 0, 0);
                 texture.Apply(false, false);
-                if (outdoorShowroom)
-                    ApplyOutdoorShowroomLift(texture);
                 RenderTexture.active = previousActive;
                 File.WriteAllBytes(outputPath, texture.EncodeToPNG());
             }
@@ -289,32 +305,6 @@ public static class RoomPreviewCaptureBuilder
             if (opened)
                 EditorSceneManager.CloseScene(scene, true);
         }
-    }
-
-    private static void ApplyOutdoorShowroomLift(Texture2D texture)
-    {
-        // Outdoor rooms inherit the real clock-driven presentation and can be
-        // captured during an evening editor session.  The selector card is
-        // merchandising art, so apply a restrained photographic lift without
-        // changing runtime materials, shadows or the day/night system.
-        Color32[] pixels = texture.GetPixels32();
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            Color32 pixel = pixels[i];
-            pixel.r = LiftPreviewChannel(pixel.r);
-            pixel.g = LiftPreviewChannel(pixel.g);
-            pixel.b = LiftPreviewChannel(pixel.b);
-            pixels[i] = pixel;
-        }
-        texture.SetPixels32(pixels);
-        texture.Apply(false, false);
-    }
-
-    private static byte LiftPreviewChannel(byte value)
-    {
-        float normalized = value / 255f;
-        float lifted = Mathf.Pow(normalized, .62f) * 1.06f + .025f;
-        return (byte)Mathf.RoundToInt(Mathf.Clamp01(lifted) * 255f);
     }
 
     private static List<GameObject> HideForeignRoomScenes(Scene keep)
@@ -439,9 +429,14 @@ public static class RoomPreviewCaptureBuilder
             changed = true;
         }
 
-        if (importer.maxTextureSize < 1024)
+        if (importer.maxTextureSize < 2048)
         {
-            importer.maxTextureSize = 1024;
+            importer.maxTextureSize = 2048;
+            changed = true;
+        }
+        if (importer.npotScale != TextureImporterNPOTScale.None)
+        {
+            importer.npotScale = TextureImporterNPOTScale.None;
             changed = true;
         }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class CatSpeechBubble : MonoBehaviour
 {
-    private const int CurrentVisualVersion = 12;
+    private const int CurrentVisualVersion = 13;
     private const float HoldDuration = 1.75f;
     private const string VisualRootName = "CatSpeechBubbleVisual";
 
@@ -109,17 +109,19 @@ public sealed class CatSpeechBubble : MonoBehaviour
         RectTransform shadowPanel = EnsureLayer(bubble, "ShadowPanel", new Vector2(288f, 90f),
             Vector2.zero, new Color32(10, 18, 27, 130), 13f, false, -1);
         RectTransform orangeTail = EnsureLayer(bubble, "OrangeTail", new Vector2(42f, 28f),
-            new Vector2(0f, -42f), new Color32(231, 198, 132, 255), 0f, true, 1);
+            new Vector2(0f, -42f), new Color32(211, 207, 195, 255), 0f, true, 1);
         RectTransform orangeFrame = EnsureLayer(bubble, "OrangeFrame", new Vector2(280f, 82f),
-            Vector2.zero, new Color32(231, 198, 132, 255), 13f, false, -1);
+            Vector2.zero, new Color32(211, 207, 195, 255), 13f, false, -1);
         RectTransform creamTail = EnsureLayer(bubble, "CreamTail", new Vector2(42f, 28f),
-            new Vector2(0f, -36f), new Color32(29, 48, 62, 255), 0f, true, 2);
-        RectTransform creamFace = EnsureLayer(bubble, "CreamFace", new Vector2(266f, 68f),
-            new Vector2(0f, 2f), new Color32(29, 48, 62, 255), 9f, false, -1);
+            new Vector2(0f, -39f), new Color32(221, 237, 227, 255), 0f, true, 2);
+        RectTransform creamFace = EnsureLayer(bubble, "CreamFace", new Vector2(276f, 78f),
+            Vector2.zero, new Color32(221, 237, 227, 255), 11f, false, -1);
 
         shadowTail.SetSiblingIndex(0); shadowPanel.SetSiblingIndex(1);
         orangeTail.SetSiblingIndex(2); orangeFrame.SetSiblingIndex(3);
         creamTail.SetSiblingIndex(4); creamFace.SetSiblingIndex(5);
+        shadowTail.gameObject.SetActive(false);
+        shadowPanel.gameObject.SetActive(false);
 
         RectTransform text = EnsureRect(bubble, "Message", new Vector2(244f, 52f));
         text.anchoredPosition = new Vector2(0f, 2f);
@@ -132,7 +134,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         label.fontSize = 23f;
         label.fontStyle = FontStyles.Bold;
         label.alignment = TextAlignmentOptions.Center;
-        label.color = new Color32(255, 249, 237, 255);
+        label.color = PremiumUiStyle.Ink;
         label.enableAutoSizing = true;
         label.fontSizeMin = 18f;
         label.fontSizeMax = 23f;
@@ -187,7 +189,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         for (int i = 0; i < candidates.Length; i++)
         {
             Canvas candidate = candidates[i];
-            if (candidate == null || !candidate.gameObject.scene.IsValid() ||
+            if (candidate == null || candidate.name != "Canvas" || !candidate.gameObject.scene.IsValid() ||
                 candidate.name == VisualRootName || candidate.name == "CatSpeechBubbleCanvas" ||
                 candidate.GetComponentInParent<PetTutorialHint>() != null)
                 continue;

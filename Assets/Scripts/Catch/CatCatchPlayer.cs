@@ -57,8 +57,17 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     public void EditorBind(Animator catAnimator, Camera camera)
     {
-        animator = catAnimator;
+        RebindAnimator(catAnimator);
         BindCamera(camera);
+    }
+
+    public void RebindAnimator(Animator replacement)
+    {
+        if (replacement == null)
+            return;
+        animator = replacement;
+        animator.applyRootMotion = false;
+        speedParameterHash = Animator.StringToHash(speedParameterName);
     }
 
     public void BindCamera(Camera camera)

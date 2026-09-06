@@ -9,6 +9,23 @@ using UnityEngine.UI;
 /// </summary>
 public static class PremiumUiFactory
 {
+    public static Sprite SolidSprite()
+    {
+        const string path = "Assets/UI/PremiumSolid.png";
+        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+        if (sprite != null) return sprite;
+        System.IO.Directory.CreateDirectory("Assets/UI");
+        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+        texture.SetPixels(new[] { Color.white, Color.white, Color.white, Color.white }); texture.Apply();
+        System.IO.File.WriteAllBytes(path, texture.EncodeToPNG()); Object.DestroyImmediate(texture);
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Single;
+        importer.textureCompression = TextureImporterCompression.Uncompressed;
+        importer.mipmapEnabled = false; importer.SaveAndReimport();
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
     public enum CurrencyVisual
     {
         Coin,
@@ -49,7 +66,7 @@ public static class PremiumUiFactory
         if (animate)
         {
             PremiumAmbientSparkle motion = iconObject.AddComponent<PremiumAmbientSparkle>();
-            motion.EditorConfigure(1.25f, 0.035f, 2.2f, 0.65f);
+            motion.EditorConfigure(.7f, 0f, 0f, 0f);
         }
         return true;
     }
@@ -63,9 +80,11 @@ public static class PremiumUiFactory
                  root.GetComponentsInChildren<LowPolyPanelGraphic>(true))
         {
             bool utilitySurface = IsUtilitySurface(panel);
+            panel.ConfigureElevation(!utilitySurface && panel.GetComponent<Mask>() == null);
+            panel.ConfigureReferenceFinish(!utilitySurface && panel.GetComponent<Mask>() == null);
             panel.ConfigureCandyPolish(
-                utilitySurface ? 0f : 0.24f,
-                utilitySurface ? 0f : 0.1f);
+                utilitySurface ? 0f : 0.065f,
+                utilitySurface ? 0f : 0.025f);
         }
 
         foreach (Button button in root.GetComponentsInChildren<Button>(true))
@@ -79,6 +98,8 @@ public static class PremiumUiFactory
         foreach (TMP_Text label in root.GetComponentsInChildren<TMP_Text>(true))
             PolishText(label, font);
 
+        PremiumReferenceArtBuilder.PolishScreen(root);
+
         foreach (RectTransform rect in root.GetComponentsInChildren<RectTransform>(true))
         {
             string name = rect.name;
@@ -90,7 +111,7 @@ public static class PremiumUiFactory
             if (rect.GetComponent<PremiumAmbientSparkle>() == null)
             {
                 PremiumAmbientSparkle sparkle = rect.gameObject.AddComponent<PremiumAmbientSparkle>();
-                sparkle.EditorConfigure(1.7f, 0.1f, 8f, 1.2f);
+                sparkle.EditorConfigure(.6f, .025f, 1f, .3f);
             }
         }
     }
@@ -113,7 +134,7 @@ public static class PremiumUiFactory
         if (surface == null)
             surface = button.GetComponentInChildren<LowPolyPanelGraphic>(true);
         if (surface != null)
-            surface.ConfigureCandyPolish(primary ? 0.32f : 0.22f, primary ? 0.14f : 0.09f);
+            surface.ConfigureCandyPolish(primary ? 0.10f : 0.055f, primary ? 0.04f : 0.025f);
 
         PremiumButtonFx fx = button.GetComponent<PremiumButtonFx>();
         if (fx == null)
@@ -137,8 +158,7 @@ public static class PremiumUiFactory
         foreach (TMP_Text label in button.GetComponentsInChildren<TMP_Text>(true))
         {
             PolishText(label, font);
-            label.fontStyle |= FontStyles.Bold;
-            label.characterSpacing = Mathf.Max(1.1f, label.characterSpacing);
+            PremiumTypography.Apply(label, label.fontSize >= 40f);
         }
     }
 
@@ -146,38 +166,9 @@ public static class PremiumUiFactory
     {
         if (label == null)
             return;
-        if (font != null)
-            label.font = font;
         label.extraPadding = true;
         label.isTextObjectScaleStatic = true;
-
-        bool display = label.fontSize >= 30f ||
-                       label.name.IndexOf("Title", System.StringComparison.OrdinalIgnoreCase) >= 0;
-        if (display)
-        {
-            label.fontStyle |= FontStyles.Bold;
-            label.characterSpacing = Mathf.Max(.8f, label.characterSpacing);
-        }
-        else
-        {
-            label.characterSpacing = Mathf.Clamp(label.characterSpacing, .45f, 1.8f);
-        }
-
-        bool lightText = label.color.r + label.color.g + label.color.b > 1.75f;
-        bool actionText = label.GetComponentInParent<Button>(true) != null;
-        if (lightText && (display || actionText))
-        {
-            label.enableVertexGradient = true;
-            label.colorGradient = new VertexGradient(
-                Color.white,
-                new Color32(255, 252, 244, 255),
-                new Color32(255, 230, 173, 255),
-                new Color32(255, 240, 202, 255));
-        }
-        else
-        {
-            label.enableVertexGradient = false;
-        }
+        PremiumTypography.Apply(label);
     }
 
     public static void ConfigureCurrencyImporters()

@@ -8,6 +8,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using U = PremiumUiElements;
 
 public static class CatRunnerContentBuilder
 {
@@ -55,8 +56,7 @@ public static class CatRunnerContentBuilder
         "Variant_PawPark",
         GardenCourtyardVariantName
     };
-    private const string CatPrefabPath =
-        "Assets/PolyOne/Cartoon Dog, Cat/Prefab/SM_CartoonAnimal_Cat.prefab";
+    private const string CatPrefabPath = PolyperfectCatIntegrationBuilder.PrefabPath;
     private const string RunnerMaterialFolder = "Assets/Art/Runner/Materials";
     private const string PawCoinModelPath =
         "Assets/Art/PremiumCurrency/PawCoin.fbx";
@@ -75,6 +75,8 @@ public static class CatRunnerContentBuilder
     private static readonly Color32 TealDark = new Color32(31, 100, 108, 255);
     private static readonly Color32 Orange = new Color32(238, 126, 48, 255);
     private static readonly Color32 Gold = new Color32(255, 196, 42, 255);
+    private static readonly Color32 Pink = new Color32(242, 101, 154, 255);
+    private static readonly Color32 Lilac = new Color32(177, 130, 226, 255);
     private static readonly Color32 Wood = new Color32(151, 91, 47, 255);
     private static readonly Color32 Wall = new Color32(111, 126, 130, 255);
 
@@ -103,6 +105,18 @@ public static class CatRunnerContentBuilder
         AssetDatabase.Refresh();
         EditorSceneManager.OpenScene(SceneArchitectureBuilder.BootstrapScenePath, OpenSceneMode.Single);
         return "cat-runner-prototype-built";
+    }
+
+    /// <summary>
+    /// Rebuilds only the shared home launcher, Games hub and competition overlay.
+    /// It deliberately leaves the authored Runner world and build settings untouched.
+    /// </summary>
+    public static string BuildLauncherOnlySilently()
+    {
+        EnsureFolders();
+        BuildLaunchButton();
+        AssetDatabase.SaveAssets();
+        return "cat-runner-launcher-built";
     }
 
     public static string EnsureGardenCourtyardVariants()
@@ -171,6 +185,8 @@ public static class CatRunnerContentBuilder
         return "garden-courtyard-variants:" + updated;
     }
 
+    public static void BuildHomeUiSilently() => BuildLaunchButton();
+
     private static void BuildLaunchButton()
     {
         Scene scene = EditorSceneManager.OpenScene(SceneArchitectureBuilder.UiScenePath, OpenSceneMode.Single);
@@ -185,90 +201,24 @@ public static class CatRunnerContentBuilder
 
         GameObject root = CreateUiObject("RunnerLaunchUI", canvas.transform);
         Stretch(root.GetComponent<RectTransform>());
-        CanvasGroup group = root.AddComponent<CanvasGroup>();
 
-        GameObject dock = CreateUiObject("HomeDock", root.transform);
-        LowPolyPanelGraphic dockGraphic = dock.AddComponent<LowPolyPanelGraphic>();
-        PremiumUiStyle.ConfigureAccentSurface(
-            dockGraphic, PremiumUiStyle.NavyLift, PremiumUiStyle.Night, 44f, 5f);
-        SetAnchored(dock.GetComponent<RectTransform>(), new Vector2(.5f, 0f),
-            new Vector2(0f, 76f), new Vector2(790f, 106f));
-
-        GameObject dockRimObject = CreateUiObject("DockRim", dock.transform);
-        LowPolyPanelGraphic dockRim = dockRimObject.AddComponent<LowPolyPanelGraphic>();
-        PremiumUiStyle.ConfigureAccentSurface(
-            dockRim, PremiumUiStyle.ChampagneLight, PremiumUiStyle.Champagne, 40f, 2f);
-        dockRim.raycastTarget = false;
-        StretchWithOffsets(dockRim.rectTransform, 3f, 3f, -3f, -3f);
-        GameObject dockInnerObject = CreateUiObject("DockInner", dock.transform);
-        LowPolyPanelGraphic dockInner = dockInnerObject.AddComponent<LowPolyPanelGraphic>();
-        PremiumUiStyle.ConfigureAccentSurface(
-            dockInner, PremiumUiStyle.NavyLift, PremiumUiStyle.Navy, 38f, 3f);
-        dockInner.raycastTarget = false;
-        StretchWithOffsets(dockInner.rectTransform, 7f, 7f, -7f, -7f);
-
-        Button rooms = CreateButton(
-            dock.transform, "ShopButton", "SHOP", PremiumUiStyle.Teal, new Vector2(230f, 72f));
-        SetAnchored(rooms.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            new Vector2(-260f, 0f), new Vector2(230f, 72f));
-
-        Button button = CreateButton(
-            dock.transform,
-            "PlayCatRunnerButton",
-            "GAMES",
-            Orange,
-            new Vector2(250f, 72f));
-        SetAnchored(button.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            new Vector2(255f, 0f), new Vector2(250f, 72f));
-
-        TMP_Text label = button.GetComponentInChildren<TMP_Text>(true);
-        label.fontSize = 31f;
-        label.fontStyle = FontStyles.Bold;
-
-        GameObject statusPanel = CreateUiObject("CurrentRoomStatus", dock.transform);
-        LowPolyPanelGraphic statusGraphic = statusPanel.AddComponent<LowPolyPanelGraphic>();
-        PremiumUiStyle.ConfigureAccentSurface(
-            statusGraphic, PremiumUiStyle.Night, PremiumUiStyle.Navy, 28f, 2f);
-        SetAnchored(
-            statusPanel.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(255f, 72f));
-        TMP_Text roomProgress = CreateLabel(
-            statusPanel.transform, "RoomProgressLabel",
-            "LIVING ROOM  •  0/" + HomeStoreService.LivingRoomItemCount, 19f,
-            PremiumUiStyle.ChampagneLight);
-        roomProgress.rectTransform.anchorMin = new Vector2(0f, .48f);
-        roomProgress.rectTransform.anchorMax = new Vector2(1f, 1f);
-        roomProgress.rectTransform.offsetMin = new Vector2(10f, 0f);
-        roomProgress.rectTransform.offsetMax = new Vector2(-10f, 0f);
-        roomProgress.alignment = TextAlignmentOptions.Center;
-        roomProgress.fontStyle = FontStyles.Bold;
-        // Room names are data-driven and vary from GARDEN to SECOND FLOOR.
-        // Keep every label on one centered line and let TMP reduce only as much
-        // as the fixed middle capsule requires.
+        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PremiumUiStyle.PremiumFontAssetPath);
+        var dock = U.Rect("HomeDock", root.transform);
+        CanvasGroup group = dock.gameObject.AddComponent<CanvasGroup>();
+        SetAnchored(dock, new Vector2(.5f, 0), new Vector2(0, 78), new Vector2(816, 92));
+        var rooms = U.Action("ShopButton", dock, font, "title.shop", PremiumUiStyle.Ivory,
+            -294, 0, 204, 80, out var shopText);
+        var button = U.Action("PlayCatRunnerButton", dock, font, "title.games", PremiumUiStyle.Ivory,
+            294, 0, 204, 80, out var label);
+        var roomButton = U.Action("CurrentRoomStatus", dock, font, null, PremiumUiStyle.Ivory,
+            0, 0, 344, 80, out var roomProgress);
+        roomButton.gameObject.AddComponent<RoomNavigationShortcut>();
+        roomProgress.name = "RoomProgressLabel"; roomProgress.fontSize = 23;
+        roomProgress.enableAutoSizing = true; roomProgress.fontSizeMin = 18; roomProgress.fontSizeMax = 23;
         roomProgress.textWrappingMode = TextWrappingModes.NoWrap;
-        roomProgress.overflowMode = TextOverflowModes.Truncate;
-        roomProgress.enableAutoSizing = true;
-        roomProgress.fontSizeMin = 11f;
-        roomProgress.fontSizeMax = 19f;
-        TMP_Text energy = CreateLabel(
-            statusPanel.transform,
-            "RunnerEnergyLabel",
-            "RUN 5/5  •  CATCH 5/5",
-            17f,
-            PremiumUiStyle.TealLift);
-        energy.rectTransform.anchorMin = new Vector2(0f, 0f);
-        energy.rectTransform.anchorMax = new Vector2(1f, .52f);
-        energy.rectTransform.offsetMin = new Vector2(12f, 6f);
-        energy.rectTransform.offsetMax = new Vector2(-12f, 0f);
-        energy.alignment = TextAlignmentOptions.Center;
-        energy.fontStyle = FontStyles.Bold;
-        // The capsule is fixed width but the text is not: the unlimited Catch
-        // entitlement prints a whole word where a count usually sits, and at a
-        // fixed size that wrapped out of the capsule and over the dock.
-        energy.textWrappingMode = TextWrappingModes.NoWrap;
-        energy.enableAutoSizing = true;
-        energy.fontSizeMin = 11f;
-        energy.fontSizeMax = 17f;
+        U.At(roomProgress.rectTransform, 0, 13, 312, 34);
+        var energy = U.Label("RunnerEnergyLabel", roomButton.targetGraphic.transform, font,
+            16, PremiumUiStyle.Muted, 0, -21, 310, 24, TextAlignmentOptions.Center);
 
         Button rewardedAd = CreateButton(
             root.transform,
@@ -301,6 +251,7 @@ public static class CatRunnerContentBuilder
         CatRunnerLauncher runnerLauncher,
         CatCatchLauncher catchLauncher)
     {
+        LeaderboardPanel leaderboardPanel = BuildLeaderboardPanel(parent);
         GameObject hubRoot = CreateUiObject("GamesHubPanel", parent);
         Stretch(hubRoot.GetComponent<RectTransform>());
         CanvasGroup hubGroup = hubRoot.AddComponent<CanvasGroup>();
@@ -310,87 +261,64 @@ public static class CatRunnerContentBuilder
         closeScrim.targetGraphic = scrim;
         closeScrim.transition = Selectable.Transition.None;
 
-        Color32 headerPink = new Color32(255, 101, 154, 255);
-
-        // Gold glow rim so the panel reads as the same premium class as the game
-        // welcome cards, not a plain cream slab.
-        GameObject glow = CreatePremiumPanel(
-            hubRoot.transform, "GamesHubGlow", new Color32(255, 221, 86, 220), 50f);
-        SetAnchored(glow.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(1044f, 724f));
-        GameObject cardShadow = CreatePremiumPanel(
-            hubRoot.transform, "GamesHubCardShadow", new Color32(126, 92, 176, 255), 46f);
-        SetAnchored(cardShadow.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(1020f, 700f));
-        GameObject card = CreatePremiumPanel(
-            hubRoot.transform, "GamesHubCard", new Color32(255, 242, 211, 255), 46f);
-        SetAnchored(card.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(1000f, 680f));
-
-        // Pink header band carrying the eyebrow + title, matching the two welcome
-        // cards so the whole Games flow shares one identity.
-        GameObject header = CreatePremiumPanel(card.transform, "GamesHeader", headerPink, 38f);
-        RectTransform headerRect = header.GetComponent<RectTransform>();
-        headerRect.anchorMin = new Vector2(0f, 1f);
-        headerRect.anchorMax = new Vector2(1f, 1f);
-        headerRect.pivot = new Vector2(0.5f, 1f);
-        headerRect.sizeDelta = new Vector2(0f, 140f);
-        headerRect.anchoredPosition = Vector2.zero;
-
-        TMP_Text eyebrow = CreateLabel(header.transform, "GamesEyebrow", "ARCADE CORNER", 18f, Cream);
-        SetAnchored(eyebrow.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -30f), new Vector2(520f, 26f));
-        eyebrow.alignment = TextAlignmentOptions.Center;
-        eyebrow.characterSpacing = 8f;
-        eyebrow.fontStyle = FontStyles.Bold;
-
-        TMP_Text title = CreateLabel(header.transform, "GamesTitle", "GAMES", 52f, Cream);
-        SetAnchored(title.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -84f), new Vector2(400f, 64f));
-        title.alignment = TextAlignmentOptions.Center;
-        title.fontStyle = FontStyles.Bold;
-
-        TMP_Text subtitle = CreateLabel(card.transform, "GamesSubtitle",
-            "EACH GAME KEEPS ITS OWN 5 LIVES", 19f, TealDark);
-        SetAnchored(subtitle.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -170f), new Vector2(720f, 30f));
-        subtitle.alignment = TextAlignmentOptions.Center;
-        subtitle.fontStyle = FontStyles.Bold;
-
-        // Corner sparkles for a little candy polish.
-        AddHubSparkle(card.transform, "SparkleLeft", new Vector2(-430f, 150f), 26f, headerPink);
-        AddHubSparkle(card.transform, "SparkleRight", new Vector2(430f, 150f), 26f, new Color32(91, 210, 191, 255));
-        AddHubSparkle(card.transform, "SparkleLower", new Vector2(-452f, -250f), 20f, Gold);
-
-        Button runnerCard = BuildGameCard(
-            card.transform, "HubCatRunnerButton", "CAT RUNNER", "ENDLESS DASH",
-            "RUN", Orange, "Assets/Art/Runner/UI/CatRunnerHero_v1.png",
-            new Vector2(-214f, -30f), out TMP_Text runnerLives);
-        Button catchCard = BuildGameCard(
-            card.transform, "HubCatCatchButton", "CAT CATCH", "60s MOUSE HUNT",
-            "HUNT", Teal, "Assets/Art/Catch/UI/CatCatchHero_v1.png",
-            new Vector2(214f, -30f), out TMP_Text catchLives);
-
-        TMP_Text hubHint = CreateLabel(card.transform, "GamesHubHint",
-            "TAP A GAME TO START PLAYING", 16f, TealDark);
-        SetAnchored(hubHint.rectTransform, new Vector2(.5f, 0f),
-            new Vector2(0f, 132f), new Vector2(720f, 26f));
-        hubHint.alignment = TextAlignmentOptions.Center;
-        hubHint.alpha = 0.85f;
-        hubHint.fontStyle = FontStyles.Bold;
-
-        Button close = CreateButton(
-            card.transform, "GamesHubClose", "CLOSE", new Color32(188, 143, 235, 255),
-            new Vector2(260f, 66f));
-        SetAnchored(close.GetComponent<RectTransform>(), new Vector2(.5f, 0f),
-            new Vector2(0f, 44f), new Vector2(260f, 66f));
-        closeScrim.onClick.AddListener(close.onClick.Invoke);
+        var font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PremiumUiStyle.PremiumFontAssetPath);
+        var card=U.Panel("GamesHubCard",hubRoot.transform,PremiumUiStyle.Ivory,0,0,1460,860,32,true);
+        var safe=U.Rect("SafeArea",hubRoot.transform);U.Fill(safe);safe.gameObject.AddComponent<SafeAreaRect>();card.transform.SetParent(safe,false);
+        U.Localize(U.Label("GamesTitle",card.transform,font,48,PremiumUiStyle.Ink,-235,346,850,72),"games.title");
+        U.Localize(U.Label("GamesSubtitle",card.transform,font,23,PremiumUiStyle.Muted,-135,286,1050,42),"games.intro");
+        var runnerCard=BuildGameCard(card.transform,"HubCatRunnerButton","Cat Runner","runner.card_intro","runner.start",PremiumUiStyle.Coral,"Assets/Art/Games/RunnerPreview.png",new Vector2(-334,-37),out var runnerLives);
+        var catchCard=BuildGameCard(card.transform,"HubCatCatchButton","Cat Catch","catch.card_intro","catch.start",PremiumUiStyle.Teal,"Assets/Art/Games/CatchPreview.png",new Vector2(334,-37),out var catchLives);
+        var rankings=U.Action("GamesHubLeaderboards",card.transform,font,"games.rankings",PremiumUiStyle.Mint,0,-379,410,62,out var rankingsLabel);
+        var close=U.Action("GamesHubClose",card.transform,font,null,PremiumUiStyle.WarmIvory,657,358,60,60,out var closeLabel);closeLabel.text="×";closeLabel.fontSize=34;
+        hubRoot.AddComponent<CatRunnerResponsiveLayout>().EditorConfigure(safe,null,card.rectTransform,null,null,null);
 
         GamesHubPanel hub = hubRoot.AddComponent<GamesHubPanel>();
         hub.EditorConfigure(
             hubGroup, close, runnerCard, catchCard,
-            runnerLives, catchLives, runnerLauncher, catchLauncher);
+            runnerLives, catchLives, runnerLauncher, catchLauncher,
+            rankings, leaderboardPanel);
         return hub;
+    }
+
+    private static LeaderboardPanel BuildLeaderboardPanel(Transform parent)
+    {
+        return PremiumLeaderboardBuilder.Build(parent);
+    }
+
+    private static void BuildLeaderboardPodiumCard(
+        Transform parent,
+        string name,
+        string rankLabel,
+        Color color,
+        Vector2 position,
+        Vector2 size,
+        out TMP_Text playerName,
+        out TMP_Text score)
+    {
+        GameObject card = CreatePremiumPanel(parent, name, color, 24f);
+        SetAnchored(card.GetComponent<RectTransform>(), new Vector2(.5f, .5f), position, size);
+
+        TMP_Text rank = CreateLabel(card.transform, "RankBadge", rankLabel, 14f, TealDark);
+        SetAnchored(rank.rectTransform, new Vector2(.5f, 1f),
+            new Vector2(0f, -20f), new Vector2(size.x - 24f, 22f));
+        rank.alignment = TextAlignmentOptions.Center;
+        rank.fontStyle = FontStyles.Bold;
+        rank.characterSpacing = 2f;
+
+        playerName = CreateLabel(card.transform, "PlayerName", "OPEN SPOT", 20f, Dark);
+        SetAnchored(playerName.rectTransform, new Vector2(.5f, .5f),
+            new Vector2(0f, -2f), new Vector2(size.x - 24f, 30f));
+        playerName.alignment = TextAlignmentOptions.Center;
+        playerName.fontStyle = FontStyles.Bold;
+        playerName.enableAutoSizing = true;
+        playerName.fontSizeMin = 14f;
+        playerName.fontSizeMax = 20f;
+
+        score = CreateLabel(card.transform, "Score", "PLAY TO CLAIM", 14f, Dark);
+        SetAnchored(score.rectTransform, new Vector2(.5f, 0f),
+            new Vector2(0f, 18f), new Vector2(size.x - 24f, 22f));
+        score.alignment = TextAlignmentOptions.Center;
+        score.fontStyle = FontStyles.Bold;
     }
 
     private static void AddHubSparkle(
@@ -407,81 +335,24 @@ public static class CatRunnerContentBuilder
     /// short descriptor and a lives readout. The cream rim is intentional — flat
     /// coloured slabs without a frame read as unfinished next to the dock CTAs.
     /// </summary>
-    private static Button BuildGameCard(
-        Transform parent,
-        string name,
-        string title,
-        string descriptor,
-        string badge,
-        Color color,
-        string heroPath,
-        Vector2 position,
-        out TMP_Text livesLabel)
+    private static Button BuildGameCard(Transform parent,string name,string title,string descriptor,string action,Color color,string heroPath,Vector2 position,out TMP_Text livesLabel)
     {
-        var outerSize = new Vector2(420f, 312f);
-        var innerSize = new Vector2(400f, 292f);
-
-        GameObject frame = CreatePremiumPanel(
-            parent, name + "Frame", new Color32(255, 247, 224, 255), 40f);
-        SetAnchored(frame.GetComponent<RectTransform>(), new Vector2(.5f, .5f), position, outerSize);
-
-        Button card = CreateButton(frame.transform, name, string.Empty, color, innerSize);
-        SetAnchored(card.GetComponent<RectTransform>(), new Vector2(.5f, .5f), Vector2.zero, innerSize);
-
-        TMP_Text existing = card.GetComponentInChildren<TMP_Text>(true);
-        if (existing != null)
-            existing.gameObject.SetActive(false);
-
-        GameObject badgePanel = CreatePremiumPanel(
-            card.transform, "Badge", new Color32(255, 247, 224, 255), 22f);
-        SetAnchored(badgePanel.GetComponent<RectTransform>(), new Vector2(.5f, 1f),
-            new Vector2(0f, -34f), new Vector2(150f, 52f));
-        TMP_Text badgeLabel = CreateLabel(badgePanel.transform, "BadgeLabel", badge, 22f, Dark);
-        Stretch(badgeLabel.rectTransform);
-        badgeLabel.alignment = TextAlignmentOptions.Center;
-        badgeLabel.fontStyle = FontStyles.Bold;
-
-        TMP_Text nameLabel = CreateLabel(card.transform, "Name", title, 30f, Cream);
-        SetAnchored(nameLabel.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -170f), new Vector2(360f, 38f));
-        nameLabel.alignment = TextAlignmentOptions.Center;
-        nameLabel.fontStyle = FontStyles.Bold;
-
-        GameObject previewWell = CreatePremiumPanel(
-            card.transform, "HeroPreviewWell", new Color32(255, 247, 224, 255), 18f);
-        SetAnchored(previewWell.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            new Vector2(0f, 35f), new Vector2(344f, 90f));
-        previewWell.AddComponent<RectMask2D>();
-        Texture2D heroTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(heroPath);
-        if (heroTexture != null)
-        {
-            GameObject artObject = CreateUiObject("HeroArt", previewWell.transform);
-            RectTransform artRect = artObject.GetComponent<RectTransform>();
-            Stretch(artRect);
-            RawImage art = artObject.AddComponent<RawImage>();
-            art.texture = heroTexture;
-            art.color = Color.white;
-            art.raycastTarget = false;
-            art.uvRect = RoomPreviewFit.CoverUv(
-                heroTexture.width, heroTexture.height, 344f, 90f);
-        }
-
-        TMP_Text descriptorLabel = CreateLabel(card.transform, "Descriptor", descriptor, 19f, Cream);
-        SetAnchored(descriptorLabel.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -210f), new Vector2(360f, 26f));
-        descriptorLabel.alignment = TextAlignmentOptions.Center;
-        descriptorLabel.alpha = 0.86f;
-        descriptorLabel.fontStyle = FontStyles.Bold;
-
-        GameObject livesPanel = CreatePremiumPanel(
-            card.transform, "LivesPanel", new Color32(255, 247, 224, 255), 20f);
-        SetAnchored(livesPanel.GetComponent<RectTransform>(), new Vector2(.5f, 0f),
-            new Vector2(0f, 34f), new Vector2(340f, 58f));
-        livesLabel = CreateLabel(livesPanel.transform, "Lives", "LIVES  5/5", 22f, Dark);
-        Stretch(livesLabel.rectTransform);
-        livesLabel.alignment = TextAlignmentOptions.Center;
-        livesLabel.fontStyle = FontStyles.Bold;
-        return card;
+        var font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PremiumUiStyle.PremiumFontAssetPath);
+        var root=U.Rect(name,parent);U.At(root,position.x,position.y,636,566);
+        var face=U.Panel("Visual",root,PremiumUiStyle.WarmIvory,0,0,636,566,28,true);
+        var well=U.Panel("HeroPreviewWell",face.transform,PremiumUiStyle.Mint,0,103,600,338,20);
+        well.gameObject.AddComponent<Mask>().showMaskGraphic=true;
+        var image=U.Rect("HeroArt",well.transform);U.Fill(image);
+        var art=image.gameObject.AddComponent<RawImage>();art.texture=AssetDatabase.LoadAssetAtPath<Texture2D>(heroPath);art.raycastTarget=false;
+        if(art.texture!=null)art.uvRect=RoomPreviewFit.CoverUv(art.texture.width,art.texture.height,600,338);
+        U.Label("Title",face.transform,font,34,PremiumUiStyle.Ink,0,-105,584,48).text=title;
+        U.Localize(U.Label("Descriptor",face.transform,font,23,PremiumUiStyle.Muted,0,-155,584,46),descriptor);
+        livesLabel=U.Label("Lives",face.transform,font,23,PremiumUiStyle.Teal,-157,-232,270,44);
+        var actionFace=U.Panel("Action",face.transform,color,169,-232,260,68,32);
+        var actionLabel=U.Label("Label",actionFace.transform,font,23,color==PremiumUiStyle.Teal?Color.white:PremiumUiStyle.Ink,0,0,224,50,TextAlignmentOptions.Center);U.Localize(actionLabel,action);actionLabel.textWrappingMode=TextWrappingModes.NoWrap;
+        var button=root.gameObject.AddComponent<Button>();button.targetGraphic=face;button.transition=Selectable.Transition.None;
+        root.gameObject.AddComponent<PremiumButtonFx>().Configure(face.rectTransform,face,button,false);
+        return button;
     }
 
     private static void BuildRunnerScene()
@@ -577,6 +448,10 @@ public static class CatRunnerContentBuilder
             uiExtras.TutorialPanel,
             uiExtras.TutorialText,
             uiExtras.TutorialSkip);
+
+        var uiBindings=new SerializedObject(game);
+        uiBindings.FindProperty("resultDoubleCoinsButton").objectReferenceValue=results.transform.Find("ResultsSafeArea/ResultsCardLayout/DoubleCoinsButton").GetComponent<Button>();
+        uiBindings.ApplyModifiedPropertiesWithoutUndo();
 
         CatRunnerResponsiveLayout responsive =
             canvas.gameObject.AddComponent<CatRunnerResponsiveLayout>();
@@ -722,7 +597,7 @@ public static class CatRunnerContentBuilder
         visual.transform.localRotation = Quaternion.identity;
         visual.transform.localScale = Vector3.one * 0.5f;
 
-        Animator animator = visual.GetComponent<Animator>();
+        Animator animator = visual.GetComponentInChildren<Animator>(true);
         CatRunnerPlayer player = root.AddComponent<CatRunnerPlayer>();
         player.EditorConfigure(animator, visual.transform);
         return player;
@@ -2789,6 +2664,7 @@ public static class CatRunnerContentBuilder
         Stretch(safeArea);
         safeAreaObject.AddComponent<SafeAreaRect>();
         extras.SafeArea = safeArea;
+        safeAreaObject.AddComponent<RunnerHudVisibility>();
 
         // Harmonised HUD grid: three equal-width stat capsules on top (coins /
         // time / distance) and a matching secondary row below (chances / stage •
@@ -2838,7 +2714,7 @@ public static class CatRunnerContentBuilder
             coinMark.alignment = TextAlignmentOptions.Center;
             coinMark.fontStyle = FontStyles.Bold;
         }
-        coins = CreateLabel(coinHudCapsule.transform, "CoinLabel", "0", 34f, Gold);
+        coins = CreateLabel(coinHudCapsule.transform, "CoinLabel", "0", 34f, PremiumUiStyle.Ink);
         SetAnchored(coins.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(36f, 0f),
             new Vector2(topPillWidth - 120f, topPillHeight - 12f));
         coins.alignment = TextAlignmentOptions.Center;
@@ -2949,490 +2825,19 @@ public static class CatRunnerContentBuilder
         countdown.alignment = TextAlignmentOptions.Center;
         countdown.fontStyle = FontStyles.Bold;
 
-        welcome = CreatePanel(
-            canvasObject.transform, "WelcomePanel", new Color32(52, 44, 137, 238));
-        Stretch(welcome.GetComponent<RectTransform>());
-        GameObject candyLeft = CreatePanel(
-            welcome.transform, "CandyGlowLeft", new Color32(54, 227, 216, 118));
-        SetAnchored(candyLeft.GetComponent<RectTransform>(), new Vector2(0f, .5f),
-            new Vector2(85f, 0f), new Vector2(390f, 1240f));
-        candyLeft.transform.localRotation = Quaternion.Euler(0f, 0f, -17f);
-        GameObject candyRight = CreatePanel(
-            welcome.transform, "CandyGlowRight", new Color32(255, 100, 177, 124));
-        SetAnchored(candyRight.GetComponent<RectTransform>(), new Vector2(1f, .5f),
-            new Vector2(-70f, 0f), new Vector2(390f, 1240f));
-        candyRight.transform.localRotation = Quaternion.Euler(0f, 0f, 17f);
-
-        GameObject welcomeSafeObject = CreateUiObject("WelcomeSafeArea", welcome.transform);
-        RectTransform welcomeSafe = welcomeSafeObject.GetComponent<RectTransform>();
-        Stretch(welcomeSafe);
-        welcomeSafeObject.AddComponent<SafeAreaRect>();
-        GameObject welcomeLayout = CreateUiObject(
-            "WelcomeCardLayout",
-            welcomeSafeObject.transform);
-        RectTransform welcomeLayoutRect = welcomeLayout.GetComponent<RectTransform>();
-        SetAnchored(
-            welcomeLayoutRect,
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(1120f, 790f));
-        extras.WelcomeCard = welcomeLayoutRect;
-
-        GameObject welcomeGlow = CreatePremiumPanel(
-            welcomeLayout.transform, "WelcomeCardGlow", new Color32(255, 221, 86, 220), 48f);
-        SetAnchored(welcomeGlow.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(1120f, 790f));
-        GameObject welcomeCard = CreatePremiumPanel(
-            welcomeLayout.transform, "WelcomeCard", new Color32(255, 242, 211, 255), 42f);
-        SetAnchored(welcomeCard.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(1100f, 770f));
-        GameObject cardHeader = CreatePremiumPanel(
-            welcomeCard.transform, "CardHeader", new Color32(255, 101, 154, 255), 34f);
-        RectTransform cardHeaderRect = cardHeader.GetComponent<RectTransform>();
-        cardHeaderRect.anchorMin = new Vector2(0f, 1f);
-        cardHeaderRect.anchorMax = new Vector2(1f, 1f);
-        cardHeaderRect.pivot = new Vector2(.5f, 1f);
-        cardHeaderRect.sizeDelta = new Vector2(0f, 170f);
-        cardHeaderRect.anchoredPosition = Vector2.zero;
-        TMP_Text eyebrow = CreateLabel(
-            cardHeader.transform, "Eyebrow", "A PURRFECT ADVENTURE", 20f, Cream);
-        SetAnchored(eyebrow.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -36f), new Vector2(600f, 30f));
-        eyebrow.alignment = TextAlignmentOptions.Center;
-        eyebrow.fontStyle = FontStyles.Bold;
-        TMP_Text welcomeTitle = CreateLabel(
-            cardHeader.transform, "WelcomeTitle", "CAT RUNNER", 64f, Cream);
-        SetAnchored(welcomeTitle.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(0f, -100f), new Vector2(680f, 82f));
-        welcomeTitle.alignment = TextAlignmentOptions.Center;
-        welcomeTitle.fontStyle = FontStyles.Bold;
-
-        ConfigureRunnerHeroImporter();
-        Texture2D runnerHero = AssetDatabase.LoadAssetAtPath<Texture2D>(RunnerHeroPath);
-        if (runnerHero != null)
-        {
-            GameObject heroFrame = CreatePremiumPanel(
-                welcomeCard.transform, "WelcomeHeroFrame", new Color32(255, 205, 64, 255), 34f);
-            SetAnchored(heroFrame.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-                new Vector2(-274f, -64f), new Vector2(516f, 516f));
-            Mask heroMask = heroFrame.AddComponent<Mask>();
-            heroMask.showMaskGraphic = true;
-            GameObject heroObject = CreateUiObject("WelcomeHeroArt", heroFrame.transform);
-            RawImage heroImage = heroObject.AddComponent<RawImage>();
-            heroImage.texture = runnerHero;
-            heroImage.uvRect = new Rect(0f, 0f, 1f, 1f);
-            heroImage.color = Color.white;
-            heroImage.raycastTarget = false;
-            StretchWithOffsets(heroImage.rectTransform, 8f, 8f, -8f, -8f);
-
-            GameObject heroGlint = CreatePremiumPanel(
-                heroFrame.transform, "HeroGlintSparkle", new Color32(255, 255, 255, 96), 16f);
-            SetAnchored(heroGlint.GetComponent<RectTransform>(), new Vector2(.72f, .82f),
-                Vector2.zero, new Vector2(94f, 14f));
-            heroGlint.transform.localRotation = Quaternion.Euler(0f, 0f, -24f);
-        }
-
-        TMP_Text tagline = CreateLabel(
-            welcomeCard.transform, "Tagline",
-            "CHASE PAW COINS  •  DODGE CAT TOYS  •  BEAT YOUR BEST", 20f, Dark);
-        SetAnchored(tagline.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(270f, -230f), new Vector2(470f, 66f));
-        tagline.alignment = TextAlignmentOptions.Center;
-        tagline.fontStyle = FontStyles.Bold;
-
-        GameObject scorePill = CreatePremiumPanel(
-            welcomeCard.transform, "BestScorePill", new Color32(100, 59, 167, 255), 28f);
-        SetAnchored(scorePill.GetComponent<RectTransform>(), new Vector2(.5f, 1f),
-            new Vector2(270f, -326f), new Vector2(430f, 82f));
-        welcomeBest = CreateLabel(
-            scorePill.transform, "BestScore", "BEST SCORE   0", 31f, Gold);
-        Stretch(welcomeBest.rectTransform);
-        welcomeBest.alignment = TextAlignmentOptions.Center;
-        welcomeBest.fontStyle = FontStyles.Bold;
-
-        welcomeEnergy = CreateLabel(
-            welcomeCard.transform, "WelcomeEnergy", "1 LIFE PER RUN", 18f, TealDark);
-        SetAnchored(welcomeEnergy.rectTransform, new Vector2(.5f, 1f),
-            new Vector2(270f, -394f), new Vector2(470f, 44f));
-        welcomeEnergy.alignment = TextAlignmentOptions.Center;
-        welcomeEnergy.fontStyle = FontStyles.Bold;
-
-        GameObject missionPill = CreatePremiumPanel(
-            welcomeCard.transform,
-            "DailyMissionPill",
-            new Color32(91, 210, 191, 255),
-            24f);
-        SetAnchored(
-            missionPill.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(270f, -475f),
-            new Vector2(470f, 80f));
-        extras.WelcomeMissions = CreateLabel(
-            missionPill.transform,
-            "DailyMissions",
-            "DAILY MISSIONS  •  COINS 0/50  •  JUMPS 0/10  •  DISTANCE 0/500 m",
-            15f,
-            Dark);
-        StretchWithOffsets(extras.WelcomeMissions.rectTransform, 12f, 6f, -12f, -6f);
-        extras.WelcomeMissions.alignment = TextAlignmentOptions.Center;
-        extras.WelcomeMissions.fontStyle = FontStyles.Bold;
-
-        welcomeStart = CreateButton(
-            welcomeCard.transform, "WelcomeStartButton", "START RUN", Orange,
-            new Vector2(430f, 94f));
-        SetAnchored(welcomeStart.GetComponent<RectTransform>(), new Vector2(.5f, 0f),
-            new Vector2(270f, 175f), new Vector2(430f, 94f));
-        welcomeStart.GetComponentInChildren<TMP_Text>(true).fontSize = 36f;
-        extras.WelcomeRewarded = CreateButton(
-            welcomeCard.transform,
-            "WelcomeRewardedEnergyButton",
-            "WATCH • LIVES +2",
-            Teal,
-            new Vector2(430f, 94f));
-        SetAnchored(
-            extras.WelcomeRewarded.GetComponent<RectTransform>(),
-            new Vector2(.5f, 0f),
-            new Vector2(270f, 175f),
-            new Vector2(430f, 94f));
-        extras.WelcomeRewarded.GetComponentInChildren<TMP_Text>(true).fontSize = 28f;
-        extras.WelcomeRewarded.gameObject.SetActive(false);
-        welcomeExit = CreateButton(
-            welcomeCard.transform, "WelcomeExitButton", "EXIT TO MAIN MENU", Teal,
-            new Vector2(430f, 76f));
-        SetAnchored(welcomeExit.GetComponent<RectTransform>(), new Vector2(.5f, 0f),
-            new Vector2(270f, 80f), new Vector2(430f, 76f));
-        TMP_Text controls = CreateLabel(
-            welcomeCard.transform,
-            "Controls",
-            "DRAG TO MOVE  •  SWIPE UP TO JUMP  •  SWIPE DOWN TO SLIDE",
-            14f,
-            Dark);
-        SetAnchored(controls.rectTransform, new Vector2(.5f, 0f),
-            new Vector2(270f, 23f), new Vector2(480f, 34f));
-        controls.alignment = TextAlignmentOptions.Center;
-
-        results = CreatePanel(canvasObject.transform, "ResultsPanel", new Color32(70, 34, 132, 232));
-        Stretch(results.GetComponent<RectTransform>());
-
-        GameObject resultRibbonLeft = CreatePanel(
-            results.transform, "ResultCandyRibbonLeft", new Color32(47, 233, 218, 108));
-        SetAnchored(resultRibbonLeft.GetComponent<RectTransform>(), new Vector2(0f, .5f),
-            new Vector2(100f, 0f), new Vector2(430f, 1260f));
-        resultRibbonLeft.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
-        GameObject resultRibbonRight = CreatePanel(
-            results.transform, "ResultCandyRibbonRight", new Color32(255, 104, 171, 112));
-        SetAnchored(resultRibbonRight.GetComponent<RectTransform>(), new Vector2(1f, .5f),
-            new Vector2(-90f, 0f), new Vector2(430f, 1260f));
-        resultRibbonRight.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
-
-        GameObject resultsSafeObject = CreateUiObject("ResultsSafeArea", results.transform);
-        RectTransform resultsSafe = resultsSafeObject.GetComponent<RectTransform>();
-        Stretch(resultsSafe);
-        resultsSafeObject.AddComponent<SafeAreaRect>();
-        GameObject resultsLayout = CreateUiObject(
-            "ResultsCardLayout",
-            resultsSafeObject.transform);
-        RectTransform resultsLayoutRect = resultsLayout.GetComponent<RectTransform>();
-        SetAnchored(
-            resultsLayoutRect,
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(720f, 800f));
-        extras.ResultsCard = resultsLayoutRect;
-
-        GameObject resultCardGlow = CreatePremiumPanel(
-            resultsLayout.transform, "ResultsCardGlow", new Color32(255, 210, 64, 225), 48f);
-        SetAnchored(resultCardGlow.GetComponent<RectTransform>(), new Vector2(.5f, .5f),
-            Vector2.zero, new Vector2(720f, 800f));
-
-        GameObject card = CreatePremiumPanel(
-            resultsLayout.transform, "ResultsCard", new Color32(255, 239, 202, 255), 46f);
-        RectTransform cardRect = card.GetComponent<RectTransform>();
-        cardRect.anchorMin = cardRect.anchorMax = new Vector2(0.5f, 0.5f);
-        cardRect.pivot = new Vector2(0.5f, 0.5f);
-        cardRect.sizeDelta = new Vector2(696f, 776f);
-        cardRect.anchoredPosition = Vector2.zero;
-
-        GameObject resultHeader = CreatePremiumPanel(
-            card.transform, "ResultsHeader", new Color32(255, 92, 157, 255), 34f);
-        RectTransform resultHeaderRect = resultHeader.GetComponent<RectTransform>();
-        resultHeaderRect.anchorMin = new Vector2(0f, 1f);
-        resultHeaderRect.anchorMax = new Vector2(1f, 1f);
-        resultHeaderRect.pivot = new Vector2(.5f, 1f);
-        resultHeaderRect.sizeDelta = new Vector2(0f, 138f);
-        resultHeaderRect.anchoredPosition = Vector2.zero;
-
-        resultTitle = CreateLabel(resultHeader.transform, "ResultTitle", "RUN OVER", 48f, Cream);
-        Stretch(resultTitle.rectTransform);
-        resultTitle.alignment = TextAlignmentOptions.Center;
-        resultTitle.fontStyle = FontStyles.Bold;
-
-        extras.NewBestBadge = CreatePremiumPanel(
-            card.transform,
-            "NewBestBadge",
-            new Color32(255, 205, 54, 255),
-            22f);
-        SetAnchored(
-            extras.NewBestBadge.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -151f),
-            new Vector2(260f, 52f));
-        TMP_Text newBestText = CreateLabel(
-            extras.NewBestBadge.transform,
-            "NewBestLabel",
-            "NEW BEST!",
-            25f,
-            Dark);
-        Stretch(newBestText.rectTransform);
-        newBestText.alignment = TextAlignmentOptions.Center;
-        newBestText.fontStyle = FontStyles.Bold;
-
-        GameObject resultStatsSurface = CreatePremiumPanel(
-            card.transform,
-            "ResultStatsSurface",
-            new Color32(255, 250, 231, 255),
-            30f);
-        SetAnchored(
-            resultStatsSurface.GetComponent<RectTransform>(),
-            new Vector2(.5f, .62f),
-            new Vector2(0f, -16f),
-            new Vector2(570f, 334f));
-
-        resultDetails = CreateLabel(card.transform, "ResultDetails", string.Empty, 30f, Dark);
-        SetAnchored(
-            resultDetails.rectTransform,
-            new Vector2(0.5f, 0.62f),
-            new Vector2(0f, -16f),
-            new Vector2(560f, 310f));
-        resultDetails.alignment = TextAlignmentOptions.Center;
-        resultDetails.lineSpacing = 18f;
-
-        GameObject resultMissionPill = CreatePremiumPanel(
-            card.transform,
-            "ResultMissionPill",
-            new Color32(100, 215, 194, 255),
-            22f);
-        SetAnchored(
-            resultMissionPill.GetComponent<RectTransform>(),
-            new Vector2(.5f, 0f),
-            new Vector2(0f, 210f),
-            new Vector2(560f, 56f));
-        extras.ResultMissions = CreateLabel(
-            resultMissionPill.transform,
-            "ResultMissions",
-            "DAILY MISSIONS",
-            14f,
-            Dark);
-        StretchWithOffsets(extras.ResultMissions.rectTransform, 10f, 4f, -10f, -4f);
-        extras.ResultMissions.alignment = TextAlignmentOptions.Center;
-        extras.ResultMissions.fontStyle = FontStyles.Bold;
-
-        collect = CreateButton(card.transform, "CollectButton", "HOME", Orange, new Vector2(450f, 82f));
-        SetAnchored(collect.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0f, 126f), new Vector2(450f, 82f));
-        retry = CreateButton(card.transform, "RetryButton", "RUN AGAIN", Teal, new Vector2(450f, 72f));
-        SetAnchored(retry.GetComponent<RectTransform>(), new Vector2(0.5f, 0f), new Vector2(0f, 42f), new Vector2(450f, 72f));
-
-        extras.PausePanel = CreatePanel(
-            canvasObject.transform,
-            "PausePanel",
-            new Color32(35, 35, 88, 220));
-        Stretch(extras.PausePanel.GetComponent<RectTransform>());
-        GameObject pauseRibbonLeft = CreatePanel(
-            extras.PausePanel.transform,
-            "PauseAquaRibbon",
-            new Color32(50, 224, 211, 105));
-        SetAnchored(
-            pauseRibbonLeft.GetComponent<RectTransform>(),
-            new Vector2(0f, .5f),
-            new Vector2(110f, 0f),
-            new Vector2(420f, 1260f));
-        pauseRibbonLeft.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
-        GameObject pauseRibbonRight = CreatePanel(
-            extras.PausePanel.transform,
-            "PausePinkRibbon",
-            new Color32(255, 102, 169, 110));
-        SetAnchored(
-            pauseRibbonRight.GetComponent<RectTransform>(),
-            new Vector2(1f, .5f),
-            new Vector2(-100f, 0f),
-            new Vector2(420f, 1260f));
-        pauseRibbonRight.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
-
-        GameObject pauseSafeObject = CreateUiObject(
-            "PauseSafeArea",
-            extras.PausePanel.transform);
-        RectTransform pauseSafe = pauseSafeObject.GetComponent<RectTransform>();
-        Stretch(pauseSafe);
-        pauseSafeObject.AddComponent<SafeAreaRect>();
-        GameObject pauseLayout = CreateUiObject(
-            "PauseCardLayout",
-            pauseSafeObject.transform);
-        RectTransform pauseLayoutRect = pauseLayout.GetComponent<RectTransform>();
-        SetAnchored(
-            pauseLayoutRect,
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(770f, 720f));
-        extras.PauseCard = pauseLayoutRect;
-        GameObject pauseGlow = CreatePremiumPanel(
-            pauseLayout.transform,
-            "PauseCardGlow",
-            new Color32(255, 211, 65, 225),
-            46f);
-        SetAnchored(
-            pauseGlow.GetComponent<RectTransform>(),
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(770f, 720f));
-        GameObject pauseCard = CreatePremiumPanel(
-            pauseLayout.transform,
-            "PauseCard",
-            new Color32(255, 241, 211, 255),
-            42f);
-        SetAnchored(
-            pauseCard.GetComponent<RectTransform>(),
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(748f, 698f));
-        GameObject pauseHeader = CreatePremiumPanel(
-            pauseCard.transform,
-            "PauseHeader",
-            new Color32(255, 98, 158, 255),
-            32f);
-        RectTransform pauseHeaderRect = pauseHeader.GetComponent<RectTransform>();
-        pauseHeaderRect.anchorMin = new Vector2(0f, 1f);
-        pauseHeaderRect.anchorMax = new Vector2(1f, 1f);
-        pauseHeaderRect.pivot = new Vector2(.5f, 1f);
-        pauseHeaderRect.sizeDelta = new Vector2(0f, 132f);
-        pauseHeaderRect.anchoredPosition = Vector2.zero;
-        TMP_Text pauseTitle = CreateLabel(
-            pauseHeader.transform, "PauseTitle", "RUN PAUSED", 50f, Cream);
-        Stretch(pauseTitle.rectTransform);
-        pauseTitle.alignment = TextAlignmentOptions.Center;
-        pauseTitle.fontStyle = FontStyles.Bold;
-
-        extras.Resume = CreateButton(
-            pauseCard.transform,
-            "ResumeButton",
-            "RESUME RUN",
-            Orange,
-            new Vector2(520f, 82f));
-        SetAnchored(
-            extras.Resume.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -190f),
-            new Vector2(520f, 82f));
-        extras.ReducedMotion = CreateButton(
-            pauseCard.transform,
-            "ReducedMotionButton",
-            "REDUCED MOTION  OFF",
-            new Color32(122, 86, 205, 255),
-            new Vector2(520f, 68f));
-        SetAnchored(
-            extras.ReducedMotion.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -292f),
-            new Vector2(520f, 68f));
-        extras.Sound = CreateButton(
-            pauseCard.transform,
-            "SoundButton",
-            "SOUND  ON",
-            Teal,
-            new Vector2(520f, 68f));
-        SetAnchored(
-            extras.Sound.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -378f),
-            new Vector2(520f, 68f));
-        extras.Haptics = CreateButton(
-            pauseCard.transform,
-            "HapticsButton",
-            "HAPTICS  ON",
-            new Color32(255, 163, 73, 255),
-            new Vector2(520f, 68f));
-        SetAnchored(
-            extras.Haptics.GetComponent<RectTransform>(),
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -464f),
-            new Vector2(520f, 68f));
-        extras.PauseExit = CreateButton(
-            pauseCard.transform,
-            "PauseExitButton",
-            "EXIT TO MAIN MENU",
-            new Color32(233, 93, 125, 255),
-            new Vector2(520f, 72f));
-        SetAnchored(
-            extras.PauseExit.GetComponent<RectTransform>(),
-            new Vector2(.5f, 0f),
-            new Vector2(0f, 58f),
-            new Vector2(520f, 72f));
-
-        extras.TutorialPanel = CreateUiObject(
-            "RunnerTutorialPanel",
-            canvasObject.transform);
-        Stretch(extras.TutorialPanel.GetComponent<RectTransform>());
-        GameObject tutorialSafeObject = CreateUiObject(
-            "TutorialSafeArea",
-            extras.TutorialPanel.transform);
-        RectTransform tutorialSafe = tutorialSafeObject.GetComponent<RectTransform>();
-        Stretch(tutorialSafe);
-        tutorialSafeObject.AddComponent<SafeAreaRect>();
-        GameObject tutorialLayout = CreateUiObject(
-            "TutorialCardLayout",
-            tutorialSafeObject.transform);
-        RectTransform tutorialLayoutRect = tutorialLayout.GetComponent<RectTransform>();
-        SetAnchored(
-            tutorialLayoutRect,
-            new Vector2(.5f, 1f),
-            new Vector2(0f, -170f),
-            new Vector2(760f, 194f));
-        extras.TutorialCard = tutorialLayoutRect;
-        GameObject tutorialGlow = CreatePremiumPanel(
-            tutorialLayout.transform,
-            "TutorialGlow",
-            new Color32(255, 209, 61, 225),
-            30f);
-        SetAnchored(
-            tutorialGlow.GetComponent<RectTransform>(),
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(760f, 194f));
-        tutorialGlow.GetComponent<LowPolyPanelGraphic>().raycastTarget = false;
-        GameObject tutorialCard = CreatePremiumPanel(
-            tutorialLayout.transform,
-            "TutorialCard",
-            new Color32(255, 241, 211, 255),
-            28f);
-        SetAnchored(
-            tutorialCard.GetComponent<RectTransform>(),
-            new Vector2(.5f, .5f),
-            Vector2.zero,
-            new Vector2(744f, 180f));
-        tutorialCard.GetComponent<LowPolyPanelGraphic>().raycastTarget = false;
-        extras.TutorialText = CreateLabel(
-            tutorialCard.transform,
-            "TutorialMessage",
-            "DRAG LEFT OR RIGHT\nCHANGE LANES",
-            30f,
-            Dark);
-        SetAnchored(
-            extras.TutorialText.rectTransform,
-            new Vector2(.44f, .5f),
-            new Vector2(-34f, 0f),
-            new Vector2(500f, 136f));
-        extras.TutorialText.alignment = TextAlignmentOptions.Center;
-        extras.TutorialText.fontStyle = FontStyles.Bold;
-        extras.TutorialSkip = CreateButton(
-            tutorialCard.transform,
-            "TutorialSkipButton",
-            "SKIP",
-            new Color32(125, 87, 205, 255),
-            new Vector2(150f, 60f));
-        SetAnchored(
-            extras.TutorialSkip.GetComponent<RectTransform>(),
-            new Vector2(.86f, .5f),
-            Vector2.zero,
-            new Vector2(150f, 60f));
+        var welcomeParts=PremiumMiniGameUiBuilder.Welcome(canvasObject.transform,true);
+        welcome=welcomeParts.Root; welcomeBest=welcomeParts.Best; welcomeEnergy=welcomeParts.Energy;
+        welcomeStart=welcomeParts.Start;welcomeExit=welcomeParts.Exit;
+        extras.WelcomeCard=welcomeParts.Card;extras.WelcomeMissions=welcomeParts.Missions;extras.WelcomeRewarded=welcomeParts.Rewarded;
+        var resultParts=PremiumMiniGameUiBuilder.Results(canvasObject.transform,true);
+        results=resultParts.Root;resultTitle=resultParts.Title;resultDetails=resultParts.Details;
+        collect=resultParts.Home;retry=resultParts.Retry;extras.ResultsCard=resultParts.Card;
+        extras.NewBestBadge=resultParts.NewBest;extras.ResultMissions=resultParts.Missions;
+        var pauseParts=PremiumMiniGameUiBuilder.Pause(canvasObject.transform,true);
+        extras.PausePanel=pauseParts.Root;extras.PauseCard=pauseParts.Card;extras.Resume=pauseParts.Resume;
+        extras.PauseExit=pauseParts.Exit;extras.ReducedMotion=pauseParts.Motion;extras.Sound=pauseParts.Sound;extras.Haptics=pauseParts.Haptics;
+        var tutorialParts=PremiumMiniGameUiBuilder.Tutorial(canvasObject.transform);
+        extras.TutorialPanel=tutorialParts.Root;extras.TutorialCard=tutorialParts.Card;extras.TutorialText=tutorialParts.Message;extras.TutorialSkip=tutorialParts.Skip;
 
         GameObject flashObject = CreatePanel(
             canvasObject.transform, "RunnerHitFlash", new Color32(255, 72, 139, 255));
@@ -3447,6 +2852,7 @@ public static class CatRunnerContentBuilder
         TMP_FontAsset premiumFont =
             AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PremiumUiStyle.PremiumFontAssetPath);
         PremiumUiFactory.PolishHierarchy(canvasObject.transform, premiumFont);
+        PremiumMiniGameUiBuilder.PolishHud(safeArea);
         results.SetActive(false);
         extras.PausePanel.SetActive(false);
         extras.TutorialPanel.SetActive(false);

@@ -1,6 +1,7 @@
 using System.Collections;
 using CatHome.Economy;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -82,16 +83,16 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         isOpen = true;
         IsAnyOpen = true;
         if (titleText != null)
-            titleText.text = milestone.Title;
+            titleText.text = GameLanguageService.Text("celebration.collection");
         if (detailText != null)
-            detailText.text = CollectionMilestoneService.FormatOwnedLabel();
+            detailText.text = GameContentCopy.Text($"{CollectionMilestoneService.CatalogSize} eşyanın {CollectionMilestoneService.OwnedCount} tanesi senin",$"{CollectionMilestoneService.OwnedCount} of {CollectionMilestoneService.CatalogSize} collected");
         if (rewardText != null)
         {
-            string reward = "+" + milestone.Coins + " COINS";
+            string reward = GameLanguageService.Format("celebration.coins",milestone.Coins);
             if (milestone.Diamonds > 0)
-                reward += "  •  +" + milestone.Diamonds + " DIAMOND";
+                reward += "  •  +" + milestone.Diamonds + " " + GameLanguageService.Text("diamonds.units");
             if (milestone.BondXp > 0)
-                reward += "  •  +" + milestone.BondXp + " BOND";
+                reward += "  •  +" + milestone.BondXp + " " + GameLanguageService.Text("currency.bond");
             rewardText.text = reward;
         }
 
@@ -166,35 +167,14 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         scrimImage.color = new Color(0.12f, 0.08f, 0.22f, 0.45f);
         scrimImage.raycastTarget = true;
 
-        panel = NewRect(root, "Card", new Vector2(760f, 520f), Vector2.zero);
-        LowPolyPanelGraphic rim = AddPanel(panel.gameObject, new Color32(255, 205, 64, 255), 28f, 8f);
-        rim.raycastTarget = true;
-        RectTransform face = NewRect(panel, "Face", new Vector2(728f, 488f), Vector2.zero);
-        AddPanel(face.gameObject, new Color32(255, 242, 214, 255), 24f, 7f);
-
-        RectTransform banner = NewRect(face, "Banner", new Vector2(680f, 88f), new Vector2(0f, 170f));
-        AddPanel(banner.gameObject, PremiumUiStyle.CandyPink, 22f, 6f);
-        titleText = NewText(banner, "Title", font, "COLLECTION COMPLETE!", 36f, Color.white);
-        Stretch(titleText.rectTransform);
-
-        detailText = NewText(face, "Detail", font, "10 OF 10 • COLLECTED", 26f,
-            PremiumUiStyle.Ink);
-        SetSize(detailText.rectTransform, new Vector2(640f, 44f), new Vector2(0f, 70f));
-
-        rewardText = NewText(face, "Reward", font, "+500 COINS", 28f,
-            new Color32(70, 54, 92, 255));
-        SetSize(rewardText.rectTransform, new Vector2(640f, 48f), new Vector2(0f, 10f));
-
-        RectTransform collect = NewRect(face, "CollectButton", new Vector2(360f, 92f),
-            new Vector2(0f, -150f));
-        RectTransform visual = NewRect(collect, "Visual", Vector2.zero, Vector2.zero);
-        Stretch(visual);
-        LowPolyPanelGraphic collectFace = AddPanel(visual.gameObject, PremiumUiStyle.CandyMint, 28f, 8f);
-        collectFace.raycastTarget = true;
-        TMP_Text collectLabel = NewText(visual, "Label", font, "COLLECT", 36f, Color.white);
-        Stretch(collectLabel.rectTransform);
-        collectButton = collect.gameObject.AddComponent<Button>();
-        collectButton.targetGraphic = collectFace;
+        panel=NewRect(root,"Card",new Vector2(880,580),Vector2.zero);
+        var face=U.Panel("Face",panel,PremiumUiStyle.Ivory,0,0,880,580,32,true);
+        var portrait=U.Rect("CatPortrait",face.transform); U.At(portrait,0,171,120,120);
+        portrait.gameObject.AddComponent<Image>().raycastTarget=false; portrait.gameObject.AddComponent<SelectedCatPortrait>();
+        titleText=U.Label("Title",face.transform,font,38,PremiumUiStyle.Ink,0,65,760,72,TextAlignmentOptions.Center);
+        detailText=U.Label("Detail",face.transform,font,24,PremiumUiStyle.Muted,0,-5,760,46,TextAlignmentOptions.Center);
+        rewardText=U.Label("Reward",face.transform,font,30,PremiumUiStyle.Teal,0,-78,760,68,TextAlignmentOptions.Center);
+        collectButton=U.Action("CollectButton",face.transform,font,"quests.claim",PremiumUiStyle.Coral,0,-207,392,80,out var collectLabel);
         collectButton.onClick.AddListener(OnCollect);
     }
 

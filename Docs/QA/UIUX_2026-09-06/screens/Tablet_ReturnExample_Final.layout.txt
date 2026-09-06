@@ -1,0 +1,5 @@
+Screen 1440x1080; SafeArea (x:0.00, y:0.00, width:1440.00, height:1080.00)
+PlayCatRunnerButton (x:886.28, y:32.91, width:176.67, height:69.28)
+CurrentRoomStatus (x:571.04, y:32.91, width:297.91, height:69.28)
+WelcomeBackButton (x:546.79, y:298.38, width:346.41, height:69.28)
+ShopButton (x:377.05, y:32.91, width:176.67, height:69.28)

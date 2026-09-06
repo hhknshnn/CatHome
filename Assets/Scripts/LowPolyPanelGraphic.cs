@@ -22,6 +22,23 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     private Vector2[] innerPoints;
     private Vector2[] glossPoints;
     private Vector2[] glowPoints;
+    [SerializeField] private bool softElevation;
+    private Vector2[] elevationPoints;
+    private Vector2[] framePoints;
+    private Vector2[] frameFringePoints;
+    private Vector2[] frameInsetPoints;
+    [SerializeField] private bool referenceFinish;
+
+    public void ConfigureReferenceFinish(bool enabled)
+    {
+        referenceFinish=enabled;SetVerticesDirty();
+    }
+
+    public void ConfigureElevation(bool enabled)
+    {
+        softElevation = enabled;
+        SetVerticesDirty();
+    }
 
     public void ConfigureTutorialStyle(Color baseColor, float cut, float bevel)
     {
@@ -79,17 +96,8 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
     public void SetPremiumBaseColor(Color baseColor)
     {
-        color = baseColor;
-        gradientTop = Color.Lerp(baseColor, Color.white, 0.12f);
-        gradientBottom = Color.Lerp(baseColor, Color.black, 0.08f);
-        topLeftHighlight = new Color32(255, 255, 255, 105);
-        bottomRightShadow = new Color32(8, 17, 25, 130);
-        useVerticalGradient = true;
-        useRoundedCorners = true;
-        cornerSegments = 18;
-        candyGlossStrength = 0.24f;
-        innerGlowStrength = 0.1f;
-        SetVerticesDirty();
+        PremiumUiStyle.ConfigureAccentSurface(this, Color.Lerp(baseColor, Color.white, .035f),
+            baseColor, cornerCut, Mathf.Min(2f, bevelWidth));
     }
 
     protected override void OnPopulateMesh(VertexHelper vh)
@@ -124,10 +132,28 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
         float cornerLimit = rounded ? 0.5f : 0.22f;
         float cut = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * cornerLimit);
+        if(referenceFinish && !shadowSurface && surfaceAlpha>.98f && rect.width>=88f && rect.height>=48f && cut>=12f)
+        {
+            DrawReferenceSurface(vh,rect,cut,segments);
+            return;
+        }
         float bevel = Mathf.Min(effectiveBevel, cut * 0.75f);
         Vector2[] outer = rounded
             ? CreateRoundedRect(ref outerPoints, rect, cut, segments)
             : CreateOctagon(ref outerPoints, rect, cut);
+
+        if (softElevation && !shadowSurface && surfaceAlpha > .98f && rect.width > 90f && rect.height > 48f)
+        {
+            // Diffuse contact depth belongs to this graphic, never an interactive
+            // sibling or an extra Shadow component that can intercept a pointer.
+            for (int layer = 6; layer >= 1; layer--)
+            {
+                float spread = layer * 1.15f;
+                Rect shadowRect = new Rect(rect.xMin-spread, rect.yMin-spread-2.5f, rect.width+spread*2, rect.height+spread*2);
+                var points = CreateRoundedRect(ref elevationPoints, shadowRect, cut+spread, segments);
+                AddPolygon(vh, points, new Color(.20f,.17f,.10f, .012f));
+            }
+        }
 
         Rect innerRect = new Rect(
             rect.xMin + bevel,
@@ -156,16 +182,12 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
             // Skipping the bottom-right quadrant left a C-shaped outline on every
             // pill (SHOP, GAMES, need bars, cards). Soft top shine stays in
             // AddCandyGloss; it must not punch a hole in the perimeter.
-            Color frameRim = Color.Lerp(effectiveShadow, new Color(0.55f, 0.32f, 0.12f, 1f), 0.35f);
-            frameRim.a = Mathf.Clamp01(
-                Mathf.Max(0.78f, effectiveShadow.a) * Mathf.Clamp01(surfaceAlpha));
-            Color edgeLight = effectiveHighlight;
-            edgeLight.a = Mathf.Clamp01(Mathf.Max(0.42f, effectiveHighlight.a * 0.55f));
             for (int i = 0; i < outer.Length; i++)
             {
                 int next = (i + 1) % outer.Length;
-                AddQuad(vh, outer[i], outer[next], inner[next], inner[i], frameRim);
-                AddQuad(vh, outer[i], outer[next], inner[next], inner[i], edgeLight);
+                float height = Mathf.InverseLerp(rect.yMin, rect.yMax, (outer[i].y + outer[next].y) * .5f);
+                Color rim = Color.Lerp(effectiveShadow, effectiveHighlight, height);
+                AddQuad(vh, outer[i], outer[next], inner[next], inner[i], rim);
             }
         }
 
@@ -187,6 +209,51 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
             AddTriangle(vh, inner[0], inner[1], inner[7], effectiveFacet);
             AddTriangle(vh, inner[3], inner[4], inner[5], effectiveFacet);
         }
+    }
+
+    private void DrawReferenceSurface(VertexHelper vh, Rect rect, float radius, int segments)
+    {
+        // Nested enamel and champagne lips. All decoration stays inside the
+        // same raycast surface, so art cannot steal the button's pointer.
+        radius=Mathf.Min(rect.height*.5f,Mathf.Max(radius,rect.height<120f?rect.height*.48f:30f));
+        if(softElevation)
+            for(int layer=8;layer>=1;layer--)
+            {
+                float spread=layer*1.0f;
+                var depth=new Rect(rect.xMin-spread,rect.yMin-spread-3f,rect.width+spread*2,rect.height+spread*2);
+                AddPolygon(vh,CreateRoundedRect(ref elevationPoints,depth,radius+spread,segments),new Color(.25f,.19f,.09f,.014f));
+            }
+        bool light=color.r>.72f&&color.g>.70f&&color.b>.58f;
+        Color top=light?new Color32(255,253,242,255):Color.Lerp(color,Color.white,.13f);
+        Color bottom=light?Color.Lerp(color,new Color32(247,228,190,255),.28f):Color.Lerp(color,new Color32(161,75,60,255),.065f);
+        DrawFrameLayer(vh,rect,radius,0,new Color32(195,157,101,235),new Color32(249,224,177,255),segments);
+        DrawFrameLayer(vh,rect,radius,1.4f,new Color32(244,225,190,255),new Color32(255,255,249,255),segments);
+        DrawFrameLayer(vh,rect,radius,4.0f,new Color32(255,250,230,255),new Color32(255,253,242,255),segments);
+        DrawFrameLayer(vh,rect,radius,6.2f,new Color32(216,184,136,255),new Color32(224,197,155,255),segments);
+        DrawFrameLayer(vh,rect,radius,7.5f,bottom,top,segments);
+        // The inner white hairline catches the key light without a noisy shine band.
+        var face=new Rect(rect.xMin+8.5f,rect.yMin+8.5f,rect.width-17f,rect.height-17f);
+        AddInnerGlow(vh,face,Mathf.Max(0,radius-8.5f),segments,.08f,ref frameInsetPoints);
+    }
+
+    private void DrawFrameLayer(VertexHelper vh,Rect rect,float radius,float inset,Color bottom,Color top,int segments)
+    {
+        var inner=new Rect(rect.xMin+inset,rect.yMin+inset,rect.width-inset*2,rect.height-inset*2);
+        var points=CreateRoundedRect(ref framePoints,inner,Mathf.Max(0,radius-inset),segments);
+        const float aa=.8f;
+        var fringeRect=new Rect(inner.xMin-aa,inner.yMin-aa,inner.width+aa*2,inner.height+aa*2);
+        var fringe=CreateRoundedRect(ref frameFringePoints,fringeRect,Mathf.Max(0,radius-inset)+aa,segments);
+        for(int i=0;i<points.Length;i++)
+        {
+            int n=(i+1)%points.Length,start=vh.currentVertCount;
+            Color a=Color.Lerp(bottom,top,Mathf.InverseLerp(inner.yMin,inner.yMax,points[i].y));
+            Color b=Color.Lerp(bottom,top,Mathf.InverseLerp(inner.yMin,inner.yMax,points[n].y));
+            Color clearA=a,clearB=b;clearA.a=clearB.a=0;
+            AddVertex(vh,fringe[i],clearA);AddVertex(vh,fringe[n],clearB);
+            AddVertex(vh,points[n],b);AddVertex(vh,points[i],a);
+            vh.AddTriangle(start,start+1,start+2);vh.AddTriangle(start,start+2,start+3);
+        }
+        AddGradientPolygon(vh,points,inner,bottom,top);
     }
 
     private bool IsShadowSurface()

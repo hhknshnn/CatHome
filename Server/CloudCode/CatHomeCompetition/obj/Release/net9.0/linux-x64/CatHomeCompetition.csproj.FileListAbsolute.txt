@@ -1,0 +1,13 @@
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\bin\Release\net9.0\linux-x64\CatHomeCompetition.deps.json
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\bin\Release\net9.0\linux-x64\CatHomeCompetition.dll
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\bin\Release\net9.0\linux-x64\CatHomeCompetition.pdb
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.csproj.AssemblyReference.cache
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.AssemblyInfoInputs.cache
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.AssemblyInfo.cs
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.csproj.CoreCompileInputs.cache
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.sourcelink.json
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.dll
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\refint\CatHomeCompetition.dll
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\CatHomeCompetition.pdb
+C:\Users\HAKAN\Desktop\CatHome\CatHome\Server\CloudCode\CatHomeCompetition\obj\Release\net9.0\linux-x64\ref\CatHomeCompetition.dll

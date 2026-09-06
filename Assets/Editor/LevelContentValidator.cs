@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -480,8 +480,47 @@ public static class LevelContentValidator
             Require(FindInScene<HungerSystem>(scene) != null, "Shared UI has no HungerSystem.", report);
             Require(FindInScene<ThirstSystem>(scene) != null, "Shared UI has no ThirstSystem.", report);
             Require(FindInScene<EnergySystem>(scene) != null, "Shared UI has no EnergySystem.", report);
-            Require(FindInScene<MainPanelController>(scene) != null,
+            MainPanelController mainPanel = FindInScene<MainPanelController>(scene);
+            Require(mainPanel != null,
                 "Shared UI has no MainPanelController.", report);
+            Require(mainPanel == null ||
+                    (FindNamedInChildren(mainPanel.transform, "LightButton") == null &&
+                     FindNamedInChildren(mainPanel.transform, "ClockDisplay") == null &&
+                     FindNamedInChildren(mainPanel.transform, "BrightnessPanel") == null &&
+                     mainPanel.GetComponent<BrightnessPanelView>() == null),
+                "The shared top bar must not restore the removed clock or brightness controls.",
+                report);
+            Require(mainPanel == null ||
+                    FindNamedInChildren(mainPanel.transform, "CatShopButton") != null,
+                "The shared top bar needs the real-cat CAT SHOP button in the removed light slot.",
+                report);
+            CatBreedShopPanel[] breedShops = FindAllInScene<CatBreedShopPanel>(scene);
+            Require(breedShops.Length == 1,
+                "Shared UI must contain exactly one persistent CAT SHOP panel.", report);
+            if (breedShops.Length == 1)
+            {
+                Require(breedShops[0].gameObject.name == CatBreedShopPanelBuilder.RootName,
+                    "CAT SHOP must use its named persistent canvas root.", report);
+                Require(breedShops[0].GetComponentInChildren<SafeAreaRect>(true) != null,
+                    "CAT SHOP needs safe-area fitting for notched displays.", report);
+                Require(breedShops[0].GetComponentsInChildren<CatBreedTurntablePreview>(true).Length == 1,
+                    "CAT SHOP needs one interactive live 3D turntable.", report);
+            }
+            CatBreedCatalog breedCatalog = AssetDatabase.LoadAssetAtPath<CatBreedCatalog>(
+                PolyperfectCatIntegrationBuilder.CatalogPath);
+            Require(breedCatalog != null && breedCatalog.Count == 10,
+                "CAT SHOP catalog must expose all ten imported cats.", report);
+            if (breedCatalog != null)
+            {
+                Require(breedCatalog.GameplayController != null,
+                    "CAT SHOP catalog has no Cat Home gameplay controller.", report);
+                for (int i = 0; i < breedCatalog.Count; i++)
+                {
+                    CatBreedCatalog.Entry breed = breedCatalog.Get(i);
+                    Require(breed != null && breed.SourcePrefab != null && breed.Portrait != null,
+                        $"CAT SHOP breed entry {i} is missing its real model or portrait.", report);
+                }
+            }
             Require(FindInScene<QuestPanelController>(scene) != null,
                 "Shared UI has no QuestPanelController.", report);
             Require(FindInScene<CurrencyHudController>(scene) != null,
@@ -617,7 +656,7 @@ public static class LevelContentValidator
                 "PowerUpLabel",
                 "PauseButton",
                 "PausePanel",
-                "RunnerTutorialPanel",
+                "TutorialPanel",
                 "WelcomeRewardedEnergyButton",
                 "DailyMissions",
                 "ResultMissions",
@@ -721,7 +760,9 @@ public static class LevelContentValidator
                 Require(animator != null && animator.runtimeAnimatorController != null,
                     "Cat Runner player does not use the current animated cat.", report);
                 if (animator != null && animator.runtimeAnimatorController != null)
-                    Require(animator.runtimeAnimatorController.name == "Controller_CartoonAnimal_Cat",
+                    Require(
+                        AssetDatabase.GetAssetPath(animator.runtimeAnimatorController) ==
+                        PolyperfectCatIntegrationBuilder.ControllerPath,
                         "Cat Runner player is not using the current cat animator controller.", report);
             }
 
@@ -777,6 +818,17 @@ public static class LevelContentValidator
                 for (int productIndex = 0; productIndex < storeProducts.Length; productIndex++)
                 {
                     StoreProductDisplay product = storeProducts[productIndex];
+                    if(product!=null&&HomeStoreService.TryGetProduct(product.ProductId,out var catProduct)&&catProduct.StoreCategory==HomeStoreCategory.Cat)
+                    {
+                        var enrichment=product.GetComponent<CatEnrichmentActivity>();
+                        Require(enrichment!=null&&enrichment.ContactPoint!=null&&enrichment.RoutineEntryPoint!=null,
+                            "CAT product '"+product.ProductId+"' needs a measured cat interaction.",report);
+                        if(enrichment!=null)
+                        {
+                            int matching=0;foreach(var routine in FindAllInScene<CatEnrichmentActivity>(scene))if(routine.Kind==enrichment.Kind)matching++;
+                            Require(matching==1,"CAT activity kind must be unique: "+enrichment.Kind,report);
+                        }
+                    }
                     Require(product != null && !string.IsNullOrWhiteSpace(product.ProductId),
                         $"Level scene '{level.ScenePath}' has a store product without an id.", report);
                     if (product != null && !string.IsNullOrWhiteSpace(product.ProductId))
@@ -790,8 +842,9 @@ public static class LevelContentValidator
                         : null;
                     Require(placement != null,
                         $"Store product '{product?.ProductId}' has no placement controller.", report);
-                    Require(placement == null || placement.SupportsRotation,
-                        $"Store product '{product?.ProductId}' does not support rotation.", report);
+                    Require(placement == null || placement.SupportsRotation ==
+                            !(HomeStoreService.IsFixedRoomProduct(product.ProductId) || CatCollectionPolicy.IsCatItem(product.ProductId)),
+                        $"Store product '{product?.ProductId}' must keep its authored orientation.", report);
                 }
                 HomeBookshelfBookSet bookSet = FindInScene<HomeBookshelfBookSet>(scene);
                 Require(bookSet != null && bookSet.BookCount == 10,
@@ -877,8 +930,13 @@ public static class LevelContentValidator
                 Require(spawns.Count(spawn => spawn.SpawnPointId == room.SpawnPointId) == 1,
                     $"Home room '{room.ScenePath}' needs exactly one '{room.SpawnPointId}' spawn.",
                     report);
+                HomeRoomBoundary boundary = FindInScene<HomeRoomBoundary>(scene);
+                Require(boundary != null,
+                    $"Home room '{room.ScenePath}' needs its movement boundary.", report);
                 ValidateAuthoringHierarchy(scene, room.ScenePath, report);
 
+                if (room.Id == HomeRoomService.LivingRoomId)
+                    ValidateLivingRoomSafety(scene, report);
                 if (room.Id == HomeRoomService.BathroomId)
                     ValidateBathroomRoom(scene, report);
                 if (room.Id == HomeRoomService.KitchenId)
@@ -887,9 +945,66 @@ public static class LevelContentValidator
                     ValidateBedroomRoom(scene, report);
                 if (room.Id == HomeRoomService.GardenId)
                     ValidateGardenRoom(scene, report);
+                if (room.Id == HomeRoomService.BalconyId)
+                    ValidateBalconyRoom(scene, report);
+                if (room.Id == HomeRoomService.PatioId)
+                    ValidatePatioRoom(scene, report);
+                if (room.Id == HomeRoomService.SecondFloorId)
+                    ValidateSecondFloorRoom(scene, report);
                 ValidateMissingScripts(scene, report);
             }, report);
         }
+    }
+
+    private static void ValidateLivingRoomSafety(Scene scene, LevelValidationReport report)
+    {
+        var interactions = new[]
+        {
+            (CatActivityKind.ArmchairNap, HomeStoreService.ArmchairId),
+            (CatActivityKind.LampWatch, HomeStoreService.FloorLampId),
+            (CatActivityKind.BookshelfSniff, HomeStoreService.BookshelfId),
+            (CatActivityKind.BookSetSniff, HomeStoreService.BookSetId),
+            (CatActivityKind.PlantSniff, HomeStoreService.TallPlantId),
+            (CatActivityKind.PaintingWatch, HomeStoreService.ModernPaintingId),
+            (CatActivityKind.TvUnitPaw, HomeStoreService.TvUnitId),
+            (CatActivityKind.TelevisionWatch, HomeStoreService.ModernTelevisionId),
+            (CatActivityKind.ConsolePaw, HomeStoreService.GameConsoleId),
+            (CatActivityKind.SpeakerListen, HomeStoreService.StereoId)
+        };
+        foreach (var pair in interactions)
+            RequireRoomActivity(scene, pair.Item1, pair.Item2, pair.Item1.ToString(), "Living Room", report);
+        GameTimeService time = FindInScene<GameTimeService>(scene);
+        bool fixedDaylight = false;
+        if (time != null)
+        {
+            SerializedObject serialized = new SerializedObject(time);
+            fixedDaylight = serialized.FindProperty("useTestTime").boolValue &&
+                Mathf.Abs(serialized.FindProperty("testHour").floatValue -
+                          HomeRoomGameplaySafetyBuilder.LivingRoomDaylightHour) < .001f;
+        }
+        Require(fixedDaylight,
+            "Living Room must stay on its fixed daylight presentation.", report);
+
+        RequireSolidFurniture(scene, HomeRoomGameplaySafetyBuilder.LivingSofaName, report);
+        RequireSolidFurniture(scene, HomeRoomGameplaySafetyBuilder.LivingCoffeeTableName, report);
+        foreach(var kind in new[]{CatActivityKind.SofaLounge,CatActivityKind.CoffeeTablePlay})
+        {
+            LivingFurnitureActivity match=null;
+            foreach(var root in scene.GetRootGameObjects())foreach(var activity in root.GetComponentsInChildren<LivingFurnitureActivity>(true))
+                if(activity.Kind==kind)match=activity;
+            Require(match!=null && match.RoutineEntryPoint!=null && match.Perch!=null,
+                "Living Room needs its measured jump routine: "+kind,report);
+        }
+    }
+
+    private static void RequireSolidFurniture(
+        Scene scene, string objectName, LevelValidationReport report)
+    {
+        GameObject furniture = FindNamedInScene(scene, objectName);
+        BoxCollider collider = furniture != null ? furniture.GetComponent<BoxCollider>() : null;
+        Require(collider != null && collider.enabled && !collider.isTrigger,
+            $"Living Room fixed furniture '{objectName}' needs an enabled solid BoxCollider.",
+            report);
     }
 
     private static void ValidateBathroomRoom(Scene scene, LevelValidationReport report)
@@ -905,6 +1020,63 @@ public static class LevelContentValidator
         Require(FindNamedInScene(scene, "Glossy Floor Tiles") != null &&
                 FindNamedInScene(scene, "Coral Lilac Tile Ribbon") != null,
             "Bathroom needs glossy tiles and its bright wall ribbon.", report);
+        PaperSpinActivity paperSpin = FindInScene<PaperSpinActivity>(scene);
+        Require(paperSpin != null,
+            "Bathroom needs the toilet paper spin activity.", report);
+        Require(paperSpin == null ||
+                paperSpin.StoreProductId == HomeStoreService.BathroomToiletId,
+            "The paper spin activity must be gated on owning BathroomToilet.", report);
+        SinkSipActivity sinkSip = FindInScene<SinkSipActivity>(scene);
+        Require(sinkSip != null,
+            "Bathroom needs the vanity tap drinking activity.", report);
+        Require(sinkSip == null ||
+                sinkSip.StoreProductId == HomeStoreService.BathroomVanityId,
+            "The vanity sip activity must be gated on owning BathroomVanitySink.", report);
+        ShowerRinseActivity showerRinse = FindInScene<ShowerRinseActivity>(scene);
+        Require(showerRinse != null,
+            "Bathroom needs the rainbow shower rinse activity.", report);
+        Require(showerRinse == null ||
+                showerRinse.StoreProductId == HomeStoreService.BathroomShowerId,
+            "The shower rinse activity must be gated on owning BathroomShower.", report);
+        TowelNestActivity towelNest = FindInScene<TowelNestActivity>(scene);
+        Require(towelNest != null,
+            "Bathroom needs the towel niche nap activity.", report);
+        Require(towelNest == null ||
+                towelNest.StoreProductId == HomeStoreService.BathroomTowelStorageId,
+            "The towel nest activity must be gated on owning BathroomTowelStorage.", report);
+        LitterDigActivity litterDig = FindInScene<LitterDigActivity>(scene);
+        Require(litterDig != null,
+            "Bathroom needs the litter tray dig activity.", report);
+        Require(litterDig == null ||
+                litterDig.StoreProductId == HomeStoreService.BathroomLitterBoxId,
+            "The litter dig activity must be gated on owning BathroomLitterBox.", report);
+        GroomBrushActivity groomBrush = FindInScene<GroomBrushActivity>(scene);
+        Require(groomBrush != null,
+            "Bathroom needs the grooming cart brush activity.", report);
+        Require(groomBrush == null ||
+                groomBrush.StoreProductId == HomeStoreService.BathroomGroomingCartId,
+            "The groom brush activity must be gated on owning BathroomGroomingCart.", report);
+        HamperDiveActivity hamperDive = FindInScene<HamperDiveActivity>(scene);
+        Require(hamperDive != null,
+            "Bathroom needs the laundry hamper dive activity.", report);
+        Require(hamperDive == null ||
+                hamperDive.StoreProductId == HomeStoreService.BathroomLaundryHamperId,
+            "The hamper dive activity must be gated on owning BathroomLaundryHamper.", report);
+        MatKneadActivity matKnead = FindInScene<MatKneadActivity>(scene);
+        Require(matKnead != null,
+            "Bathroom needs the bath mat knead activity.", report);
+        Require(matKnead == null ||
+                matKnead.StoreProductId == HomeStoreService.BathroomBathMatId,
+            "The mat knead activity must be gated on owning BathroomBathMat.", report);
+        // The mirror reuses the shared sit-and-look, so it is found by kind.
+        Require(FindSitLook(scene, CatActivityKind.MirrorGaze) != null,
+            "Bathroom needs the wall mirror gaze activity.", report);
+        TubEdgeWalkActivity tubEdge = FindInScene<TubEdgeWalkActivity>(scene);
+        Require(tubEdge != null,
+            "Bathroom needs the tub rim walk activity.", report);
+        Require(tubEdge == null ||
+                tubEdge.StoreProductId == HomeStoreService.BathroomTubId,
+            "The tub edge walk activity must be gated on owning BathroomTub.", report);
 
         StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
         var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
@@ -960,6 +1132,32 @@ public static class LevelContentValidator
                 FindNamedInScene(scene, "Kitchen Paw Medallion") != null,
             "Kitchen needs its sunrise window and paw wall medallion.", report);
 
+        // All ten Kitchen products ship a cat routine. Three of them reuse a
+        // shared class (SitLookActivity twice, SinkSipActivity, MatKneadActivity,
+        // PerchNapActivity twice), so those are found by kind rather than by
+        // type — otherwise the second instance of a shared class is invisible
+        // to a FindInScene<T> that returns the first hit.
+        RequireRoomActivity(scene, CatActivityKind.IslandPerch,
+            HomeStoreService.KitchenIslandId, "island counter perch", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.StoolPerch,
+            HomeStoreService.KitchenCounterStoolId, "counter stool perch", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.FridgeStare,
+            HomeStoreService.KitchenRefrigeratorId, "refrigerator stare", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.FruitSwat,
+            HomeStoreService.KitchenFruitBasketId, "fruit basket swat", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.PantryClimb,
+            HomeStoreService.KitchenPantryShelfId, "pantry climb", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.OvenWarmth,
+            HomeStoreService.KitchenStoveOvenId, "oven basking", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.CartNudge,
+            HomeStoreService.KitchenDishCartId, "dish cart nudge", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.MealTime,
+            HomeStoreService.KitchenFeedingStationId, "feeding station meal", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.KitchenSip,
+            HomeStoreService.KitchenSinkCabinetId, "kitchen sink sip", "Kitchen", report);
+        RequireRoomActivity(scene, CatActivityKind.KitchenMatKnead,
+            HomeStoreService.KitchenPawMatId, "kitchen runner knead", "Kitchen", report);
+
         StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
         var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
         for (int i = 0; i < products.Length; i++)
@@ -987,6 +1185,33 @@ public static class LevelContentValidator
 
     private static void ValidateBedroomRoom(Scene scene, LevelValidationReport report)
     {
+        // All ten Bedroom products ship a cat routine, and most reuse a shared
+        // class, so each is found by kind.
+        RequireRoomActivity(scene, CatActivityKind.BedNap,
+            HomeStoreService.BedroomQueenBedId, "queen bed nap", "Bedroom", report);
+        RequireRoomActivity(scene, CatActivityKind.WardrobeScratch,
+            HomeStoreService.BedroomWardrobeId, "wardrobe scratch", "Bedroom", report);
+        RequireRoomActivity(scene, CatActivityKind.DaybedWatch,
+            HomeStoreService.BedroomWindowDaybedId, "daybed window watch", "Bedroom",
+            report);
+        RequireRoomActivity(scene, CatActivityKind.KnockOff,
+            HomeStoreService.BedroomNightstandId, "nightstand knock off", "Bedroom",
+            report);
+        RequireRoomActivity(scene, CatActivityKind.VanityStoolNap,
+            HomeStoreService.BedroomVanityStoolId, "vanity stool nap", "Bedroom",
+            report);
+        RequireRoomActivity(scene, CatActivityKind.YarnSwat,
+            HomeStoreService.BedroomYarnBasketId, "yarn basket pounce", "Bedroom",
+            report);
+        RequireRoomActivity(scene, CatActivityKind.NightLightGaze,
+            HomeStoreService.BedroomNightLightId, "night light gaze", "Bedroom", report);
+        RequireRoomActivity(scene, CatActivityKind.ArtGaze,
+            HomeStoreService.BedroomDreamArtId, "dream art gaze", "Bedroom", report);
+        RequireRoomActivity(scene, CatActivityKind.BedroomMatKnead,
+            HomeStoreService.BedroomPawRugId, "bedside rug knead", "Bedroom", report);
+        RequireRoomActivity(scene, CatActivityKind.CanopyNap,
+            HomeStoreService.BedroomStarCanopyId, "star canopy nap", "Bedroom", report);
+
         Require(FindNamedInScene(scene, "Dreamy Wood Floor") != null &&
                 FindNamedInScene(scene, "Moonlight Checker Floor") == null &&
                 FindNamedInScene(scene, "Starlight Wall Ribbon") != null,
@@ -994,6 +1219,11 @@ public static class LevelContentValidator
         Require(FindNamedInScene(scene, "Bedroom Moon Window") != null &&
                 FindNamedInScene(scene, "Bedroom Paw Medallion") != null,
             "Bedroom needs its moon window and paw wall medallion.", report);
+        CanopyNapActivity canopyNap = FindInScene<CanopyNapActivity>(scene);
+        Require(canopyNap != null,
+            "Bedroom needs the star tipi nap activity.", report);
+        Require(canopyNap == null || canopyNap.StoreProductId == HomeStoreService.BedroomStarCanopyId,
+            "The star tipi nap activity must be gated on owning BedroomStarCanopy.", report);
 
         StoreProductDisplay[] products = FindAllInScene<StoreProductDisplay>(scene);
         var authoredProductIds = new HashSet<string>(StringComparer.Ordinal);
@@ -1018,6 +1248,95 @@ public static class LevelContentValidator
                 "Bedroom scene is missing store product '" +
                 HomeStoreService.BedroomCollection[i] + "'.", report);
         }
+    }
+
+
+    /// <summary>
+    /// Balcony v1 shipped without cat routines on purpose. The wave-3 decision
+    /// brings it up to the same contract as every other room, so the products
+    /// are checked here the way the Garden's are.
+    /// </summary>
+    private static void ValidateBalconyRoom(Scene scene, LevelValidationReport report)
+    {
+        RequireRoomActivity(scene, CatActivityKind.AwningGaze,
+            HomeStoreService.BalconySunAwningId, "sun awning gaze", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.HerbShelfClimb,
+            HomeStoreService.BalconyHerbShelfId, "herb shelf climb", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.FeederShake,
+            HomeStoreService.BalconyBirdFeederId, "bird feeder shake", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.EggChairNap,
+            HomeStoreService.BalconyHangingChairId, "hanging chair nap", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.BenchNap,
+            HomeStoreService.BalconyCushionBenchId, "cushion bench nap", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.TableKnockOff,
+            HomeStoreService.BalconySideTableId, "side table knock off", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.SunMatBask,
+            HomeStoreService.BalconySunMatId, "sun mat bask", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.PlanterDig,
+            HomeStoreService.BalconyPlanterBoxId, "planter box dig", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.RailingSwat,
+            HomeStoreService.BalconyRailingFlowersId, "railing flowers swat", "Balcony", report);
+        RequireRoomActivity(scene, CatActivityKind.LanternGaze,
+            HomeStoreService.BalconyLanternStringId, "lantern string gaze", "Balcony", report);
+    }
+    /// <summary>
+    /// Patio v1 shipped with one routine — the porch swing ride — and nine
+    /// products that were furniture and nothing else. Wave 3 gives every one of
+    /// them a beat, so the room is checked the way the Garden and Balcony are.
+    /// </summary>
+    /// <summary>
+    /// The loft shipped as ten pieces of furniture with no cat behaviour at
+    /// all. Wave 3 gives every one of them a beat, so the room is checked the
+    /// way the Garden, Balcony and Patio are. Nine of the ten share an activity
+    /// class with another room, which is exactly why every lookup here is by
+    /// KIND and not by component type.
+    /// </summary>
+    private static void ValidateSecondFloorRoom(Scene scene, LevelValidationReport report)
+    {
+        RequireRoomActivity(scene, CatActivityKind.RunnerKnead,
+            HomeStoreService.LoftFloorRunnerId, "floor runner knead", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.CushionNest,
+            HomeStoreService.LoftFloorCushionsId, "floor cushions nest", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.BookKnockOff,
+            HomeStoreService.LoftBookStackId, "book stack knock off", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.LampGlowBask,
+            HomeStoreService.LoftArcLampId, "arc lamp glow bask", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.BeanBagNap,
+            HomeStoreService.LoftBeanBagId, "bean bag nap", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.RecordSpin,
+            HomeStoreService.LoftRecordPlayerId, "record player spin", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.DeskPerch,
+            HomeStoreService.LoftStudyDeskId, "study desk perch", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.GalleryGaze,
+            HomeStoreService.LoftWallGalleryId, "wall gallery gaze", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.BookcaseClimb,
+            HomeStoreService.LoftTallBookcaseId, "tall bookcase climb", "Second Floor", report);
+        RequireRoomActivity(scene, CatActivityKind.ChaiseNap,
+            HomeStoreService.LoftChaiseLoungeId, "chaise lounge nap", "Second Floor", report);
+    }
+
+    private static void ValidatePatioRoom(Scene scene, LevelValidationReport report)
+    {
+        RequireRoomActivity(scene, CatActivityKind.ArchClimb,
+            HomeStoreService.PatioPergolaArchId, "pergola arch climb", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.SwingRide,
+            HomeStoreService.PatioPorchSwingId, "porch swing ride", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.ParasolScratch,
+            HomeStoreService.PatioParasolId, "parasol scratch", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.DiningPerch,
+            HomeStoreService.PatioDiningSetId, "dining set perch", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.FirePitBask,
+            HomeStoreService.PatioFirePitId, "fire pit bask", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.FountainSip,
+            HomeStoreService.PatioWaterFountainId, "water fountain sip", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.FernWatch,
+            HomeStoreService.PatioPottedFernsId, "potted ferns watch", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.HerbTroughDig,
+            HomeStoreService.PatioHerbTroughId, "herb trough dig", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.FestoonGaze,
+            HomeStoreService.PatioStringLightsId, "string lights gaze", "Patio", report);
+        RequireRoomActivity(scene, CatActivityKind.StoneRugKnead,
+            HomeStoreService.PatioStoneRugId, "stone rug knead", "Patio", report);
     }
 
     private static void ValidateGardenRoom(Scene scene, LevelValidationReport report)
@@ -1066,6 +1385,27 @@ public static class LevelContentValidator
                 "Garden scene is missing store product '" +
                 HomeStoreService.GardenCollection[i] + "'.", report);
         }
+
+        RequireRoomActivity(scene, CatActivityKind.PergolaClimb,
+            HomeStoreService.GardenPergolaId, "pergola climb", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.TreeScratch,
+            HomeStoreService.GardenSaplingId, "sapling scratch", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.BistroPerch,
+            HomeStoreService.GardenBistroSetId, "bistro table perch", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.HammockSway,
+            HomeStoreService.GardenHammockId, "hammock sway", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.SunBask,
+            HomeStoreService.GardenSunLoungerId, "sun lounger bask", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.GrillWatch,
+            HomeStoreService.GardenGrillId, "grill stare", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.BirdBathSip,
+            HomeStoreService.GardenBirdBathId, "bird bath sip", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.PotDig,
+            HomeStoreService.GardenFlowerPotsId, "flower pot dig", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.DaisyRoll,
+            HomeStoreService.GardenDaisyBedId, "daisy bed knead", "Garden", report);
+        RequireRoomActivity(scene, CatActivityKind.YarnBallChase,
+            HomeStoreService.GardenYarnBallId, "yarn ball chase", "Garden", report);
     }
 
     private static void ValidateScene(
@@ -1141,6 +1481,30 @@ public static class LevelContentValidator
         }
     }
 
+    /// <summary>
+    /// Finds an activity by KIND rather than by type. Both the Kitchen and the
+    /// Bedroom need this: most of their routines come from a handful of shared
+    /// classes, and a FindInScene&lt;T&gt; would only ever see the first
+    /// instance of each.
+    /// </summary>
+    private static void RequireRoomActivity(
+        Scene scene, CatActivityKind kind, string productId, string label,
+        string room, LevelValidationReport report)
+    {
+        CatActivity[] activities = FindAllInScene<CatActivity>(scene);
+        CatActivity found = null;
+        for (int i = 0; i < activities.Length; i++)
+        {
+            if (activities[i] != null && activities[i].Kind == kind)
+                found = activities[i];
+        }
+
+        Require(found != null, room + " needs the " + label + " activity.", report);
+        Require(found == null || found.StoreProductId == productId,
+            "The " + label + " activity must be gated on owning '" + productId + "'.",
+            report);
+    }
+
     private static SitLookActivity FindSitLook(Scene scene, CatActivityKind kind)
     {
         SitLookActivity[] activities = FindAllInScene<SitLookActivity>(scene);
@@ -1169,6 +1533,17 @@ public static class LevelContentValidator
                     return transforms[i].gameObject;
         }
 
+        return null;
+    }
+
+    private static Transform FindNamedInChildren(Transform root, string objectName)
+    {
+        if (root == null)
+            return null;
+        Transform[] transforms = root.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < transforms.Length; i++)
+            if (transforms[i].name == objectName)
+                return transforms[i];
         return null;
     }
 

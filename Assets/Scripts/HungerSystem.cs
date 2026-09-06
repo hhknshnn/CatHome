@@ -160,7 +160,7 @@ public class HungerSystem : MonoBehaviour
         if (percentageText != null)
         {
             percentageText.text = Mathf.CeilToInt(currentHunger) + "%";
-            percentageText.color = textColor;
+            percentageText.color = PremiumUiStyle.Ink;
         }
 
         if (isStarving)
@@ -208,7 +208,7 @@ public class HungerSystem : MonoBehaviour
             hungerFrame.color = flashingRed;
 
         if (percentageText != null)
-            percentageText.color = Color.Lerp(textColor, Color.white, pulse);
+            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     private void OnDisable()

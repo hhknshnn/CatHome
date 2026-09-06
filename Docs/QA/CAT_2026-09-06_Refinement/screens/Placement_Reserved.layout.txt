@@ -1,0 +1,4 @@
+Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
+RotateLeft (x:916.00, y:65.00, width:84.00, height:70.00)
+RotateRight (x:1016.00, y:65.00, width:84.00, height:70.00)
+CancelPlacement (x:1356.00, y:65.00, width:134.00, height:70.00)

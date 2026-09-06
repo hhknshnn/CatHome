@@ -47,19 +47,19 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
         dim.rectTransform.anchorMin=Vector2.zero;dim.rectTransform.anchorMax=Vector2.one;dim.rectTransform.offsetMin=dim.rectTransform.offsetMax=Vector2.zero;dim.color=new Color(0.03f,.06f,.09f,.76f);dim.raycastTarget=true;
         safeRoot=CreateRect(root,"SafeArea",Vector2.zero,Vector2.zero);safeRoot.anchorMin=Vector2.zero;safeRoot.anchorMax=Vector2.one;safeRoot.offsetMin=safeRoot.offsetMax=Vector2.zero;
         panel=CreateRect(safeRoot,"CelebrationPanel",new Vector2(980f,570f),Vector2.zero);
-        CreatePanel(panel,"Depth",new Vector2(1000f,590f),Vector2.zero,PremiumUiStyle.Shadow,54f,12f);
-        CreatePanel(panel,"ChampagneFrame",new Vector2(980f,570f),Vector2.zero,PremiumUiStyle.Champagne,54f,14f);
-        CreatePanel(panel,"NavyFace",new Vector2(934f,526f),new Vector2(0f,5f),PremiumUiStyle.Navy,45f,9f);
+        CreatePanel(panel,"IvoryFace",new Vector2(980,570),Vector2.zero,PremiumUiStyle.Ivory,32,2);
         burst=CreateRect(panel,"SunBurst",new Vector2(360f,270f),new Vector2(0f,116f));burst.gameObject.AddComponent<CanvasRenderer>();
-        burst.gameObject.AddComponent<OnboardingCelebrationGraphic>().Configure(OnboardingCelebrationGraphic.ShapeKind.Burst,new Color32(255,188,55,185));
+        burst.gameObject.AddComponent<OnboardingCelebrationGraphic>().Configure(OnboardingCelebrationGraphic.ShapeKind.Burst,new Color32(255,215,147,55));
         catPortrait=CreateRect(panel,"HappyCat",new Vector2(210f,190f),new Vector2(0f,124f));
         catVisual=CreateRect(catPortrait,"CatPreview",new Vector2(230f,210f),Vector2.zero);catVisual.gameObject.AddComponent<CanvasRenderer>();
         RawImage previewImage=catVisual.gameObject.AddComponent<RawImage>();previewImage.color=Color.white;previewImage.raycastTarget=false;catPreview=catVisual.gameObject.AddComponent<CatCelebrationPreview>();
-        TMP_Text title=CreateText(panel,"Title",font,"CARE COMPLETE!",55f,FontStyles.Bold,new Vector2(760f,72f),new Vector2(0f,-18f),PremiumUiStyle.Ivory);
-        TMP_Text subtitle=CreateText(panel,"Subtitle",font,"+180 COINS  |  CAT RUNNER UNLOCKED",31f,FontStyles.Bold,new Vector2(780f,54f),new Vector2(0f,-85f),PremiumUiStyle.ChampagneLight);
+        TMP_Text title=CreateText(panel,"Title",font,GameLanguageService.Text("celebration.care"),44f,FontStyles.Bold,new Vector2(760f,72f),new Vector2(0f,-18f),PremiumUiStyle.Ink);
+        TMP_Text subtitle=CreateText(panel,"Subtitle",font,GameLanguageService.Text("celebration.care_reward"),26f,FontStyles.Bold,new Vector2(780f,54f),new Vector2(0f,-85f),PremiumUiStyle.Teal);
         RectTransform buttonRoot=CreateRect(panel,"LetsPlayButton",new Vector2(390f,104f),new Vector2(0f,-192f));
         LowPolyPanelGraphic face=CreatePanel(buttonRoot,"ButtonFace",new Vector2(390f,96f),new Vector2(0f,4f),PremiumUiStyle.Teal,42f,6f);
-        CreateText(buttonRoot,"Label",font,"LET'S PLAY!",34f,FontStyles.Bold,new Vector2(350f,70f),new Vector2(0f,5f),Color.white);
+        CreateText(face.transform,"Label",font,GameLanguageService.Text("celebration.play"),30f,FontStyles.Bold,new Vector2(350f,70f),new Vector2(0f,5f),Color.white);
+        face.SetPremiumBaseColor(PremiumUiStyle.Coral);
+        face.GetComponentInChildren<TMP_Text>().color=PremiumUiStyle.Ink;
         face.raycastTarget=true;playButton=buttonRoot.gameObject.AddComponent<Button>();playButton.targetGraphic=face;playButton.transition=Selectable.Transition.None;playButton.onClick.AddListener(HandlePlay);
         PremiumButtonFx playFx=buttonRoot.gameObject.AddComponent<PremiumButtonFx>();
         playFx.Configure(face.rectTransform,face,playButton,true);
@@ -83,10 +83,18 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
         rootGroup.alpha=1f;rootGroup.interactable=true;rootGroup.blocksRaycasts=true;gameObject.SetActive(true);
         if(catMovement==null)catMovement=FindAnyObjectByType<CatMovement>();if(catMovement!=null)catMovement.AcquireInputBlock(this);
         catPreview?.Begin(catMovement);
-        StartAnimation(OpenRoutine());
+        if(CatRunnerProgressService.ReducedMotion)
+        {
+            panel.localScale=Vector3.one*layoutScale;
+            catPortrait.anchoredPosition=new Vector2(0f,124f);
+            catPortrait.localScale=Vector3.one;
+        }
+        else StartAnimation(OpenRoutine());
     }
 
-    private void HandlePlay(){if(!isOpen||closing)return;closing=true;playButton.interactable=false;StartAnimation(CloseRoutine());}
+    private void HandlePlay(){if(!isOpen||closing)return;
+        if(CatRunnerProgressService.ReducedMotion){isOpen=false;IsAnyOpen=false;catPreview?.Cleanup();ReleaseInput();SetHiddenImmediate();PlayRequested?.Invoke();return;}
+        closing=true;playButton.interactable=false;StartAnimation(CloseRoutine());}
     private IEnumerator OpenRoutine()
     {
         panel.localScale=Vector3.one*(layoutScale*.75f);catPortrait.anchoredPosition=new Vector2(0f,92f);catPortrait.localScale=new Vector3(1.12f,.84f,1f);
@@ -125,7 +133,7 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
     }
     private IEnumerator CloseRoutine()
     {
-        float press=0f;while(press<.12f){press+=Time.unscaledDeltaTime;playButton.transform.localScale=Vector3.one*Mathf.Lerp(1f,.92f,Smooth(press/.12f));yield return null;}
+        float press=0f;while(press<.12f){press+=Time.unscaledDeltaTime;playButton.targetGraphic.rectTransform.localScale=Vector3.one*Mathf.Lerp(1f,.92f,Smooth(press/.12f));yield return null;}
         float elapsed=0f;while(elapsed<.24f){elapsed+=Time.unscaledDeltaTime;float t=Smooth(elapsed/.24f);rootGroup.alpha=1f-t;panel.localScale=Vector3.one*(layoutScale*Mathf.Lerp(.98f,.86f,t));yield return null;}
         isOpen=false;closing=false;IsAnyOpen=false;catPreview?.Cleanup();ReleaseInput();SetHiddenImmediate();animationRoutine=null;PlayRequested?.Invoke();
     }
@@ -137,7 +145,7 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
         if(catPortrait!=null){catPortrait.anchoredPosition=new Vector2(0f,124f);catPortrait.localScale=Vector3.one;}if(catVisual!=null)SetAlpha(catVisual,1f);
         if(burst!=null){burst.localScale=Vector3.one;burst.localRotation=Quaternion.identity;SetAlpha(burst,1f);}
         if(confetti!=null)for(int i=0;i<confetti.Length;i++)if(confetti[i]!=null){confetti[i].anchoredPosition=new Vector2(0f,105f);confetti[i].localScale=Vector3.zero;confetti[i].localRotation=Quaternion.identity;SetAlpha(confetti[i],1f);}
-        if(playButton!=null){playButton.interactable=true;playButton.transform.localScale=Vector3.one;}
+        if(playButton!=null){playButton.interactable=true;playButton.targetGraphic.rectTransform.localScale=Vector3.one;}
     }
     private void ConfigureInteractionLayer()
     {

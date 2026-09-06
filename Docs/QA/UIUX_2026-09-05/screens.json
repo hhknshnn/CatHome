@@ -1,0 +1,289 @@
+[
+  [
+    "01_Title",
+    "Ana menü",
+    "Ana deneyim",
+    "C",
+    "Kedi, logo, durum kartları ve çok sayıda güçlü eylem aynı anda dikkat çekiyor."
+  ],
+  [
+    "02_Title_Credits",
+    "Yapımcılar",
+    "Ana deneyim",
+    "C",
+    "Geniş panelde gerçek katkı ve sürüm bilgileri daha anlamlı bir içerik oluşturmalı."
+  ],
+  [
+    "03_Title_NewGame",
+    "Yeni oyun / sıfırlama",
+    "Hesap ve ayarlar",
+    "C",
+    "İptal ile ilerlemeyi sıfırlama daha açık ayrılmalı; tehlikeli işlem ana menüde ikincil kalmalı."
+  ],
+  [
+    "04_Title_Account",
+    "Hesap seçimi",
+    "Hesap ve ayarlar",
+    "C",
+    "Hesap korumanın faydası kısa anlatılmalı; iki yol ve geri eylemi netleşmeli."
+  ],
+  [
+    "05_Title_Settings",
+    "Ayarlar — açılış",
+    "Hesap ve ayarlar",
+    "C",
+    "Ses, erişilebilirlik, dil ve hesap ayrı gruplar olmalı. Uzun hesap durumu düğmede sıkışıyor."
+  ],
+  [
+    "06_Title_Privacy",
+    "Gizlilik ve veri",
+    "Hesap ve ayarlar",
+    "C",
+    "Bağlı hesap bilgisiyle giriş gerekli mesajı çelişiyor. Hesap ve senkronizasyon durumu ayrılmalı."
+  ],
+  [
+    "07_OfflineReturn",
+    "Geri dönüş özeti",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Örnek 2 saat ve ihtiyaç değerleri yalnız UI'ya verildi. İhtiyaç azalması ödül kutlaması gibi sunuluyor."
+  ],
+  [
+    "08_Home",
+    "Ev ve HUD",
+    "Ana deneyim",
+    "C",
+    "Oda açık kalıyor; üst göstergeler, yardımcı ikonlar ve alt dock arasında daha güçlü öncelik gerekli."
+  ],
+  [
+    "09_Hamburger",
+    "Yan menü",
+    "Ana deneyim",
+    "C",
+    "Tekrarlanan yollar ve karışık dil var. Menü oyuncunun amaçlarına göre adlandırılmalı."
+  ],
+  [
+    "10_Quests",
+    "Görevler",
+    "İlerleme ve öğretici",
+    "C",
+    "Tekrarlanan geniş satırlar ve yoğun alt bilgi. Günlük/bölüm ayrımı, ilerleme ve ödül görselleri güçlenmeli."
+  ],
+  [
+    "11_CatJournal",
+    "Kedi günlüğü",
+    "Kedim ve odalar",
+    "C",
+    "Çizim gerçek seçili kediyle aynı kimliği taşımıyor. İsim, ırk ve renk tek ailede düzenlenmeli."
+  ],
+  [
+    "12_CatBreeds",
+    "Kedi ırkları",
+    "Kedim ve odalar",
+    "C",
+    "Canlı model iyi temel; küçük portreler, boşluk ve geliştirme metinleri sunumu zayıflatıyor."
+  ],
+  [
+    "13_Rooms",
+    "Odalar",
+    "Kedim ve odalar",
+    "C",
+    "Gerçek oda fotoğrafları değerli. Kartların çerçeve ve bilgi katmanları sadeleşmeli."
+  ],
+  [
+    "14_GamesHub",
+    "Oyun seçimi",
+    "Mini oyunlar",
+    "C",
+    "Kedi illüstrasyonları oyun modellerinden farklı; dar kadrajlar ve tekrarlanan etiketler var."
+  ],
+  [
+    "15_Home_Settings",
+    "Ayarlar — ev",
+    "Hesap ve ayarlar",
+    "C",
+    "Açılıştakiyle aynı bileşen; arka plandan bağımsız tutarlı gruplama gerekli."
+  ],
+  [
+    "16_Shop_CAT",
+    "Mağaza — CAT",
+    "Mağaza",
+    "C",
+    "CAT adı ırk mağazasıyla karışabiliyor. Kedi eşyaları daha açık bir kategori adı."
+  ],
+  [
+    "17_Shop_ROOM",
+    "Mağaza — ROOM",
+    "Mağaza",
+    "C",
+    "Üst alan çok yer kaplıyor; ürünü büyüten ve daha çok ürün gösteren bir kart düzeni gerekli."
+  ],
+  [
+    "18_Shop_HOME",
+    "Mağaza — HOME",
+    "Mağaza",
+    "C",
+    "Oda gezinmesi ve oda satın alma aynı kart dili ve açık sahiplik durumlarını kullanmalı."
+  ],
+  [
+    "19_Buy_CoinsAvailable",
+    "Satın alma — jeton yeterli",
+    "Mağaza",
+    "Ö",
+    "Gerçek ürüne ait diyalog doğrudan açıldı; satın alınmadı. Dev arka plan dekoru ürünü bastırıyor."
+  ],
+  [
+    "20_Buy_Prerequisite",
+    "Satın alma — ön koşul",
+    "Mağaza",
+    "Ö",
+    "Kitap seti ve gerekli kitaplık birlikte anlatılmalı; hangi ürünün alındığı ilk bakışta belli olmalı."
+  ],
+  [
+    "21_DiamondPacks",
+    "Elmas paketleri",
+    "Mağaza",
+    "C",
+    "50 elmas uygun paket olarak gösterildi. Gerçek fiyat ve sağlayıcı yüklenme/hata durumları tamamlanmalı."
+  ],
+  [
+    "22_DiamondConfirm_Preview",
+    "Elmas harcama onayı",
+    "Mağaza",
+    "Ö",
+    "Örnek 5 elmas onayı; bakiye değiştirilmedi. Ürün, tutar ve onay için daha dengeli küçük modal gerekli."
+  ],
+  [
+    "23_Leaderboard",
+    "Liderlik — boş veri",
+    "Mini oyunlar",
+    "C",
+    "0 oyuncu gerçek veri durumu. Boş podyum yerine anlaşılır boş durum; filtreler daha sakin."
+  ],
+  [
+    "24_Runner_Welcome",
+    "Runner — giriş",
+    "Mini oyunlar",
+    "C",
+    "Can harcanmadı. İki sütun iyi temel; sanat dili ve metin önceliği yenilenmeli."
+  ],
+  [
+    "25_Runner_HUD_Preview",
+    "Runner — HUD",
+    "Mini oyunlar",
+    "Ö",
+    "Örnek sayılar; koşu başlatılmadı. Boş parkur oyun dünyası kalitesinin kanıtı değildir."
+  ],
+  [
+    "26_Runner_Tutorial_Preview",
+    "Runner — öğretici",
+    "Mini oyunlar",
+    "Ö",
+    "İlk yönerge görünümü. Hareketi metin yerine bağlam içinde göstermek gerekir."
+  ],
+  [
+    "27_Runner_Pause_Preview",
+    "Runner — duraklatma",
+    "Mini oyunlar",
+    "Ö",
+    "Görünüm önizlemesi. Devam ve küçük tercih kontrolleri aynı görsel ağırlıkta olmamalı."
+  ],
+  [
+    "28_Runner_Result_Preview",
+    "Runner — sonuç",
+    "Mini oyunlar",
+    "Ö",
+    "Örnek skor/ödül; ödül uygulanmadı. Ana kazanç, rekor ve ayrıntılar ayrışmalı."
+  ],
+  [
+    "29_Runner_NoEnergy_Preview",
+    "Runner — can yok",
+    "Mini oyunlar",
+    "Ö",
+    "Başlat ve reklam düğmeleri çakışıyor. Aynı yerleşim ve görünürlük davranışı kodda da doğrulandı."
+  ],
+  [
+    "30_Catch_Welcome",
+    "Catch — giriş",
+    "Mini oyunlar",
+    "C",
+    "Can harcanmadı. Runner ile ortak dil ve gerçek oyun kedisi kullanılmalı."
+  ],
+  [
+    "31_Catch_HUD_Preview",
+    "Catch — HUD",
+    "Mini oyunlar",
+    "Ö",
+    "Örnek sayılar; av başlatılmadı. Fare ve jeton ikonları iki sayının hızlı okunmasını kolaylaştırmalı."
+  ],
+  [
+    "32_Catch_Tutorial_Preview",
+    "Catch — öğretici",
+    "Mini oyunlar",
+    "Ö",
+    "Üst yönerge ve alt sabit açıklama tekrar ediyor. Fare üzerinde kısa hedef gösterimi öneriliyor."
+  ],
+  [
+    "33_Catch_Pause_Preview",
+    "Catch — duraklatma",
+    "Mini oyunlar",
+    "Ö",
+    "Runner ile aynı duraklatma ailesine alınmalı."
+  ],
+  [
+    "34_Catch_Result_Preview",
+    "Catch — sonuç",
+    "Mini oyunlar",
+    "Ö",
+    "Örnek 8 fare, 1250 skor, 40 jeton; ödül uygulanmadı. Sayı bloğu yerine ödül hiyerarşisi gerekli."
+  ],
+  [
+    "35_Catch_NoLives_Preview",
+    "Catch — can yok",
+    "Mini oyunlar",
+    "Ö",
+    "Runner ile aynı başlat/reklam çakışması; ortak can durumu bileşeni gerekli."
+  ],
+  [
+    "36_Onboarding_Name_Preview",
+    "Tanışma — isim",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Mevcut UI yeniden oluşturuldu; kayıt sıfırlanmadı. Portrede yüz yerine materyal dokusunun parçası görünüyor."
+  ],
+  [
+    "37_Onboarding_Dialogue_Preview",
+    "Tanışma — konuşma",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Mevcut portre kaynağı sabit UV kesiti kullanıyor. Gerçek kedi portresi ve belirgin devam gerekiyor."
+  ],
+  [
+    "38_Onboarding_Complete_Preview",
+    "Bakım tamamlandı",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Kutlama gösterildi; 180 jeton verilmedi. Kedi önizlemesi merkezde çok küçük."
+  ],
+  [
+    "39_Home_LevelUp_Preview",
+    "Ev seviyesi kutlaması",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Örnek seviye 4; gerçek kayıt seviyesi değiştirilmedi. Başlık tekrarı azaltılıp ödül öne çıkarılmalı."
+  ],
+  [
+    "40_Collection_Complete_Preview",
+    "Koleksiyon kutlaması",
+    "İlerleme ve öğretici",
+    "Ö",
+    "Örnek oda tamamlama; koleksiyon/ödül değiştirilmedi. Tamamlanan oda görseli eksik, genel sayaç baskın."
+  ],
+  [
+    "42_Activity_Action_Preview",
+    "Bağlamsal aktivite düğmesi",
+    "Ana deneyim",
+    "Ö",
+    "Yalnız eylem düğmesi gösterildi; aktivite başlatılmadı. İlgili eşyanın hedef vurgusuyla bağ kurulmalı."
+  ]
+]

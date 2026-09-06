@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 13:02:27Z" end-time="2026-09-06 13:02:45Z" duration="18,4170384">
+  <test-suite type="TestSuite" id="1091" name="CatHome" fullname="CatHome" runstate="Runnable" testcasecount="63" result="Passed" start-time="2026-09-06 13:02:27Z" end-time="2026-09-06 13:02:45Z" duration="18.417038" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1087" name="CatHome.PlayModeTests.dll" fullname="C:/Users/HAKAN/Desktop/CatHome/CatHome/Library/ScriptAssemblies/CatHome.PlayModeTests.dll" runstate="Runnable" testcasecount="63" result="Passed" start-time="2026-09-06 13:02:27Z" end-time="2026-09-06 13:02:45Z" duration="18.397055" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="33768" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+      <test-suite type="TestFixture" id="1027" name="CatEnrichmentTests" fullname="CatEnrichmentTests" classname="CatEnrichmentTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-06 13:02:27Z" end-time="2026-09-06 13:02:45Z" duration="18.391790" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+        <test-case id="1031" name="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" fullname="CatEnrichmentTests.Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" methodname="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" classname="CatEnrichmentTests" runstate="Runnable" seed="146717464" result="Passed" start-time="2026-09-06 13:02:27Z" end-time="2026-09-06 13:02:45Z" duration="18.371232" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+Saving results to: Docs/QA/UIUX_2026-09-06\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

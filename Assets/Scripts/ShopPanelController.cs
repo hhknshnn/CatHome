@@ -74,6 +74,11 @@ public sealed class ShopPanelController : MonoBehaviour
     [Header("Purchase dialog")]
     [SerializeField] private CanvasGroup purchaseGroup;
     [SerializeField] private RawImage purchaseIcon;
+    [SerializeField] private GameObject requestedProductRoot;
+    [SerializeField] private RawImage requestedProductIcon;
+    [SerializeField] private TMP_Text requestedProductLabel;
+    [SerializeField] private TMP_Text purchasePlacementText;
+    [SerializeField] private RawImage diamondConfirmationIcon;
     [SerializeField] private TMP_Text purchaseTitleText;
     [SerializeField] private TMP_Text purchaseMessageText;
     [SerializeField] private Button purchaseCoinButton;
@@ -81,6 +86,7 @@ public sealed class ShopPanelController : MonoBehaviour
     [SerializeField] private Button purchaseDiamondButton;
     [SerializeField] private TMP_Text purchaseDiamondButtonText;
     [SerializeField] private Button purchaseCancelButton;
+    [SerializeField] private Button purchaseLaterButton;
 
     [Header("Diamond confirmation")]
     [SerializeField] private CanvasGroup diamondConfirmationGroup;
@@ -102,9 +108,9 @@ public sealed class ShopPanelController : MonoBehaviour
     [SerializeField] private Button placementCancelButton;
 
     [Header("Responsive size")]
-    [SerializeField, Range(0.35f, 0.9f)] private float widthFraction = 0.76f;
-    [SerializeField, Min(0f)] private float minWidth = 1320f;
-    [SerializeField, Min(0f)] private float maxWidth = 1420f;
+    [SerializeField, Range(0.35f, 0.9f)] private float widthFraction = 0.9f;
+    [SerializeField, Min(0f)] private float minWidth = 1460f;
+    [SerializeField, Min(0f)] private float maxWidth = 1720f;
     [SerializeField, Min(0f)] private float safeAreaMargin = 34f;
 
     [Header("Animation")]
@@ -115,17 +121,17 @@ public sealed class ShopPanelController : MonoBehaviour
     [SerializeField, Range(0.7f, 1f)] private float revealScaleFrom = 0.94f;
     [SerializeField, Range(0f, 1f)] private float scrimTargetAlpha = 0.68f;
 
-    private static readonly Color BuyColor = new Color32(38, 193, 174, 255);
-    private static readonly Color OwnedColor = new Color32(116, 91, 166, 255);
-    private static readonly Color NeedColor = new Color32(244, 126, 76, 255);
-    private static readonly Color TabActiveColor = PremiumUiStyle.Ivory;
-    private static readonly Color TabIdleColor = PremiumUiStyle.NavyLift;
-    private static readonly Color TabActiveTextColor = PremiumUiStyle.Ink;
-    private static readonly Color TabIdleTextColor = PremiumUiStyle.ChampagneLight;
+    private static readonly Color BuyColor = PremiumUiStyle.Mint;
+    private static readonly Color OwnedColor = PremiumUiStyle.Mint;
+    private static readonly Color NeedColor = PremiumUiStyle.WarmIvory;
+    private static readonly Color TabActiveColor = PremiumUiStyle.Teal;
+    private static readonly Color TabIdleColor = PremiumUiStyle.Mint;
+    private static readonly Color TabActiveTextColor = Color.white;
+    private static readonly Color TabIdleTextColor = PremiumUiStyle.Ink;
 
     private static string DefaultFeedback => HomeStoreService.FreePurchaseTestingEnabled
-        ? "FREE TEST MODE  •  TAP GET  •  NO COINS OR DIAMONDS USED"
-        : "EARN COINS IN CAT RUNNER  •  PURCHASES STAY IN YOUR HOME";
+        ? GameContentCopy.Text("Ücretsiz deneme · Edin düğmesi bakiyeni harcamaz.","Free test · Get an item without spending your balance.")
+        : GameContentCopy.Text("Oyunlarda jeton kazan, kedine mutlu bir ev kur.","Earn coins in games and build a happy home for your cat.");
 
     private PanelState state = PanelState.Closed;
     private Coroutine animationRoutine;
@@ -135,6 +141,7 @@ public sealed class ShopPanelController : MonoBehaviour
     private bool listenersBound;
     private WhileYouWereAwayPopup offlinePopup;
     private HomeProductPlacement activePlacement;
+    private bool activePlacementWasStored;
     private bool placementMode;
     private HomeStoreCategory activeCategory = HomeStoreCategory.Cat;
     private bool purchaseDialogOpen;
@@ -181,8 +188,10 @@ public sealed class ShopPanelController : MonoBehaviour
         BindListeners();
         EconomyService.AnyBalanceChanged += RefreshStore;
         HomeStoreService.OwnershipChanged += HandleOwnershipChanged;
+        HomeStoreService.StorageChanged += HandleOwnershipChanged;
         HomeRoomService.CurrentRoomChanged += HandleCurrentRoomChanged;
         HomeProgressionService.Changed += RefreshStore;
+        GameLanguageService.Changed += RefreshStore;
         RefreshStore();
     }
 
@@ -213,9 +222,10 @@ public sealed class ShopPanelController : MonoBehaviour
         if (IsBlockingModalActive())
             return;
 
-        RefreshStore();
-        SetFeedback(DefaultFeedback);
-        SetCategory(category, false);
+        // Category selection owns the footer copy as well as the visible cards.
+        // Opening directly into ROOM must show its set/budget guidance instead
+        // of inheriting CAT's generic earning hint.
+        SetCategory(category, true);
         placementMode = false;
         if (panel != null)
             panel.gameObject.SetActive(true);
@@ -292,15 +302,28 @@ public sealed class ShopPanelController : MonoBehaviour
             return;
         }
 
-        if (productId == HomeStoreService.HomeRoomsPreviewId)
+        foreach(var room in HomeRoomService.Rooms)
         {
-            SetFeedback("LIVING ROOM IS YOUR CURRENT ROOM  •  COMPLETE ALL " +
-                        HomeStoreService.LivingRoomItemCount + " ITEMS");
+            string roomProduct=room.IsAlwaysUnlocked?HomeStoreService.HomeRoomsPreviewId:room.RequiredOwnershipId;
+            if(roomProduct!=productId || !HomeRoomService.IsRoomUnlocked(room.Id))continue;
+            if(HomeRoomService.CurrentRoomId==room.Id)
+                SetFeedback(GameContentCopy.Text("Zaten bu odadasın.","You’re already in this room."));
+            else
+            {
+                var loader=FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include);
+                if(loader!=null && loader.LoadRoom(room.Id))RequestClose();
+            }
             return;
         }
 
         if (HomeStoreService.IsOwned(productId) && product.IsPlaceable)
         {
+            if (CatCollectionPolicy.IsCatItem(productId) && !HomeStoreService.IsStored(productId))
+            {
+                HomeStoreService.TrySetStored(productId, true);
+                SetFeedback(GameContentCopy.Text("Koleksiyona kaldırıldı. İstediğinde yeniden ekleyebilirsin.", "Put away. Add it again whenever you like."));
+                RefreshStore(); return;
+            }
             BeginPlacement(productId);
             return;
         }
@@ -339,9 +362,9 @@ public sealed class ShopPanelController : MonoBehaviour
             return;
         }
 
-        if (ProgressionService.CurrentChapterNumber < product.RequiredLevel)
+        if (!HomeStoreService.MeetsHomeLevelRequirement(product))
         {
-            SetFeedback("REACH LEVEL " + product.RequiredLevel + " TO UNLOCK THIS ITEM.");
+            SetFeedback("REACH HOME LEVEL " + product.RequiredLevel + " TO UNLOCK THIS ITEM.");
             return;
         }
 
@@ -454,7 +477,7 @@ public sealed class ShopPanelController : MonoBehaviour
         {
             purchaseTitleText.text = string.IsNullOrEmpty(pendingRequiredForProductId)
                 ? product.Title
-                : "REQUIRED: " + GetShortProductTitle(product.Id);
+                : GameLanguageService.Format("shop.required", product.Title);
         }
 
         if (purchaseMessageText != null)
@@ -464,18 +487,34 @@ public sealed class ShopPanelController : MonoBehaviour
                     pendingRequiredForProductId,
                     out HomeStoreProduct requestedProduct))
             {
-                purchaseMessageText.text = requestedProduct.Title + " NEEDS " +
-                    GetShortProductTitle(product.Id) + ". BUY IT FIRST.";
+                purchaseMessageText.text = GameLanguageService.Format("shop.required_body", requestedProduct.Title, product.Title);
             }
             else
             {
                 purchaseMessageText.text =
-                    "CHOOSE COINS OR DIAMONDS  •  1 DIAMOND = 100 COINS";
+                    product.Description;
             }
         }
 
         if (purchaseIcon != null)
             purchaseIcon.texture = GetProductPreviewTexture(product.Id);
+
+        bool prerequisite=!string.IsNullOrEmpty(pendingRequiredForProductId);
+        if(requestedProductRoot!=null) requestedProductRoot.SetActive(prerequisite);
+        if(prerequisite && HomeStoreService.TryGetProduct(pendingRequiredForProductId,out var requested))
+        {
+            if(requestedProductIcon!=null) requestedProductIcon.texture=GetProductPreviewTexture(requested.Id);
+            if(requestedProductLabel!=null) requestedProductLabel.text=GameLanguageService.Format("shop.requested",requested.Title);
+        }
+        if(purchaseIcon!=null)
+        {
+            purchaseIcon.rectTransform.sizeDelta=Vector2.one*(prerequisite?378:492);
+            purchaseIcon.rectTransform.anchoredPosition=new Vector2(-318,prerequisite?72:22);
+            purchaseIcon.uvRect=product.StoreCategory==HomeStoreCategory.Home ? RoomPreviewFit.CoverUv(1920,1080,purchaseIcon.rectTransform.rect.width,purchaseIcon.rectTransform.rect.height) : new Rect(0,0,1,1);
+        }
+        if(purchasePlacementText!=null) purchasePlacementText.text=GameLanguageService.Text(
+            product.StoreCategory==HomeStoreCategory.Home?"shop.room_purchase":
+            HomeStoreService.IsFixedRoomProduct(product.Id)?"shop.placement":"shop.cat_placement");
 
         PurchasePreview coin = EconomyService.PreviewPurchase(
             CurrencyType.Coin,
@@ -488,12 +527,12 @@ public sealed class ShopPanelController : MonoBehaviour
         if (purchaseCoinButtonText != null)
         {
             purchaseCoinButtonText.text = coin.CanAfford
-                ? "BUY  •  " + product.CoinPrice.ToString("N0") + " COINS"
-                : "NEED " + coin.Missing.ToString("N0") + " MORE COINS";
+                ? GameLanguageService.Format("shop.buy_coins", product.CoinPrice.ToString("N0"))
+                : GameLanguageService.Format("shop.need_coins", coin.Missing.ToString("N0"));
         }
         if (purchaseDiamondButtonText != null)
             purchaseDiamondButtonText.text =
-                product.DiamondPrice.ToString("N0") + " DIAMONDS";
+                GameLanguageService.Format("shop.buy_diamonds", product.DiamondPrice.ToString("N0"));
     }
 
     private void PurchaseWithCoins()
@@ -525,14 +564,14 @@ public sealed class ShopPanelController : MonoBehaviour
 
         diamondConfirmationOpen = true;
         if (diamondConfirmationTitle != null)
-            diamondConfirmationTitle.text = "CONFIRM PURCHASE";
+            diamondConfirmationTitle.text = GameLanguageService.Text("shop.confirm");
         if (diamondConfirmationMessage != null)
             diamondConfirmationMessage.text =
-                "BUY " + product.Title + " FOR " +
-                product.DiamondPrice.ToString("N0") + " DIAMONDS?";
+                GameLanguageService.Format("shop.confirm_body",product.Title,product.DiamondPrice.ToString("N0"));
         if (diamondConfirmationButtonText != null)
             diamondConfirmationButtonText.text =
-                "YES, USE " + product.DiamondPrice.ToString("N0") + " DIAMONDS";
+                GameLanguageService.Format("shop.buy_diamonds", product.DiamondPrice.ToString("N0"));
+        if(diamondConfirmationIcon!=null) diamondConfirmationIcon.texture=GetProductPreviewTexture(product.Id);
         SetDiamondConfirmationVisible(true);
     }
 
@@ -672,7 +711,8 @@ public sealed class ShopPanelController : MonoBehaviour
                     ownedCount++;
 
                 if (card.categoryText != null)
-                    card.categoryText.text = product.Category;
+                    card.categoryText.text = HomeStoreService.GetCatalogEyebrow(
+                        product.Id, product.Category);
                 if (card.titleText != null)
                     card.titleText.text = product.Title;
                 if (card.descriptionText != null)
@@ -694,7 +734,23 @@ public sealed class ShopPanelController : MonoBehaviour
                         ? product.DiamondPrice.ToString("N0")
                         : string.Empty;
                 if (card.ownedBadge != null)
+                {
                     card.ownedBadge.SetActive(owned);
+                    if (CatCollectionPolicy.IsCatItem(product.Id))
+                    {
+                        var badgeLabel = card.ownedBadge.GetComponentInChildren<TMP_Text>(true);
+                        if (badgeLabel != null)
+                        {
+                            string key = HomeStoreService.IsStored(product.Id)
+                                ? "shop.in_collection" : "shop.in_room";
+                            var localized = badgeLabel.GetComponent<LocalizedLabel>();
+                            if (localized != null)
+                                localized.EditorConfigure(badgeLabel, key);
+                            else
+                                badgeLabel.text = GameLanguageService.Text(key);
+                        }
+                    }
+                }
 
                 if (card.button != null)
                     card.button.interactable = true;
@@ -769,7 +825,9 @@ public sealed class ShopPanelController : MonoBehaviour
                 }
                 else if (owned)
                 {
-                    SetCardAction(card, product.IsPlaceable ? "MOVE ITEM" : "PREVIEW READY", OwnedColor);
+                    SetCardAction(card, CatCollectionPolicy.IsCatItem(product.Id) ?
+                        (HomeStoreService.IsStored(product.Id) ? GameContentCopy.Text("Odaya ekle", "Add to room") : GameContentCopy.Text("Kaldır", "Put away")) :
+                        HomeStoreService.IsFixedRoomProduct(product.Id) ? "IN YOUR ROOM" : product.IsPlaceable ? "MOVE ITEM" : "PREVIEW READY", OwnedColor);
                 }
                 else if (!product.IsAvailable ||
                          (!product.SupportsCoins && !product.SupportsDiamonds))
@@ -777,9 +835,12 @@ public sealed class ShopPanelController : MonoBehaviour
                     SetCardAction(card, "COMING SOON", NeedColor);
                 }
                 else if (!HomeStoreService.FreePurchaseTestingEnabled &&
-                         ProgressionService.CurrentChapterNumber < product.RequiredLevel)
+                         !HomeStoreService.MeetsHomeLevelRequirement(product))
                 {
-                    SetCardAction(card, "LEVEL " + product.RequiredLevel + " REQUIRED", NeedColor);
+                    SetCardAction(
+                        card,
+                        "HOME LV. " + product.RequiredLevel + " REQUIRED",
+                        NeedColor);
                 }
                 else if (HomeStoreService.FreePurchaseTestingEnabled || CanAfford(product))
                 {
@@ -813,17 +874,17 @@ public sealed class ShopPanelController : MonoBehaviour
                          (HomeStoreService.IsOwned(HomeStoreService.HomeBalconyPreviewId) ? 1 : 0) +
                          (HomeStoreService.IsOwned(HomeStoreService.HomePatioPreviewId) ? 1 : 0) +
                          (HomeStoreService.IsOwned(HomeStoreService.HomeSecondFloorPreviewId) ? 1 : 0);
-            categoryCount = 7;
+            categoryCount = HomeRoomService.Rooms.Count;
         }
 
         if (ownedCountText != null)
-            ownedCountText.text = ownedCount + " OF " + categoryCount + "  •  COLLECTED";
+            ownedCountText.text = GameLanguageService.Format("shop.progress", ownedCount, categoryCount);
 
         if (homeLevelText != null)
-            homeLevelText.text = "HOME LV. " + HomeProgressionService.HomeLevel;
+            homeLevelText.text = GameLanguageService.Format("title.home_level", HomeProgressionService.HomeLevel);
 
         if (sectionTitleText != null)
-            sectionTitleText.text = GetSectionTitle(activeCategory);
+            sectionTitleText.text = GetSectionTitle(activeCategory) + (activeCategory==HomeStoreCategory.Cat ? " · " + CatCollectionPolicy.DisplayedCount + " / 5" : "");
         RefreshTabs();
         RefreshPurchaseDialog();
     }
@@ -831,7 +892,7 @@ public sealed class ShopPanelController : MonoBehaviour
     private static string BuildPriceText(HomeStoreProduct product)
     {
         if (HomeStoreService.FreePurchaseTestingEnabled && product.IsAvailable)
-            return "FREE TEST";
+            return GameStatusCopy.Text("FREE TEST");
         if (product.Id == HomeStoreService.HomeRoomsPreviewId)
             return HomeStoreService.LivingRoomOwnedCount + " / " +
                    HomeStoreService.LivingRoomItemCount;
@@ -871,12 +932,10 @@ public sealed class ShopPanelController : MonoBehaviour
         if (updateFeedback)
         {
             SetFeedback(category == HomeStoreCategory.Cat
-                ? DefaultFeedback
+                ? GameContentCopy.Text("En fazla 5 eşya · 1 yatak. Kaldırdıkların koleksiyonunda kalır.", "Up to 5 items · 1 bed. Removed items stay in your collection.")
                 : category == HomeStoreCategory.Room
-                    ? HomeRoomService.CurrentRoom.DisplayName + "  •  ALL " +
-                      HomeStoreService.GetRoomCollection(HomeRoomService.CurrentRoomId).Count +
-                      " ITEMS AVAILABLE  •  SCROLL TO EXPLORE"
-                    : "COMPLETE EACH ROOM  •  UNLOCK THE NEXT WITH COINS OR DIAMONDS");
+                    ? BuildRoomEconomyFeedback()
+                    : GameContentCopy.Text("Odaları tamamla · Yeni odaları jeton veya elmasla aç.","Complete rooms · Unlock new rooms with coins or diamonds."));
         }
         RefreshStore();
         if (productScrollRect != null && productScrollRect.content != null)
@@ -885,6 +944,31 @@ public sealed class ShopPanelController : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(productScrollRect.content);
             productScrollRect.verticalNormalizedPosition = 1f;
         }
+    }
+
+    private static string BuildRoomEconomyFeedback()
+    {
+        string id=HomeRoomService.CurrentRoomId;
+        int owned=HomeStoreService.GetRoomOwnedCount(id),total=HomeStoreService.GetRoomCollection(id).Count;
+        return GameContentCopy.Text($"Koleksiyonun {owned}/{total} · Eşyalar tasarlanan yerine eklenir.",$"Your collection {owned}/{total} · Items go into their designed places.");
+    }
+
+    private static string BuildNextRoomGoal(string roomId)
+    {
+        if (!HomeStoreService.TryGetNextRoomPurchaseGoal(
+                roomId,
+                out HomeStorePurchaseGoal goal))
+        {
+            return "COLLECTION READY";
+        }
+
+        string title = GetShortProductTitle(goal.Product.Id);
+        if (HomeStoreService.FreePurchaseTestingEnabled)
+            return "NEXT " + title + "  •  FREE TEST";
+        return goal.CanAfford
+            ? "NEXT " + title + "  •  READY TO BUY"
+            : "NEXT " + title + "  •  NEED " +
+              goal.MissingCoins.ToString("N0") + " COINS";
     }
 
     private bool IsVisibleInActiveCollection(HomeStoreProduct product)
@@ -932,11 +1016,11 @@ public sealed class ShopPanelController : MonoBehaviour
         switch (category)
         {
             case HomeStoreCategory.Room:
-                return HomeRoomService.CurrentRoom.DisplayName + " FURNITURE & DECOR";
+                return GameLanguageService.Format("shop.furniture_title",HomeRoomService.CurrentRoom.DisplayName);
             case HomeStoreCategory.Home:
-                return "HOME EXPANSIONS";
+                return GameLanguageService.Text("shop.home");
             default:
-                return "CAT TOYS & NEEDS";
+                return GameLanguageService.Text("shop.cat");
         }
     }
 
@@ -948,7 +1032,7 @@ public sealed class ShopPanelController : MonoBehaviour
         {
             return requiredProduct.Title;
         }
-        return "REQUIRED ITEM";
+        return GameContentCopy.Text("Gerekli eşya","Required item");
     }
 
     private static string GetRequiredProductShortTitle(string productId)
@@ -959,21 +1043,21 @@ public sealed class ShopPanelController : MonoBehaviour
     private static string GetShortProductTitle(string productId)
     {
         if (productId == HomeStoreService.BookshelfId)
-            return "BOOKSHELF";
+            return GameContentCopy.Text("Kitaplık","Bookshelf");
         if (productId == HomeStoreService.TvUnitId)
-            return "TV UNIT";
+            return GameContentCopy.Text("TV ünitesi","TV unit");
         if (!string.IsNullOrEmpty(productId) &&
             HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product))
         {
             return product.Title;
         }
-        return "REQUIRED ITEM";
+        return GameContentCopy.Text("Gerekli eşya","Required item");
     }
 
     private static void SetCardAction(ProductCard card, string text, Color color)
     {
         if (card.actionText != null)
-            card.actionText.text = text;
+            card.actionText.text = GameStatusCopy.Text(text);
         if (card.actionBackground != null)
             SetGraphicColor(card.actionBackground, color);
     }
@@ -989,11 +1073,38 @@ public sealed class ShopPanelController : MonoBehaviour
     private void SetFeedback(string message)
     {
         if (feedbackText != null)
-            feedbackText.text = message;
+            feedbackText.text = GameStatusCopy.Text(message);
     }
 
     private void BeginPlacement(string productId)
     {
+        if (!CatCollectionPolicy.CanDisplay(productId, out var capacityReason))
+        { SetFeedback(capacityReason); return; }
+        if (CatCollectionPolicy.IsCatItem(productId))
+        {
+            bool added=HomeStoreService.TrySetStored(productId,false);
+            SetPlacementUi(false);
+            SetFeedback(GameLanguageService.Current==GameLanguage.Turkish ?
+                (added?"Salonunda yerine yerleştirildi.":"Şu anda yerleştirilemiyor. Biraz sonra tekrar dene."):
+                (added?"Placed in your living room.":"Cannot place this item right now. Try again shortly."));
+            RefreshStore();return;
+        }
+        if (HomeStoreService.IsFixedRoomProduct(productId))
+        {
+            SetPlacementUi(false);
+            SetFeedback("ADDED TO ITS PLACE IN YOUR ROOM!");
+            RefreshStore();
+            return;
+        }
+        string requiredProductId = HomeStoreService.GetRequiredProductId(productId);
+        if (!string.IsNullOrEmpty(requiredProductId) &&
+            HomeStoreService.IsStored(requiredProductId))
+        {
+            SetFeedback("PLACE " + GetRequiredProductTitle(productId) + " FIRST.");
+            BeginPlacement(requiredProductId);
+            return;
+        }
+
         HomeProductPlacement[] placements =
             FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include);
         activePlacement = null;
@@ -1006,8 +1117,20 @@ public sealed class ShopPanelController : MonoBehaviour
             }
         }
 
+        activePlacementWasStored = HomeStoreService.IsStored(productId);
         if (activePlacement == null || !activePlacement.BeginPreview())
         {
+            activePlacementWasStored = false;
+            SetFeedback("THIS ITEM CANNOT BE MOVED RIGHT NOW.");
+            return;
+        }
+
+        if (activePlacementWasStored &&
+            !HomeStoreService.TrySetStored(productId, false))
+        {
+            activePlacement.CancelPreview();
+            activePlacement = null;
+            activePlacementWasStored = false;
             SetFeedback("THIS ITEM CANNOT BE MOVED RIGHT NOW.");
             return;
         }
@@ -1078,16 +1201,25 @@ public sealed class ShopPanelController : MonoBehaviour
             return;
         }
 
+        string productId = activePlacement != null
+            ? activePlacement.ProductId
+            : string.Empty;
+        bool committed = false;
         if (activePlacement != null)
         {
             if (save)
-                activePlacement.CommitPreview();
+                committed = activePlacement.CommitPreview();
             else
                 activePlacement.CancelPreview();
         }
 
+        if ((!save || !committed) && activePlacementWasStored &&
+            !string.IsNullOrEmpty(productId))
+            HomeStoreService.TrySetStored(productId, true);
+
         placementMode = false;
         activePlacement = null;
+        activePlacementWasStored = false;
         SetPlacementUi(false);
         BeginClosing();
     }
@@ -1114,7 +1246,7 @@ public sealed class ShopPanelController : MonoBehaviour
         if (HomeStoreService.TryGetProduct(activePlacement.ProductId, out HomeStoreProduct product) &&
             placementTitleText != null)
         {
-            placementTitleText.text = "PLACE " + product.Title;
+            placementTitleText.text = product.Title;
         }
         if (placementCounterText != null &&
             activePlacement.PlacementKind == HomeProductPlacementKind.BookshelfOnly)
@@ -1136,8 +1268,8 @@ public sealed class ShopPanelController : MonoBehaviour
             activePlacement.PlacementKind != HomeProductPlacementKind.ProductSurfaceOnly)
         {
             placementCounterText.text = activePlacement.IsPreviewValid
-                ? "DRAG TO MOVE  •  USE ARROWS TO ROTATE"
-                : "BLOCKED  •  MOVE OR ROTATE AWAY FROM FURNITURE";
+                ? GameContentCopy.Text("Boş alana sürükle · Oklarla döndür", "Drag to move · Use arrows to rotate")
+                : GameContentCopy.Text("Bu alan ayrılmış. Başka bir yer seç.", "This space is reserved. Choose another spot.");
         }
         if (placementPreviousButton != null)
             placementPreviousButton.interactable = activePlacement.SupportsRotation;
@@ -1212,23 +1344,22 @@ public sealed class ShopPanelController : MonoBehaviour
         if (availableWidth <= 1f || availableHeight <= 1f)
             return;
 
-        float width = Mathf.Clamp(
-            availableWidth * widthFraction,
-            Mathf.Min(minWidth, maxWidth),
-            Mathf.Max(minWidth, maxWidth));
-        width = Mathf.Min(width, Mathf.Max(1f, availableWidth - safeAreaMargin * 2f));
+        // Header and transaction cards use one authored composition. Shrinking
+        // only the panel width strands their fixed positions outside its rim.
+        float width = maxWidth;
         panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-
+        float widthBudget = Mathf.Min(availableWidth * widthFraction,
+            Mathf.Max(1f, availableWidth - safeAreaMargin * 2f));
         float heightBudget = Mathf.Max(1f, availableHeight - safeAreaMargin * 2f);
-        fitScale = panel.rect.height > heightBudget ? heightBudget / panel.rect.height : 1f;
+        fitScale = Mathf.Min(1f, widthBudget / width, heightBudget / panel.rect.height);
     }
 
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        widthFraction = 0.76f;
-        minWidth = 1320f;
-        maxWidth = 1420f;
+        widthFraction = 0.9f;
+        minWidth = 1460f;
+        maxWidth = 1720f;
         safeAreaMargin = 34f;
     }
 #endif
@@ -1287,6 +1418,7 @@ public sealed class ShopPanelController : MonoBehaviour
             purchaseDiamondButton.onClick.AddListener(PurchaseWithDiamonds);
         if (purchaseCancelButton != null)
             purchaseCancelButton.onClick.AddListener(ClosePurchaseDialog);
+        if (purchaseLaterButton != null) purchaseLaterButton.onClick.AddListener(ClosePurchaseDialog);
         if (diamondConfirmationButton != null)
             diamondConfirmationButton.onClick.AddListener(ConfirmDiamondPurchase);
         if (diamondConfirmationCancelButton != null)
@@ -1338,6 +1470,7 @@ public sealed class ShopPanelController : MonoBehaviour
             purchaseDiamondButton.onClick.RemoveListener(PurchaseWithDiamonds);
         if (purchaseCancelButton != null)
             purchaseCancelButton.onClick.RemoveListener(ClosePurchaseDialog);
+        if (purchaseLaterButton != null) purchaseLaterButton.onClick.RemoveListener(ClosePurchaseDialog);
         if (diamondConfirmationButton != null)
             diamondConfirmationButton.onClick.RemoveListener(ConfirmDiamondPurchase);
         if (diamondConfirmationCancelButton != null)
@@ -1393,8 +1526,10 @@ public sealed class ShopPanelController : MonoBehaviour
     {
         EconomyService.AnyBalanceChanged -= RefreshStore;
         HomeStoreService.OwnershipChanged -= HandleOwnershipChanged;
+        HomeStoreService.StorageChanged -= HandleOwnershipChanged;
         HomeRoomService.CurrentRoomChanged -= HandleCurrentRoomChanged;
         HomeProgressionService.Changed -= RefreshStore;
+        GameLanguageService.Changed -= RefreshStore;
         ForceHideImmediate();
     }
 

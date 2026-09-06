@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -31,7 +32,8 @@ public static class SettingsPanelBuilder
         ("game_sound", "GAME SOUND"),
         ("haptics", "VIBRATION"),
         ("reduced_motion", "REDUCED MOTION"),
-        ("language", "LANGUAGE")
+        ("language", "LANGUAGE"),
+        ("account", "ACCOUNT")
     };
 
     [MenuItem("Tools/Cat Home/UI/Build Settings Panel")]
@@ -80,29 +82,14 @@ public static class SettingsPanelBuilder
         scrimButton.targetGraphic = scrim;
         scrimButton.transition = Selectable.Transition.None;
 
-        RectTransform glow = CreateRect("AquaGlow", safeArea);
-        SetCentered(glow, new Vector2(1020f, 800f), new Vector2(0f, -10f));
-        LowPolyPanelGraphic glowGraphic = AddPanel(glow.gameObject,
-            new Color32(53, 231, 216, 88), 48f, 10f, false);
-        PremiumUiStyle.ConfigureShadowSurface(glowGraphic,
-            new Color32(45, 220, 209, 96), 48f);
-
-        RectTransform depth = CreateRect("CoralDepth", safeArea);
-        SetCentered(depth, new Vector2(996f, 772f), Vector2.zero);
-        AddPanel(depth.gameObject, PremiumUiStyle.CoralLift, 44f, 10f, false);
-
-        RectTransform panel = CreateRect("SettingsPanelVisual", safeArea);
-        SetCentered(panel, new Vector2(980f, 752f), Vector2.zero);
+        RectTransform panel = U.Rect("SettingsPanelVisual", safeArea);
+        U.At(panel, 0, 0, 1240, 860);
         CanvasGroup panelGroup = GetOrAdd<CanvasGroup>(panel.gameObject);
-        LowPolyPanelGraphic panelFace = AddPanel(panel.gameObject, Cream, 44f, 14f, true);
-        PremiumUiStyle.ConfigureAccentSurface(
-            panelFace,
-            new Color32(255, 239, 191, 255),
-            new Color32(211, 249, 234, 255),
-            44f, 14f);
+        AddPanel(panel.gameObject, PremiumUiStyle.Ivory, 32, 2, true);
 
         BuildHeader(panel, font);
         List<Row> builtRows = BuildRows(panel, font);
+        Button privacyDataButton = BuildPrivacyDataButton(panel, font);
         Button closeButton = BuildCloseButton(panel, font);
 
         var serialized = new SerializedObject(controller);
@@ -113,7 +100,9 @@ public static class SettingsPanelBuilder
         Assign(serialized, "panelVisual", panel);
         Assign(serialized, "panelGroup", panelGroup);
         Assign(serialized, "closeButton", closeButton);
+        Assign(serialized, "privacyDataButton", privacyDataButton);
         AssignRows(serialized, builtRows);
+        Assign(serialized, "accountStatus", panel.Find("Row_account/AccountStatus").GetComponent<TMP_Text>());
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         PremiumUiFactory.PolishHierarchy(root.transform, font);
@@ -132,111 +121,47 @@ public static class SettingsPanelBuilder
 
     private static void BuildHeader(RectTransform panel, TMP_FontAsset font)
     {
-        LowPolyPanelGraphic badge = CreatePanel("SettingsBadge", panel,
-            PremiumUiStyle.CandyGrape, 26f, 8f, false);
-        SetCentered(badge.rectTransform, new Vector2(150f, 48f), new Vector2(-360f, 322f));
-        TMP_Text badgeText = CreateText("BadgeText", badge.transform, font, 20f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(badgeText.rectTransform);
-        badgeText.text = "GEAR";
-        badgeText.fontStyle = FontStyles.Bold;
-        Localize(badgeText, "settings.badge");
-
-        TMP_Text title = CreateText("Title", panel, font, 44f, Ink,
-            TextAlignmentOptions.Center);
-        SetCentered(title.rectTransform, new Vector2(560f, 58f), new Vector2(0f, 322f));
-        title.text = "SETTINGS";
-        title.fontStyle = FontStyles.Bold;
-        title.characterSpacing = 2.4f;
-        Localize(title, "settings.title");
-
-        TMP_Text subtitle = CreateText("Subtitle", panel, font, 20f,
-            PremiumUiStyle.Muted, TextAlignmentOptions.Center);
-        SetCentered(subtitle.rectTransform, new Vector2(820f, 40f), new Vector2(0f, 280f));
-        subtitle.text = "SOUND, MUSIC & MOTION";
-        subtitle.fontStyle = FontStyles.Bold;
-        subtitle.characterSpacing = 1.1f;
-        Localize(subtitle, "settings.subtitle");
+        U.Localize(U.Label("Title",panel,font,48,Ink,-250,353,620,70),"settings.title");
+        U.Localize(U.Label("Subtitle",panel,font,22,PremiumUiStyle.Muted,-100,293,920,42),"settings.subtitle");
+        U.Localize(U.Label("SoundSection",panel,font,24,Ink,-300,222,512,36),"settings.group.sound");
+        U.Localize(U.Label("AccessSection",panel,font,24,Ink,300,222,512,36),"settings.group.access");
     }
-
-    private const float RowWidth = 800f;
-    private const float RowHeight = 78f;
-    private const float RowSpacing = 12f;
 
     private static List<Row> BuildRows(RectTransform panel, TMP_FontAsset font)
     {
         var rows = new List<Row>(Rows.Length);
-        float total = Rows.Length * RowHeight + (Rows.Length - 1) * RowSpacing;
-        float startY = total * 0.5f - RowHeight * 0.5f - 40f;
-        for (int i = 0; i < Rows.Length; i++)
+        for (int i=0;i<Rows.Length;i++)
         {
-            float y = startY - i * (RowHeight + RowSpacing);
-            LowPolyPanelGraphic well = CreatePanel("Row_" + Rows[i].key, panel,
-                PremiumUiStyle.CandyCloud, 22f, 6f, false);
-            SetCentered(well.rectTransform, new Vector2(RowWidth, RowHeight), new Vector2(0f, y));
-            PremiumUiStyle.ConfigureAccentSurface(well,
-                new Color32(255, 250, 232, 255), new Color32(232, 246, 255, 255), 22f, 6f);
-
-            TMP_Text label = CreateText("Label", well.transform, font, 26f, Ink,
-                TextAlignmentOptions.Left);
-            RectTransform labelRect = label.rectTransform;
-            labelRect.anchorMin = new Vector2(0f, 0.5f);
-            labelRect.anchorMax = new Vector2(0f, 0.5f);
-            labelRect.pivot = new Vector2(0f, 0.5f);
-            labelRect.sizeDelta = new Vector2(520f, 40f);
-            labelRect.anchoredPosition = new Vector2(36f, 0f);
-            label.text = Rows[i].label;
-            label.fontStyle = FontStyles.Bold;
-            label.characterSpacing = 1.2f;
-            label.overflowMode = TextOverflowModes.Truncate;
-            label.enableAutoSizing = true;
-            label.fontSizeMin = 18f;
-            label.fontSizeMax = 26f;
-            Localize(label, "settings.row." + Rows[i].key);
-
-            RectTransform toggleRoot = CreateRect("Toggle", well.transform);
-            toggleRoot.anchorMin = toggleRoot.anchorMax = toggleRoot.pivot = new Vector2(1f, 0.5f);
-            toggleRoot.sizeDelta = new Vector2(166f, 54f);
-            toggleRoot.anchoredPosition = new Vector2(-30f, 0f);
-            LowPolyPanelGraphic face = AddPanel(toggleRoot.gameObject,
-                new Color(0.42f, 0.84f, 0.55f), 24f, 7f, true);
-            TMP_Text stateText = CreateText("State", toggleRoot, font, 24f,
-                Color.white, TextAlignmentOptions.Center);
-            Stretch(stateText.rectTransform);
-            stateText.text = "ON";
-            stateText.fontStyle = FontStyles.Bold;
-            stateText.characterSpacing = 1.4f;
-            stateText.enableAutoSizing = true;
-            stateText.fontSizeMin = 16f;
-            stateText.fontSizeMax = 24f;
-
-            Button button = GetOrAdd<Button>(toggleRoot.gameObject);
-            button.targetGraphic = face;
-            button.transition = Selectable.Transition.ColorTint;
-
-            rows.Add(new Row(Rows[i].key, button, face, stateText));
+            bool account=i==6;
+            float x=i<3?-300:300;
+            float y=148-(i<3?i:i-3)*92;
+            if(account){x=0;y=-224;}
+            var well=U.Panel("Row_"+Rows[i].key,panel,PremiumUiStyle.WarmIvory,x,y,account?1136:536,76,20);
+            var label=U.Label("Label",well.transform,font,23,Ink,account?-300:-82,account?14:0,account?470:334,38);
+            U.Localize(label,"settings.row."+Rows[i].key);
+            if(account)
+            {
+                var status=U.Label("AccountStatus",well.transform,font,19,PremiumUiStyle.Muted,-200,-18,670,30);
+                status.text=GameLanguageService.Text("account.status.guest");
+            }
+            var button=U.Action("Toggle",well.transform,font,null,PremiumUiStyle.Mint,
+                account?406:192,0,account?248:124,54,out var state);
+            state.fontSize=20;
+            var face=(LowPolyPanelGraphic)button.targetGraphic;
+            rows.Add(new Row(Rows[i].key,button,face,state));
         }
+        U.Localize(U.Label("AccountSection",panel,font,24,Ink,0,-154,1136,36),"settings.row.account");
         return rows;
     }
-
-    private static Button BuildCloseButton(RectTransform panel, TMP_FontAsset font)
+    private static Button BuildCloseButton(RectTransform panel,TMP_FontAsset font)
     {
-        RectTransform root = CreateRect("CloseButton", panel);
-        SetCentered(root, new Vector2(62f, 62f), new Vector2(444f, 326f));
-        RectTransform visual = CreateRect("CloseVisual", root);
-        Stretch(visual);
-        LowPolyPanelGraphic surface = AddPanel(visual.gameObject,
-            PremiumUiStyle.CandyPink, 31f, 8f, true);
-        PremiumUiStyle.ConfigureAccentSurface(surface,
-            PremiumUiStyle.CoralLift, PremiumUiStyle.CandyPink, 31f, 8f);
-        TMP_Text label = CreateText("CloseLabel", visual, font, 33f,
-            Color.white, TextAlignmentOptions.Center);
-        Stretch(label.rectTransform);
-        label.text = "×";
-        label.fontStyle = FontStyles.Bold;
-        Button button = GetOrAdd<Button>(root.gameObject);
-        button.targetGraphic = surface;
-        return button;
+        var button=U.Action("CloseButton",panel,font,null,PremiumUiStyle.WarmIvory,552,359,60,60,out var label);
+        label.text="×"; label.fontSize=34; return button;
+    }
+    private static Button BuildPrivacyDataButton(RectTransform panel,TMP_FontAsset font)
+    {
+        return U.Action("PrivacyDataButton",panel,font,"settings.privacy_data",PremiumUiStyle.Mint,
+            0,-343,380,60,out var label);
     }
 
     // --- shared helpers ---------------------------------------------------

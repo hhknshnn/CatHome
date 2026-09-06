@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Failed(Child)" total="6" passed="3" failed="3" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-06 15:19:19Z" end-time="2026-09-06 15:21:52Z" duration="152,6232133">
+  <test-suite type="TestSuite" id="1093" name="CatHome" fullname="CatHome" runstate="Runnable" testcasecount="65" result="Failed" site="Child" start-time="2026-09-06 15:19:19Z" end-time="2026-09-06 15:21:52Z" duration="152.623213" total="6" passed="3" failed="3" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1089" name="CatHome.PlayModeTests.dll" fullname="C:/Users/HAKAN/Desktop/CatHome/CatHome/Library/ScriptAssemblies/CatHome.PlayModeTests.dll" runstate="Runnable" testcasecount="65" result="Failed" site="Child" start-time="2026-09-06 15:19:19Z" end-time="2026-09-06 15:21:52Z" duration="152.612307" total="6" passed="3" failed="3" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="12060" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+      <test-suite type="TestFixture" id="1027" name="CatEnrichmentTests" fullname="CatEnrichmentTests" classname="CatEnrichmentTests" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2026-09-06 15:19:19Z" end-time="2026-09-06 15:21:52Z" duration="152.607183" total="6" passed="3" failed="3" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+]]></output>
+        <test-case id="1028" name="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" fullname="CatEnrichmentTests.AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" methodname="AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom" classname="CatEnrichmentTests" runstate="Runnable" seed="2030175961" result="Failed" start-time="2026-09-06 15:19:19Z" end-time="2026-09-06 15:20:53Z" duration="93.632063" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  cat.leash/domestic-shorthair start=True finish=True motion=8,747888 toy=False clear=True
+cat.collar/domestic-shorthair start=True finish=True motion=8,758986 toy=False clear=True
+cat.bell-collar/domestic-shorthair start=True finish=True motion=8,841956 toy=False clear=True
+cat.leash/domestic-shorthair-orange start=True finish=True motion=8,63204 toy=False clear=True
+cat.collar/domestic-shorthair-orange start=True finish=True motion=8,63694 toy=False clear=True
+cat.bell-collar/domestic-shorthair-orange start=True finish=True motion=8,958506 toy=False clear=True
+cat.leash/khao-manee start=True finish=True motion=8,564708 toy=False clear=True
+cat.collar/khao-manee start=True finish=True motion=8,588549 toy=False clear=True
+cat.bell-collar/khao-manee start=True finish=True motion=8,623505 toy=False clear=True
+cat.leash/british-shorthair start=True finish=True motion=8,712351 toy=False clear=True
+cat.collar/british-shorthair start=True finish=True motion=8,398639 toy=False clear=True
+cat.bell-collar/british-shorthair start=True finish=True motion=8,483373 toy=False clear=True
+cat.leash/domestic-longhair start=True finish=True motion=8,733099 toy=False clear=True
+cat.collar/domestic-longhair start=True finish=True motion=8,336474 toy=False clear=True
+cat.bell-collar/domestic-longhair start=True finish=True motion=8,744215 toy=False clear=True
+cat.leash/maine-coon start=True finish=True motion=8,738121 toy=False clear=True
+cat.collar/maine-coon start=True finish=True motion=8,635126 toy=False clear=True
+cat.bell-collar/maine-coon start=True finish=True motion=8,503203 toy=False clear=True
+cat.leash/oriental-shorthair start=True finish=True motion=8,730586 toy=False clear=True
+cat.collar/oriental-shorthair start=True finish=True motion=8,336757 toy=False clear=True
+cat.bell-collar/oriental-shorthair start=True finish=True motion=8,537682 toy=False clear=True
+cat.leash/persian start=True finish=True motion=8,750933 toy=False clear=True
+cat.collar/persian start=True finish=True motion=8,71388 toy=False clear=True
+cat.bell-collar/persian start=True finish=True motion=8,646006 toy=False clear=True
+cat.leash/russian-blue start=True finish=True motion=8,623323 toy=False clear=True
+cat.collar/russian-blue start=True finish=True motion=8,809466 toy=False clear=True
+cat.bell-collar/russian-blue start=True finish=True motion=8,57056 toy=False clear=True
+cat.leash/sphynx start=True finish=True motion=8,947217 toy=False clear=True
+cat.collar/sphynx start=True finish=True motion=8,745738 toy=False clear=True
+cat.bell-collar/sphynx start=True finish=True motion=8,698221 toy=False clear=True
+  Expected: <empty>
+  But was:  < "cat.leash/domestic-shorthair start=True finish=True motion=8,747888 toy=False clear=True", "cat.collar/domestic-shorthair start=True finish=True motion=8,758986 toy=False clear=True", "cat.bell-collar/domestic-shorthair start=True finish=True motion=8,841956 toy=False clear=True", "cat.leash/domestic-shorthair-orange start=True finish=True motion=8,63204 toy=False clear=True", "cat.collar/domestic-shorthair-orange start=True finish=True motion=8,63694 toy=False clear=True", "cat.bell-collar/domestic-shorthair-orange start=True finish=True motion=8,958506 toy=False clear=True", "cat.leash/khao-manee start=True finish=True motion=8,564708 toy=False clear=True", "cat.collar/khao-manee start=True finish=True motion=8,588549 toy=False clear=True", "cat.bell-collar/khao-manee start=True finish=True motion=8,623505 toy=False clear=True", "cat.leash/british-shorthair start=True finish=True motion=8,712351 toy=False clear=True"... >
+]]></message>
+            <stack-trace><![CDATA[at CatEnrichmentTests+<AllFifteenProducts_AllTenBreeds_AnimateAndReleaseInTheCompleteRoom>d__7.MoveNext () [0x006d6] in C:\Users\HAKAN\Desktop\CatHome\CatHome\Assets\Tests\PlayMode\CatEnrichmentTests.cs:72
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@76560ee600cb\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+          </failure>
+          <output><![CDATA[There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+There are no audio listeners in the scene. Please ensure there is always one audio listener in the scene
+ProgressionService: quest 'level1_ball' completed.
+ProgressionService: quest 'level1_eat' completed.
+]]></output>
+        </test-case>
+        <test-case id="1030" name="BasketAndScratchPost_KeepRealPlayOnEveryBreed" fullname="CatEnrichmentTests.BasketAndScratchPost_KeepRealPlayOnEveryBreed" methodname="BasketAndScratchPost_KeepRealPlayOnEveryBreed" classname="CatEnrichmentTests" runstate="Runnable" seed="2054806610" result="Passed" start-time="2026-09-06 15:20:53Z" end-time="2026-09-06 15:21:03Z" duration="10.354328" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <output><![CDATA[CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+CatMovement input block acquired by BallChaseActivity('BallActivity', id=782400); active blockers=1.
+CatMovement input block released by BallChaseActivity('BallActivity', id=782400); active blockers=0.
+]]></output>
+        </test-case>
+        <test-case id="1029" name="CancelAndOwnership_RestorePhysicsPoseAndToy" fullname="CatEnrichmentTests.CancelAndOwnership_RestorePhysicsPoseAndToy" methodname="CancelAndOwnership_RestorePhysicsPoseAndToy" classname="CatEnrichmentTests" runstate="Runnable" seed="879348880" result="Passed" start-time="2026-09-06 15:21:03Z" end-time="2026-09-06 15:21:03Z" duration="0.407946" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1031" name="RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" fullname="CatEnrichmentTests.RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" methodname="RestingAtZeroEnergy_GainsSlowly_AndCancelStopsRecovery" classname="CatEnrichmentTests" runstate="Runnable" seed="125132056" result="Passed" start-time="2026-09-06 15:21:03Z" end-time="2026-09-06 15:21:11Z" duration="7.790136" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+        </test-case>
+        <test-case id="1032" name="ToyResponses_FollowRealPawContact_AndUseVariedPoses" fullname="CatEnrichmentTests.ToyResponses_FollowRealPawContact_AndUseVariedPoses" methodname="ToyResponses_FollowRealPawContact_AndUseVariedPoses" classname="CatEnrichmentTests" runstate="Runnable" seed="699112828" result="Failed" start-time="2026-09-06 15:21:11Z" end-time="2026-09-06 15:21:50Z" duration="38.704477" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  No real paw contact: cat.bell-collar, cat.leash, cat.collar
+  Expected: <empty>
+  But was:  < "cat.bell-collar", "cat.leash", "cat.collar" >
+]]></message>
+            <stack-trace><![CDATA[at CatEnrichmentTests+<ToyResponses_FollowRealPawContact_AndUseVariedPoses>d__11.MoveNext () [0x0026b] in C:\Users\HAKAN\Desktop\CatHome\CatHome\Assets\Tests\PlayMode\CatEnrichmentTests.cs:155
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@76560ee600cb\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+          </failure>
+        </test-case>
+        <test-case id="1033" name="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" fullname="CatEnrichmentTests.Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" methodname="Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth" classname="CatEnrichmentTests" runstate="Runnable" seed="1571215667" result="Failed" start-time="2026-09-06 15:21:50Z" end-time="2026-09-06 15:21:52Z" duration="1.702536" asserts="0">
+          <properties>
+            <property name="_JOINTYPE" value="UnityCombinatorial" />
+            <property name="retryIteration" value="0" />
+            <property name="repeatIteration" value="0" />
+          </properties>
+          <failure>
+            <message><![CDATA[  domestic-shorthair must not penetrate the tunnel fabric
+  Expected: less than 1.0f
+  But was:  1.32839727f
+]]></message>
+            <stack-trace><![CDATA[at CatEnrichmentTests+<Tunnel_AllBreeds_KeepThePosedBodyAndTailInsideTheCloth>d__12.MoveNext () [0x0045b] in C:\Users\HAKAN\Desktop\CatHome\CatHome\Assets\Tests\PlayMode\CatEnrichmentTests.cs:193
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@76560ee600cb\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+          </failure>
+          <output><![CDATA[Saving results to: Docs/QA/UIUX_2026-09-06\PlayMode.xml
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

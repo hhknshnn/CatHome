@@ -8,6 +8,9 @@ public sealed class HomeStoreSaveState
 {
     public int storeVersion = HomeStoreService.SaveVersion;
     public string[] ownedProductIds = Array.Empty<string>();
+    // Legacy fields remain readable for v11 saves. Store v7 discards custom
+    // ROOM placements and storage; legacy CAT toys keep their existing layout.
+    public string[] storedProductIds = Array.Empty<string>();
     public HomeStorePlacementEntry[] placements = Array.Empty<HomeStorePlacementEntry>();
     // Version 5: last successfully activated home room. Room ownership remains
     // authoritative in ownedProductIds; a locked/unknown id falls back safely.
@@ -19,6 +22,7 @@ public sealed class HomeStoreSaveState
         {
             storeVersion = HomeStoreService.SaveVersion,
             ownedProductIds = Array.Empty<string>(),
+            storedProductIds = Array.Empty<string>(),
             placements = Array.Empty<HomeStorePlacementEntry>(),
             currentRoomId = HomeRoomService.LivingRoomId
         };
@@ -89,10 +93,10 @@ public readonly struct HomeStoreProduct
         bool isPlaceable)
     {
         Id = id;
-        Title = title;
+        titleEnglish = title;
         StoreCategory = storeCategory;
         Category = category;
-        Description = description;
+        descriptionEnglish = description;
         CoinPrice = Math.Max(0L, coinPrice);
         DiamondPrice = Math.Max(0L, diamondPrice);
         RequiredLevel = Math.Max(1, requiredLevel);
@@ -101,10 +105,12 @@ public readonly struct HomeStoreProduct
     }
 
     public string Id { get; }
-    public string Title { get; }
+    private readonly string titleEnglish;
+    public string Title => GameProductCopy.Title(Id,titleEnglish);
     public HomeStoreCategory StoreCategory { get; }
     public string Category { get; }
-    public string Description { get; }
+    private readonly string descriptionEnglish;
+    public string Description => GameProductCopy.Description(Id,descriptionEnglish);
     public long CoinPrice { get; }
     public long DiamondPrice { get; }
     public int RequiredLevel { get; }
@@ -150,6 +156,21 @@ public readonly struct HomeStorePurchaseResult
     public bool Succeeded => Status == HomeStorePurchaseStatus.Purchased;
 }
 
+public readonly struct HomeStorePurchaseGoal
+{
+    public HomeStorePurchaseGoal(HomeStoreProduct product, long coinBalance)
+    {
+        Product = product;
+        CoinBalance = Math.Max(0L, coinBalance);
+        MissingCoins = Math.Max(0L, product.CoinPrice - CoinBalance);
+    }
+
+    public HomeStoreProduct Product { get; }
+    public long CoinBalance { get; }
+    public long MissingCoins { get; }
+    public bool CanAfford => MissingCoins == 0L;
+}
+
 /// <summary>
 /// Persistent ownership authority for room objects bought with earned coins.
 /// Product presentation lives in the UI builder; product identity, price and
@@ -157,10 +178,13 @@ public readonly struct HomeStorePurchaseResult
 /// </summary>
 public static class HomeStoreService
 {
-    public const int SaveVersion = 5;
-    // Temporary hands-on QA switch. Store and room-selector clicks acquire
-    // available content immediately while this is false; TryPurchase keeps the
-    // real economy path intact for automated economy coverage and later release.
+    public const int SaveVersion = 8;
+    public static bool IsFixedRoomProduct(string productId) =>
+        TryGetProduct(productId, out HomeStoreProduct product) &&
+        product.IsPlaceable && product.StoreCategory == HomeStoreCategory.Room;
+    // Temporary hands-on QA switch. Keep false while content/layout testing is
+    // active; the real wallet path remains covered by TryPurchase tests and is
+    // enabled only at the final economy/release gate.
     public const bool EconomyChecksEnabled = false;
     public const string BallBasketId = "home.ball-basket";
     public const string ScratchPostId = "home.scratch-post";
@@ -311,6 +335,24 @@ public static class HomeStoreService
         ModernTelevisionId
     };
 
+    private static readonly string[] LivingRoomReadingSetInternal =
+    {
+        FloorLampId,
+        ArmchairId,
+        TallPlantId,
+        BookshelfId,
+        BookSetId,
+        ModernPaintingId
+    };
+
+    private static readonly string[] LivingRoomMediaSetInternal =
+    {
+        TvUnitId,
+        GameConsoleId,
+        StereoId,
+        ModernTelevisionId
+    };
+
     private static readonly string[] BathroomCollectionInternal =
     {
         BathroomBathMatId,
@@ -325,12 +367,48 @@ public static class HomeStoreService
         BathroomShowerId
     };
 
+    private static readonly string[] BathroomCareSetInternal =
+    {
+        BathroomBathMatId,
+        BathroomLaundryHamperId,
+        BathroomLitterBoxId,
+        BathroomGroomingCartId,
+        BathroomTowelStorageId,
+        BathroomMirrorId
+    };
+
+    private static readonly string[] BathroomSpaSetInternal =
+    {
+        BathroomToiletId,
+        BathroomVanityId,
+        BathroomTubId,
+        BathroomShowerId
+    };
+
     private static readonly string[] KitchenCollectionInternal =
     {
         KitchenPawMatId,
         KitchenFruitBasketId,
         KitchenFeedingStationId,
         KitchenCounterStoolId,
+        KitchenPantryShelfId,
+        KitchenDishCartId,
+        KitchenSinkCabinetId,
+        KitchenRefrigeratorId,
+        KitchenStoveOvenId,
+        KitchenIslandId
+    };
+
+    private static readonly string[] KitchenCafeSetInternal =
+    {
+        KitchenPawMatId,
+        KitchenFruitBasketId,
+        KitchenFeedingStationId,
+        KitchenCounterStoolId
+    };
+
+    private static readonly string[] KitchenChefSetInternal =
+    {
         KitchenPantryShelfId,
         KitchenDishCartId,
         KitchenSinkCabinetId,
@@ -353,6 +431,24 @@ public static class HomeStoreService
         BedroomQueenBedId
     };
 
+    private static readonly string[] BedroomCozySetInternal =
+    {
+        BedroomPawRugId,
+        BedroomNightLightId,
+        BedroomDreamArtId,
+        BedroomYarnBasketId,
+        BedroomNightstandId,
+        BedroomVanityStoolId
+    };
+
+    private static readonly string[] BedroomRoyalSetInternal =
+    {
+        BedroomWardrobeId,
+        BedroomWindowDaybedId,
+        BedroomStarCanopyId,
+        BedroomQueenBedId
+    };
+
     private static readonly string[] GardenCollectionInternal =
     {
         GardenYarnBallId,
@@ -360,6 +456,24 @@ public static class HomeStoreService
         GardenDaisyBedId,
         GardenSaplingId,
         GardenBirdBathId,
+        GardenSunLoungerId,
+        GardenBistroSetId,
+        GardenGrillId,
+        GardenHammockId,
+        GardenPergolaId
+    };
+
+    private static readonly string[] GardenNatureSetInternal =
+    {
+        GardenYarnBallId,
+        GardenFlowerPotsId,
+        GardenDaisyBedId,
+        GardenSaplingId,
+        GardenBirdBathId
+    };
+
+    private static readonly string[] GardenPatioSetInternal =
+    {
         GardenSunLoungerId,
         GardenBistroSetId,
         GardenGrillId,
@@ -381,6 +495,24 @@ public static class HomeStoreService
         BalconySunAwningId
     };
 
+    private static readonly string[] BalconySunnySetInternal =
+    {
+        BalconySunMatId,
+        BalconyPlanterBoxId,
+        BalconyHerbShelfId,
+        BalconyRailingFlowersId,
+        BalconyBirdFeederId
+    };
+
+    private static readonly string[] BalconyLoungeSetInternal =
+    {
+        BalconyLanternStringId,
+        BalconyCushionBenchId,
+        BalconySideTableId,
+        BalconyHangingChairId,
+        BalconySunAwningId
+    };
+
     private static readonly string[] PatioCollectionInternal =
     {
         PatioStoneRugId,
@@ -395,6 +527,24 @@ public static class HomeStoreService
         PatioPergolaArchId
     };
 
+    private static readonly string[] PatioOasisSetInternal =
+    {
+        PatioStoneRugId,
+        PatioPottedFernsId,
+        PatioHerbTroughId,
+        PatioStringLightsId,
+        PatioWaterFountainId
+    };
+
+    private static readonly string[] PatioGatherSetInternal =
+    {
+        PatioFirePitId,
+        PatioDiningSetId,
+        PatioParasolId,
+        PatioPorchSwingId,
+        PatioPergolaArchId
+    };
+
     private static readonly string[] SecondFloorCollectionInternal =
     {
         LoftFloorRunnerId,
@@ -402,6 +552,24 @@ public static class HomeStoreService
         LoftBookStackId,
         LoftArcLampId,
         LoftBeanBagId,
+        LoftRecordPlayerId,
+        LoftStudyDeskId,
+        LoftWallGalleryId,
+        LoftTallBookcaseId,
+        LoftChaiseLoungeId
+    };
+
+    private static readonly string[] SecondFloorNookSetInternal =
+    {
+        LoftFloorRunnerId,
+        LoftFloorCushionsId,
+        LoftBookStackId,
+        LoftArcLampId,
+        LoftBeanBagId
+    };
+
+    private static readonly string[] SecondFloorStudioSetInternal =
+    {
         LoftRecordPlayerId,
         LoftStudyDeskId,
         LoftWallGalleryId,
@@ -482,17 +650,17 @@ public static class HomeStoreService
             900L, 9L, 2, true, true),
         new HomeStoreProduct(
             CanopyBedId,
-            "BURGER CAT BED",
+            "CANOPY CAT BED",
             HomeStoreCategory.Cat,
             "REST",
-            "A playful burger-shaped hideaway for warm naps and funny photos.",
+            "An open canopy bed: climb in, knead the cushion and curl up for a nap.",
             1500L, 15L, 3, true, true),
         new HomeStoreProduct(
             TreatJarId,
-            "TREAT JAR",
+            "TREAT PUZZLE",
             HomeStoreCategory.Cat,
             "FEEDING",
-            "A colorful treat jar for the feeding corner and future snack rewards.",
+            "A little treat puzzle with a paw button and a bouncing lid.",
             500L, 5L, 2, true, true),
         new HomeStoreProduct(
             FeatherToyId,
@@ -503,31 +671,31 @@ public static class HomeStoreService
             800L, 8L, 2, true, true),
         new HomeStoreProduct(
             CollarId,
-            "CLASSIC COLLAR",
+            "BALL TRACK",
             HomeStoreCategory.Cat,
-            "STYLE",
-            "A polished collar displayed in the cat's growing accessory collection.",
+            "TOY",
+            "Bat the bright ball and watch it race around its circular track.",
             1000L, 10L, 3, true, true),
         new HomeStoreProduct(
             LeashId,
-            "WALKING LEASH",
+            "RIBBON PLAY MAT",
             HomeStoreCategory.Cat,
-            "STYLE",
-            "A coordinated leash ready for future garden and outdoor adventures.",
+            "TOY",
+            "Catch a wiggly ribbon on a soft mint play mat.",
             1100L, 11L, 3, true, true),
         new HomeStoreProduct(
             BellCollarId,
-            "BELL COLLAR",
+            "JINGLE ROLLER",
             HomeStoreCategory.Cat,
-            "STYLE",
-            "A jingling pastel collar for showing off around the house.",
+            "TOY",
+            "A little rolling rattle that spins when your cat bats it.",
             400L, 4L, 1, true, true),
         new HomeStoreProduct(
             KibbleBagId,
-            "CAT FOOD TIN",
+            "FOOD PUZZLE",
             HomeStoreCategory.Cat,
             "FEEDING",
-            "A colorful wet-food tin for the feeding corner.",
+            "A food puzzle with a moving release button for curious paws.",
             600L, 6L, 2, true, true),
         new HomeStoreProduct(
             NapPillowId,
@@ -1263,6 +1431,8 @@ public static class HomeStoreService
         new Dictionary<string, HomeStoreProduct>(StringComparer.Ordinal);
     private static readonly HashSet<string> OwnedProductIds =
         new HashSet<string>(StringComparer.Ordinal);
+    private static readonly HashSet<string> StoredProductIds =
+        new HashSet<string>(StringComparer.Ordinal);
     private static readonly Dictionary<string, HomeStorePlacementEntry> PlacementByProductId =
         new Dictionary<string, HomeStorePlacementEntry>(StringComparer.Ordinal);
 
@@ -1342,6 +1512,7 @@ public static class HomeStoreService
     }
     public static event Action<string> OwnershipChanged;
     public static event Action<string> PlacementChanged;
+    public static event Action<string> StorageChanged;
 
     public static bool TryGetProduct(string productId, out HomeStoreProduct product)
     {
@@ -1357,6 +1528,40 @@ public static class HomeStoreService
     public static bool IsOwned(string productId)
     {
         return !string.IsNullOrWhiteSpace(productId) && OwnedProductIds.Contains(productId);
+    }
+
+    public static bool IsStored(string productId)
+    {
+        if (IsFixedRoomProduct(productId)) return false;
+        return IsOwned(productId) && StoredProductIds.Contains(productId);
+    }
+
+    /// <summary>
+    /// Packs an owned placeable product away, or restores it to its last placement.
+    /// Ownership, collection progress and purchase history never change.
+    /// </summary>
+    public static bool TrySetStored(string productId, bool stored)
+    {
+        if (IsFixedRoomProduct(productId)) return !stored && IsOwned(productId);
+        if (!IsOwned(productId) ||
+            !TryGetProduct(productId, out HomeStoreProduct product) ||
+            !product.IsPlaceable)
+        {
+            return false;
+        }
+
+        if (!stored && !CatCollectionPolicy.CanDisplay(productId, out _)) return false;
+        if (!stored && !CatRoomArrangement.PrepareAddition(productId)) return false;
+
+        bool changed = stored
+            ? StoredProductIds.Add(productId)
+            : StoredProductIds.Remove(productId);
+        if (!changed)
+            return true;
+
+        CatHomeSaveSystem.SaveNow();
+        StorageChanged?.Invoke(productId);
+        return true;
     }
 
     /// <summary>
@@ -1391,6 +1596,436 @@ public static class HomeStoreService
     public static bool IsLivingRoomCollectionProduct(string productId)
     {
         return Array.IndexOf(LivingRoomCollectionInternal, productId) >= 0;
+    }
+
+    public static string GetLivingRoomDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(LivingRoomReadingSetInternal, productId) >= 0)
+            return "READING";
+        if (Array.IndexOf(LivingRoomMediaSetInternal, productId) >= 0)
+            return "MEDIA";
+        return string.Empty;
+    }
+
+    public static string GetBathroomDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(BathroomCareSetInternal, productId) >= 0)
+            return "CARE";
+        if (Array.IndexOf(BathroomSpaSetInternal, productId) >= 0)
+            return "SPA";
+        return string.Empty;
+    }
+
+    public static string GetKitchenDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(KitchenCafeSetInternal, productId) >= 0)
+            return "CAFE";
+        if (Array.IndexOf(KitchenChefSetInternal, productId) >= 0)
+            return "CHEF";
+        return string.Empty;
+    }
+
+    public static string GetBedroomDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(BedroomCozySetInternal, productId) >= 0)
+            return "COZY";
+        if (Array.IndexOf(BedroomRoyalSetInternal, productId) >= 0)
+            return "ROYAL";
+        return string.Empty;
+    }
+
+    public static string GetGardenDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(GardenNatureSetInternal, productId) >= 0)
+            return "NATURE";
+        if (Array.IndexOf(GardenPatioSetInternal, productId) >= 0)
+            return "PATIO";
+        return string.Empty;
+    }
+
+    public static string GetBalconyDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(BalconySunnySetInternal, productId) >= 0)
+            return "SUNNY";
+        if (Array.IndexOf(BalconyLoungeSetInternal, productId) >= 0)
+            return "LOUNGE";
+        return string.Empty;
+    }
+
+    public static string GetPatioDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(PatioOasisSetInternal, productId) >= 0)
+            return "OASIS";
+        if (Array.IndexOf(PatioGatherSetInternal, productId) >= 0)
+            return "GATHER";
+        return string.Empty;
+    }
+
+    public static string GetSecondFloorDesignSetLabel(string productId)
+    {
+        if (Array.IndexOf(SecondFloorNookSetInternal, productId) >= 0)
+            return "NOOK";
+        if (Array.IndexOf(SecondFloorStudioSetInternal, productId) >= 0)
+            return "STUDIO";
+        return string.Empty;
+    }
+
+    public static string GetRoomDesignSetLabel(string productId)
+    {
+        string livingRoomSet = GetLivingRoomDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(livingRoomSet))
+            return livingRoomSet;
+
+        string bathroomSet = GetBathroomDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(bathroomSet))
+            return bathroomSet;
+
+        string kitchenSet = GetKitchenDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(kitchenSet))
+            return kitchenSet;
+
+        string bedroomSet = GetBedroomDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(bedroomSet))
+            return bedroomSet;
+
+        string gardenSet = GetGardenDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(gardenSet))
+            return gardenSet;
+
+        string balconySet = GetBalconyDesignSetLabel(productId);
+        if (!string.IsNullOrEmpty(balconySet))
+            return balconySet;
+
+        string patioSet = GetPatioDesignSetLabel(productId);
+        return !string.IsNullOrEmpty(patioSet)
+            ? patioSet
+            : GetSecondFloorDesignSetLabel(productId);
+    }
+
+    /// <summary>
+    /// Returns the authored Living Room design-set size, owned count and the
+    /// remaining Coin budget. This is display-only economy guidance: it never
+    /// discounts, grants or spends currency and therefore cannot diverge from
+    /// the canonical product catalog.
+    /// </summary>
+    public static bool TryGetLivingRoomDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "READING", StringComparison.OrdinalIgnoreCase))
+            products = LivingRoomReadingSetInternal;
+        else if (string.Equals(setLabel, "MEDIA", StringComparison.OrdinalIgnoreCase))
+            products = LivingRoomMediaSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetBathroomDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "CARE", StringComparison.OrdinalIgnoreCase))
+            products = BathroomCareSetInternal;
+        else if (string.Equals(setLabel, "SPA", StringComparison.OrdinalIgnoreCase))
+            products = BathroomSpaSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetKitchenDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "CAFE", StringComparison.OrdinalIgnoreCase))
+            products = KitchenCafeSetInternal;
+        else if (string.Equals(setLabel, "CHEF", StringComparison.OrdinalIgnoreCase))
+            products = KitchenChefSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetBedroomDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "COZY", StringComparison.OrdinalIgnoreCase))
+            products = BedroomCozySetInternal;
+        else if (string.Equals(setLabel, "ROYAL", StringComparison.OrdinalIgnoreCase))
+            products = BedroomRoyalSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetGardenDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "NATURE", StringComparison.OrdinalIgnoreCase))
+            products = GardenNatureSetInternal;
+        else if (string.Equals(setLabel, "PATIO", StringComparison.OrdinalIgnoreCase))
+            products = GardenPatioSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetBalconyDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "SUNNY", StringComparison.OrdinalIgnoreCase))
+            products = BalconySunnySetInternal;
+        else if (string.Equals(setLabel, "LOUNGE", StringComparison.OrdinalIgnoreCase))
+            products = BalconyLoungeSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetPatioDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "OASIS", StringComparison.OrdinalIgnoreCase))
+            products = PatioOasisSetInternal;
+        else if (string.Equals(setLabel, "GATHER", StringComparison.OrdinalIgnoreCase))
+            products = PatioGatherSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    public static bool TryGetSecondFloorDesignSetProgress(
+        string setLabel,
+        out int owned,
+        out int total,
+        out long remainingCoins)
+    {
+        IReadOnlyList<string> products;
+        if (string.Equals(setLabel, "NOOK", StringComparison.OrdinalIgnoreCase))
+            products = SecondFloorNookSetInternal;
+        else if (string.Equals(setLabel, "STUDIO", StringComparison.OrdinalIgnoreCase))
+            products = SecondFloorStudioSetInternal;
+        else
+        {
+            owned = 0;
+            total = 0;
+            remainingCoins = 0L;
+            return false;
+        }
+
+        owned = GetOwnedCount(products);
+        total = products.Count;
+        remainingCoins = GetRemainingCoinCost(products);
+        return true;
+    }
+
+    /// <summary>
+    /// Coin value still needed to complete a room collection at catalog prices.
+    /// Owned products contribute zero; unknown room ids safely use Living Room,
+    /// matching <see cref="GetRoomCollection"/>.
+    /// </summary>
+    public static long GetRoomRemainingCoinCost(string roomId)
+    {
+        return GetRemainingCoinCost(GetRoomCollection(roomId));
+    }
+
+    /// <summary>
+    /// Returns the next unowned product in the room's canonical price order and
+    /// how many Coins the current wallet still needs. Display-only: no balance,
+    /// ownership or save state is changed.
+    /// </summary>
+    public static bool TryGetNextRoomPurchaseGoal(
+        string roomId,
+        out HomeStorePurchaseGoal goal)
+    {
+        IReadOnlyList<string> collection = GetRoomCollection(roomId);
+        for (int i = 0; i < collection.Count; i++)
+        {
+            string productId = collection[i];
+            if (IsOwned(productId) ||
+                !ProductsById.TryGetValue(productId, out HomeStoreProduct product) ||
+                !product.SupportsCoins)
+            {
+                continue;
+            }
+
+            goal = new HomeStorePurchaseGoal(product, EconomyService.Coins);
+            return true;
+        }
+
+        goal = default;
+        return false;
+    }
+
+    public static string GetPlacementFamilyLabel(string productId)
+    {
+        if (string.Equals(productId, BookSetId, StringComparison.Ordinal))
+            return "BOOKSHELF";
+        if (string.Equals(productId, ModernTelevisionId, StringComparison.Ordinal))
+            return "TV UNIT";
+        if (string.Equals(productId, BookshelfId, StringComparison.Ordinal) ||
+            string.Equals(productId, ModernPaintingId, StringComparison.Ordinal) ||
+            string.Equals(productId, TvUnitId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        if (string.Equals(productId, BathroomTowelStorageId, StringComparison.Ordinal) ||
+            string.Equals(productId, BathroomMirrorId, StringComparison.Ordinal) ||
+            string.Equals(productId, BathroomToiletId, StringComparison.Ordinal) ||
+            string.Equals(productId, BathroomVanityId, StringComparison.Ordinal) ||
+            string.Equals(productId, BathroomTubId, StringComparison.Ordinal) ||
+            string.Equals(productId, BathroomShowerId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        if (string.Equals(productId, KitchenPantryShelfId, StringComparison.Ordinal) ||
+            string.Equals(productId, KitchenSinkCabinetId, StringComparison.Ordinal) ||
+            string.Equals(productId, KitchenRefrigeratorId, StringComparison.Ordinal) ||
+            string.Equals(productId, KitchenStoveOvenId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        if (string.Equals(productId, BedroomDreamArtId, StringComparison.Ordinal) ||
+            string.Equals(productId, BedroomNightstandId, StringComparison.Ordinal) ||
+            string.Equals(productId, BedroomWardrobeId, StringComparison.Ordinal) ||
+            string.Equals(productId, BedroomWindowDaybedId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        if (string.Equals(productId, BalconyHerbShelfId, StringComparison.Ordinal) ||
+            string.Equals(productId, BalconyRailingFlowersId, StringComparison.Ordinal) ||
+            string.Equals(productId, BalconyLanternStringId, StringComparison.Ordinal) ||
+            string.Equals(productId, BalconySunAwningId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        // PatioStringLights is deliberately NOT here: it stands on its own posts.
+        // The Patio has no wall to hang a festoon from, only a .63 low wall.
+        if (string.Equals(productId, PatioHerbTroughId, StringComparison.Ordinal) ||
+            string.Equals(productId, PatioPergolaArchId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        if (string.Equals(productId, LoftWallGalleryId, StringComparison.Ordinal) ||
+            string.Equals(productId, LoftTallBookcaseId, StringComparison.Ordinal))
+        {
+            return "WALL";
+        }
+
+        return IsLivingRoomCollectionProduct(productId) ||
+               IsBathroomCollectionProduct(productId) ||
+               IsKitchenCollectionProduct(productId) ||
+               IsBedroomCollectionProduct(productId) ||
+               IsGardenCollectionProduct(productId) ||
+               IsBalconyCollectionProduct(productId) ||
+               IsPatioCollectionProduct(productId) ||
+               IsSecondFloorCollectionProduct(productId)
+            ? "FLOOR"
+            : string.Empty;
+    }
+
+    public static string GetCatalogEyebrow(string productId, string fallbackCategory)
+    {
+        string set = GetRoomDesignSetLabel(productId);
+        string placement = GetPlacementFamilyLabel(productId);
+        if (!string.IsNullOrEmpty(set) && !string.IsNullOrEmpty(placement))
+            return set + "  •  " + placement;
+        return fallbackCategory ?? string.Empty;
     }
 
     public static bool IsBathroomCollectionProduct(string productId)
@@ -1474,6 +2109,22 @@ public static class HomeStoreService
         return count;
     }
 
+    private static long GetRemainingCoinCost(IReadOnlyList<string> collection)
+    {
+        long total = 0L;
+        for (int i = 0; i < collection.Count; i++)
+        {
+            string productId = collection[i];
+            if (IsOwned(productId) ||
+                !ProductsById.TryGetValue(productId, out HomeStoreProduct product))
+                continue;
+            total = product.CoinPrice > long.MaxValue - total
+                ? long.MaxValue
+                : total + product.CoinPrice;
+        }
+        return total;
+    }
+
     public static bool IsLivingRoomProductRevealed(string productId)
     {
         return IsLivingRoomCollectionProduct(productId);
@@ -1508,6 +2159,7 @@ public static class HomeStoreService
 
     public static int GetPlacementIndex(string productId)
     {
+        if (IsFixedRoomProduct(productId)) return 0;
         return !string.IsNullOrWhiteSpace(productId) &&
                PlacementByProductId.TryGetValue(productId, out HomeStorePlacementEntry entry)
             ? Math.Max(0, entry.slotIndex)
@@ -1519,6 +2171,7 @@ public static class HomeStoreService
         out Vector3 position,
         out float rotationY)
     {
+        if (IsFixedRoomProduct(productId)) { position = default; rotationY = 0f; return false; }
         if (!string.IsNullOrWhiteSpace(productId) &&
             PlacementByProductId.TryGetValue(productId, out HomeStorePlacementEntry entry) &&
             entry.hasWorldPosition &&
@@ -1536,6 +2189,7 @@ public static class HomeStoreService
 
     public static bool TrySetPlacement(string productId, int slotIndex, int slotCount)
     {
+        if (IsFixedRoomProduct(productId)) return false;
         if (!IsOwned(productId) || slotCount <= 0 || slotIndex < 0 || slotIndex >= slotCount)
             return false;
 
@@ -1550,6 +2204,7 @@ public static class HomeStoreService
 
     public static bool TrySetPlacement(string productId, Vector3 position, float rotationY)
     {
+        if (IsFixedRoomProduct(productId)) return false;
         if (!IsOwned(productId) || !IsFinite(position.x) || !IsFinite(position.z) ||
             !IsFinite(rotationY))
         {
@@ -1558,6 +2213,20 @@ public static class HomeStoreService
 
         PlacementByProductId[productId] =
             new HomeStorePlacementEntry(productId, position, Mathf.Repeat(rotationY, 360f));
+        CatHomeSaveSystem.SaveNow();
+        PlacementChanged?.Invoke(productId);
+        return true;
+    }
+
+    /// <summary>Removes a custom transform so the authored/default placement is used again.</summary>
+    public static bool TryClearPlacement(string productId)
+    {
+        if (IsFixedRoomProduct(productId)) return IsOwned(productId);
+        if (!IsOwned(productId))
+            return false;
+        if (!PlacementByProductId.Remove(productId))
+            return true;
+
         CatHomeSaveSystem.SaveNow();
         PlacementChanged?.Invoke(productId);
         return true;
@@ -1697,6 +2366,9 @@ public static class HomeStoreService
         }
 
         OwnedProductIds.Add(productId);
+        if (product.IsPlaceable && !IsFixedRoomProduct(productId))
+            StoredProductIds.Add(productId);
+        // Ownership immediately reveals the product at its authored location.
         // Home XP is earned before the save so the grant and the ownership change
         // are captured in the same file write.
         HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
@@ -1710,7 +2382,7 @@ public static class HomeStoreService
     /// <summary>
     /// QA-only acquisition path used while EconomyChecksEnabled is false. It
     /// never reads or spends a balance, and acquires placement prerequisites so
-    /// a single catalog click can immediately enter placement mode.
+    /// a single catalog click can immediately reveal the product in its room.
     /// </summary>
     public static HomeStorePurchaseResult TryAcquireForTesting(string productId)
     {
@@ -1744,6 +2416,8 @@ public static class HomeStoreService
         }
 
         OwnedProductIds.Add(productId);
+        if (product.IsPlaceable && !IsFixedRoomProduct(productId))
+            StoredProductIds.Add(productId);
         HomeProgressionService.GrantHomeXp(product.CoinPrice, productId);
         if (recordQuest)
             ProgressionService.RecordProgress(QuestType.BuyStoreItem);
@@ -1758,6 +2432,9 @@ public static class HomeStoreService
         string[] owned = new string[OwnedProductIds.Count];
         OwnedProductIds.CopyTo(owned);
         Array.Sort(owned, StringComparer.Ordinal);
+        string[] stored = new string[StoredProductIds.Count];
+        StoredProductIds.CopyTo(stored);
+        Array.Sort(stored, StringComparer.Ordinal);
         var placements = new List<HomeStorePlacementEntry>(PlacementByProductId.Count);
         foreach (KeyValuePair<string, HomeStorePlacementEntry> pair in PlacementByProductId)
         {
@@ -1770,6 +2447,7 @@ public static class HomeStoreService
         {
             storeVersion = SaveVersion,
             ownedProductIds = owned,
+            storedProductIds = stored,
             placements = placements.ToArray(),
             currentRoomId = HomeRoomService.CurrentRoomId
         };
@@ -1778,6 +2456,7 @@ public static class HomeStoreService
     public static void ApplySavedState(HomeStoreSaveState state)
     {
         OwnedProductIds.Clear();
+        StoredProductIds.Clear();
         PlacementByProductId.Clear();
         if (state?.ownedProductIds != null)
         {
@@ -1789,12 +2468,30 @@ public static class HomeStoreService
             }
         }
 
+        // Store v7 deliberately ignores legacy ROOM storage and drag coordinates,
+        // including those arriving from an older cloud/device save. Ownership,
+        // currency and progression are untouched; the scene owns the layout.
+
+        if (state?.storedProductIds != null)
+        {
+            for (int i = 0; i < state.storedProductIds.Length; i++)
+            {
+                string id = state.storedProductIds[i];
+                if (!IsFixedRoomProduct(id) && OwnedProductIds.Contains(id) &&
+                    TryGetProduct(id, out HomeStoreProduct product) &&
+                    product.IsPlaceable)
+                {
+                    StoredProductIds.Add(id);
+                }
+            }
+        }
+
         if (state?.placements != null)
         {
             for (int i = 0; i < state.placements.Length; i++)
             {
                 HomeStorePlacementEntry entry = state.placements[i];
-                if (entry != null && entry.slotIndex >= 0 &&
+                if (entry != null && !IsFixedRoomProduct(entry.productId) && entry.slotIndex >= 0 &&
                     OwnedProductIds.Contains(entry.productId))
                 {
                     if (!entry.hasWorldPosition ||
@@ -1818,6 +2515,18 @@ public static class HomeStoreService
             }
         }
 
+        // Stable catalog order makes old/cloud saves with too many visible toys
+        // converge. Keep every ownership and saved pose; excess goes to collection.
+        int displayedCats = 0; bool hasBed = false;
+        foreach (var product in ProductsInternal)
+        {
+            if (!CatCollectionPolicy.IsCatItem(product.Id) || !IsOwned(product.Id) || IsStored(product.Id)) continue;
+            bool bed = CatCollectionPolicy.IsBed(product.Id);
+            if (displayedCats >= CatCollectionPolicy.Capacity || (bed && hasBed))
+                StoredProductIds.Add(product.Id);
+            else { displayedCats++; hasBed |= bed; }
+        }
+
         // Apply only after ownership has been restored so Bathroom access can
         // be checked against the same canonical save section. Pre-v5 saves have
         // a null id and therefore migrate to the Living Room without a grant.
@@ -1825,15 +2534,18 @@ public static class HomeStoreService
 
         OwnershipChanged?.Invoke(string.Empty);
         PlacementChanged?.Invoke(string.Empty);
+        StorageChanged?.Invoke(string.Empty);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetRuntimeState()
     {
         OwnedProductIds.Clear();
+        StoredProductIds.Clear();
         PlacementByProductId.Clear();
         OwnershipChanged = null;
         PlacementChanged = null;
+        StorageChanged = null;
     }
 
     private static bool IsFinite(float value)

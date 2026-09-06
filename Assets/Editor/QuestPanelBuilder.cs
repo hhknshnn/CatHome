@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
+using U = PremiumUiElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -53,19 +54,19 @@ public static class QuestPanelBuilder
     // fallback. The height is authored here and only ever scaled down by the
     // controller when the safe area is too short for it.
     private const float FallbackPanelWidth = 1120f;
-    private const float HeaderHeight = 118f;
+    private const float HeaderHeight = 100f;
     private const float HeaderInset = 6f;
-    private const float PanelSidePadding = 26f;
+    private const float PanelSidePadding = 38f;
 
     private const float LevelLabelTopGap = 14f;
-    private const float LevelLabelHeight = 46f;
+    private const float LevelLabelHeight = 64f;
     private const float BodyTopGap = 12f;
 
     // Row pool. Every level in the current ProgressionConfig has at most two
     // quests; the pool is deliberately larger so a bigger level added later still
     // renders without a rebuild, and the list scrolls when it does not fit.
     private const int RowPoolCount = 6;
-    private const float RowHeight = 170f;
+    private const float RowHeight = 150f;
     private const float RowSpacing = 16f;
     private const int VisibleRows = 3;
     private const float BodyHeight = RowHeight * VisibleRows + RowSpacing * (VisibleRows - 1);
@@ -85,11 +86,11 @@ public static class QuestPanelBuilder
 
     // Row internals.
     private const float RowContentPaddingX = 22f;
-    private const float RowContentPaddingY = 21f;
+    private const float RowContentPaddingY = 15f;
     private const float RowColumnGap = 16f;
     private const float ActionColumnWidth = 210f;
     private const float TitleHeight = 38f;
-    private const float DescriptionHeight = 50f;
+    private const float DescriptionHeight = 40f;
     private const float MetaHeight = 30f;
     private const float InfoRowSpacing = 5f;
     private const float ProgressWidth = 90f;
@@ -214,6 +215,8 @@ public static class QuestPanelBuilder
         serialized.FindProperty("maxWidth").floatValue = 1240f;
         serialized.FindProperty("safeAreaMargin").floatValue = 32f;
         AssignRows(serialized, rowData);
+        serialized.FindProperty("chapterTab").objectReferenceValue = root.transform.Find("SafeArea/Panel/LevelLabel/ChapterTab").GetComponent<Button>();
+        serialized.FindProperty("dailyTab").objectReferenceValue = root.transform.Find("SafeArea/Panel/LevelLabel/DailyTab").GetComponent<Button>();
         serialized.ApplyModifiedPropertiesWithoutUndo();
 
         PremiumUiFactory.PolishHierarchy(root.transform, font);
@@ -273,21 +276,8 @@ public static class QuestPanelBuilder
         CanvasGroup group = GetOrAdd<CanvasGroup>(panelRoot);
         group.alpha = 0f;
 
-        // Centred depth keeps every edge of the panel frame equally weighted.
-        LowPolyPanelGraphic shadow = CreatePanelGraphic("Shadow", panelRoot.transform, FrameShadow, 26f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(shadow.rectTransform, 8f);
-        LowPolyPanelGraphic ambientShadow = CreatePanelGraphic("AmbientShadow", panelRoot.transform, PremiumUiStyle.SoftShadow, 30f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(ambientShadow.rectTransform, 11f);
-
-        // Orange low-poly frame; it is the panel's raycast target so a tap on the
-        // card never falls through to the scrim (which would close the panel).
-        LowPolyPanelGraphic frame = CreatePanelGraphic("Frame", panelRoot.transform, FrameOrange, 26f, 2f, true);
-        Stretch(frame.rectTransform);
-
-        // Deep petrol inner surface, matching the Home Store shell.
-        LowPolyPanelGraphic face = CreatePanelGraphic("Face", panelRoot.transform, PanelCream, 22f, 2f, false);
-        StretchWithOffsets(face.rectTransform, 4f, 4f, -4f, -4f);
-
+        var face=U.Panel("Face",panelRoot.transform,PremiumUiStyle.Ivory,0,0,FallbackPanelWidth,PanelHeight,32,true);
+        U.Fill(face.rectTransform);
         Button closeButton = CreateHeader(panelRoot.transform, font);
         TMP_Text levelLabel = CreateLevelLabel(panelRoot.transform, font);
         MessageParts message = CreateMessage(panelRoot.transform, font);
@@ -314,24 +304,12 @@ public static class QuestPanelBuilder
         GameObject headerRoot = CreateRect("Header", parent);
         AnchorTop(headerRoot.GetComponent<RectTransform>(), HeaderTop, HeaderHeight, HeaderInset * 2f);
 
-        LowPolyPanelGraphic bar = CreatePanelGraphic("Bar", headerRoot.transform, new Color32(242, 87, 157, 255), 20f, 5f, false);
-        Stretch(bar.rectTransform);
-        LowPolyPanelGraphic emblemRim = CreatePanelGraphic("EmblemRim", headerRoot.transform, FrameOrange, 38f, 3f, false);
-        RectTransform emblemRect = emblemRim.rectTransform;
-        emblemRect.anchorMin = emblemRect.anchorMax = new Vector2(0f, 0.5f);
-        emblemRect.pivot = new Vector2(0f, 0.5f);
-        emblemRect.sizeDelta = new Vector2(78f, 78f);
-        emblemRect.anchoredPosition = new Vector2(18f, 0f);
-        LowPolyPanelGraphic emblemFace = CreatePanelGraphic("EmblemFace", emblemRim.transform, PremiumUiStyle.CandyAqua, 32f, 2f, false);
-        StretchWithOffsets(emblemFace.rectTransform, 5f, 5f, -5f, -5f);
-        BuildQuestsEmblem(emblemFace.transform);
-
-        // Title with a soft dark-brown offset shadow behind it, exactly like the
-        // rest of the low-poly UI.
-        CreateHeaderTitle(headerRoot.transform, "TitleShadow", font, TitleShadowColor, new Vector2(3f, -4f));
-        CreateHeaderTitle(headerRoot.transform, "Title", font, CreamBar, Vector2.zero);
-
-        return CreateCloseButton(headerRoot.transform);
+        var title=U.Label("Title",headerRoot.transform,font,44,PremiumUiStyle.Ink,0,0,1,1);
+        U.Fill(title.rectTransform); title.rectTransform.offsetMin=new Vector2(42,8); title.rectTransform.offsetMax=new Vector2(-100,-8);
+        U.Localize(title,"quests.title");
+        var close=U.Action("CloseButton",headerRoot.transform,font,null,PremiumUiStyle.WarmIvory,0,0,58,58,out var label);
+        var rect=(RectTransform)close.transform; rect.anchorMin=rect.anchorMax=new Vector2(1,.5f); rect.anchoredPosition=new Vector2(-56,0);
+        label.text="×"; label.fontSize=34; return close;
     }
 
     private static void CreateHeaderTitle(
@@ -392,18 +370,14 @@ public static class QuestPanelBuilder
         GameObject labelRoot = CreateRect("LevelLabel", parent);
         AnchorTop(labelRoot.GetComponent<RectTransform>(), LevelLabelTop, LevelLabelHeight, PanelSidePadding);
 
-        LowPolyPanelGraphic capsule = CreatePanelGraphic("ChapterCapsule", labelRoot.transform,
-            new Color32(225, 211, 249, 255), 18f, 3f, false);
-        Stretch(capsule.rectTransform);
-
-        TMP_Text label = CreateText(labelRoot.transform, "ChapterLabel", font, 22f,
-            PremiumUiStyle.Ink, TextAlignmentOptions.MidlineLeft);
-        ConfigureAutoSize(label, 22f, 17f);
-        StretchWithOffsets(label.rectTransform, 22f, 0f, -22f, 0f);
-        label.fontStyle = FontStyles.Bold;
-        label.characterSpacing = 0.8f;
-        // Authored placeholder only; the controller replaces it on every refresh.
-        label.text = "LEVEL 1";
+        var chapter=U.Action("ChapterTab",labelRoot.transform,font,"quests.chapter_tab",PremiumUiStyle.Teal,0,0,208,58,out var chapterText);
+        chapterText.color=Color.white; chapterText.fontSize=23; chapterText.textWrappingMode=TextWrappingModes.NoWrap;
+        var daily=U.Action("DailyTab",labelRoot.transform,font,"quests.daily_tab",PremiumUiStyle.Mint,0,0,208,58,out var dailyText);
+        foreach(var button in new[]{chapter,daily}) { var r=(RectTransform)button.transform; r.anchorMin=r.anchorMax=new Vector2(0,.5f); }
+        ((RectTransform)chapter.transform).anchoredPosition=new Vector2(104,0);
+        ((RectTransform)daily.transform).anchoredPosition=new Vector2(328,0);
+        var label=U.Label("ChapterLabel",labelRoot.transform,font,22,PremiumUiStyle.Muted,0,0,1,1,TextAlignmentOptions.Right);
+        U.Fill(label.rectTransform); label.rectTransform.offsetMin=new Vector2(464,0);
         return label;
     }
 
@@ -415,7 +389,7 @@ public static class QuestPanelBuilder
         AnchorTop(messageRoot.GetComponent<RectTransform>(), BodyTop, BodyHeight, PanelSidePadding);
 
         TMP_Text label = AddWrappingText(
-            messageRoot, font, 32f, 20f, CreamBar, TextAlignmentOptions.Center);
+            messageRoot, font, 32f, 20f, PremiumUiStyle.Ink, TextAlignmentOptions.Center);
         label.fontStyle = FontStyles.Bold;
         label.text = "All levels completed";
 
@@ -498,31 +472,8 @@ public static class QuestPanelBuilder
         CanvasGroup group = GetOrAdd<CanvasGroup>(rowRoot);
         group.alpha = 0f;
 
-        // A centred halo avoids a false empty strip on the row's right edge.
-        LowPolyPanelGraphic shadow = CreatePanelGraphic("Shadow", rowRoot.transform, PremiumUiStyle.SoftShadow, 16f, 0f, false);
-        PremiumUiStyle.SetCenteredShadowStretch(shadow.rectTransform, 3f);
-
-        // Orange low-poly frame; it is the row's raycast target so a tap on the
-        // row never falls through to the scrim and closes the panel by accident.
-        LowPolyPanelGraphic frame = CreatePanelGraphic("Frame", rowRoot.transform, FrameOrange, 16f, 1.5f, true);
-        Stretch(frame.rectTransform);
-
-        // Warm ivory content cards mirror the product cards in Home Store.
-        Color cream = RowCreams[index % RowCreams.Length];
-        LowPolyPanelGraphic face = CreatePanelGraphic("Face", rowRoot.transform, cream, 13f, 1.5f, false);
-        StretchWithOffsets(face.rectTransform, 3f, 3f, -3f, -3f);
-
-        LowPolyPanelGraphic accent = CreatePanelGraphic("AccentRail", rowRoot.transform,
-            index % 3 == 0 ? PremiumUiStyle.CandyAqua :
-            index % 3 == 1 ? PremiumUiStyle.CandyGrape : PremiumUiStyle.CandyPeach,
-            7f, 1f, false);
-        RectTransform accentRect = accent.rectTransform;
-        accentRect.anchorMin = new Vector2(0f, 0.5f);
-        accentRect.anchorMax = new Vector2(0f, 0.5f);
-        accentRect.pivot = new Vector2(0f, 0.5f);
-        accentRect.sizeDelta = new Vector2(13f, RowHeight - 26f);
-        accentRect.anchoredPosition = new Vector2(10f, 0f);
-
+        var face=U.Panel("Face",rowRoot.transform,PremiumUiStyle.WarmIvory,0,0,1,1,22,true);
+        U.Fill(face.rectTransform);
         // Two columns: a flexible info column and a fixed-width action column, so
         // the state label and the Claim button always sit at the same x on every
         // row and the info text keeps whatever width is left.
@@ -664,15 +615,16 @@ public static class QuestPanelBuilder
         LowPolyPanelGraphic claimFaceGraphic = claimFace.AddComponent<LowPolyPanelGraphic>();
         // Green reads as the one affirmative action in an otherwise orange/cream
         // panel, so the claimable row is unmistakable.
-        claimFaceGraphic.color = new Color32(43, 205, 174, 255);
+        claimFaceGraphic.color = PremiumUiStyle.Coral;
         claimFaceGraphic.raycastTarget = true;
-        ConfigurePanel(claimFaceGraphic, 14f, 5f);
+        PremiumUiStyle.ConfigureSurface(claimFaceGraphic, PremiumUiStyle.Coral, 18f, 1f);
 
         TMP_Text claimLabel = CreateText(
-            claimFace.transform, "Label", font, 28f, CreamBar, TextAlignmentOptions.Center);
+            claimFace.transform, "Label", font, 24f, PremiumUiStyle.Ink, TextAlignmentOptions.Center);
         claimLabel.fontStyle = FontStyles.Bold;
-        claimLabel.characterSpacing = 3f;
+        claimLabel.characterSpacing = 0.6f;
         claimLabel.text = "CLAIM";
+        U.Localize(claimLabel,"quests.claim");
         Stretch(claimLabel.rectTransform);
 
         Button claimButton = MakeButton(claimRoot, claimFaceGraphic, claimFace.GetComponent<RectTransform>());
@@ -696,11 +648,11 @@ public static class QuestPanelBuilder
         rect.sizeDelta = new Vector2(-PanelSidePadding * 2f, FooterHeight);
         rect.anchoredPosition = new Vector2(0f, PanelBottomPadding);
 
-        LowPolyPanelGraphic bar = CreatePanelGraphic("Bar", footerRoot.transform, PremiumUiStyle.NavyLift, 16f, 3f, false);
+        LowPolyPanelGraphic bar = CreatePanelGraphic("Bar", footerRoot.transform, PremiumUiStyle.Mint, 16f, 3f, false);
         Stretch(bar.rectTransform);
 
         TMP_Text label = CreateText(
-            footerRoot.transform, "Label", font, 18f, CreamBar, TextAlignmentOptions.Center);
+            footerRoot.transform, "Label", font, 18f, PremiumUiStyle.Ink, TextAlignmentOptions.Center);
         label.fontStyle = FontStyles.Bold;
         label.text = "Coins: 0    Bond XP: 0    Diamonds: 0";
         ConfigureAutoSize(label, 26f, 15f);
