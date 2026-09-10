@@ -49,18 +49,6 @@ public static class BondMilestoneService
     private static readonly BondMilestone[] MilestonesInternal =
     {
         new BondMilestone(
-            MouseHuntId,
-            MouseHuntBond,
-            "Clockwork Mouse",
-            "A wind-up mouse for short indoor hunts.",
-            CatActivityKind.MouseHunt),
-        new BondMilestone(
-            WindowWatchId,
-            WindowWatchBond,
-            "Window Watch",
-            "Sit at the living-room window and watch the street.",
-            CatActivityKind.WindowWatch),
-        new BondMilestone(
             FeatherPlayId,
             FeatherPlayBond,
             "Feather Frenzy",

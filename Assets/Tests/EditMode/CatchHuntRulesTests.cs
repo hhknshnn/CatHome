@@ -2,6 +2,14 @@ using NUnit.Framework;
 
 public sealed class CatchHuntRulesTests
 {
+    [TestCase(90f)]
+    [TestCase(180f)]
+    [TestCase(29f)]
+    public void LongChase_CannotBypassTheLaunchDirection(float angle)
+    {
+        Assert.That(CatchHuntRules.ShouldForcePounce(.8f, 10f, angle), Is.False);
+        Assert.That(CatchHuntRules.ShouldForcePounce(1.7f, 10f, 20f), Is.True);
+    }
     [Test]
     public void Pounce_RequiresBeingClose()
     {

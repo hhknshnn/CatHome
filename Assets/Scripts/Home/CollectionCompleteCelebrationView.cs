@@ -17,6 +17,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
     private static CollectionCompleteCelebrationView instance;
 
     private CanvasGroup rootGroup;
+    private PremiumModalBackdrop backdrop;
     private RectTransform panel;
     private TMP_Text titleText;
     private TMP_Text detailText;
@@ -60,19 +61,28 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         IsAnyOpen = false;
     }
 
+    private void OnDisable() => HideImmediate();
+
     private void HandleCompleted(CollectionMilestone milestone)
     {
-        if (TitleScreen.IsShowing)
+        if (!CanPresent)
             return;
         Show(milestone);
     }
 
+    public static bool CanPresent => !TitleScreen.IsShowing && !HomeUiFlow.IsHomeControlBlocked &&
+        !ShopPanelController.IsAnyOpen && !CatBreedShopPanel.IsAnyOpen && !RoomSelectorPanel.IsAnyOpen &&
+        !QuestPanelController.IsAnyOpen && !SettingsPanel.IsAnyOpen && !PrivacyDataPanel.IsAnyOpen &&
+        !GamesHubPanel.IsAnyOpen && !LeaderboardPanel.IsAnyOpen && !CatCompanionPanel.IsAnyOpen && CatActivity.Active==null &&
+        !(FindFirstObjectByType<MainPanelController>() is MainPanelController menu && menu.IsOpen);
+
     private void Update()
     {
-        if (isOpen || TitleScreen.IsShowing || HomeLevelUpCelebrationView.IsAnyOpen)
+        if (isOpen)
             return;
         if (!CollectionMilestoneService.TryPeekPending(out CollectionMilestone pending))
             return;
+        if(!CanPresent)return;
         Show(pending);
     }
 
@@ -85,7 +95,9 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         if (titleText != null)
             titleText.text = GameLanguageService.Text("celebration.collection");
         if (detailText != null)
-            detailText.text = GameContentCopy.Text($"{CollectionMilestoneService.CatalogSize} eşyanın {CollectionMilestoneService.OwnedCount} tanesi senin",$"{CollectionMilestoneService.OwnedCount} of {CollectionMilestoneService.CatalogSize} collected");
+            detailText.text = milestone.IsCatalogWide
+                ? GameContentCopy.Text($"{CollectionMilestoneService.CatalogSize} eşyanın hepsi senin!",$"All {CollectionMilestoneService.CatalogSize} items collected!")
+                : HomeRoomService.GetOrLivingRoom(milestone.RoomId).DisplayName + " · " + GameContentCopy.Text("10 / 10 eşya", "10 / 10 items");
         if (rewardText != null)
         {
             string reward = GameLanguageService.Format("celebration.coins",milestone.Coins);
@@ -97,6 +109,8 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         }
 
         gameObject.SetActive(true);
+        if (backdrop != null)
+            backdrop.enabled = true;
         if (rootGroup != null)
         {
             rootGroup.alpha = 1f;
@@ -112,12 +126,13 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         if (!CatRunnerProgressService.ReducedMotion)
             routine = StartCoroutine(PopIn());
         HomeAudioController.PlayCelebration();
+        JoyfulUiArt.Celebrate(panel);
     }
 
     private IEnumerator PopIn()
     {
         float elapsed = 0f;
-        while (elapsed < 0.28f)
+        while (elapsed < 0.28f && !CatRunnerProgressService.ReducedMotion)
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / 0.28f);
@@ -137,19 +152,25 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         claimed = true;
         CollectionMilestoneService.TryClaim(current.Id);
         HideImmediate();
-        isOpen = false;
-        IsAnyOpen = false;
     }
 
     private void HideImmediate()
     {
+        if (routine != null)
+        {
+            StopCoroutine(routine);
+            routine = null;
+        }
+        isOpen = false;
+        IsAnyOpen = false;
         if (rootGroup != null)
         {
             rootGroup.alpha = 0f;
             rootGroup.interactable = false;
             rootGroup.blocksRaycasts = false;
         }
-        gameObject.SetActive(true);
+        if (backdrop != null)
+            backdrop.enabled = false;
     }
 
     private void Build()
@@ -166,16 +187,24 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         Image scrimImage = scrim.gameObject.AddComponent<Image>();
         scrimImage.color = new Color(0.12f, 0.08f, 0.22f, 0.45f);
         scrimImage.raycastTarget = true;
+        backdrop = scrim.gameObject.AddComponent<PremiumModalBackdrop>();
 
-        panel=NewRect(root,"Card",new Vector2(880,580),Vector2.zero);
-        var face=U.Panel("Face",panel,PremiumUiStyle.Ivory,0,0,880,580,32,true);
-        var portrait=U.Rect("CatPortrait",face.transform); U.At(portrait,0,171,120,120);
+        panel=NewRect(root,"Card",new Vector2(1060,620),Vector2.zero);
+        PremiumMomentArt.FitParent(panel,1060,620);
+        var face=U.Panel("Face",panel,PremiumUiStyle.Ivory,0,0,1060,620,32,true);
+        var stage=PremiumMomentArt.Stage(face.transform,-326,0,338,552);
+        var portrait=U.Rect("CatPortrait",stage); U.At(portrait,0,36,244,244);
         portrait.gameObject.AddComponent<Image>().raycastTarget=false; portrait.gameObject.AddComponent<SelectedCatPortrait>();
-        titleText=U.Label("Title",face.transform,font,38,PremiumUiStyle.Ink,0,65,760,72,TextAlignmentOptions.Center);
-        detailText=U.Label("Detail",face.transform,font,24,PremiumUiStyle.Muted,0,-5,760,46,TextAlignmentOptions.Center);
-        rewardText=U.Label("Reward",face.transform,font,30,PremiumUiStyle.Teal,0,-78,760,68,TextAlignmentOptions.Center);
-        collectButton=U.Action("CollectButton",face.transform,font,"quests.claim",PremiumUiStyle.Coral,0,-207,392,80,out var collectLabel);
+        PremiumMomentArt.Caption(stage,"Birlikte büyüyen\nbir yuva.","A home we build\ntogether.",0,-169,284,92,27);
+        PremiumMomentArt.Caption(face.transform,"KOLEKSİYON ANI","COLLECTION MOMENT",176,242,574,40,19);
+        titleText=U.Label("Title",face.transform,font,43,PremiumUiStyle.Ink,176,159,574,122,TextAlignmentOptions.Center);
+        detailText=U.Label("Detail",face.transform,font,24,PremiumUiStyle.Muted,176,42,574,72,TextAlignmentOptions.Center);
+        PremiumMomentArt.RewardTray(face.transform,176,-75,574,112);
+        rewardText=U.Label("Reward",face.transform,font,27,PremiumUiStyle.Teal,212,-75,464,100,TextAlignmentOptions.Center);
+        collectButton=U.Action("CollectButton",face.transform,font,"quests.claim",PremiumUiStyle.Coral,176,-222,574,80,out var collectLabel);
         collectButton.onClick.AddListener(OnCollect);
+        JoyfulUiArt.ActionStyle(collectButton,JoyfulUiArt.Coral);
+        JoyfulUiArt.Surface(face,JoyfulUiArt.Paper,32);
     }
 
     private static void Stretch(RectTransform rect)

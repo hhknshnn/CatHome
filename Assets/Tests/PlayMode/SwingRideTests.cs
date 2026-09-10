@@ -95,6 +95,7 @@ public sealed class SwingRideTests
         float deadline = Time.realtimeSinceStartup + 30f;
         while (ride.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(ride);
             float rock = Mathf.Abs(Mathf.DeltaAngle(0f, ride.SwingPivot.localEulerAngles.x));
             maxRock = Mathf.Max(maxRock, rock);
             float toSeat = Vector3.Distance(cat.transform.position, seat.position);

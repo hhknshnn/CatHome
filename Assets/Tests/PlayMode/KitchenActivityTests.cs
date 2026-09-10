@@ -72,7 +72,7 @@ public sealed class KitchenActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 45f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         Assert.That(activity.IsRunning, Is.False, activity.Kind + " must finish on its own.");
@@ -146,6 +146,7 @@ public sealed class KitchenActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (climb.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(climb);
             float y = cat.transform.position.y;
             peakY = Mathf.Max(peakY, y);
             if (y > floorY + 0.30f && y < floorY + 0.75f)
@@ -187,6 +188,7 @@ public sealed class KitchenActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (nudge.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(nudge);
             maxOffset = Mathf.Max(maxOffset, Vector3.Distance(home, visual.localPosition));
             yield return null;
         }

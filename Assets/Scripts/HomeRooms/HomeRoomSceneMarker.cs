@@ -15,12 +15,15 @@ public sealed class HomeRoomSceneMarker : MonoBehaviour
     public Camera LevelCamera => levelCamera;
     public CatMovement Cat => cat;
 
+    private void OnEnable() => HomeRoomCameraProfile.Apply(levelCamera);
+
 #if UNITY_EDITOR
     public void EditorConfigure(string id, Camera camera, CatMovement roomCat)
     {
         roomId = string.IsNullOrWhiteSpace(id) ? HomeRoomService.LivingRoomId : id;
         levelCamera = camera;
         cat = roomCat;
+        HomeRoomCameraProfile.Apply(levelCamera);
     }
 #endif
 }

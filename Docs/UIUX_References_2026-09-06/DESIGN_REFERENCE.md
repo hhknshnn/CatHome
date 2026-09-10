@@ -1,4 +1,8 @@
 # Cat Home — Görsel tasarım referansları
+
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](../ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
 6 Eylül 2026 · Önerilen ortak yön: sıcak, modern, içerik odaklı.
 
 Bu set, mevcut oyun kedileri, ürün ikonları ve oda görüntüleri referans alınarak **yerleşik image_gen** ile oluşturuldu. Oyun kodu, sahneler ve modeller değiştirilmedi. Görseller tasarım yönünü anlatır; Unity'den alınmış uygulanmış ekran görüntüleri değildir. Uygulamada mevcut model, materyal, animasyon ve kanonik para ikonları doğrudan kullanılacak.

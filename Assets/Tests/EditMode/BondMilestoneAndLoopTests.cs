@@ -26,28 +26,28 @@ public sealed class BondMilestoneAndLoopTests
     [Test]
     public void BondMilestones_UnlockInCareOrder()
     {
-        Assert.That(BondMilestoneService.Count, Is.EqualTo(4));
+        Assert.That(BondMilestoneService.Count, Is.EqualTo(2));
         Assert.That(BondMilestoneService.CountReached(0), Is.EqualTo(0));
         Assert.That(
             BondMilestoneService.HasReached(BondMilestoneService.MouseHuntId, 34),
             Is.False);
         Assert.That(
             BondMilestoneService.HasReached(BondMilestoneService.MouseHuntId, 35),
-            Is.True);
-        Assert.That(BondMilestoneService.CountReached(80), Is.EqualTo(2));
-        Assert.That(BondMilestoneService.CountReached(150), Is.EqualTo(3));
-        Assert.That(BondMilestoneService.CountReached(250), Is.EqualTo(4));
+            Is.False);
+        Assert.That(BondMilestoneService.CountReached(80), Is.EqualTo(0));
+        Assert.That(BondMilestoneService.CountReached(150), Is.EqualTo(1));
+        Assert.That(BondMilestoneService.CountReached(250), Is.EqualTo(2));
 
         Assert.That(
             BondMilestoneService.TryGetNext(0, out BondMilestone first),
             Is.True);
-        Assert.That(first.Id, Is.EqualTo(BondMilestoneService.MouseHuntId));
+        Assert.That(first.Id, Is.EqualTo(BondMilestoneService.FeatherPlayId));
         Assert.That(
             BondMilestoneService.TryGetNext(250, out _),
             Is.False);
         Assert.That(
             BondMilestoneService.FormatNextGiftLabel(79),
-            Does.Contain("Window Watch"));
+            Does.Contain("Feather Frenzy"));
     }
 
     [Test]

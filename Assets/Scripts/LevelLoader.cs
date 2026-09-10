@@ -16,6 +16,8 @@ public sealed class LevelLoader : MonoBehaviour
     private Coroutine loadRoutine;
     private ProgressionConfig config;
     private string pendingRoomScenePath;
+    private CatMovement outgoingTransitionCat;
+    private CatMovement incomingTransitionCat;
 
     public bool IsReady { get; private set; }
     public bool IsTransitioning => loadRoutine != null;
@@ -39,6 +41,7 @@ public sealed class LevelLoader : MonoBehaviour
     {
         ProgressionService.StateChanged -= HandleProgressionChanged;
         SceneManager.sceneLoaded -= HandlePendingRoomSceneLoaded;
+        ReleaseTransitionInputBlocks();
     }
 
     private void Start()
@@ -95,6 +98,10 @@ public sealed class LevelLoader : MonoBehaviour
     /// </summary>
     public bool LoadRoom(string roomId)
     {
+        // A queued home button must not replace the hidden return room while
+        // either mini-game is loading, showing its welcome, or being played.
+        if (HomeUiFlow.IsMiniGameVisible)
+            return false;
         if (loadRoutine != null || !HomeRoomService.TryGetRoom(roomId, out HomeRoomDefinition room))
             return false;
 
@@ -119,8 +126,29 @@ public sealed class LevelLoader : MonoBehaviour
             return false;
         }
 
-        CatHomeSaveSystem.SaveNow();
-        BeginLoad(room, true, false);
+        // Care and furniture routines own shared need systems that survive the
+        // old room. End them before either saving or loading another cat.
+        Scene outgoingScene = HasCurrentRoom
+            ? SceneManager.GetSceneByPath(CurrentRoom.ScenePath)
+            : SceneManager.GetActiveScene();
+        outgoingTransitionCat = outgoingScene.IsValid() && outgoingScene.isLoaded
+            ? FindInScene<CatMovement>(outgoingScene)
+            : null;
+        if (outgoingTransitionCat != null)
+        {
+            outgoingTransitionCat.AcquireInputBlock(this);
+            CatActionState.CancelForTransition(outgoingTransitionCat);
+        }
+        try
+        {
+            CatHomeSaveSystem.SaveNow();
+            BeginLoad(room, true, false);
+        }
+        catch
+        {
+            ReleaseTransitionInputBlocks();
+            throw;
+        }
         return true;
     }
 
@@ -174,6 +202,7 @@ public sealed class LevelLoader : MonoBehaviour
         }
 
         CatMovement cat = FindInScene<CatMovement>(roomScene);
+        incomingTransitionCat = cat;
         if (cat != null)
             cat.AcquireInputBlock(this);
 
@@ -203,8 +232,6 @@ public sealed class LevelLoader : MonoBehaviour
 #endif
         if (!marked)
         {
-            if (cat != null)
-                cat.ReleaseInputBlock(this);
             FailLoad(room, $"Room '{room.Id}' lost access before activation.");
             yield break;
         }
@@ -221,8 +248,7 @@ public sealed class LevelLoader : MonoBehaviour
         }
         finally
         {
-            if (cat != null)
-                cat.ReleaseInputBlock(this);
+            ReleaseTransitionInputBlocks();
         }
         if (CurrentLevel != null)
             LevelLoaded?.Invoke(CurrentLevel);
@@ -237,6 +263,9 @@ public sealed class LevelLoader : MonoBehaviour
         }
 
         SetScenePresentationEnabled(scene, false, null);
+        incomingTransitionCat = FindInScene<CatMovement>(scene);
+        if (incomingTransitionCat != null)
+            incomingTransitionCat.AcquireInputBlock(this);
     }
 
     private void FailLoad(HomeRoomDefinition room, string message)
@@ -246,7 +275,18 @@ public sealed class LevelLoader : MonoBehaviour
         pendingRoomScenePath = null;
         IsReady = HasCurrentRoom;
         loadRoutine = null;
+        ReleaseTransitionInputBlocks();
         RoomLoadFailed?.Invoke(room.Id, message);
+    }
+
+    private void ReleaseTransitionInputBlocks()
+    {
+        if (outgoingTransitionCat != null)
+            outgoingTransitionCat.ReleaseInputBlock(this);
+        if (incomingTransitionCat != null)
+            incomingTransitionCat.ReleaseInputBlock(this);
+        outgoingTransitionCat = null;
+        incomingTransitionCat = null;
     }
 
     private static bool ValidateRoomScene(
@@ -339,6 +379,7 @@ public sealed class LevelLoader : MonoBehaviour
         }
 
         Camera preferred = ResolvePreferredCamera(targetScene);
+        HomeRoomCameraProfile.Apply(preferred);
         SetScenePresentationEnabled(targetScene, true, preferred);
     }
 

@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e392e56c258164eb4d1d582081c6da, type: 3}
+  m_Name: PremiumMomentArt
+  m_EditorClassIdentifier: CatHome.Runtime::PremiumMomentArtSet
+  Coin: {fileID: 2800000, guid: c0355cac6aa975f4bbe6a56794ff877f, type: 3}

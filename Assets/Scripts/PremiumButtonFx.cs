@@ -56,7 +56,8 @@ public sealed class PremiumButtonFx : MonoBehaviour,
     private void Update()
     {
         bool interactable = button == null || button.IsInteractable();
-        bool scaleActive = animateScale && !reducedMotion &&
+        bool motionReduced = reducedMotion || CatRunnerProgressService.ReducedMotion;
+        bool scaleActive = animateScale && !motionReduced &&
                            (pressed || hovering || selected ||
                             releaseBounce > 0f || Mathf.Abs(currentScale - 1f) > 0.001f);
         if (scaleActive)
@@ -98,9 +99,11 @@ public sealed class PremiumButtonFx : MonoBehaviour,
         if (surface == null)
             return;
 
+        surface.SetInteractionState(pressed && interactable, selected || hovering, !interactable);
+
         // Feedback is driven by intent. No perpetual pulse or gloss sweep
         // competes with the cat while the player reads or watches the room.
-        if (reducedMotion || !interactable || (!hovering && !selected))
+        if (motionReduced || !interactable || (!hovering && !selected))
             surface.SetRuntimeGloss(-1f, 0f);
         else
             surface.SetRuntimeGloss(.5f, .10f);
@@ -227,7 +230,10 @@ public sealed class PremiumButtonFx : MonoBehaviour,
     private void OnDisable()
     {
         if (surface != null)
+        {
             surface.SetRuntimeGloss(-1f, 0f);
+            surface.SetInteractionState(false, false, false);
+        }
         if (animateScale)
             ApplyScale(1f, true);
         ResetInteractionState();

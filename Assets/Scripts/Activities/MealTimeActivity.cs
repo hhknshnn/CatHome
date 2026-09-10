@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -27,12 +28,17 @@ public sealed class MealTimeActivity : CatActivity
 
     private CharacterController characterController;
     private HungerSystem hunger;
+    private Vector3 contactStand;
+    private List<Vector3> contactApproach;
 
-    public override string ProgressLabel => IsRunning ? "EATING..." : string.Empty;
+    public override string ProgressLabel => !IsRunning ? string.Empty : InspectingOnly ?
+        (GameLanguageService.Current == GameLanguage.Turkish ? "Merakla kokluyor" : "Having a sniff") : "EATING...";
 
     public float MealDuration => Mathf.Max(0.5f, mealDuration);
     public float HungerRestore => Mathf.Max(0f, hungerRestore);
     public float NotHungryAbove => Mathf.Clamp(notHungryAbove, 0f, 100f);
+    public bool InspectingOnly { get; private set; }
+    protected override bool RecordsQuestProgress => !InspectingOnly;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -44,9 +50,11 @@ public sealed class MealTimeActivity : CatActivity
 
         if (hunger == null)
             hunger = FindAnyObjectByType<HungerSystem>(FindObjectsInactive.Include);
-        if (hunger != null && hunger.CurrentHunger >= NotHungryAbove)
+        InspectingOnly = hunger != null && hunger.CurrentHunger >= NotHungryAbove;
+
+        if (Cat != null && !FindContactStand(RoutineFloorPosition))
         {
-            failureReason = "I AM NOT HUNGRY!";
+            failureReason = "LET'S MAKE ROOM BESIDE THE BOWL!";
             return false;
         }
 
@@ -56,6 +64,7 @@ public sealed class MealTimeActivity : CatActivity
 
     protected override bool BeginActivity()
     {
+        if (!FindContactStand(Cat.transform.position)) return false;
         characterController = Cat.GetComponent<CharacterController>();
         StartCoroutine(MealRoutine());
         return true;
@@ -69,18 +78,25 @@ public sealed class MealTimeActivity : CatActivity
 
         Vector3 start = Cat.transform.position;
         Quaternion startRotation = Cat.transform.rotation;
-        Vector3 stand = Flatten(standPoint.position, start.y);
+        Vector3 stand = Flatten(contactStand, start.y);
         Vector3 bowl = bowlPoint.position;
 
-        Quaternion toStand = LookTowards(stand - start, startRotation);
-        yield return Move(start, stand, startRotation, toStand, 0.34f);
+        foreach (Vector3 point in contactApproach)
+        {
+            Vector3 destination = Flatten(point, start.y);
+            Vector3 from = Cat.transform.position;
+            Quaternion travel = LookTowards(destination - from, Cat.transform.rotation);
+            yield return Move(from, destination, Cat.transform.rotation, travel,
+                Mathf.Max(.12f, Vector3.Distance(from, destination) / 1.1f));
+        }
 
         Quaternion inward = LookTowards(
-            new Vector3(bowl.x - stand.x, 0f, bowl.z - stand.z), toStand);
-        yield return Move(stand, stand, toStand, inward, 0.20f);
+            new Vector3(bowl.x - stand.x, 0f, bowl.z - stand.z), startRotation);
+        PlayCatPose(CatActivityPose.Sniff);
+        yield return CatActivityFacing.Turn(Cat, inward, .24f);
 
         float elapsed = 0f;
-        PlayCatPose(CatActivityPose.Eat, standPoint);
+        PlayCatPose(InspectingOnly ? CatActivityPose.Sniff : CatActivityPose.Eat, standPoint);
         while (elapsed < MealDuration)
         {
             elapsed += Time.deltaTime;
@@ -98,18 +114,29 @@ public sealed class MealTimeActivity : CatActivity
         Cat.transform.position = stand;
         Cat.transform.rotation = inward;
         // Back off the bowl before physics resumes.
-        Quaternion away = LookTowards(start - stand, inward);
-        yield return Move(stand, stand, inward, away, 0.22f);
+        Quaternion away = CatActivityFacing.Resolve(Cat, stand, LookTowards(start - stand, inward));
+        PlayCatPose(CatActivityPose.Sniff);
+        yield return CatActivityFacing.Turn(Cat, away, .22f);
 
         RestoreCat();
-        if (hunger != null)
+        if (hunger != null && !InspectingOnly)
             hunger.Feed(HungerRestore);
         CompleteActivity("YUM!");
+    }
+
+    private bool FindContactStand(Vector3 origin)
+    {
+        Vector3 authored = Flatten(standPoint.position, Cat.transform.position.y);
+        origin.y = authored.y;
+        return CatActivityFacing.TryFindContactStand(Cat, bowlPoint.position, authored, origin,
+            out contactStand, out contactApproach);
     }
 
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
+        PlayCatPose(CatActivityPose.Sniff);
+        yield return CatActivityFacing.Turn(Cat, toRotation, .18f);
         PlayCatPose(CatActivityPose.Walk);
         float elapsed = 0f;
         while (elapsed < duration)
@@ -117,7 +144,7 @@ public sealed class MealTimeActivity : CatActivity
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
             Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
+            Cat.transform.rotation = toRotation;
             yield return null;
         }
 
@@ -149,11 +176,13 @@ public sealed class MealTimeActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

@@ -12,13 +12,13 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
     [SerializeField] private CatRunnerGameController game;
     [SerializeField] private CatRunnerPlayer player;
     [SerializeField] private CatRunnerTrackManager track;
-    [SerializeField, Range(0f, 1f)] private float laneFollow = 0.28f;
-    [SerializeField, Range(0f, 1f)] private float jumpFollow = 0.24f;
-    [SerializeField] private float positionSmoothTime = 0.14f;
+    [SerializeField, Range(0f, 1f)] private float laneFollow = 0.13f;
+    [SerializeField, Range(0f, 1f)] private float jumpFollow = 0.08f;
+    [SerializeField] private float positionSmoothTime = 0.24f;
     [SerializeField] private float rotationResponsiveness = 8f;
-    [SerializeField] private float maximumLaneRoll = 4.5f;
-    [SerializeField] private float baseFieldOfView = 56f;
-    [SerializeField] private float maximumFieldOfView = 64f;
+    [SerializeField] private float maximumLaneRoll = 0.65f;
+    [SerializeField] private float baseFieldOfView = 50f;
+    [SerializeField] private float maximumFieldOfView = 54f;
 
     private Camera targetCamera;
     private Vector3 authoredLocalPosition;
@@ -55,7 +55,8 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
 
     private void LateUpdate()
     {
-        float delta = Mathf.Max(0.0001f, Time.unscaledDeltaTime);
+        if (game != null && game.IsPaused) return;
+        float delta = Mathf.Max(0.0001f, Time.deltaTime);
         float lane = player != null ? player.LanePosition : 0f;
         float laneVelocity = (lane - previousLanePosition) / delta;
         previousLanePosition = lane;
@@ -70,10 +71,10 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
             : 0f;
         float running = game != null && game.IsRunning ? 1f : 0f;
         float clock = Time.unscaledTime;
-        float breathing = reducedMotion ? 0f : Mathf.Sin(clock * 1.65f) * 0.018f;
+        float breathing = reducedMotion ? 0f : Mathf.Sin(clock * 1.65f) * 0.004f;
         float sideSway = reducedMotion
             ? 0f
-            : Mathf.Sin(clock * 1.12f + 0.8f) * 0.018f * (0.35f + running);
+            : Mathf.Sin(clock * 1.12f + 0.8f) * 0.004f * (0.35f + running);
 
         runKick = Mathf.MoveTowards(runKick, 0f, delta * 1.8f);
         coinKick = Mathf.MoveTowards(coinKick, 0f, delta * 5f);
@@ -81,14 +82,14 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
 
         float shakeX = reducedMotion
             ? 0f
-            : (Mathf.PerlinNoise(clock * 22f, 1.7f) - 0.5f) * trauma * 0.22f;
+            : (Mathf.PerlinNoise(clock * 22f, 1.7f) - 0.5f) * trauma * 0.07f;
         float shakeY = reducedMotion
             ? 0f
-            : (Mathf.PerlinNoise(2.9f, clock * 25f) - 0.5f) * trauma * 0.16f;
+            : (Mathf.PerlinNoise(2.9f, clock * 25f) - 0.5f) * trauma * 0.05f;
         Vector3 targetPosition = authoredLocalPosition + new Vector3(
             lane * laneFollow + sideSway + shakeX,
             jumpHeight * jumpFollow + breathing + shakeY,
-            -runKick * 0.55f);
+            -runKick * 0.12f);
         transform.localPosition = Vector3.SmoothDamp(
             transform.localPosition,
             targetPosition,
@@ -109,9 +110,9 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
             ? 0f
             : (Mathf.PerlinNoise(clock * 27f, 6.1f) - 0.5f) * trauma * 5f;
         Quaternion targetRotation = authoredLocalRotation * Quaternion.Euler(
-            roadPitch + jumpPitch,
+            reducedMotion ? roadPitch : roadPitch + jumpPitch,
             sideSway * 12f,
-            laneRoll + shakeRoll);
+            reducedMotion ? 0f : laneRoll + shakeRoll);
         float rotationBlend = 1f - Mathf.Exp(-Mathf.Max(1f, rotationResponsiveness) * delta);
         transform.localRotation = Quaternion.Slerp(
             transform.localRotation,
@@ -121,7 +122,7 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
         if (targetCamera != null)
         {
             float desiredFov = Mathf.Lerp(baseFieldOfView, maximumFieldOfView, speed01) +
-                               (reducedMotion ? 0f : runKick * 2.2f + coinKick);
+                               (reducedMotion ? 0f : runKick * .45f + coinKick);
             targetCamera.fieldOfView = Mathf.SmoothDamp(
                 targetCamera.fieldOfView,
                 desiredFov,
@@ -139,7 +140,7 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
 
     public void PulseCoin()
     {
-        coinKick = Mathf.Max(coinKick, 0.55f);
+        coinKick = 0f; // Coin feedback belongs to the pickup/HUD, not a repeated zoom.
     }
 
     public void AddHitTrauma(float amount = 0.65f)
@@ -166,13 +167,13 @@ public sealed class CatRunnerCameraRig : MonoBehaviour
         game = controller;
         player = runner;
         track = manager;
-        laneFollow = 0.28f;
-        jumpFollow = 0.24f;
-        positionSmoothTime = 0.14f;
+        laneFollow = 0.13f;
+        jumpFollow = 0.08f;
+        positionSmoothTime = 0.24f;
         rotationResponsiveness = 8f;
-        maximumLaneRoll = 4.5f;
-        baseFieldOfView = 56f;
-        maximumFieldOfView = 64f;
+        maximumLaneRoll = 0.65f;
+        baseFieldOfView = 50f;
+        maximumFieldOfView = 54f;
     }
 #endif
 }

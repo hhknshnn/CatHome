@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2769188626761746248}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.44, y: 0, z: 0}
+  m_LocalPosition: {x: -0.308, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -58,7 +58,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4731011074251409817}
@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 8267048765512609537}
   - component: {fileID: 3831248750360396980}
   - component: {fileID: 8603324663837639277}
+  - component: {fileID: 481785126821241113}
   m_Layer: 0
   m_Name: LoftBookStack
   m_TagString: Untagged
@@ -185,7 +186,7 @@ MonoBehaviour:
   productId: loft.book-stack
   movableRoot: {fileID: 4544542348579454979}
   legacySlots: []
-  footprintSize: {x: 0.6, y: 0.5}
+  footprintSize: {x: 0.42000002, y: 0.35}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -237,6 +238,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &481785126821241113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5531804858952029094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.7
 --- !u!1 &8493752404358464251
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 8493752404358464251}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.6, y: 0, z: 0}
+  m_LocalPosition: {x: -0.42000002, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -319,31 +333,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 167c7fc33e74c524d9b66936de757fa4, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 946b23c09763c9f408c05fce1c6737e7, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 5be24bf3cbd9c6247ba59c544b7f38a7, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: ed75dc93680d5a941ac92ab955e9406c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
     - target: {fileID: 919132149155446097, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: m_Name
       value: LoftBookStack_PremiumModel
@@ -439,19 +453,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 7636f3c580c036a4292e3a4963f795c4, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
     - target: {fileID: 919132149155446097, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: m_Name
       value: Book

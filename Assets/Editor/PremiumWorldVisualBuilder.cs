@@ -66,6 +66,7 @@ public static class PremiumWorldVisualBuilder
         RecolorLivingRoomFurniture(scene);
         RebuildHome2ComfortDetails(root.transform);
         HomeRoomGameplaySafetyBuilder.ApplyToScene(scene);
+        ModernWorldArtBuilder.Apply(scene, HomeRoomService.LivingRoomId);
         EditorUtility.SetDirty(cameraData);
         EditorUtility.SetDirty(volume);
         EditorSceneManager.MarkSceneDirty(scene);
@@ -364,10 +365,10 @@ public static class PremiumWorldVisualBuilder
 
         Transform sofa = CreateGroup(details, "SofaComfortSet");
         GameObject leftCushion = CreateSphere(sofa, "MintCushion",
-            new Vector3(-0.48f, 0.77f, 2.02f), new Vector3(0.38f, 0.23f, 0.16f), mint);
+            new Vector3(0.65f, 0.77f, 2.30f), new Vector3(0.38f, 0.23f, 0.16f), mint);
         leftCushion.transform.localRotation = Quaternion.Euler(0f, 8f, 10f);
         GameObject rightCushion = CreateSphere(sofa, "LilacCushion",
-            new Vector3(0.48f, 0.77f, 2.02f), new Vector3(0.38f, 0.23f, 0.16f), lilac);
+            new Vector3(0.52f, 0.75f, 1.99f), new Vector3(0.38f, 0.23f, 0.16f), lilac);
         rightCushion.transform.localRotation = Quaternion.Euler(0f, -8f, -10f);
         CreateBox(sofa, "PearlSeatBand", new Vector3(0f, 0.34f, 1.82f),
             new Vector3(1.55f, 0.035f, 0.075f), cream);
@@ -389,6 +390,7 @@ public static class PremiumWorldVisualBuilder
             new Vector3(0.66f, 0.018f, 0.22f), cream);
         CreateSphere(table, "MintCenterpiece", new Vector3(0f, 0.53f, 0.56f),
             new Vector3(0.12f, 0.045f, 0.12f), mint);
+        LivingRoomArrangementBuilder.Apply(root.gameObject.scene);
     }
 
     private static void CreateBackWainscot(

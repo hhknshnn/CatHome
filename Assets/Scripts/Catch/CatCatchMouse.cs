@@ -26,6 +26,9 @@ public sealed class CatCatchMouse : MonoBehaviour
     private float winded;
     private const float SpawnPopSeconds = 0.24f;
     private float spawnRemaining;
+    private static readonly System.Collections.Generic.List<CatCatchMouse> peers=new System.Collections.Generic.List<CatCatchMouse>();
+    private void OnEnable(){if(!peers.Contains(this))peers.Add(this);}
+    private void OnDisable(){peers.Remove(this);}
 
     /// <summary>True while the mouse is out of breath — the cat's opening.</summary>
     public bool IsWinded => winded > 0f;
@@ -125,6 +128,14 @@ public sealed class CatCatchMouse : MonoBehaviour
         Vector3 next = speed > 0f
             ? Vector3.MoveTowards(before, target, speed * delta)
             : before;
+        Vector3 separation=Vector3.zero;
+        foreach(var other in peers)
+        {
+            if(other==null||other==this||!other.IsActive||other.arena!=arena)continue;
+            Vector3 away=before-other.transform.position;away.y=0;float distance=away.magnitude;
+            if(distance>.001f&&distance<.55f)separation+=away/distance*(.55f-distance)*4;
+        }
+        next=Clamp(next+Vector3.ClampMagnitude(separation,1.1f)*delta);
         Vector3 moved = next - before;
         moved.y = 0f;
         velocity = delta > 0f ? moved / delta : Vector3.zero;
@@ -134,11 +145,11 @@ public sealed class CatCatchMouse : MonoBehaviour
                 Quaternion.LookRotation(moved.normalized, Vector3.up),
                 16f * delta);
 
-        float bob = speed > 0f ? Mathf.Abs(Mathf.Sin(Time.time * 8f)) * 0.04f : 0f;
+        float bob = 0f;
         next.y = ArenaPoint(0f, localMin.y, 0f).y + bob;
         transform.position = next;
         float pulse = speed > 0f ? 0.06f : 0.03f;
-        float scale = 1f + Mathf.Sin(Time.time * 10f + GetInstanceID()) * pulse;
+        float scale = 1f;
         if (spawnRemaining > 0f)
         {
             spawnRemaining = Mathf.Max(0f, spawnRemaining - delta);

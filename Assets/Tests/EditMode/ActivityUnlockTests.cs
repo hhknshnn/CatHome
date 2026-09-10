@@ -44,32 +44,19 @@ public sealed class ActivityUnlockTests
     {
         Assert.That(ball, Is.Not.Null);
         Assert.That(scratch, Is.Not.Null);
-        Assert.That(mouse, Is.Not.Null);
-        Assert.That(windowWatch, Is.Not.Null);
-        Assert.That(windowWatch.RequiredBondXp, Is.EqualTo(BondMilestoneService.WindowWatchBond));
+        Assert.That(mouse, Is.Null,"The retired home hunt must not return.");
+        Assert.That(windowWatch, Is.Null, "The retired Window Watch must not return.");
 
         Assert.That(ball.IsUnlocked, Is.False);
         Assert.That(scratch.IsUnlocked, Is.False);
-        Assert.That(mouse.IsUnlocked, Is.False);
-        Assert.That(windowWatch.IsUnlocked, Is.False);
         Assert.That(ball.IsContentVisible, Is.False);
         Assert.That(scratch.IsContentVisible, Is.False);
-        Assert.That(mouse.IsContentVisible, Is.False);
 
         ProgressionService.ApplySavedState(0, 0, 35, 1, new QuestProgressEntry[0]);
         ball.RefreshUnlockPresentation();
         scratch.RefreshUnlockPresentation();
-        mouse.RefreshUnlockPresentation();
         Assert.That(ball.IsUnlocked, Is.False, "Bond must not bypass store ownership.");
         Assert.That(scratch.IsUnlocked, Is.False, "Bond must not bypass store ownership.");
-        Assert.That(mouse.IsUnlocked, Is.True);
-        Assert.That(mouse.IsContentVisible, Is.True);
-        windowWatch.RefreshUnlockPresentation();
-        Assert.That(windowWatch.IsUnlocked, Is.False, "Window watch waits for 80 Bond.");
-
-        ProgressionService.ApplySavedState(0, 0, BondMilestoneService.WindowWatchBond, 1, new QuestProgressEntry[0]);
-        windowWatch.RefreshUnlockPresentation();
-        Assert.That(windowWatch.IsUnlocked, Is.True);
 
         long totalPrice = HomeStoreService.BallBasketPrice + HomeStoreService.ScratchPostPrice;
         EconomyService.AddCurrency(CurrencyType.Coin, totalPrice, EconomySource.Debug);
@@ -119,18 +106,20 @@ public sealed class ActivityUnlockTests
         energy.ApplySavedValue(0f);
 
         ProgressionService.ApplySavedState(
-            0, 0, BondMilestoneService.MouseHuntBond, 1, new QuestProgressEntry[0]);
-        mouse.RefreshUnlockPresentation();
+            0, 0, BondMilestoneService.WindowWatchBond, 1, new QuestProgressEntry[0]);
+        var observation = root.AddComponent<SitLookActivity>();
+        observation.EditorConfigure("prompt-fixture", "Bookshelf", CatActivityKind.BookshelfSniff,
+            QuestType.WindowWatch, 0, "WATCH", 1f, 4f, root.transform, null, null);
 
-        Assert.That(mouse.IsUnlocked, Is.True);
+        Assert.That(observation.IsUnlocked, Is.True);
         Assert.That(
-            ActivityPromptController.BuildActionText(mouse, energy),
-            Is.EqualTo(GameContentCopy.Text("12 enerji gerekli","Need 12 energy")));
+            ActivityPromptController.BuildActionText(observation, energy),
+            Is.EqualTo(GameContentCopy.Text($"{Mathf.CeilToInt(observation.EnergyCost)} enerji gerekli",$"Need {Mathf.CeilToInt(observation.EnergyCost)} energy")));
 
-        energy.ApplySavedValue(12f);
+        energy.ApplySavedValue(observation.EnergyCost);
         Assert.That(
-            ActivityPromptController.BuildActionText(mouse, energy),
-            Is.EqualTo(GameInteractionCopy.Text(mouse.ActionText)));
+            ActivityPromptController.BuildActionText(observation, energy),
+            Is.EqualTo(GameInteractionCopy.Text(observation.ActionText)));
 
         Object.DestroyImmediate(root);
     }
@@ -196,6 +185,8 @@ public sealed class ActivityUnlockTests
         Assert.That(stand, Is.Not.Null);
         Assert.That(door, Is.Not.Null);
         Assert.That(stand.localPosition.y, Is.GreaterThan(door.localPosition.y + 0.05f));
+        Assert.That(door.localPosition.x, Is.LessThan(-.2f), "The actual glass occupies +X; enter through the open -X half.");
+        Assert.That(stand.localPosition.x, Is.LessThan(-.2f), "The rinse must remain visible through the opening.");
 
         Assert.That(rinse.IsUnlocked, Is.False, "The rinse waits for the store purchase.");
         Assert.That(
@@ -235,7 +226,7 @@ public sealed class ActivityUnlockTests
         Transform floor = prefab.transform.Find("SipFloorPoint");
         Assert.That(perch, Is.Not.Null);
         Assert.That(floor, Is.Not.Null);
-        Assert.That(perch.localPosition.y, Is.GreaterThan(0.7f),
+        Assert.That(perch.localPosition.y / ProductScale(prefab), Is.GreaterThan(0.7f),
             "The perch must sit on the counter, not on the floor.");
         Assert.That(floor.localPosition.z, Is.GreaterThan(perch.localPosition.z),
             "The cat must start in front of the vanity and hop back towards the basin.");
@@ -327,7 +318,7 @@ public sealed class ActivityUnlockTests
         // so the authored front at -Z is still the front.
         Assert.That(floor.localPosition.z, Is.LessThan(nestPoint.localPosition.z),
             "The cat must start in front of the niche and hop back into it.");
-        Assert.That(nestPoint.localPosition.y, Is.EqualTo(1.7472f).Within(.01f),
+        Assert.That(nestPoint.localPosition.y / ProductScale(prefab), Is.EqualTo(1.7472f).Within(.01f),
             "The enclosed towel bay has too little headroom for the large breeds.");
         Assert.That(nestPoint.GetComponent<CatActivitySurface>().AlignAlongSurface, Is.True);
 
@@ -472,8 +463,8 @@ public sealed class ActivityUnlockTests
         Assert.That(gaze, Is.Not.Null, "The mirror must carry a sit-and-look.");
         Assert.That(gaze.Kind, Is.EqualTo(CatActivityKind.MirrorGaze));
         Assert.That(gaze.QuestType, Is.EqualTo(QuestType.MirrorGaze));
-        Assert.That(gaze.ReactionKind, Is.EqualTo(SitLookReaction.PawSwat),
-            "The cat swats at its own reflection.");
+        Assert.That(gaze.ReactionKind, Is.EqualTo(SitLookReaction.Sit),
+            "The cat calmly observes its reflection without locomotion or swatting.");
         Assert.That(gaze.LookPoint, Is.Not.Null);
         Assert.That(gaze.LookPoint.localPosition.y, Is.GreaterThan(0.3f),
             "The look point is the glass, which is above the shelf.");
@@ -666,7 +657,7 @@ public sealed class ActivityUnlockTests
         Assert.That(upper.localPosition.y, Is.GreaterThan(lower.localPosition.y),
             "The climb has to go up, one shelf at a time.");
         Assert.That(climb.UsesIntermediatePerch, Is.False, "The old intermediate board is filled with jars.");
-        Assert.That(upper.localPosition.y, Is.EqualTo(1.7696f).Within(.01f));
+        Assert.That(upper.localPosition.y / ProductScale(prefab), Is.EqualTo(1.7696f).Within(.01f));
 
         AssertUnlocksWithPurchase(climb, HomeStoreService.KitchenPantryShelfId);
     }
@@ -785,7 +776,7 @@ public sealed class ActivityUnlockTests
         {
             Transform anchor = LoadStoreProduct(prefabName).transform.Find("InteractionAnchor");
             Assert.That(anchor, Is.Not.Null, prefabName + " has no InteractionAnchor.");
-            Assert.That(anchor.localPosition.z, Is.LessThan(-0.5f),
+            Assert.That(anchor.localPosition.z / ProductScale(LoadStoreProduct(prefabName)), Is.LessThan(-0.5f),
                 prefabName + " is a floor product: the room is at root -Z.");
         }
     }
@@ -907,7 +898,7 @@ public sealed class ActivityUnlockTests
         Assert.That(upper.localPosition.y, Is.GreaterThan(lower.localPosition.y),
             "The climb has to go up, bench then rail.");
         Assert.That(climb.UsesIntermediatePerch, Is.False, "The rail below the canopy has no headroom.");
-        Assert.That(upper.localPosition.y, Is.GreaterThan(1.69f));
+        Assert.That(upper.localPosition.y / ProductScale(prefab), Is.GreaterThan(1.69f));
         // The bench stands against the back lattice, so every point of the climb
         // is at root +Z and the cat starts inside the shelter. The pergola is a
         // yaw 0 floor product and absent from `facesBackward`, so Z is not
@@ -936,7 +927,7 @@ public sealed class ActivityUnlockTests
         // Yaw 0 floor product, absent from `facesBackward`: the courtyard is at
         // root -Z, and the point has to clear the 0.41 planter or the cat works
         // basket weave instead of bark.
-        Assert.That(point.localPosition.z, Is.LessThan(-0.42f),
+        Assert.That(point.localPosition.z / ProductScale(prefab), Is.LessThan(-0.42f),
             "The scratch point stands clear of the planter rim.");
         Assert.That(anchor.localPosition.z, Is.LessThan(point.localPosition.z),
             "The cat walks in from further out than it scratches.");
@@ -1053,7 +1044,7 @@ public sealed class ActivityUnlockTests
 
         Assert.That(watch.LookPoint, Is.Not.Null);
         Assert.That(watch.LookPoint.name, Is.EqualTo("StareLookPoint"));
-        Assert.That(watch.LookPoint.localPosition.y,
+        Assert.That(watch.LookPoint.localPosition.y / ProductScale(prefab),
             Is.GreaterThan(0.5f).And.LessThan(0.8f),
             "The stare lands on the lid seam, not up at the 1.05 vent.");
         // The grill is the third Garden product with a non-zero yaw and the
@@ -1154,7 +1145,7 @@ public sealed class ActivityUnlockTests
         Transform floor = prefab.transform.Find("SipFloorPoint");
         Assert.That(perch, Is.Not.Null);
         Assert.That(floor, Is.Not.Null);
-        Assert.That(perch.localPosition.y, Is.GreaterThan(0.5f),
+        Assert.That(perch.localPosition.y / ProductScale(prefab), Is.GreaterThan(0.5f),
             "The cat drinks from the rim, not from the base at 0.10.");
         // The bird sculpture sits on the BACK of the rim, so the cat's side of
         // the bowl is the courtyard side and the perch is at root -Z.
@@ -1723,7 +1714,7 @@ public sealed class ActivityUnlockTests
         Assert.That(floor.localPosition.y, Is.EqualTo(0f));
         Assert.That(lower.localPosition.y, Is.GreaterThan(0.3f));
         Assert.That(climb.UsesIntermediatePerch, Is.False);
-        Assert.That(upper.localPosition.y, Is.EqualTo(1.27f).Within(.01f));
+        Assert.That(upper.localPosition.y / ProductScale(prefab), Is.EqualTo(1.27f).Within(.01f));
         Assert.That(upper.GetComponent<CatActivitySurface>().ResolvePose(CatActivityPose.Sleep), Is.EqualTo(CatActivityPose.Sit));
         // Yaw 90 at x -3.22 would face the rack into the left wall, so the shelf
         // is in `facesBackward` and the deck is at root +Z.
@@ -1915,5 +1906,11 @@ public sealed class ActivityUnlockTests
         }
 
         return null;
+    }
+    // Geometry assertions use authored units; the native matrix verifies the actual resized surface.
+    private static float ProductScale(GameObject prefab)
+    {
+        var stamp = prefab.GetComponent<RoomProductScaleStamp>();
+        return stamp != null ? stamp.AppliedScale : 1f;
     }
 }

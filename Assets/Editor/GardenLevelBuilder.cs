@@ -34,10 +34,6 @@ public static class GardenLevelBuilder
     private static readonly Color GrassDeep = new Color32(91, 176, 91, 255);
     private static readonly Color GrassLight = new Color32(184, 232, 139, 255);
     private static readonly Color WoodFence = new Color32(228, 177, 112, 255);
-    private const float LivingCameraFieldOfView = 47f;
-    private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
-    private static readonly Quaternion LivingCameraRotation =
-        Quaternion.Euler(25f, 12.995f, 0f);
     private static readonly Vector3 LivingSpawnPointPosition = new Vector3(0f, 0f, -2f);
     private static readonly Color LivingAmbientSkyColor = new Color32(54, 58, 66, 255);
     private static readonly Color LivingAmbientEquatorColor = new Color32(29, 32, 34, 255);
@@ -687,10 +683,8 @@ public static class GardenLevelBuilder
             typeof(AudioListener), typeof(UniversalAdditionalCameraData));
         cameraObject.tag = "MainCamera";
         cameraObject.transform.SetParent(parent, false);
-        cameraObject.transform.localPosition = LivingCameraPosition;
-        cameraObject.transform.localRotation = LivingCameraRotation;
         Camera camera = cameraObject.GetComponent<Camera>();
-        camera.fieldOfView = LivingCameraFieldOfView;
+        HomeRoomCameraProfile.Apply(camera);
         camera.nearClipPlane = .3f;
         camera.farClipPlane = 1000f;
         camera.clearFlags = CameraClearFlags.SolidColor;
@@ -852,6 +846,10 @@ public static class GardenLevelBuilder
             EditorSceneManager.SaveScene(scene);
         }
 
+        SceneObservationFacingBuilder.Configure(scene);
+        EditorSceneManager.MarkSceneDirty(scene);
+        EditorSceneManager.SaveScene(scene);
+
         if (opened && scene.IsValid())
             EditorSceneManager.CloseScene(scene, true);
         return existing == null ? "bird-watch-added" : "bird-watch-present";
@@ -901,6 +899,7 @@ public static class GardenLevelBuilder
             SitLookReaction.Sit,
             2.8f,
             "HELLO BIRDS!");
+        SceneObservationFacingBuilder.Configure(station.scene);
     }
 
     private static void BuildChaseToys(

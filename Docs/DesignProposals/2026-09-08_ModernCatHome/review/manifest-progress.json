@@ -1,0 +1,54 @@
+[
+  {
+    "id": "01",
+    "file": "01-home-hero.png",
+    "title": "Ana oyun ve salon",
+    "group": "Ev",
+    "states": [
+      "Ana oyun HUD"
+    ],
+    "source": "C:/Users/HAKAN/.codex/generated_images/01a08005-283e-7513-9bf2-6af70865585f/exec-bccd7883-ad08-42d0-bdcc-9aa3d40ceb01.png"
+  },
+  {
+    "id": "02",
+    "file": "02-opening.png",
+    "title": "Açılış ve ilk giriş",
+    "group": "Başlangıç",
+    "states": [
+      "Açılış / Devam et",
+      "Yükleme",
+      "Google / misafir seçimi",
+      "Ana menü çekmecesi"
+    ],
+    "prompt": "Board topic OPENING AND NAVIGATION. Quadrant 1: lush sunlit cat lounge title menu, huge elegant 'CAT HOME', orange tabby foreground and black cat/Maine Coon behind, left clear title 'Yuvana hoş geldin', primary 'Devam et', small secondary 'Yeni oyun', small top settings icon. Quadrant 2: beautiful near fullbleed lounge crop, sleeping cat, tasteful progress track 'Yuvan hazırlanıyor', loading paw mark, not fake percent. Quadrant 3: first account choice, cat sitting left on sapphire seat, right 'Yuvan yanında olsun', branded Google sign-in white button 'Google ile devam et', quiet 'Misafir olarak oyna', short note 'İlerlemene buradan devam edebilirsin'. Quadrant 4: Home room mostly visible, right tidy navigation drawer with portrait header and six calm rows 'Mağaza', 'Görevler', 'Kedim', 'Odalar', 'Ayarlar', 'Ana menü'; obvious close icon. Different screen compositions, same polished design.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-b9dbef4e-cb50-4290-bbad-7af827f1f0e5.png"
+  },
+  {
+    "id": "03",
+    "file": "03-home-actions.png",
+    "title": "Bakım ve ev etkileşimleri",
+    "group": "Ev",
+    "states": [
+      "Yakın bakım / Su iç",
+      "Süren dinlenme / Kalk",
+      "Sevme / duygu balonu",
+      "Meşgul / ulaşılamayan eylem"
+    ],
+    "prompt": "Board topic HOME INTERACTION STATES. All screens show same front-centered room and existing four-item bottom dock. Q1: orange cat truly near open front of water bowl tray at back wall, contextual bottom right clean photo card 'Su kabı' blue action 'Su iç', subtle cyan cue at interaction point, top 'Su 18%' with drop icon. Q2: orange cat actually comfortably loafing on coral sofa cushion, contextual card 'İkili koltuk', visible status 'Dinleniyor', thin energy progress 'Enerji 64%', clear blue 'Kalk', no coins or rewards, a tiny quiet moon thought bubble. Q3: gently petting standing cat, small fingertip gesture illustration, one organic soft white speech bubble 'Mırr…' and two small fading coral hearts near head, no reward screen, visible open room. Q4: room background and compact companion action sheet: 'Loki şu an su içiyor', command thumbnails greyed with text 'Birazdan hazır', separate small neutral contextual message 'Ön tarafa yaklaş', no distant action button implying teleport. World remains dominant and cat/action connected.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-5c1c59eb-1d72-49e9-b9a0-6a0bd2559914.png"
+  },
+  {
+    "id": "04",
+    "file": "04-dialogue-onboarding.png",
+    "title": "Diyalog, balon ve tanışma",
+    "group": "Başlangıç",
+    "states": [
+      "İsim verme",
+      "Hikâye diyaloğu",
+      "Dört adımlı öğretici",
+      "Konuşma / düşünce balonları"
+    ],
+    "prompt": "Board topic DIALOGUE AND FIRST MEETING. Q1: naming screen over softly softened room, large polished orange cat portrait at left, slim white speech-shaped card right, heading 'Sana ne diyelim?', active text field 'Loki', blue button 'Tanışalım', small step '1 / 4'. Q2: narrative dialogue over room, broad but low-height bottom speech card with protruding circular true cat portrait, speaker 'Loki', exact short copy 'Birlikte evi keşfedelim mi?', blue small 'Devam' at right, slim step dots, no huge empty rectangle. Q3: contextual onboarding movement tutorial, dimmed world except left joystick spotlight, small connected instruction card 'Patiyi sürükle, birlikte yürüyelim.', progress '2 / 4', clear 'Atla'; cat in scene remains visible. Q4: art-directed sheet showing three believable in-world reactions on mini home vignettes: a pointed speech balloon 'Biraz su iyi gelir.', a softly scalloped thought bubble with moon icon while sleeping, a compact contented 'Mırr…' near cat. Organic precise silhouettes, small pastel rim and soft contact shadow, not generic rectangles; use body text size easily read. Include small caption 'Konuşma / Düşünce / Tepki'.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-6cd15695-174a-47f5-a9c4-03576f08925d.png"
+  }
+]

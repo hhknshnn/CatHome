@@ -69,6 +69,7 @@ public sealed class PaperSpinTests
         float deadline = Time.realtimeSinceStartup + 25f;
         while (spin.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(spin);
             maxTurn = Mathf.Max(maxTurn, Quaternion.Angle(restRotation, pivot.localRotation));
             yield return null;
         }

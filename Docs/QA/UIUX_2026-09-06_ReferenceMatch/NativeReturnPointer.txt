@@ -1,5 +1,0 @@
-Final scene EventSystem raycast + pointer down/up/click: WelcomeBackButton
-InputBlocked=False
-HomeControlBlocked=False
-BlurTargetsAfterClose=0
-OS mouse attempts in this final session did not dispatch while Application.isFocused=False; no native-click success claimed.

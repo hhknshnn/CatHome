@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -159,6 +160,8 @@ public static class RoomPreviewCaptureBuilder
         EditorSceneManager.SetActiveScene(scene);
 
         var revealed = new List<GameObject>();
+        Action restoreCatPhoto = null;
+        Action restoreCatFinish = null;
         var hiddenForeign = HideForeignRoomScenes(scene);
         AmbientMode previousAmbientMode = RenderSettings.ambientMode;
         float previousAmbientIntensity = RenderSettings.ambientIntensity;
@@ -183,7 +186,9 @@ public static class RoomPreviewCaptureBuilder
         }
         try
         {
+            restoreCatFinish = ApplyModernCatPhotoFinish(scene);
             RevealOwnedLooks(scene, revealed);
+            restoreCatPhoto = ArrangeCatPhoto(scene);
             // Room cards are showroom photography, not a snapshot of the
             // developer machine's current evening hour.  Keep the runtime
             // day/night system intact while baking every card at the same warm
@@ -197,9 +202,9 @@ public static class RoomPreviewCaptureBuilder
             for (int i = 0; i < sceneLights.Count; i++)
             {
                 Light light = sceneLights[i];
-                if (light != null && light.type == LightType.Directional)
+                if (light != null && light.type == LightType.Directional && light.name != "ReferenceSoftFill")
                 {
-                    light.intensity = outdoorShowroom ? 1.35f : 1.24f;
+                    light.intensity = outdoorShowroom ? 1.05f : 1.24f;
                     light.color = new Color32(255, 246, 216, 255);
                 }
             }
@@ -209,7 +214,7 @@ public static class RoomPreviewCaptureBuilder
             Light previewKey = previewKeyObject.GetComponent<Light>();
             previewKey.type = LightType.Point;
             previewKey.color = new Color32(255, 238, 201, 255);
-            previewKey.intensity = outdoorShowroom ? 2.4f : 3.2f;
+            previewKey.intensity = outdoorShowroom ? .7f : 3.2f;
             previewKey.range = 11f;
             previewKey.shadows = LightShadows.None;
 
@@ -219,7 +224,7 @@ public static class RoomPreviewCaptureBuilder
             Light previewFill = previewFillObject.GetComponent<Light>();
             previewFill.type = LightType.Point;
             previewFill.color = new Color32(151, 226, 255, 255);
-            previewFill.intensity = outdoorShowroom ? 1.2f : 1.45f;
+            previewFill.intensity = outdoorShowroom ? .35f : 1.45f;
             previewFill.range = 9f;
             previewFill.shadows = LightShadows.None;
             // Indoor rooms already carry the measured gameplay light rig.
@@ -245,6 +250,8 @@ public static class RoomPreviewCaptureBuilder
                 throw new InvalidOperationException("No camera in " + scenePath);
 
             RenderTexture previousTarget = camera.targetTexture;
+            Rect previousRect = camera.rect;
+            float previousFov = camera.fieldOfView;
             bool previousEnabled = camera.enabled;
             camera.enabled = true;
             var render = new RenderTexture(PreviewWidth, PreviewHeight, 24)
@@ -255,6 +262,8 @@ public static class RoomPreviewCaptureBuilder
             try
             {
                 camera.targetTexture = render;
+                camera.rect = new Rect(0,0,1,1);
+                camera.fieldOfView=HomeRoomCameraProfile.PreviewFieldOfView;
                 camera.Render();
                 RenderTexture previousActive = RenderTexture.active;
                 RenderTexture.active = render;
@@ -267,6 +276,8 @@ public static class RoomPreviewCaptureBuilder
             finally
             {
                 camera.targetTexture = previousTarget;
+                camera.rect = previousRect;
+                camera.fieldOfView = previousFov;
                 camera.enabled = previousEnabled;
                 if (texture != null)
                     UnityEngine.Object.DestroyImmediate(texture);
@@ -276,6 +287,8 @@ public static class RoomPreviewCaptureBuilder
         }
         finally
         {
+            restoreCatFinish?.Invoke();
+            restoreCatPhoto?.Invoke();
             for (int i = 0; i < revealed.Count; i++)
             {
                 if (revealed[i] != null)
@@ -330,6 +343,44 @@ public static class RoomPreviewCaptureBuilder
         return hidden;
     }
 
+    private static Action ApplyModernCatPhotoFinish(Scene scene)
+    {
+        var catalog = CatModernVisualCatalog.Load();
+        if (catalog == null) return null;
+        // Editor scene actors have not run the gameplay factory. Resolve the
+        // same shared assets just for this photo, without adding runtime stamps
+        // or persisting overrides into the authored room scene.
+        var states = scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            .Select(skin => Tuple.Create(skin, skin.sharedMesh, skin.sharedMaterials))
+            .ToArray();
+        Action restore = () =>
+        {
+            foreach (var state in states)
+            {
+                if (state.Item1 == null) continue;
+                state.Item1.sharedMesh = state.Item2;
+                state.Item1.sharedMaterials = state.Item3;
+            }
+        };
+        try
+        {
+            foreach (var state in states)
+            {
+                var modernMesh = catalog.Resolve(state.Item2);
+                if (modernMesh != state.Item2) state.Item1.sharedMesh = modernMesh;
+                var modernMaterials = state.Item3.Select(material => catalog.Resolve(material)).ToArray();
+                if (!modernMaterials.SequenceEqual(state.Item3)) state.Item1.sharedMaterials = modernMaterials;
+            }
+            return restore;
+        }
+        catch
+        {
+            restore();
+            throw;
+        }
+    }
+
     private static void RestoreForeignRoomScenes(List<GameObject> hidden)
     {
         for (int i = 0; i < hidden.Count; i++)
@@ -359,6 +410,7 @@ public static class RoomPreviewCaptureBuilder
                 root.GetComponentsInChildren<StoreProductDisplay>(true);
             for (int i = 0; i < displays.Length; i++)
             {
+                if(CatCollectionPolicy.IsCatItem(displays[i].ProductId))continue;
                 var serialized = new SerializedObject(displays[i]);
                 var visual = serialized.FindProperty("visualRoot").objectReferenceValue
                     as GameObject;
@@ -368,6 +420,40 @@ public static class RoomPreviewCaptureBuilder
                 revealed.Add(visual);
             }
         }
+    }
+
+    private static Action ArrangeCatPhoto(Scene scene)
+    {
+        if(scene.path!=HomeRoomService.LivingRoomScenePath)return null;
+        var products=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<HomeProductPlacement>(true))
+            .Where(p=>CatCollectionPolicy.IsCatItem(p.ProductId)).ToArray();
+        var states=new Dictionary<GameObject,bool>();var poses=new Dictionary<Transform,Tuple<Vector3,Quaternion>>();
+        foreach(var p in products)
+        {
+            poses[p.MovableRoot]=Tuple.Create(p.MovableRoot.position,p.MovableRoot.rotation);
+            foreach(var t in p.MovableRoot.GetComponentsInChildren<Transform>(true))states[t.gameObject]=t.gameObject.activeSelf;
+        }
+        Action restore=()=>{
+            foreach(var pair in poses)if(pair.Key!=null)pair.Key.SetPositionAndRotation(pair.Value.Item1,pair.Value.Item2);
+            foreach(var pair in states)if(pair.Key!=null)pair.Key.SetActive(pair.Value);
+            var layout=CatRoomArrangement.Request(scene);if(layout!=null)layout.Invalidate();
+        };
+        try
+        {
+            foreach(var p in products)p.MovableRoot.gameObject.SetActive(false);
+            string[] ids={HomeStoreService.ScratchPostId,HomeStoreService.PlayTunnelId,HomeStoreService.BallBasketId,HomeStoreService.ToyMouseId,HomeStoreService.NapPillowId};
+            var layout=CatRoomArrangement.Request(scene);layout.Invalidate();
+            if(!layout.TryPlan(ids,out var plan))throw new InvalidOperationException("No valid five-item room photo layout.");
+            foreach(var p in products)if(plan.TryGetValue(p.ProductId,out var pose))
+            {
+                p.MovableRoot.SetPositionAndRotation(pose.position,Quaternion.Euler(0,pose.yaw,0));p.MovableRoot.gameObject.SetActive(true);
+                var activity=p.GetComponent<CatActivity>();
+                var visual=new SerializedObject(activity).FindProperty("unlockedContent").objectReferenceValue as GameObject;
+                if(visual!=null)visual.SetActive(true);
+            }
+            return restore;
+        }
+        catch{restore();throw;}
     }
 
     private static Camera FindCamera(Scene scene)

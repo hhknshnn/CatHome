@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum CatActivityPose { Walk, Sit, Sleep, Eat, Drink, Paw, Scratch, Hop, Crawl, Groom, Stalk, Pounce, Sniff, BatLeft, BatRight, Push, Tug, Stretch }
+public enum CatActivityPose { Walk, Sit, Sleep, Eat, Drink, Paw, Scratch, Hop, Crawl, Groom, Stalk, Pounce, Sniff, BatLeft, BatRight, Push, Tug, Stretch, Loaf, Meow, StandUp, SitDown, GentleKnead }
 
 /// <summary>
 /// One animation owner for a scripted furniture routine. The shared controller
@@ -98,7 +98,8 @@ public sealed class CatActivityAnimation : MonoBehaviour
             if (forward.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(forward, up);
         }
         if (area != null && area.AlignAlongSurface)
-            visual.rotation = support.rotation * Quaternion.Euler(0f, 90f, 0f) * visualRotation;
+            visual.rotation = CatActivityFacing.AlongAxis(movement, support.position,
+                support.rotation * Quaternion.Euler(0f, 90f, 0f)) * visualRotation;
         if (sampledMesh == null) sampledMesh = new Mesh { name = "Cat contact sample" };
         // Account for the breed hierarchy's scale before transforming to world
         // space. The default overload expands this sample again under the 1.5x
@@ -190,9 +191,9 @@ public sealed class CatActivityAnimation : MonoBehaviour
             case CatActivityPose.Sleep: return "Sleep";
             case CatActivityPose.Eat: return "Eat";
             case CatActivityPose.Drink: return "Drink";
-            case CatActivityPose.Paw:
-            case CatActivityPose.Scratch: return "ActivityPawSwat";
-            case CatActivityPose.Hop: return "ActivityPounce";
+            case CatActivityPose.Paw: return "ActivityPawSwat";
+            case CatActivityPose.Scratch: return "ToyScratch";
+            case CatActivityPose.Hop: return "ToyPounce";
             case CatActivityPose.Crawl: return "ActivityTunnelCrawl";
             case CatActivityPose.Groom: return "ActivityScratch";
             case CatActivityPose.Stalk: return "ToyStalk";
@@ -203,6 +204,10 @@ public sealed class CatActivityAnimation : MonoBehaviour
             case CatActivityPose.Push: return "ToyPush";
             case CatActivityPose.Tug: return "ToyTug";
             case CatActivityPose.Stretch: return "ToyStretch";
+            case CatActivityPose.Loaf: return "CompanionLoaf";
+            case CatActivityPose.Meow: return "CompanionMeow";
+            case CatActivityPose.StandUp: return "CompanionStandUp";
+            case CatActivityPose.SitDown: return "CompanionSitDown";
             default: return "Idle";
         }
     }

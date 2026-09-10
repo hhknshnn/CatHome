@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -14,19 +15,31 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public sealed class HomeRoomShellTests
 {
-    private static readonly string[] RoomScenePaths =
-    {
-        HomeRoomService.LivingRoomScenePath,
-        HomeRoomService.BathroomScenePath,
-        HomeRoomService.KitchenScenePath,
-        HomeRoomService.BedroomScenePath,
-        HomeRoomService.GardenScenePath,
-        HomeRoomService.BalconyScenePath,
-        HomeRoomService.PatioScenePath,
-        HomeRoomService.SecondFloorScenePath
-    };
+    private static string[] RoomScenePaths => HomeRoomService.Rooms.Select(room => room.ScenePath).ToArray();
 
     private const float Tolerance = .001f;
+
+    [Test]
+    public void BalconyAndLoft_ForegroundArchitectureLeavesTheFrontViewOpen()
+    {
+        WithScene(HomeRoomService.BalconyScenePath, scene =>
+        {
+            var front = FindNamed(scene, "FrontRail");
+            Assert.That(front, Is.Not.Null);
+            Assert.That(front.gameObject.activeSelf, Is.True, "Only the rendering is cut away.");
+            Assert.That(front.GetComponentsInChildren<Renderer>().All(r => !r.enabled), Is.True);
+            foreach (string side in new[] { "LeftRail", "RightRail" })
+                Assert.That(FindNamed(scene, side).GetComponentsInChildren<Renderer>().All(r => r.enabled), Is.True, side);
+        });
+        WithScene(HomeRoomService.SecondFloorScenePath, scene =>
+        {
+            var ceiling = FindNamed(scene, "Loft Ceiling");
+            Assert.That(ceiling, Is.Not.Null);
+            foreach (Transform part in ceiling)
+                foreach (var renderer in part.GetComponentsInChildren<Renderer>())
+                    Assert.That(renderer.enabled, Is.EqualTo(part.name.StartsWith("Pendant", StringComparison.Ordinal)), part.name);
+        });
+    }
 
     [Test]
     public void EveryRoomScene_UsesTheCanonicalShellBox()
@@ -56,11 +69,8 @@ public sealed class HomeRoomShellTests
     }
 
     [Test]
-    public void EveryRoomScene_SharesTheLivingRoomCameraAndCatScale()
+    public void EveryRoomScene_KeepsItsApprovedCameraAndSharedCatScale()
     {
-        Vector3? cameraPosition = null;
-        Quaternion? cameraRotation = null;
-        float fieldOfView = 0f;
         Vector3? catPosition = null;
         Vector3? catScale = null;
 
@@ -72,26 +82,13 @@ public sealed class HomeRoomShellTests
                 Assert.That(camera, Is.Not.Null, $"'{path}' has no camera.");
                 Transform cat = FindNamed(scene, "CatRoot");
                 Assert.That(cat, Is.Not.Null, $"'{path}' has no CatRoot.");
-
-                if (cameraPosition == null)
-                {
-                    cameraPosition = camera.transform.position;
-                    cameraRotation = camera.transform.rotation;
-                    fieldOfView = camera.fieldOfView;
-                    catPosition = cat.position;
-                    catScale = cat.lossyScale;
-                    return;
-                }
-
-                AssertVector(camera.transform.position, cameraPosition.Value,
-                    $"'{path}' camera position");
-                Assert.That(
-                    Quaternion.Angle(camera.transform.rotation, cameraRotation.Value),
-                    Is.LessThan(.05f), $"'{path}' camera rotation differs.");
-                Assert.That(camera.fieldOfView, Is.EqualTo(fieldOfView).Within(Tolerance),
-                    $"'{path}' camera field of view differs.");
-                AssertVector(cat.position, catPosition.Value, $"'{path}' cat position");
-                AssertVector(cat.lossyScale, catScale.Value, $"'{path}' cat scale");
+                if(catScale==null){catPosition=cat.position;catScale=cat.lossyScale;}
+                AssertVector(cat.position,catPosition.Value,$"'{path}' cat position");
+                AssertVector(cat.lossyScale,catScale.Value,$"'{path}' cat scale");
+                Assert.That(camera.GetComponent<HomeWorldViewport>(),Is.Not.Null,"Every home camera reserves the navigation strip.");
+                AssertVector(camera.transform.position,HomeRoomCameraProfile.Position,$"'{path}' front-centred camera");
+                Assert.That(Quaternion.Angle(camera.transform.rotation,Quaternion.Euler(HomeRoomCameraProfile.Angles)),Is.LessThan(.05f),path);
+                Assert.That(camera.fieldOfView,Is.EqualTo(HomeRoomCameraProfile.FieldOfView).Within(Tolerance),path);
             });
         }
     }

@@ -72,7 +72,7 @@ public sealed class BedroomActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 45f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         Assert.That(activity.IsRunning, Is.False, activity.Kind + " must finish on its own.");
@@ -147,6 +147,7 @@ public sealed class BedroomActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (knock.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(knock);
             lowestY = Mathf.Min(lowestY, glass.localPosition.y);
             maxTilt = Mathf.Max(maxTilt, Quaternion.Angle(homeRotation, glass.localRotation));
             yield return null;

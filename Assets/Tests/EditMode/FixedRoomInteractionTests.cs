@@ -94,6 +94,12 @@ public sealed class FixedRoomInteractionTests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Art/StoreProducts/Prefabs/" + definition.PrefabName + ".prefab");
             var activity = prefab.GetComponent<CatActivity>();
+            if(definition.ProductId==HomeStoreService.GameConsoleId||definition.ProductId==HomeStoreService.StereoId||definition.ProductId==HomeStoreService.TvUnitId)
+            {
+                Assert.That(activity,Is.Null,"This purchased product is decor, with no cat action.");
+                Assert.That(prefab.GetComponent<StoreProductDisplay>(),Is.Not.Null,"Ownership must still control decor visibility.");
+                ids.Add(definition.ProductId);continue;
+            }
             Assert.That(activity, Is.Not.Null, definition.ProductId);
             Assert.That(prefab.GetComponent<RoomProductFeedback>(), Is.Not.Null, definition.ProductId);
             Assert.That(activity.StoreProductId, Is.EqualTo(definition.ProductId));

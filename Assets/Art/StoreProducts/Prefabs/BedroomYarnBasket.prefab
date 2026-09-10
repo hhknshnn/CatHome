@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6623138140045113844}
   - component: {fileID: 2074076379715052522}
   - component: {fileID: 3221540674292002503}
+  - component: {fileID: 4460473569685737602}
   m_Layer: 0
   m_Name: BedroomYarnBasket
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MonoBehaviour:
   productId: bedroom.yarn-basket
   movableRoot: {fileID: 8386187372734640966}
   legacySlots: []
-  footprintSize: {x: 0.72, y: 0.72}
+  footprintSize: {x: 0.59040004, y: 0.59040004}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -106,6 +107,37 @@ MonoBehaviour:
   reactionKind: 2
   lookDuration: 2.6
   completeMessage: GOT THE YARN!
+  visibleLookTargets:
+  - {x: -0.10832815, y: 0.30816942, z: -0.11639475}
+  - {x: 0.117387064, y: 0.29132286, z: 0.23760855}
+  - {x: 0.25594407, y: 0.29132283, z: -0.06877636}
+  - {x: -0.2101419, y: 0.29132283, z: 0.16148667}
+  - {x: 0.08981788, y: 0.2992332, z: -0.22861965}
+  - {x: 0.052826554, y: 0.29806113, z: 0.04818353}
+  - {x: -0.26278105, y: 0.29132283, z: -0.034404423}
+  - {x: -0.034404483, y: 0.29132286, z: 0.26278105}
+  - {x: 0.22961201, y: 0.29132283, z: 0.13234757}
+  - {x: -0.06877636, y: 0.2913228, z: -0.25594407}
+  - {x: 0.01519081, y: 0.29919267, z: -0.1267407}
+  - {x: -0.15621103, y: 0.2979068, z: 0.02119028}
+  - {x: -0.22961204, y: 0.2913228, z: -0.13234757}
+  - {x: 0.2101419, y: 0.2913228, z: -0.16148667}
+  - {x: 0.26278105, y: 0.29132283, z: 0.034404453}
+  - {x: -0.16148661, y: 0.2913228, z: -0.21014196}
+  - {x: -0.13234752, y: 0.29132283, z: 0.22961205}
+  - {x: 0.14844848, y: 0.30816942, z: 0.086591445}
+  - {x: -0.25708982, y: 0.29132283, z: 0.08752369}
+  - {x: 0.15001954, y: 0.29985997, z: -0.20624948}
+  - {x: 0.021615466, y: 0.2984914, z: 0.10179659}
+  - {x: 0.0687764, y: 0.29132286, z: 0.25594404}
+  - {x: -0.1207977, y: 0.29892167, z: -0.07031203}
+  - {x: -0.02513218, y: 0.29966143, z: -0.1516266}
+  - {x: 0.13467933, y: 0.29916772, z: 0.04862791}
+  - {x: 0.062490337, y: 0.30816942, z: -0.21835992}
+  - {x: 0.11529767, y: 0.30816942, z: -0.22794667}
+  - {x: -0.105596446, y: 0.29701793, z: -0.13202588}
+  - {x: 0.004080996, y: 0.30816942, z: -0.13336147}
+  - {x: -0.01430218, y: 0.30816942, z: -0.14442895}
 --- !u!114 &3221540674292002503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +150,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &4460473569685737602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3692585346780155083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.82
 --- !u!1 &4754139081414540702
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,7 +188,7 @@ Transform:
   m_GameObject: {fileID: 4754139081414540702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.14163935, y: 0.37581638, z: -0.21718033}
+  m_LocalPosition: {x: 0.11614427, y: 0.30816942, z: -0.17808786}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -174,7 +219,7 @@ Transform:
   m_GameObject: {fileID: 7344226407662457135}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.14163935, y: 0, z: -0.78}
+  m_LocalPosition: {x: 0.11614427, y: 0, z: -0.6396}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -207,7 +252,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.82, y: 0.82, z: 0.82}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7790350214713890672}
@@ -297,27 +342,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4063e0e89760d1945a7e18aea92d5f3f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 26e2070c5e0e1bd449c5f5d1a63b180f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 58c80ba0b446fad42a302244a6098c52, type: 2}
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 63876a9ca83454543811ddb5f4af0515, type: 2}
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2265460983ad51345a3446ab10229283, type: 2}
     - target: {fileID: -7511558181221131132, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 62a13641c06873d4196c4d819e65a916, type: 2}
     - target: {fileID: 919132149155446097, guid: 08ac1319e8205b047b6e3915da8b7108, type: 3}
       propertyPath: m_Name
       value: BedroomYarnBasket_PremiumModel

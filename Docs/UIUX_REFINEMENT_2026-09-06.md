@@ -1,5 +1,9 @@
 # UI/UX ikinci kalite geçişi — 6 Eylül 2026
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 Bu tarihsel geçişin ardından [referansa uyum uygulaması](UIUX_REFERENCE_MATCH_2026-09-06.md) geldi. Güncel yüzey, font ağırlığı, simgeler ve HD karşılaştırma orada kayıtlıdır.
 
 Kullanıcının gerçek oyun görüntülerinde bildirdiği geri dönüş ekranı kilidi giderildi. Önceki uygulamanın referansla arasındaki tipografi, yüzey ve yerleşim farkları ortak sistemde iyileştirildi.

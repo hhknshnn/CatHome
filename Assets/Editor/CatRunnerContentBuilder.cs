@@ -463,6 +463,7 @@ public static class CatRunnerContentBuilder
             uiExtras.PauseCard,
             uiExtras.TutorialCard);
 
+        MiniGameArtBuilder.Runner(root.transform);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene, RunnerScenePath);
     }
@@ -546,8 +547,8 @@ public static class CatRunnerContentBuilder
         ColorAdjustments color = GetOrAddVolumeComponent<ColorAdjustments>(profile);
         color.active = true;
         color.postExposure.Override(-0.18f);
-        color.contrast.Override(22f);
-        color.saturation.Override(24f);
+        color.contrast.Override(14f);
+        color.saturation.Override(10f);
 
         Vignette vignette = GetOrAddVolumeComponent<Vignette>(profile);
         vignette.active = true;
@@ -656,13 +657,13 @@ public static class CatRunnerContentBuilder
             GetOrCreateMaterial("RunnerAccentTeal", new Color32(37, 204, 181, 255))
         };
         Material goldMaterial = GetOrCreateGlowMaterial(
-            "RunnerCoinGold", new Color32(255, 196, 42, 255), true, 2.05f);
+            "RunnerCoinGold", new Color32(231, 183, 87, 255), true, .10f);
         Material coinCore = GetOrCreateGlowMaterial(
-            "RunnerCoinCore", new Color32(255, 238, 111, 255), true, 2.35f);
+            "RunnerCoinCore", new Color32(248, 219, 152, 255), true, .08f);
         Material coinPaw = GetOrCreateGlowMaterial(
-            "RunnerCoinPaw", new Color32(255, 118, 36, 255), true, 1.7f);
+            "RunnerCoinPaw", new Color32(255, 239, 190, 255), true, .13f);
         Material coinRim = GetOrCreateMaterial(
-            "RunnerCoinRim", new Color32(119, 65, 63, 255), true);
+            "RunnerCoinRim", new Color32(130, 86, 41, 255), true);
         Material orangeMaterial = accentThemes[0];
         Material tealMaterial = accentThemes[2];
         Material purpleMaterial = accentThemes[1];
@@ -1203,7 +1204,7 @@ public static class CatRunnerContentBuilder
         return root;
     }
 
-    private static void BuildHazardTelegraph(
+    public static void BuildHazardTelegraph(
         GameObject template,
         Material warningMaterial)
     {

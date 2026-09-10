@@ -54,12 +54,25 @@ public sealed class GamesHubPanel : MonoBehaviour
 
     private void Update()
     {
+        // Fallback when a return had to reload GameScene instead of revealing
+        // the already loaded home. Normal additive returns restore immediately.
+        if (!HomeUiFlow.IsMiniGameVisible)
+            CatRunnerSessionContext.RestoreRequestedNavigation();
         if (!open)
             return;
         RefreshLives();
     }
 
     public void Show()
+    {
+        if (HomeUiFlow.IsMiniGameVisible)
+            return;
+        ShowCore();
+    }
+
+    internal void ShowFromMiniGameReturn() => ShowCore();
+
+    private void ShowCore()
     {
         open = true;
         movement=FindAnyObjectByType<CatMovement>();if(movement!=null)movement.AcquireInputBlock(this);
@@ -92,6 +105,8 @@ public sealed class GamesHubPanel : MonoBehaviour
 
     private void PlayRunner()
     {
+        if (!open || HomeUiFlow.IsMiniGameVisible)
+            return;
         HideImmediate();
         if (runnerLauncher != null)
             runnerLauncher.Launch();
@@ -99,6 +114,8 @@ public sealed class GamesHubPanel : MonoBehaviour
 
     private void PlayCatch()
     {
+        if (!open || HomeUiFlow.IsMiniGameVisible)
+            return;
         HideImmediate();
         if (catchLauncher != null)
             catchLauncher.Launch();
@@ -106,6 +123,8 @@ public sealed class GamesHubPanel : MonoBehaviour
 
     private void ShowLeaderboards()
     {
+        if (!open || HomeUiFlow.IsMiniGameVisible)
+            return;
         HideImmediate();
         if (leaderboardPanel != null)
             leaderboardPanel.Show();

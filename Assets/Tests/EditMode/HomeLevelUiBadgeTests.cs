@@ -69,18 +69,27 @@ public sealed class HomeLevelUiBadgeTests
             Assert.That(roomLabel.textWrappingMode, Is.EqualTo(TextWrappingModes.NoWrap));
             Assert.That(roomLabel.alignment, Is.EqualTo(TextAlignmentOptions.Center));
             Assert.That(roomLabel.fontSizeMin, Is.GreaterThanOrEqualTo(18f));
-            Assert.That(roomLabel.fontSizeMax, Is.GreaterThanOrEqualTo(26f), "The reference dock uses readable action-size room labels.");
+            Assert.That(roomLabel.fontSizeMax, Is.GreaterThanOrEqualTo(22f), "The approved 80-pixel navigation strip keeps a readable room label.");
 
             string oldText=roomLabel.text;
-            try { foreach (HomeRoomDefinition room in HomeRoomService.Rooms)
+            try
             {
-                roomLabel.text = room.DisplayName;
-                roomLabel.ForceMeshUpdate();
-                Assert.That(roomLabel.isTextOverflowing, Is.False,
-                    room.DisplayName + " must fit inside the middle dock capsule.");
-                Assert.That(roomLabel.textInfo.lineCount, Is.EqualTo(1),
-                    room.DisplayName + " must stay on one line.");
-            } } finally {roomLabel.text=oldText;}
+                foreach (var language in new[] { GameLanguage.Turkish, GameLanguage.English })
+                using (new TestLanguageScope(language))
+                foreach (HomeRoomDefinition room in HomeRoomService.Rooms)
+                {
+                    int total=HomeStoreService.GetRoomCollection(room.Id).Count;
+                    roomLabel.text = room.DisplayName + "  ·  " + total + "/" + total;
+                    roomLabel.ForceMeshUpdate();
+                    Assert.That(roomLabel.isTextOverflowing, Is.False,
+                        roomLabel.text + " must fit inside its dock slot.");
+                    Assert.That(roomLabel.textInfo.lineCount, Is.EqualTo(1),
+                        roomLabel.text + " must stay on one line.");
+                    Assert.That(roomLabel.fontSize, Is.GreaterThanOrEqualTo(18f),
+                        roomLabel.text + " must remain readable with its collection count.");
+                }
+            }
+            finally {roomLabel.text=oldText;}
         }
         finally
         {

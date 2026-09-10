@@ -81,6 +81,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &819094363194082933
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,11 +146,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -339,6 +342,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &1101706493543789934
 GameObject:
   m_ObjectHideFlags: 0
@@ -476,11 +482,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -578,27 +584,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.89509803, g: 0.9436275, b: 0.9832353, a: 1}
+  m_Color: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 22
-  bevelWidth: 6
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 14
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 1, b: 1, a: 1}
-  gradientBottom: {r: 0.89509803, g: 0.9436275, b: 0.9832353, a: 1}
+  gradientTop: {r: 0.9472941, g: 0.96988237, b: 1, a: 1}
+  gradientBottom: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
-  softElevation: 1
-  referenceFinish: 1
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!114 &7892256079519502175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,27 +775,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6695098, g: 0.86715686, b: 0.9411765, a: 1}
+  m_Color: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 40
-  bevelWidth: 10
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 22
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.84847057, g: 0.97835296, b: 0.9422745, a: 1}
-  gradientBottom: {r: 0.6695098, g: 0.86715686, b: 0.9411765, a: 1}
+  gradientTop: {r: 0.9799216, g: 0.98745096, b: 1, a: 1}
+  gradientBottom: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &1480468285191046575
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,6 +879,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &1602250797139939561
 GameObject:
   m_ObjectHideFlags: 0
@@ -925,27 +940,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.8476112, b: 0.78273284, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.78108925, b: 0.7024353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &1682214946266711885
 GameObject:
   m_ObjectHideFlags: 0
@@ -1008,11 +1026,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -1129,6 +1147,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &1997878502984771433
 GameObject:
   m_ObjectHideFlags: 0
@@ -1204,7 +1225,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.4117647, g: 0.3372549, b: 0.45490196, a: 1}
+  m_fontColor: {r: 0.3254902, g: 0.40392157, b: 0.49019608, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1341,7 +1362,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1612,27 +1633,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9792157, g: 0.86715686, b: 0.91058826, a: 1}
+  m_Color: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 7
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 14
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.96031374, b: 0.8376471, a: 1}
-  gradientBottom: {r: 0.9792157, g: 0.86715686, b: 0.91058826, a: 1}
+  gradientTop: {r: 0.9472941, g: 0.96988237, b: 1, a: 1}
+  gradientBottom: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
-  softElevation: 1
-  referenceFinish: 1
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2326524751650377701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,7 +1732,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.3254902, g: 0.40392157, b: 0.49019608, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1849,6 +1873,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2426319224559941294
 GameObject:
   m_ObjectHideFlags: 0
@@ -1907,27 +1934,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.7978208, b: 0.7193632, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.71673924, b: 0.6205353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &2513639899277860737
 GameObject:
   m_ObjectHideFlags: 0
@@ -2008,6 +2038,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2560362650839118046
 GameObject:
   m_ObjectHideFlags: 0
@@ -2067,27 +2100,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9143686, g: 0.8075098, b: 0.86409414, a: 1}
+  m_Color: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 22
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 14
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.9142055, b: 0.9437898, a: 1}
-  gradientBottom: {r: 0.9143686, g: 0.8075098, b: 0.86409414, a: 1}
+  gradientTop: {r: 0.9472941, g: 0.96988237, b: 1, a: 1}
+  gradientBottom: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
-  softElevation: 1
-  referenceFinish: 1
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2610826364570787562
 GameObject:
   m_ObjectHideFlags: 0
@@ -2167,6 +2203,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2658271007534785517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2225,27 +2264,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.856664, b: 0.73746884, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.7927892, b: 0.6439353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &2790746416470181892
 GameObject:
   m_ObjectHideFlags: 0
@@ -2321,7 +2363,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2458,7 +2500,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.4117647, g: 0.3372549, b: 0.45490196, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2582,11 +2624,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -2758,6 +2800,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &2968166112137314879
 GameObject:
   m_ObjectHideFlags: 0
@@ -2838,6 +2883,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &3147428109348118072
 GameObject:
   m_ObjectHideFlags: 0
@@ -2896,27 +2944,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.7797152, b: 0.796312, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.6933392, b: 0.71998525, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &3225015895375770132
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,7 +3043,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3280,27 +3331,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.7857503, g: 0.87929606, b: 0.8098912, a: 1}
-  gradientBottom: {r: 0.7023156, g: 0.82203925, b: 0.7375353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &3479988230705338933
 GameObject:
   m_ObjectHideFlags: 0
@@ -3380,6 +3434,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &3496676405311898090
 GameObject:
   m_ObjectHideFlags: 0
@@ -3441,11 +3498,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -3562,6 +3619,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &3673711972378013032
 GameObject:
   m_ObjectHideFlags: 0
@@ -3620,27 +3680,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8853312, g: 0.87929606, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.8310157, g: 0.82203925, b: 0.8194353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &3878327069038052381
 GameObject:
   m_ObjectHideFlags: 0
@@ -3703,11 +3766,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -3824,6 +3887,9 @@ MonoBehaviour:
   innerGlowStrength: 0
   softElevation: 0
   referenceFinish: 0
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &4694251495003098616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3903,6 +3969,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &4697476486949352660
 GameObject:
   m_ObjectHideFlags: 0
@@ -4098,7 +4167,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.4117647, g: 0.3372549, b: 0.45490196, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4239,6 +4308,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &5206019554984428721
 GameObject:
   m_ObjectHideFlags: 0
@@ -4297,27 +4369,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.8219616, g: 0.78876805, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.7491157, g: 0.70503926, b: 0.8194353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &5271729353285058029
 GameObject:
   m_ObjectHideFlags: 0
@@ -4384,27 +4459,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
+  m_Color: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 72
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 22
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
+  gradientTop: {r: 0.9799216, g: 0.98745096, b: 1, a: 1}
+  gradientBottom: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &5298381731669718422
 GameObject:
   m_ObjectHideFlags: 0
@@ -4463,27 +4541,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
+  m_Color: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 16
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.7766976, g: 0.834032, b: 0.8732608, a: 1}
-  gradientBottom: {r: 0.69061565, g: 0.7635392, b: 0.8194353, a: 1}
+  gradientTop: {r: 0.27450982, g: 0.6, b: 1, a: 1}
+  gradientBottom: {r: 0.15294118, g: 0.4745098, b: 0.9607843, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 1
+  playfulAction: 1
 --- !u!1 &5402582045897229661
 GameObject:
   m_ObjectHideFlags: 0
@@ -4559,7 +4640,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4713,27 +4794,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8109804, g: 0.95509803, b: 0.90294117, a: 1}
+  m_Color: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 44
-  bevelWidth: 14
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 28
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.9422745, b: 0.76909804, a: 1}
-  gradientBottom: {r: 0.8109804, g: 0.95509803, b: 0.90294117, a: 1}
+  gradientTop: {r: 0.9799216, g: 0.98745096, b: 1, a: 1}
+  gradientBottom: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &5806603474679687637
 GameObject:
   m_ObjectHideFlags: 0
@@ -4792,27 +4876,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
+  m_Color: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 68
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 22
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.90253156, g: 0.7878628, b: 0.807628, a: 1}
-  gradientBottom: {r: 0.7984762, g: 0.6572852, b: 0.7021944, a: 1}
+  gradientTop: {r: 0.9799216, g: 0.98745096, b: 1, a: 1}
+  gradientBottom: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
   softElevation: 1
-  referenceFinish: 1
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &5913027259800254674
 GameObject:
   m_ObjectHideFlags: 0
@@ -4947,27 +5034,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.94480395, g: 0.32039216, b: 0.555, a: 1}
+  m_Color: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 31
-  bevelWidth: 8
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 14.88
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.5345882, b: 0.40831372, a: 1}
-  gradientBottom: {r: 0.94480395, g: 0.32039216, b: 0.555, a: 1}
+  gradientTop: {r: 0.96862745, g: 0.98039216, b: 1, a: 1}
+  gradientBottom: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.055
-  innerGlowStrength: 0.025
-  softElevation: 1
-  referenceFinish: 1
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &6113363191990628474
 GameObject:
   m_ObjectHideFlags: 0
@@ -5030,11 +5120,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -5147,7 +5237,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5268,27 +5358,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::LowPolyPanelGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
+  m_Color: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 26
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 14
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 0.9733741, g: 0.4911498, b: 0.6686557, a: 1}
-  gradientBottom: {r: 0.8827098, g: 0.30448627, b: 0.536953, a: 1}
+  gradientTop: {r: 0.9472941, g: 0.96988237, b: 1, a: 1}
+  gradientBottom: {r: 0.91764706, g: 0.9529412, b: 1, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
-  candyGlossStrength: 0.065
-  innerGlowStrength: 0.025
-  softElevation: 1
-  referenceFinish: 1
+  cornerSegments: 12
+  candyGlossStrength: 0
+  innerGlowStrength: 0
+  softElevation: 0
+  referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &6485414023632722727
 GameObject:
   m_ObjectHideFlags: 0
@@ -5351,11 +5444,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -5472,6 +5565,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &7102931221575472705
 GameObject:
   m_ObjectHideFlags: 0
@@ -5537,20 +5633,23 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 44
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 26
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.85799533, b: 0.4260643, a: 1}
+  gradientTop: {r: 0.9451959, g: 0.8340317, b: 0.5190438, a: 1}
   gradientBottom: {r: 0.9143686, g: 0.74067456, b: 0.24850589, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
+  cornerSegments: 12
   candyGlossStrength: 0
   innerGlowStrength: 0
-  softElevation: 0
+  softElevation: 1
   referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &7205398265168485745
 GameObject:
   m_ObjectHideFlags: 0
@@ -5626,7 +5725,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.4117647, g: 0.3372549, b: 0.45490196, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5842,6 +5941,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &7426483532947590257
 GameObject:
   m_ObjectHideFlags: 0
@@ -5921,6 +6023,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &7648567910609777582
 GameObject:
   m_ObjectHideFlags: 0
@@ -6048,7 +6153,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6244,6 +6349,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &7938871876373219935
 GameObject:
   m_ObjectHideFlags: 0
@@ -6306,11 +6414,11 @@ MonoBehaviour:
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_PressedColor: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_DisabledColor: {r: 0.55, g: 0.58, b: 0.64, a: 0.78}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
-    m_FadeDuration: 0.06
+    m_FadeDuration: 0.08
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
     m_PressedSprite: {fileID: 0}
@@ -6429,6 +6537,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8204897755672991228
 GameObject:
   m_ObjectHideFlags: 0
@@ -6546,20 +6657,23 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  cornerCut: 44
-  bevelWidth: 4.5
-  topLeftHighlight: {r: 1, g: 1, b: 1, a: 0.8235294}
-  bottomRightShadow: {r: 0.2509804, g: 0.11764706, b: 0.35686275, a: 0.7372549}
-  warmFacet: {r: 1, g: 0.76862746, b: 0.88235295, a: 0.24313726}
+  cornerCut: 26
+  bevelWidth: 1
+  topLeftHighlight: {r: 0, g: 0, b: 0, a: 0}
+  bottomRightShadow: {r: 0, g: 0, b: 0, a: 0}
+  warmFacet: {r: 0, g: 0, b: 0, a: 0}
   useVerticalGradient: 1
-  gradientTop: {r: 1, g: 0.61836237, b: 0.51481724, a: 1}
+  gradientTop: {r: 0.92036283, g: 0.49384293, b: 0.39925283, a: 1}
   gradientBottom: {r: 0.9143686, g: 0.4557451, b: 0.35403532, a: 1}
   useRoundedCorners: 1
-  cornerSegments: 18
+  cornerSegments: 12
   candyGlossStrength: 0
   innerGlowStrength: 0
-  softElevation: 0
+  softElevation: 1
   referenceFinish: 0
+  modernFinish: 1
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8339405802908681214
 GameObject:
   m_ObjectHideFlags: 0
@@ -6639,6 +6753,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8384475596543169814
 GameObject:
   m_ObjectHideFlags: 0
@@ -6793,6 +6910,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8580373485386686898
 GameObject:
   m_ObjectHideFlags: 0
@@ -6872,6 +6992,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8630633169237067265
 GameObject:
   m_ObjectHideFlags: 0
@@ -6947,7 +7070,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.09019608, g: 0.15686275, b: 0.25490198, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7088,6 +7211,9 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0
 --- !u!1 &8840792223709528812
 GameObject:
   m_ObjectHideFlags: 0
@@ -7163,7 +7289,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.19607843, g: 0.13725491, b: 0.26666668, a: 1}
+  m_fontColor: {r: 0.3254902, g: 0.40392157, b: 0.49019608, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7304,3 +7430,6 @@ MonoBehaviour:
   innerGlowStrength: 0.025
   softElevation: 1
   referenceFinish: 1
+  modernFinish: 0
+  modernAction: 0
+  playfulAction: 0

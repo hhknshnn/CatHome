@@ -9,7 +9,7 @@ public static class PremiumHdVisualBuilder
 {
     public static string BuildSilently()
     {
-        ConfigurePipeline("Mobile", 2048, 2);
+        ConfigurePipeline("Mobile", 1024, 1);
         ConfigurePipeline("PC", 4096, 4);
         var quality = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/QualitySettings.asset")[0]);
         var levels = quality.FindProperty("m_QualitySettings");
@@ -50,16 +50,29 @@ public static class PremiumHdVisualBuilder
         }
         if (active.IsValid() && active.isLoaded) SceneManager.SetActiveScene(active);
         AssetDatabase.SaveAssets();
-        return "Native resolution, 4x MSAA, high SMAA, soft shadows; " + cameras + " room/game cameras configured.";
+        return "PC HD and bounded mobile quality; " + cameras + " room/game cameras configured.";
     }
     private static void ConfigurePipeline(string name, int shadowSize, int cascades)
     {
         var asset = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/Settings/" + name + "_RPAsset.asset");
-        asset.renderScale = 1f; asset.msaaSampleCount = 4; asset.supportsHDR = true;
+        bool mobile=name=="Mobile";
+        asset.renderScale = mobile ? .85f : 1f; asset.msaaSampleCount = mobile ? 2 : 4; asset.supportsHDR = true;
+        if(mobile)asset.shadowDistance=16f;
         asset.mainLightShadowmapResolution = shadowSize; asset.shadowCascadeCount = cascades;
         var serialized = new SerializedObject(asset);
         serialized.FindProperty("m_SoftShadowsSupported").boolValue = true;
         serialized.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(asset);
+        if(mobile)
+        {
+            var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>("Assets/Settings/Mobile_Renderer.asset");
+            foreach(var feature in renderer.rendererFeatures)
+            {
+                if(feature==null||feature.name!="ScreenSpaceAmbientOcclusion")continue;
+                var settings=new SerializedObject(feature);
+                settings.FindProperty("m_Settings.Downsample").boolValue=true;
+                settings.ApplyModifiedPropertiesWithoutUndo();EditorUtility.SetDirty(feature);
+            }
+        }
     }
 }

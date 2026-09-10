@@ -32,6 +32,7 @@ public sealed class CartNudgeActivity : CatActivity
     public float RollDistance => Mathf.Max(0.02f, rollDistance);
     public int ShoveCount => Mathf.Max(1, shoveCount);
     public Transform CartVisual => cartVisual;
+    public Vector3 WorldRollDirection => transform.TransformDirection(rollDirection.sqrMagnitude > .0001f ? rollDirection.normalized : Vector3.right).normalized;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -70,14 +71,20 @@ public sealed class CartNudgeActivity : CatActivity
         Quaternion toShove = LookTowards(shove - start, startRotation);
         yield return Move(start, shove, startRotation, toShove, 0.34f);
 
-        Vector3 roll = rollDirection.sqrMagnitude > 0.0001f
-            ? rollDirection.normalized
-            : Vector3.right;
+        Vector3 roll = WorldRollDirection;
+        Vector3 localRoll = cartVisual.parent != null ? cartVisual.parent.InverseTransformDirection(roll) : roll;
         Quaternion facing = LookTowards(roll, toShove);
         yield return Move(shove, shove, toShove, facing, 0.20f);
 
+        Quaternion watching = CatActivityFacing.Resolve(Cat, shove, facing);
         for (int i = 0; i < ShoveCount; i++)
         {
+            // Re-aim at the real cart only for the next physical push.
+            if (Quaternion.Angle(Cat.transform.rotation, facing) > .1f)
+            {
+                PlayCatPose(CatActivityPose.Sniff);
+                yield return CatActivityFacing.Turn(Cat, facing, .20f);
+            }
             // Paw reaches out; the cart runs ahead of it and coasts back.
             float push = 0f;
             PlayCatPose(CatActivityPose.Paw);
@@ -88,27 +95,29 @@ public sealed class CartNudgeActivity : CatActivity
                 float reach = Mathf.Sin(t * Mathf.PI);
                 Cat.transform.position = shove + roll * (reach * 0.070f);
                 Cat.transform.rotation = facing * Quaternion.Euler(-reach * 15f, 0f, 0f);
-                cartVisual.localPosition = visualHome + roll * (reach * RollDistance);
+                cartVisual.localPosition = visualHome + localRoll * (reach * RollDistance);
                 yield return null;
             }
 
             // Coast: the cart keeps going a little, then settles back.
             float coast = 0f;
+            PlayCatPose(CatActivityPose.Sniff);
+            yield return CatActivityFacing.Turn(Cat, watching, .20f);
             PlayCatPose(CatActivityPose.Sit);
             while (coast < 0.55f)
             {
                 coast += Time.deltaTime;
                 float t = Mathf.Clamp01(coast / 0.55f);
                 float damped = Mathf.Cos(t * Mathf.PI * 2.2f) * (1f - t) * 0.34f;
-                cartVisual.localPosition = visualHome + roll * (damped * RollDistance);
+                cartVisual.localPosition = visualHome + localRoll * (damped * RollDistance);
                 Cat.transform.position = shove;
-                Cat.transform.rotation = facing;
+                Cat.transform.rotation = watching;
                 yield return null;
             }
         }
 
         cartVisual.localPosition = visualHome;
-        Quaternion away = LookTowards(start - shove, facing);
+        Quaternion away = CatActivityFacing.Resolve(Cat, shove, LookTowards(start - shove, facing));
         yield return Move(shove, shove, facing, away, 0.22f);
 
         RestoreCat();
@@ -118,19 +127,37 @@ public sealed class CartNudgeActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
+        Vector3 direction = to - from; direction.y = 0f;
+        if (direction.sqrMagnitude < .000001f)
+        {
+            // An already reached entry is not an extra stationary work beat.
+            if (Quaternion.Angle(Cat.transform.rotation, toRotation) <= .1f) yield break;
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
+            yield break;
+        }
+
+        // Turn on the spot first. Interpolating a travel position while still
+        // facing the previous action made the return leg slide backwards.
+        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
+        PlayCatPose(CatActivityPose.GentleKnead);
+        yield return CatActivityFacing.Turn(Cat, travel, .16f);
         PlayCatPose(CatActivityPose.Walk);
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
+            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
             yield return null;
         }
 
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        Cat.transform.SetPositionAndRotation(to, travel);
+        if (Quaternion.Angle(travel, toRotation) > .1f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
+        }
     }
 
     private void RestoreCat()
@@ -159,11 +186,13 @@ public sealed class CartNudgeActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

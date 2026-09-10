@@ -22,33 +22,33 @@ public static class StoreCatalogAssets
             new Vector3(-2.82f, 0f, 1.58f)),
         Custom(HomeStoreService.ToyMouseId, "ToyMouse", new Vector2(.44f, .78f), .34f,
             new Vector3(-1.82f, 0f, -2.08f)),
-        Custom(HomeStoreService.PlayTunnelId, "PlayTunnel", new Vector2(.58f, .9f), .60f,
+        Custom(HomeStoreService.PlayTunnelId, "PlayTunnel", new Vector2(.58f, .76f), .60f,
             new Vector3(2.55f, 0f, -.55f)),
         RoomAt(HomeStoreService.TvUnitId, "TvUnit", "Nightstand_1.prefab",
-            new Vector2(1.82f, .58f), .58f, 4f, new Vector3(-3.34f, 0f, -.42f),
+            new Vector2(2.20f, .54f), .53f, 4f, new Vector3(-3.30f, 0f, -.60f),
             90f, HomeProductPlacementKind.WallEdge),
         RoomAt(HomeStoreService.ModernTelevisionId, "ModernTelevision", "TV_Modern.prefab",
-            new Vector2(1.52f, .18f), 1.02f, 4f, new Vector3(-3.34f, 0f, -.42f),
+            new Vector2(1.35f, .16f), .91f, 4f, new Vector3(-3.30f, 0f, -.60f),
             90f, HomeProductPlacementKind.ProductSurfaceOnly),
         Generated(HomeStoreService.GameConsoleId, "GameConsoleSet",
-            new Vector2(.58f, .48f), .45f, new Vector3(2.45f, 0f, -2.15f),
-            0f, HomeProductPlacementKind.Floor),
+            new Vector2(.46f, .32f), .30f, new Vector3(-3.30f, 0f, -.60f),
+            90f, HomeProductPlacementKind.Floor),
         RoomAt(HomeStoreService.FloorLampId, "FloorLamp", "Lamp_Tall.prefab",
-            new Vector2(.7f, .7f), 1.85f, 3f, new Vector3(3.28f, 0f, -2.02f)),
+            new Vector2(.52f, .52f), 1.40f, 3f, new Vector3(2.65f, 0f, 2.24f)),
         Custom(HomeStoreService.SideTableId, "SideTable", new Vector2(1.02f, 1.02f), .78f,
             new Vector3(2.92f, 0f, 1.18f)),
 
         RoomAt(HomeStoreService.BookshelfId, "TallBookshelf", "Bookshelf_Tall.prefab",
-            new Vector2(1.6f, .62f), 1.85f, 2.5f, new Vector3(-3.25f, 0f, 1.05f),
-            90f, HomeProductPlacementKind.WallEdge),
+            new Vector2(1.30f, .52f), 1.49f, 2.5f, LivingRoomReferenceLayout.BookshelfPosition,
+            180f, HomeProductPlacementKind.WallEdge),
         Generated(HomeStoreService.BookSetId, "ColorfulBookSet",
-            new Vector2(.25f, .25f), .32f, new Vector3(-3.25f, 0f, 1.05f),
-            90f, HomeProductPlacementKind.BookshelfOnly),
+            new Vector2(.20f, .20f), .26f, LivingRoomReferenceLayout.BookshelfPosition,
+            180f, HomeProductPlacementKind.BookshelfOnly),
         RoomAt(HomeStoreService.TallPlantId, "TallHouseplant", "PottedPlant_Tall_1.prefab",
-            new Vector2(1f, 1f), 1.25f, 2.6f, new Vector3(3.15f, 0f, 1.65f)),
+            new Vector2(.72f, .72f), .90f, 2.6f, LivingRoomGazeLayoutBuilder.TallPlantPosition),
         RoomAt(HomeStoreService.ModernPaintingId, "ModernPainting", "Painting_Modern_1.prefab",
-            new Vector2(1.1f, .2f), .82f, 4f, new Vector3(-3.55f, 0f, .7f),
-            90f, HomeProductPlacementKind.WallEdge, new Vector3(0f, 1.35f, 0f)),
+            new Vector2(1.1f, .2f), .82f, 4f, new Vector3(LivingRoomReferenceLayout.BedPosition.x, 0f, 2.69f),
+            180f, HomeProductPlacementKind.WallEdge, new Vector3(0f, 1.55f, 0f)),
         Custom(HomeStoreService.WallClockId, "RoundWallClock", new Vector2(.8f, .2f), .85f,
             new Vector3(3.55f, 0f, .8f), 270f, HomeProductPlacementKind.WallEdge,
             new Vector3(0f, 1.35f, 0f)),
@@ -309,15 +309,15 @@ public static class StoreCatalogAssets
             new Vector2(.78f, .78f), .48f, 1.15f, new Vector3(2.38f, 0f, 1.72f)),
 
         RoomAt(HomeStoreService.ArmchairId, "ClassicArmchair", "Armchair_Classic.prefab",
-            new Vector2(1.05f, .79f), .84f, 4f, new Vector3(-1.92f,0f,1.86f)),
+            new Vector2(1.05f, .79f), .84f, 4f, new Vector3(2.18f,0f,1.95f),50f),
         Room(HomeStoreService.SmallPlantId, "TablePlant", "PottedPlant_Small_2.prefab",
             new Vector2(.72f, .76f), .58f, 4f),
         Room(HomeStoreService.MirrorId, "WallMirror", "Mirror.prefab",
             new Vector2(1f, .2f), 1.12f, 4f, HomeProductPlacementKind.WallEdge,
             new Vector3(0f, 1.3f, 0f)),
         Generated(HomeStoreService.StereoId, "SpeakerSystem",
-            new Vector2(1.18f, .58f), .66f, new Vector3(2.95f, 0f, 1.1f),
-            0f, HomeProductPlacementKind.Floor),
+            new Vector2(2.14f, .25f), .84f, new Vector3(-3.30f, 0f, -.60f),
+            90f, HomeProductPlacementKind.Floor),
         Room(HomeStoreService.RetroTvId, "RetroTelevision", "TV_Retro.prefab",
             new Vector2(1.05f, .68f), 1.18f, 4f, HomeProductPlacementKind.WallEdge),
         Room(HomeStoreService.StoolId, "AccentStool", "Stool_3.prefab",
@@ -478,33 +478,41 @@ public readonly struct StoreCatalogAsset
         string productId, string prefabName, string sourceAssetPath,
         Vector2 footprint, float height, Vector3 defaultPosition, float defaultYaw,
         HomeProductPlacementKind placementKind, float visualScale,
-        Vector3 visualOffset, bool generatePreview, float hungHeight = 0f)
+        Vector3 visualOffset, bool generatePreview, float hungHeight = 0f, bool useRoomLayout = true)
     {
         ProductId = productId;
         PrefabName = prefabName;
         SourceAssetPath = sourceAssetPath;
-        Footprint = footprint;
-        Height = height;
-        DefaultPosition = StoreCatalogAssets.TryGetCatPose(productId,out var catPosition,out var catYaw) ? catPosition : defaultPosition;
-        DefaultYaw = StoreCatalogAssets.TryGetCatPose(productId,out _,out catYaw) ? catYaw : defaultYaw;
+        authoredFootprint = footprint;
+        authoredHeight = height;
+        authoredPosition = StoreCatalogAssets.TryGetCatPose(productId,out var catPosition,out var catYaw) ? catPosition : defaultPosition;
+        authoredYaw = StoreCatalogAssets.TryGetCatPose(productId,out _,out catYaw) ? catYaw : defaultYaw;
+        this.useRoomLayout = useRoomLayout;
         PlacementKind = placementKind;
         VisualScale = visualScale;
         VisualOffset = visualOffset;
         GeneratePreview = generatePreview;
-        HungHeight = hungHeight;
+        authoredHungHeight = hungHeight;
     }
 
     public string ProductId { get; }
     public string PrefabName { get; }
     public string SourceAssetPath { get; }
-    public Vector2 Footprint { get; }
-    public float Height { get; }
-    public Vector3 DefaultPosition { get; }
-    public float DefaultYaw { get; }
+    private readonly Vector2 authoredFootprint;
+    private readonly float authoredHeight, authoredYaw, authoredHungHeight;
+    private readonly Vector3 authoredPosition;
+    private readonly bool useRoomLayout;
+    public Vector2 Footprint => useRoomLayout && HomeRoomLayoutCatalog.TryGet(ProductId,out var row) ? row.footprint : authoredFootprint;
+    public float Height => useRoomLayout && HomeRoomLayoutCatalog.TryGet(ProductId,out var row) ? row.height : authoredHeight;
+    public Vector3 DefaultPosition => useRoomLayout && HomeRoomLayoutCatalog.TryGet(ProductId,out var row) ? row.position : authoredPosition;
+    public float DefaultYaw => useRoomLayout && HomeRoomLayoutCatalog.TryGet(ProductId,out var row) ? row.yaw : authoredYaw;
     public HomeProductPlacementKind PlacementKind { get; }
     public float VisualScale { get; }
     public Vector3 VisualOffset { get; }
     public bool GeneratePreview { get; }
-    public float HungHeight { get; }
+    public float HungHeight => useRoomLayout && authoredHungHeight > .01f &&
+        HomeRoomLayoutCatalog.TryGet(ProductId,out var row) ? row.position.y : authoredHungHeight;
     public string IconPath => StoreCatalogAssets.IconFolder + "/" + PrefabName + "_Icon.png";
+    public StoreCatalogAsset WithoutRoomLayout() => new StoreCatalogAsset(ProductId,PrefabName,SourceAssetPath,
+        authoredFootprint,authoredHeight,authoredPosition,authoredYaw,PlacementKind,VisualScale,VisualOffset,GeneratePreview,authoredHungHeight,false);
 }

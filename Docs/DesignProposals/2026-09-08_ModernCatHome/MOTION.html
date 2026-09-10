@@ -1,0 +1,72 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cat Home — MOTION</title><link rel="stylesheet" href="gallery.css"></head><body><header class="top"><a class="brand" href="index.html">CAT HOME</a><span class="tag">TASARIM ÖNERİSİ · 08.09.2026 · ONAY BEKLİYOR</span></header><main class="wrap"><div class="links"><a class="button" href="index.html">← Görsel galeri</a><a class="button" href="MOTION.md" download>Belgeyi indir</a></div><article class="document"><h1>Cat Home — hareket, animasyon ve ses sunumu</h1>
+<p>8 Eylül 2026 · Onay öncesi tasarım şartnamesi. Bu dosya çalışan animasyon klibi değildir.</p>
+<p><a href="index.html">Galeri</a> · <a href="PLAN.html">Uygulama planı</a></p>
+<h2>Hareketin amacı</h2>
+<p>Hareket; dokunmayı, durum değişimini, kedinin niyetini ve fiziksel teması anlaşılır kılmalı. Sürekli sallanan kartlar ve her dokunuşta aynı sıçrama yerine eylemin büyüklüğüne uygun kısa tepkiler öneriliyor. Görsel panolar anahtar pozları gösterir. Galerideki oynatılabilir örnek yalnız arayüzün açılma/kapanma ritmini gösterir; kedi iskeleti veya cihaz performansı için kanıt değildir.</p>
+<h2>Arayüz zaman çizelgesi</h2>
+<p>Aşağıdakiler önerilen sunum süreleridir; mevcut oynanış veya animasyon klibi süresi değildir. UI süreleri zaman ölçeğinden bağımsız, durdurulabilir ve yeniden girişte temizlenebilir olmalıdır.</p>
+<div class="table-wrap"><table>
+<tr><th>Aile</th><th>Normal hareket</th><th>Azaltılmış hareket</th><th>Bitiriş / iptal</th></tr>
+<tr><td>Düğmeye basma</td><td>70 ms, en çok %2 küçülme; bırakınca 110 ms dönüş</td><td>Renk ve küçük yüzey değişimi; ölçek yok</td><td>Parmağın dışarı sürüklenmesi satın alma üretmez</td></tr>
+<tr><td>Ana panel</td><td>200 ms açılma, 12 px yükselme, %98→100 ölçek ve alfa</td><td>100 ms alfa, konum/ölçek yok</td><td>140 ms kapanış; arka girdi kapanış bitene kadar kilitli</td></tr>
+<tr><td>Sağ menü çekmecesi</td><td>220 ms, yalnız 24 px giriş hareketi</td><td>100 ms alfa</td><td>Geri tuşu en üst katmanı kapatır</td></tr>
+<tr><td>Sekme değişimi</td><td>160 ms; seçili işaret 8–12 px kayar; içerik kısa çözülür</td><td>Seçili durum anında; içerik 80 ms alfa</td><td>Art arda dokunma içerikleri üst üste bırakmaz</td></tr>
+<tr><td>Konuşma balonu</td><td>180 ms, kuyruk ucundan en çok %98→100; metin sonra görünür</td><td>100 ms alfa; metin bir seferde</td><td>Yeni kritik balon eskisini düzenli değiştirir</td></tr>
+<tr><td>Uzun diyalog</td><td>Panel 200 ms; metin 30–35 karakter/sn isteğe bağlı</td><td>Metin doğrudan tamamlanır</td><td>İlk dokunma metni tamamlar, sonraki ilerler; cümle kaybı yok</td></tr>
+<tr><td>Küçük bildirim</td><td>180 ms giriş, 2,2 sn okuma, 160 ms çıkış</td><td>100 ms giriş/çıkış; okuma süresi aynı</td><td>Aynı ödül olayı iki bildirim doğurmaz</td></tr>
+<tr><td>Ödül sayımı</td><td>En çok 650 ms; kaynak miktara doğru tek ilerleme</td><td>Son miktar anında</td><td>Sunum sayacı ekonomiyi yazmaz; tekrar oynatma ödül vermez</td></tr>
+<tr><td>Konfeti / kalp</td><td>Tek olay, 600–900 ms; sınırlı küçük parçacık</td><td>Dekor kapalı, kazanım metni açık</td><td>Kapanışta tüm parçacıklar bırakılır</td></tr>
+<tr><td>Oda geçişi</td><td>220–280 ms kısa çözülme; gerçek hazır olma süreci izlenir</td><td>100 ms çözülme</td><td>Eski/yeni kamera çakışmaz; yeni oda hazır olmadan hareket açılmaz</td></tr>
+<tr><td>Portre vitrini</td><td>İlk kare önden üç çeyrek; parmakla kontrollü dönüş</td><td>Girdi olmadıkça durur</td><td>Boyut/kapanışta render hedefi bırakılır</td></tr>
+<tr><td>Kaydırma</td><td>Parmakla bire bir hareket; sınırlı atalet</td><td>Atalet yok; doğrudan kaydırma var</td><td>Düğme tıklamasıyla sürükleme ayrılır</td></tr>
+</table></div>
+<p>Bu süreler UI için bir başlangıç standardıdır. Görsel karşılaştırmada hızlı/yavaş bulunan alanlar tek bir ortak değişken üzerinden ayarlanır. Dekor bitene kadar oyuncunun asıl eylemi gereksiz bekletilmez.</p>
+<h2>Kedi hareket aileleri</h2>
+<p>Her ailede giriş → gerçek etkileşim / tutulan poz → çıkış → iptal kontrolü gerekir. Bütün ürünleri aynı miyav ve tek baş hareketiyle temsil etmek yeterli değildir. Aşağıdaki harita mevcut etkinlik çeşitlerini görsel olarak kapsar; yeni ödül veya yeni oyun mekaniği eklemez.</p>
+<div class="table-wrap"><table>
+<tr><th>Aile / mevcut örnekler</th><th>Anahtar poz önerisi</th><th>Teknik ve davranış sınırı</th></tr>
+<tr><td>Boşta / bakış</td><td>Ağırlık küçük aktarılır, kulak bir kez döner, kısa doğal baş bakışı</td><td>Gövde sürekli sallanmaz; kemik boyları değişmez</td></tr>
+<tr><td>Yürüme / koşma / dönüş</td><td>İtiş, destek, salınım; sert yönde önce dönüş sonra ilerleme</td><td>Mevcut .65 m/sn alt yürüyüş; tempo gerçek yer hızı; durunca ayak sürükleme yok</td></tr>
+<tr><td>Miyav</td><td>Baş hafif yükselir, ağız kısa açılır, nefesle kapanır</td><td>Gerçek klip/ses süresi; bitene kadar komut yığılmaz; enerji/jeton/görev ödülü yok</td></tr>
+<tr><td>Otur / Loaf / Kalk</td><td>Kalça alçalır, ön patiler yerleşir; loaf&#x27;ta patiler gövde altına toplanır; kalkış destekle başlar</td><td>Mevcut .7 sn oturma, loaf&#x27;tan .4 sn ara ve .7 sn kalkış temel alınır; UI süresine göre kısaltılmaz. Enerji yalnız gerçek tutulmuş dinlenmede</td></tr>
+<tr><td>Mama / su / tokken inceleme</td><td>Açık önden yaklaşma, baş kap seviyesine iner; yemek/içme ve koklama farklı küçük hareketler</td><td>Gerçek kaba temas; görünmeyen eşya bakım açmaz; koklama yemek görevi ilerletmez</td></tr>
+<tr><td>Uyku / Uyan</td><td>Yatağa yerleşme, göğüste küçük nefes, başı kaldırarak uyanma</td><td>Uyku gerçek destek noktasında; yatak arkası kapalı; kayıt geri yükleme korunur</td></tr>
+<tr><td>Mobilyada dinlenme</td><td>Minder teması, doğal omuz/kalça yerleşimi; sonra destekli kalkış/iniş</td><td>Koltuk, daybed, minder, canopy/perch/towel/oven warmth aynı yaşam döngüsü; oyuncu Kalk diyene kadar sürer</td></tr>
+<tr><td>Sevme / fırçalama</td><td>Baş temas yönüne hafif döner, gözler yumuşar, omuz küçük tepki verir</td><td>Sadece gerçek sevme/fırça evresinde; insan el modeli zorunlu değil</td></tr>
+<tr><td>Tırmalama</td><td>Ön pati sırayla yüzeye basar, gövde arka patilerle desteklenir</td><td>Pati yüzeye girmez; tırmalama noktası ve denetleyici sahipliği korunur</td></tr>
+<tr><td>Yoğurma</td><td>Yumuşak yüzeyde sırayla sol/sağ ön pati; omuzdan küçük karşı hareket</td><td>MatKnead temas desteği ve düşük genlik; kumaşı aşırı çökertme yok</td></tr>
+<tr><td>Tünel</td><td>Ağızda hizalanma → baş/gövde girişi → içinden yürüyüş → açık çıkış</td><td>Yalnız Oyna rutini; iki ağızdan seçim; elle yürürken katı engel korunur</td></tr>
+<tr><td>Top / yumak / fare oyunu</td><td>Hedefe bakma → yaklaşma → tek pati itişi → takip</td><td>Sürekli top taraması, görünür oyuncak engelleri, gerçek tek temas; dekorun içinden geçiş yok</td></tr>
+<tr><td>Küçük nesne devirme</td><td>Ağırlık destek patilerinde, tek ön pati uzanır, nesne ayrılır</td><td>KnockOff/CartNudge gibi mevcut etkinliklerin gerçek temas zamanı esas</td></tr>
+<tr><td>Çıkma / inme / kenar yürüyüşü</td><td>Önce ön patiler destek alır, arka bacak itişi; inişte ön patiler yumuşar</td><td>PantryClimb/TubEdge/Perch; gerçek ürün üçgenleri ve açık çıkış</td></tr>
+<tr><td>Kutu / sepet içine girme</td><td>Başla kontrol, ön pati, gövde, içeride kısa tepki, açık çıkış</td><td>HamperDive; ürün hacmi ile kedi hacmi eşleşir</td></tr>
+<tr><td>Kazma</td><td>Ön patiler dönüşümlü, gövde dengeli, kısa arka kontrol</td><td>LitterDig; efekt küçük ve yerel, ihtiyaç/ödül koşulları korunur</td></tr>
+<tr><td>Duş / lavabo</td><td>Açık girişten yerleşme, doğal baş eğimi, kısa damla ve silkelenme</td><td>ShowerRinse/SinkSip; duşun cam olmayan yarısı ve gerçek su evresi</td></tr>
+<tr><td>Salıncak</td><td>Salıncağın gerçek hareketi, kedi gövdesi destek üstünde dengelenir</td><td>SwingRide; azaltılmış harekette dekor sakinleşir, eylem bitirme erişilebilir</td></tr>
+<tr><td>Kuş / asılı oyuncak / tablo</td><td>Sınırlı baş ve göz takibi; gerekiyorsa küçük tek pati uzanması</td><td>BirdFeederShake/SitLook; ulaşılamayan nesneye sahte temas yok</td></tr>
+<tr><td>TV / pikap / kâğıt</td><td>Bakış hedefi + gerçek medya; pikap yatay döner; kâğıt kendi rulosunda açılır</td><td>Pikap Y ekseni, kâğıt X; TV mevcut kayıtlı medya; ek canlı kamera yok</td></tr>
+<tr><td>Runner zıplama / iniş</td><td>Hazırlık → uçuş → ön pati inişi → koşuya dönüş</td><td>Mevcut atlayış eğrisi; tek iniş olayı; köke ikinci görsel yay eklenmez</td></tr>
+<tr><td>Runner eğilme / toparlanma</td><td>Dirsek/diz gerçek bükülür, sırt doğal alçalır; son eğilme pozundan koşuya dönüş</td><td>Mevcut 90 ms giriş, 220 ms toparlanma, 1.25–2.6 eğilme çevrimi/sn; Y ezme yok</td></tr>
+<tr><td>Runner yol / rampa teması</td><td>Son örneklenen patiler gerçek yüzeye oturur</td><td>Koşu/eğilme/toparlanma .033 m yol/rampa ölçümü; yalnız yukarı düzeltme; havada/pause atlanır</td></tr>
+<tr><td>Catch av</td><td>Hedef seçme → yönlenme → hazırlanma → atılma → pati teması → toparlanma</td><td>28° hazırlık eşiği, 300°/sn dönüş, havada sabit yön, .32 m ön pati teması; tek fare; kaçırma seriyi bitirir</td></tr>
+</table></div>
+<h2>Sahne hareketleri ve efektler</h2>
+<ul>
+<li>Bitki ve kumaş: düşük genlik, seyrek ve dekoratif; collider oynamaz. Azaltılmış harekette durur.</li>
+<li>Pencere ışığı: materyal/ışık tasarımı; pahalı sürekli güneş simülasyonu önerilmez. Mevcut zaman ve ışık tercihleri varsa onlara bağlanır.</li>
+<li>Jeton: kanonik pati yüzü korunur; görünür parlama kontrollüdür. Spawn açıklığı ve mıknatıs yolu engelleri aşmaz.</li>
+<li>Hedef halkası: sadece ilgili hedef; zemine oturur, kedinin patisini veya fareyi örtecek opak disk olmaz.</li>
+<li>Vuruş/başarı: küçük yerel yıldız/çizgi, en fazla kısa bir olay. Kamera sarsılması ve FOV etkisi azaltılmış hareketi izler.</li>
+<li>Başlangıç/sonuç fotoğrafı: hazır gerçek Play kamerasından alınır; görsel üretim karesini gerçek oynanış diye sunma yok.</li>
+</ul>
+<h2>Ses eşleşmesi</h2>
+<p>Doğal miyav, mırlama, mama ve su sesleri gerçek eylem evresine bağlı kalır. İptal, pause, mute ve sahne geçişinde biter. Her düğmeye plop eklenmez, eski sentetik sürekli müzik/ortam döngüsü geri getirilmez. Ödül ve alışveriş gibi anlamlı olaylarda mevcut kısa sesler kullanılabilir; sesin olması yeni bir ödül olayı tanımlamaz.</p>
+<h2>Hareket kabul kontrolü</h2>
+<ul>
+<li>On ırkta yan, ön ve arka görünüş: kemik/pati/zemin, kulak/kuyruk ve görünür yüzey teması.</li>
+<li>Giriş, sürme, çıkış, iptal; pause, odak kaybı, oda/ırk değişimi sırasında kaynak ve hareket kilidi temizliği.</li>
+<li>Runner iki hız, düz/rampa ve 30/60 simülasyon adımı; Catch durağan/kaçırma/ardışık temas durumları.</li>
+<li>Mobilyada giriş ve çıkış gerçek oda kamerasından, komşu eşyalar görünürken; yakın çekim tek başına yeterli değil.</li>
+<li>Normal ve azaltılmış hareket, ses açık/kapalı; UI ritmi ile oyun fiziği birbirinden bağımsız doğrulanır.</li>
+<li>Galeride storyboard ile gerçek yeni oyun kaydı ayrı etiketlenir. Bu teslimde gerçek yeni animasyon kaydı üretilmedi.</li>
+</ul></article></main></body></html>

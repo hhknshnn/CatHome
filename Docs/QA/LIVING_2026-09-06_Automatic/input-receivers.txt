@@ -1,2 +1,0 @@
-Games dock: pointerClick -> GamesHubPanel open, hit Visual
-Shop dock: pointerClick -> ShopPanel open=True, hit=Visual

@@ -22,6 +22,8 @@ public class HungerSystem : MonoBehaviour
 
     private Coroutine eatingCoroutine;
     private bool isEating;
+    private UnityEngine.Object eatingOwner;
+    private Action eatingCompleted;
 
     private readonly Color fullColor = new Color32(242, 154, 56, 255);
     private readonly Color hungryColor = new Color32(246, 200, 76, 255);
@@ -30,6 +32,7 @@ public class HungerSystem : MonoBehaviour
     private readonly Color textColor = new Color32(255, 244, 214, 255);
 
     public bool IsEating => isEating;
+    public bool IsEatingFor(UnityEngine.Object owner) => isEating && ReferenceEquals(eatingOwner, owner);
     public bool CanEat => !isEating && currentHunger < 99.9f;
     public float CurrentHunger => currentHunger;
 
@@ -71,7 +74,9 @@ public class HungerSystem : MonoBehaviour
         UpdateUI();
     }
 
-    public bool BeginEating(float duration)
+    public bool BeginEating(float duration) => BeginEating(duration, null);
+
+    public bool BeginEating(float duration, UnityEngine.Object owner, Action onCompleted = null)
     {
         if (!isActiveAndEnabled || !CanEat)
             return false;
@@ -83,6 +88,8 @@ public class HungerSystem : MonoBehaviour
         }
 
         isEating = true;
+        eatingOwner = owner;
+        eatingCompleted = onCompleted;
         if (duration <= 0f)
         {
             CompleteEating();
@@ -116,12 +123,17 @@ public class HungerSystem : MonoBehaviour
 
     private void CompleteEating()
     {
+        Action completed = eatingCompleted;
+        eatingCompleted = null;
         currentHunger = 100f;
         isEating = false;
+        eatingOwner = null;
         eatingCoroutine = null;
 
         UpdateUI();
 
+        try { completed?.Invoke(); }
+        catch (Exception exception) { Debug.LogException(exception, this); }
         try
         {
             Ate?.Invoke();
@@ -143,6 +155,7 @@ public class HungerSystem : MonoBehaviour
 
     public void ApplySavedValue(float value)
     {
+        CancelEating(eatingOwner);
         currentHunger = Mathf.Clamp(value, 0f, 100f);
         UpdateUI();
     }
@@ -211,8 +224,9 @@ public class HungerSystem : MonoBehaviour
             percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
-    private void OnDisable()
+    public void CancelEating(UnityEngine.Object owner)
     {
+        if (!ReferenceEquals(eatingOwner, owner)) return;
         if (eatingCoroutine != null)
         {
             StopCoroutine(eatingCoroutine);
@@ -220,7 +234,14 @@ public class HungerSystem : MonoBehaviour
         }
 
         isEating = false;
+        eatingOwner = null;
+        eatingCompleted = null;
+        UpdateUI();
+    }
 
+    private void OnDisable()
+    {
+        CancelEating(eatingOwner);
         if (catMovement != null)
             catMovement.SetHungerSpeedMultiplier(1f);
     }

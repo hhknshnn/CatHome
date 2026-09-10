@@ -29,18 +29,14 @@ public sealed class CanopyNapActivity : CatActivity
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
     public float NapDuration => Mathf.Max(0.5f, napDuration);
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
+    public override float EnergyCost => 0f;
+    public override bool SupportsContinuousRest=>true;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
         if (doorPoint == null || nestPoint == null)
         {
             failureReason = "THE TENT IS NOT READY";
-            return false;
-        }
-
-        if (Energy != null && Energy.CurrentEnergy >= WideAwakeEnergy)
-        {
-            failureReason = "I AM WIDE AWAKE!";
             return false;
         }
 
@@ -75,7 +71,8 @@ public sealed class CanopyNapActivity : CatActivity
 
         // Turn around so the cat sleeps facing the open door.
         Quaternion outward = LookTowards(door - nest, inward);
-        yield return Move(nest, nest, inward, outward, 0.26f);
+        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest, outward);
+        yield return Move(nest, nest, inward, restingFacing, 0.26f);
 
         Vector3 curled = originalScale;
         curled.y *= 0.62f;
@@ -85,7 +82,7 @@ public sealed class CanopyNapActivity : CatActivity
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sleep, nestPoint);
-        while (elapsed < NapDuration)
+        while (KeepResting)
         {
             elapsed += Time.deltaTime;
             float breath = Mathf.Sin(elapsed * 3.1f) * 0.035f;
@@ -98,18 +95,20 @@ public sealed class CanopyNapActivity : CatActivity
         }
 
         yield return Squash(Cat.transform.localScale, originalScale, 0.24f);
+        // The exit still follows the real opening, even when resting used the
+        // other end of the same support axis.
+        yield return CatActivityFacing.Turn(Cat, outward);
         yield return EnterNest(nest, door, outward, outward, 0.50f);
 
         RestoreCat();
-        if (Energy != null)
-            Energy.RestoreEnergy(EnergyRestore);
         CompleteActivity("SWEET DREAMS!");
     }
 
     private IEnumerator EnterNest(Vector3 from, Vector3 to, Quaternion start, Quaternion end, float duration)
     {
         bool raised = Mathf.Abs(from.y - to.y) > .12f;
-        PlayCatPose(raised ? CatActivityPose.Hop : CatActivityPose.Crawl);
+        if(raised){yield return CatActivityMotion.Jump(Cat,from,to,start,end);yield break;}
+        PlayCatPose(CatActivityPose.Crawl);
         float elapsed = 0f;
         while (elapsed < duration)
         {
@@ -181,11 +180,13 @@ public sealed class CanopyNapActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

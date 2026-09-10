@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 4162483684192370394}
   - component: {fileID: 1515705309627607282}
   - component: {fileID: 144999667472451148}
+  - component: {fileID: 801629744054623873}
   m_Layer: 0
   m_Name: PatioStoneRug
   m_TagString: Untagged
@@ -254,6 +255,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &801629744054623873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5307167992903467612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &7289175856237910029
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,23 +350,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 0f6e051533e811145a6dffda8492015c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: ebe87d89620b6dc44a53e62bcfd10661, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: baa39b2a8eb4f094d8d3dd23d1fecd78, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 46cd09cfc6bf41c428d9061c98ac29e3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 81413f395de3d4847a3c1dddcbbdaa2b, type: 2}
     - target: {fileID: 919132149155446097, guid: 7cfadaf95911c8d44881109f81f7c4f2, type: 3}
       propertyPath: m_Name
       value: PatioStoneRug_PremiumModel

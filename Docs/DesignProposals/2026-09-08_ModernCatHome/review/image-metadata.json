@@ -1,0 +1,140 @@
+[
+  {
+    "id": "01",
+    "file": "01-home-hero.png",
+    "width": 1672,
+    "height": 941
+  },
+  {
+    "id": "02",
+    "file": "02-opening.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "03",
+    "file": "03-home-actions.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "04",
+    "file": "04-dialogue-onboarding.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "05",
+    "file": "05-store.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "06",
+    "file": "06-purchase.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "07",
+    "file": "07-room-navigation.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "08",
+    "file": "08-interior-worlds.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "09",
+    "file": "09-outdoor-worlds.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "10",
+    "file": "10-my-cat.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "11",
+    "file": "11-together-guide.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "12",
+    "file": "12-quests-return.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "13",
+    "file": "13-celebrations.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "14",
+    "file": "14-games-lobby.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "15",
+    "file": "15-runner.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "16",
+    "file": "16-catch.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "17",
+    "file": "17-results-pause.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "18",
+    "file": "18-online.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "19",
+    "file": "19-settings-confirm.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "20",
+    "file": "20-motion-storyboard.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "21",
+    "file": "21-responsive.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "22",
+    "file": "22-design-system.png",
+    "width": 1586,
+    "height": 992
+  },
+  {
+    "id": "23",
+    "file": "23-home-animation.png",
+    "width": 1448,
+    "height": 1086
+  }
+]

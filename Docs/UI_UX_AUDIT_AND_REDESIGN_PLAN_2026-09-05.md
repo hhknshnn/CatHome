@@ -1,5 +1,9 @@
 # Cat Home — UI/UX incelemesi ve yenileme planı
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 > Tarihsel inceleme. Onaylanan tasarım 6 Eylül'de uygulandı: [uygulama kaydı](UIUX_IMPLEMENTATION_2026-09-06.md), [yeni gerçek oyun görüntüleri](QA/UIUX_2026-09-06/index.html). Aşağıdaki gözlemler önceki arayüze aittir.
 
 5 Eylül 2026 · Durum: inceleme ve tasarım önerisi; uygulama yapılmadı.

@@ -1,5 +1,9 @@
 # CAT koleksiyonu — yerleşim ve oyun düzeltmesi
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 6 Eylül 2026. Kullanıcı kararı: **aynı anda en fazla 5 CAT eşyası, en fazla 1 yatak**.
 
 ## Yerleşim

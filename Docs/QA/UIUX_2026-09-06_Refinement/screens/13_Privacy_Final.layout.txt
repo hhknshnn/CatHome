@@ -1,7 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-SyncNowButton (x:484.00, y:382.00, width:464.00, height:72.00)
-CloseButton (x:1401.00, y:843.00, width:60.00, height:60.00)
-DeleteInfoButton (x:484.00, y:500.00, width:952.00, height:66.00)
-DataRequestButton (x:972.00, y:586.00, width:464.00, height:66.00)
-PrivacyPolicyButton (x:484.00, y:586.00, width:464.00, height:66.00)
-DeleteCloudAccountButton (x:972.00, y:382.00, width:464.00, height:72.00)

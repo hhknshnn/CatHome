@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 1847744417646963482}
   - component: {fileID: 2750099020604643896}
   - component: {fileID: 2372139257628724876}
+  - component: {fileID: 7648805174141372962}
   m_Layer: 0
   m_Name: BathroomBathMat
   m_TagString: Untagged
@@ -183,6 +184,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7648805174141372962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2616092786258591471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &3491818184009541560
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,23 +362,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a972b444a223344ea4e66c67d3b9c8c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 45cf5987c0ce685479e3ba5a91a93771, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: dea03fb89582a3a4cab327bbd0de955c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 1025d6b2ec184a44abe1bff7c4055848, type: 2}
     - target: {fileID: -7511558181221131132, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 31777db48e73a0d44b0c31715315c57d, type: 2}
     - target: {fileID: 919132149155446097, guid: 7f6e3fcbe153ef546b05a7e929f0ec7f, type: 3}
       propertyPath: m_Name
       value: BathroomBathMat_PremiumModel

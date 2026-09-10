@@ -12,25 +12,31 @@ public static class LivingRoomArrangementBuilder
         if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Finish Play before authoring.");
         CatHomeAuthoringWorkspace.OpenFullHomePreview(false);
         var scene=SceneManager.GetSceneByPath(HomeRoomService.LivingRoomScenePath);
-        StoreProductContentBuilder.RebuildProductWithExistingMaterials(HomeStoreService.ArmchairId);
-        StoreCatalogAssets.TryGet(HomeStoreService.ArmchairId,out var definition);
-        foreach(var root in scene.GetRootGameObjects())foreach(var p in root.GetComponentsInChildren<HomeProductPlacement>(true))
+        foreach(var definition in StoreCatalogAssets.PlaceableProducts)
         {
-            if(p.ProductId!=HomeStoreService.ArmchairId)continue;
-            var copy=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/StoreProducts/Prefabs/ClassicArmchair.prefab"),scene);
-            copy.name=p.name;copy.transform.SetParent(p.transform.parent,false);
-            copy.transform.SetPositionAndRotation(definition.DefaultPosition,Quaternion.Euler(0,definition.DefaultYaw,0));
-            UnityEngine.Object.DestroyImmediate(p.gameObject);break;
+            if(!HomeStoreService.IsLivingRoomCollectionProduct(definition.ProductId))continue;
+            StoreProductContentBuilder.RebuildProductWithExistingMaterials(definition.ProductId);
+            foreach(var root in scene.GetRootGameObjects())foreach(var p in root.GetComponentsInChildren<HomeProductPlacement>(true))
+            {
+                if(p.ProductId!=definition.ProductId)continue;
+                var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/StoreProducts/Prefabs/"+definition.PrefabName+".prefab");
+                var copy=(GameObject)PrefabUtility.InstantiatePrefab(prefab,scene);
+                copy.name=p.name;copy.transform.SetParent(p.transform.parent,false);
+                var position=definition.DefaultPosition;if(definition.HungHeight>.01f)position.y=definition.HungHeight;
+                copy.transform.SetPositionAndRotation(position,Quaternion.Euler(0,definition.DefaultYaw,0));
+                UnityEngine.Object.DestroyImmediate(p.gameObject);break;
+            }
         }
         Apply(scene);EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
         return "Compact armchair, care strip, sofa/table jump routines and automatic CAT arrangement authored.";
     }
     public static void Apply(Scene scene)
     {
-        Move(scene,"FoodBowl",new Vector3(3.22f,0,-.35f));
-        Move(scene,"WaterBowl",new Vector3(3.22f,0,-.98f));
-        Move(scene,"FoodInteractionPoint",new Vector3(2.75f,0,-.35f));
-        Move(scene,"WaterInteractionPoint",new Vector3(2.75f,0,-.98f));
+        LivingRoomReferenceLayout.Apply(scene);
+        LivingRoomReferenceLayout.ApplyCareLayout(scene);
+        // The care builder measures the new straight back and fits it to the wall.
+        Move(scene,"Bed5 V3",LivingRoomReferenceLayout.BedPosition);
+        PremiumCareStationBuilder.Apply(scene);
         var parent=Find(scene,"RoomFurniture");
         var root=Find(scene,"LivingFurniturePlay");
         if(root==null){root=new GameObject("LivingFurniturePlay").transform;SceneManager.MoveGameObjectToScene(root.gameObject,scene);root.SetParent(parent,false);}
@@ -40,34 +46,39 @@ public static class LivingRoomArrangementBuilder
         {
             // The centre seam exposes the frame 16 cm below the cushions.
             // Rest wholly on the left cushion, measuring its real upper face.
-            Vector3 support=new Vector3(-.40f,0,2.02f);support.y=MeasureTop(sofa,support,.52f);
-            CreateActivity(root,"SofaLounge",CatActivityKind.SofaLounge,new Vector3(-.40f,0,1.30f),support,new Vector2(.72f,.58f),false,null);
+            float scale=LivingRoomReferenceLayout.SofaScale;
+            Vector3 support=LivingRoomReferenceLayout.SofaPoint(new Vector3(-.40f,0,2.02f));support.y=MeasureTop(sofa,support,.52f*scale);
+            var entry=LivingRoomReferenceLayout.SofaPoint(new Vector3(-.40f,0,1.30f))-Vector3.right*.16f;
+            CreateActivity(root,"SofaLounge",CatActivityKind.SofaLounge,entry,support,new Vector2(.72f,.58f)*scale,false,null);
         }
         if(table!=null)
         {
-            Vector3 support=new Vector3(.04f,0,.56f);support.y=MeasureTop(table,support,.48f)+.018f;
+            Vector3 support=LivingRoomReferenceLayout.TablePoint(new Vector3(.04f,0,.56f));support.y=MeasureTop(table,support,.48f)+.018f;
             var mint=Find(scene,"MintCenterpiece");
             if(mint!=null)
             {
-                mint.position=new Vector3(.25f,support.y+.032f,.56f);
+                mint.position=LivingRoomReferenceLayout.TablePoint(new Vector3(.25f,support.y+.032f,.56f));
                 mint.localScale=new Vector3(.12f,.065f,.12f);
             }
-            CreateActivity(root,"CoffeeTablePlay",CatActivityKind.CoffeeTablePlay,new Vector3(.95f,0,.56f),support,new Vector2(.80f,.58f),true,mint);
+            // Jump from the open central aisle; keep the foreground free for toys.
+            CreateActivity(root,"CoffeeTablePlay",CatActivityKind.CoffeeTablePlay,LivingRoomReferenceLayout.TablePosition+Vector3.left*.80f,support,new Vector2(.80f,.58f),true,mint);
         }
+        LivingRoomGazeLayoutBuilder.Apply(scene);
         var arrangement=CatRoomArrangement.Request(scene);if(arrangement!=null)arrangement.Invalidate();
     }
     static void CreateActivity(Transform root,string name,CatActivityKind kind,Vector3 entry,Vector3 perch,Vector2 size,bool table,Transform toy)
     {
         var t=root.Find(name);if(t==null){t=new GameObject(name).transform;t.SetParent(root,false);}
         var floor=Point(t,table?"TableJumpEntry":"SofaJumpEntry",entry);
-        var support=Point(t,"MeasuredSupport",perch);support.rotation=Quaternion.Euler(0,90,0);
+        var support=Point(t,"MeasuredSupport",perch);support.rotation=Quaternion.Euler(0,180,0);
         var surface=support.GetComponent<CatActivitySurface>()??support.gameObject.AddComponent<CatActivitySurface>();
         surface.EditorConfigure(new Vector2(size.y,size.x));
         var activity=t.GetComponent<LivingFurnitureActivity>()??t.gameObject.AddComponent<LivingFurnitureActivity>();
         activity.EditorConfigure(name,table?"Sehpa oyunu":"Koltuk keyfi",kind,table?QuestType.KnockOff:QuestType.Sleep,0,
             table?"JUMP ON TABLE":"JUMP ON SOFA",1.4f,table?2:0,floor,null,null);
         activity.EditorConfigureEntry(floor);
-        activity.EditorConfigureFurniture(support,table,toy,new Vector3(.60f,perch.y+.032f,.56f),new Vector3(.82f,.035f,.56f));
+        activity.EditorConfigureSelection(Find(root.gameObject.scene,table?HomeRoomGameplaySafetyBuilder.LivingCoffeeTableName:HomeRoomGameplaySafetyBuilder.LivingSofaName));
+        activity.EditorConfigureFurniture(support,table,toy,LivingRoomReferenceLayout.TablePoint(new Vector3(.60f,perch.y+.032f,.56f)),LivingRoomReferenceLayout.TablePoint(new Vector3(.82f,.035f,.56f)));
         EditorUtility.SetDirty(activity);EditorUtility.SetDirty(surface);
     }
     public static float MeasureTop(Transform root,Vector3 point,float near)

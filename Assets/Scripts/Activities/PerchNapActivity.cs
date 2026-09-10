@@ -33,18 +33,14 @@ public sealed class PerchNapActivity : CatActivity
     public float SettleDuration => Mathf.Max(0.5f, settleDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
+    public override float EnergyCost => 0f;
+    public override bool SupportsContinuousRest=>true;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
         if (floorPoint == null || perchPoint == null)
         {
             failureReason = "NO ROOM UP THERE";
-            return false;
-        }
-
-        if (Energy != null && Energy.CurrentEnergy >= WideAwakeEnergy)
-        {
-            failureReason = "I AM WIDE AWAKE!";
             return false;
         }
 
@@ -88,7 +84,8 @@ public sealed class PerchNapActivity : CatActivity
 
         // Turn to face the room, then loaf: front paws tucked, breathing.
         Quaternion outward = LookTowards(floor - perch, inward);
-        yield return Move(perch, perch, inward, outward, 0.26f);
+        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, perch, outward);
+        yield return Move(perch, perch, inward, restingFacing, 0.26f);
         Vector3 loafed = originalScale;
         loafed.y *= 0.68f;
         loafed.x *= 1.08f;
@@ -97,7 +94,7 @@ public sealed class PerchNapActivity : CatActivity
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sleep, perchPoint);
-        while (elapsed < SettleDuration)
+        while (KeepResting)
         {
             elapsed += Time.deltaTime;
             float breath = Mathf.Sin(elapsed * 3.0f) * 0.032f;
@@ -107,7 +104,7 @@ public sealed class PerchNapActivity : CatActivity
             breathing.z *= 1f - breath * 0.4f;
             Cat.transform.localScale = breathing;
             Cat.transform.position = perch;
-            Cat.transform.rotation = outward;
+            Cat.transform.rotation = restingFacing;
             yield return null;
         }
 
@@ -115,8 +112,6 @@ public sealed class PerchNapActivity : CatActivity
         yield return Hop(perch, floor, outward, 0.40f);
 
         RestoreCat();
-        if (Energy != null)
-            Energy.RestoreEnergy(EnergyRestore);
         CompleteActivity(string.IsNullOrWhiteSpace(completeMessage)
             ? "GOOD SPOT!" : completeMessage);
     }
@@ -124,21 +119,7 @@ public sealed class PerchNapActivity : CatActivity
     /// <summary>Arc between two points, peaking above the higher end.</summary>
     private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
     {
-        PlayCatPose(CatActivityPose.Hop);
-        float peak = Mathf.Max(from.y, to.y) + 0.24f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            Vector3 position = CatActivityMotion.JumpPosition(from, to, t, peak - Mathf.Max(from.y, to.y));
-            Cat.transform.position = position;
-            Cat.transform.rotation = facing;
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = facing;
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
     }
 
     private IEnumerator Move(
@@ -199,11 +180,13 @@ public sealed class PerchNapActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

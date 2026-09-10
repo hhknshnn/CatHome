@@ -4,15 +4,15 @@ using UnityEngine;
 public sealed class CatRunnerTrackMotionTests
 {
     [Test]
-    public void TrackObjects_ApproachFasterThanVisualFloor()
+    public void TrackObjects_StayAttachedToTheirSupportingFloor()
     {
         var gameObject = new GameObject("TrackMotionTest");
         try
         {
             CatRunnerTrackManager track = gameObject.AddComponent<CatRunnerTrackManager>();
 
-            Assert.That(track.ObjectApproachSpeedMultiplier, Is.GreaterThan(1f));
-            Assert.That(7f * track.ObjectApproachSpeedMultiplier, Is.GreaterThan(7f));
+            Assert.That(track.ObjectApproachSpeedMultiplier, Is.EqualTo(1f));
+            Assert.That(7f * track.ObjectApproachSpeedMultiplier, Is.EqualTo(7f));
         }
         finally
         {

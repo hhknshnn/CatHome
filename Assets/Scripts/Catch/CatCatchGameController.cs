@@ -28,6 +28,7 @@ public sealed class CatCatchGameController : MonoBehaviour
     [SerializeField] private TMP_Text welcomeLivesText;
     [SerializeField] private Button welcomeStartButton;
     [SerializeField] private Button welcomeExitButton;
+    [SerializeField] private Button welcomeGamesButton;
     [SerializeField] private Button welcomeRewardedButton;
     [SerializeField] private GameObject hudRoot;
     [SerializeField] private TMP_Text scoreLabel;
@@ -38,6 +39,7 @@ public sealed class CatCatchGameController : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private TMP_Text resultDetails;
     [SerializeField] private Button collectButton;
+    [SerializeField] private Button resultGamesButton;
     [SerializeField] private Button retryButton;
     [SerializeField] private GameObject tutorialPanel;
     [SerializeField] private TMP_Text tutorialText;
@@ -46,9 +48,11 @@ public sealed class CatCatchGameController : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button pauseExitButton;
+    [SerializeField] private Button pauseGamesButton;
 
     private bool hunting;
     private bool settling;
+    private bool exiting;
     private bool paused;
     private float remaining;
     private int catches;
@@ -74,6 +78,7 @@ public sealed class CatCatchGameController : MonoBehaviour
     public int Catches => catches;
     public int Score => score;
     public bool IsHunting => hunting;
+    public bool IsPaused => paused;
     public int StrikesResolved { get; private set; }
     public int StrikesMissed { get; private set; }
     public float LastStrikeGap { get; private set; } = -1f;
@@ -96,6 +101,9 @@ public sealed class CatCatchGameController : MonoBehaviour
             player.BindCamera(huntCamera);
         Bind(welcomeStartButton, StartHunt);
         Bind(welcomeExitButton, ExitToHome);
+        Bind(welcomeGamesButton, ReturnToGamesFromWelcome);
+        Bind(pauseGamesButton, ReturnToGamesFromPause);
+        Bind(resultGamesButton, ReturnToGamesFromResult);
         Bind(welcomeRewardedButton, RequestRewardedLives);
         Bind(collectButton, ExitToHome);
         Bind(retryButton, StartHunt);
@@ -112,6 +120,9 @@ public sealed class CatCatchGameController : MonoBehaviour
         Time.timeScale = 1f;
         Unbind(welcomeStartButton, StartHunt);
         Unbind(welcomeExitButton, ExitToHome);
+        Unbind(welcomeGamesButton, ReturnToGamesFromWelcome);
+        Unbind(pauseGamesButton, ReturnToGamesFromPause);
+        Unbind(resultGamesButton, ReturnToGamesFromResult);
         Unbind(welcomeRewardedButton, RequestRewardedLives);
         Unbind(collectButton, ExitToHome);
         Unbind(retryButton, StartHunt);
@@ -149,12 +160,12 @@ public sealed class CatCatchGameController : MonoBehaviour
 
     public void PauseHunt()
     {
-        if (!hunting || paused || settling)
+        if (!hunting || paused || settling || exiting)
             return;
         paused = true;
         Time.timeScale = 0f;
         if (player != null)
-            player.SetInputEnabled(false);
+            player.SetPaused(true);
         if (tutorialPanel != null && tutorialActive)
             tutorialPanel.SetActive(false);
         SetPanel(pausePanel, true);
@@ -164,7 +175,7 @@ public sealed class CatCatchGameController : MonoBehaviour
 
     public void ResumeHunt()
     {
-        if (!hunting || !paused)
+        if (!hunting || !paused || exiting)
             return;
         paused = false;
         Time.timeScale = 1f;
@@ -177,24 +188,19 @@ public sealed class CatCatchGameController : MonoBehaviour
             RefreshTutorialText();
         }
         if (player != null)
-            player.SetInputEnabled(true);
+            player.SetPaused(false);
     }
 
     public void ExitFromPause()
     {
-        if (settling)
+        if (!paused || settling || exiting)
             return;
-        paused = false;
-        Time.timeScale = 1f;
-        SetPanel(pausePanel, false);
-        if (hunting)
-            FinishHunt(false);
-        StartCoroutine(UnloadRoutine());
+        ExitToHome();
     }
 
     public void StartHunt()
     {
-        if (hunting || settling)
+        if (hunting || settling || exiting)
             return;
         if (!CatchLivesService.TrySpendHuntLife())
         {
@@ -207,6 +213,9 @@ public sealed class CatCatchGameController : MonoBehaviour
         score = 0;
         combo = 0;
         comboStepsTotal = 0;
+        StrikesResolved = 0;
+        StrikesMissed = 0;
+        LastStrikeGap = -1f;
         huntId = Guid.NewGuid().ToString("N");
         lastCatchTime = float.NegativeInfinity;
         remaining = HuntDuration;
@@ -252,11 +261,53 @@ public sealed class CatCatchGameController : MonoBehaviour
         RefreshWelcome();
     }
 
-    public void ExitToHome()
+    public void ExitToHome() => ExitToDestination(false);
+
+    public void ReturnToGamesFromWelcome()
     {
+        if (!hunting && welcomePanel != null && welcomePanel.activeSelf)
+            ExitToDestination(true);
+    }
+
+    public void ReturnToGamesFromPause()
+    {
+        if (paused)
+            ExitToDestination(true);
+    }
+
+    public void ReturnToGamesFromResult()
+    {
+        if (!hunting && resultPanel != null && resultPanel.activeSelf)
+            ExitToDestination(true);
+    }
+
+    private void ExitToDestination(bool games)
+    {
+        if (exiting || settling)
+            return;
+        // Lock before stopping the round: another queued click cannot spend a
+        // life or start a second unload while the scene is still alive.
+        exiting = true;
+        CatRunnerSessionContext.SetReturnToGames(games);
         if (hunting)
             FinishHunt(false);
+        if (huntCanvas != null)
+            huntCanvas.enabled = false;
         StartCoroutine(UnloadRoutine());
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+            PauseHunt();
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+#if !UNITY_EDITOR
+        if (!hasFocus)
+            PauseHunt();
+#endif
     }
 
     private void EndHunt()
@@ -292,6 +343,9 @@ public sealed class CatCatchGameController : MonoBehaviour
         if (newBest)
             bestScore = score;
         long coins = CatchScoring.CoinsForCatches(catches);
+        // Keep the existing quest/save identity completable after retiring the
+        // separate home mouse station. One completed hunt fulfils one quest step.
+        if(catches>=3)ProgressionService.RecordProgress(QuestType.MouseHunt);
         if (coins > 0)
         {
             EconomyService.GrantReward(
@@ -346,6 +400,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         if (target == null)
         {
             StrikesMissed++;
+            combo = 0;
             PanicNearbyMice(strikePoint);
             return;
         }
@@ -664,7 +719,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         if (comboLabel == null)
             return;
         bool comboLive = combo > 1 && Time.time - lastCatchTime <= CatchScoring.ComboWindowSeconds;
-        comboLabel.text = comboLive ? $"COMBO  x{Mathf.Min(combo, CatchScoring.MaximumComboSteps + 1)}" : string.Empty;
+        comboLabel.text = comboLive ? GameContentCopy.Text("SERİ","COMBO")+$"  x{Mathf.Min(combo, CatchScoring.MaximumComboSteps + 1)}" : string.Empty;
     }
 
     private void BeginTutorial()
@@ -754,6 +809,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         Scene catchScene = SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName);
         if (catchScene.IsValid() && catchScene.isLoaded)
         {
+            CatRunnerSessionContext.RestoreRequestedNavigation();
             AsyncOperation operation = SceneManager.UnloadSceneAsync(catchScene);
             while (operation != null && !operation.isDone)
                 yield return null;
@@ -858,6 +914,13 @@ public sealed class CatCatchGameController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    public void EditorConfigureNavigation(Button welcomeGames, Button pauseGames, Button resultGames)
+    {
+        welcomeGamesButton = welcomeGames;
+        pauseGamesButton = pauseGames;
+        resultGamesButton = resultGames;
+    }
+
     public void EditorConfigure(
         CatCatchPlayer catchPlayer,
         CatCatchMouse[] mouseSet,

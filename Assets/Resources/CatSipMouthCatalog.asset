@@ -1,0 +1,1514 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8da51274331d494889f1a6a63a4a918, type: 3}
+  m_Name: CatSipMouthCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::CatSipMouthCatalog
+  profiles:
+  - sourceKey: 529697c5edf72df46953b0f9a8548137:-5384383481081143580
+    vertices:
+    - vertexIndex: 45
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.011467396, y: 0.028668523, z: -0.00038318665}
+        weight: 0.87133104
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0114673665, y: 0.006933739, z: 0.042046055}
+        weight: 0.12699747
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005
+        bindPosition: {x: -0.011467341, y: 0.043568354, z: 0.038344264}
+        weight: 0.0016714744
+    - vertexIndex: 149
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012509987, y: 0.035736892, z: -0.002628307}
+        weight: 0.57551235
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012510023, y: 0.010674683, z: 0.048449766}
+        weight: 0.4147734
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.012510051, y: 0.0848935, z: 0.03765174}
+        weight: 0.0097142495
+    - vertexIndex: 1289
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0125099905, y: 0.035736892, z: -0.0026282892}
+        weight: 0.57551235
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012509954, y: 0.010674683, z: 0.048449785}
+        weight: 0.4147734
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.012509926, y: 0.0848935, z: 0.03765178}
+        weight: 0.009714245
+    - vertexIndex: 1349
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.016311873, y: 0.009525486, z: 0.04675069}
+        weight: 0.69359165
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.016311908, y: 0.033827096, z: -0.0018797935}
+        weight: 0.29753068
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.016311845, y: 0.08317282, z: 0.036535174}
+        weight: 0.008877632
+    - vertexIndex: 1362
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.015908845, y: 0.04642255, z: -0.0026565795}
+        weight: 0.8939091
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0159088, y: 0.0130463, z: 0.058868974}
+        weight: 0.10215038
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.015908765, y: 0.09113954, z: 0.04632192}
+        weight: 0.0039405315
+    - vertexIndex: 1371
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.016311873, y: 0.009525486, z: 0.04675069}
+        weight: 0.69359165
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.016311908, y: 0.033827096, z: -0.0018797935}
+        weight: 0.29753068
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.016311845, y: 0.08317282, z: 0.036535174}
+        weight: 0.008877632
+    - vertexIndex: 1387
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000005003614, y: 0.053059608, z: -0.0069955606}
+        weight: 1
+    - vertexIndex: 1400
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0125285825, y: 0.04538044, z: -0.0058413064}
+        weight: 0.8959144
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012528538, y: 0.01592486, z: 0.057153642}
+        weight: 0.1004048
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.012528506, y: 0.09312157, z: 0.043620065}
+        weight: 0.0036808497
+    - vertexIndex: 1418
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0046502803, y: 0.04916896, z: -0.007021201}
+        weight: 0.9029945
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.004650232, y: 0.017907063, z: 0.06059106}
+        weight: 0.09349227
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.0046501984, y: 0.09628706, z: 0.04601269}
+        weight: 0.0035132112
+    - vertexIndex: 1431
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0046502803, y: 0.04916896, z: -0.007021201}
+        weight: 0.9029945
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.004650232, y: 0.017907063, z: 0.06059106}
+        weight: 0.09349227
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.0046501984, y: 0.09628706, z: 0.04601269}
+        weight: 0.0035132112
+    - vertexIndex: 1483
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0046502803, y: 0.04916896, z: -0.007021201}
+        weight: 0.9029945
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.004650232, y: 0.017907063, z: 0.06059106}
+        weight: 0.09349227
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.0046501984, y: 0.09628706, z: 0.04601269}
+        weight: 0.0035132112
+    - vertexIndex: 1497
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.011467396, y: 0.028668523, z: -0.00038318665}
+        weight: 0.87133104
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0114673665, y: 0.006933739, z: 0.042046055}
+        weight: 0.12699747
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005
+        bindPosition: {x: -0.011467341, y: 0.043568354, z: 0.038344264}
+        weight: 0.0016714744
+    - vertexIndex: 1638
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.010211237, y: 0.00373003, z: 0.00645434}
+        weight: 0.6046399
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.010211244, y: 0.028086146, z: -0.000934882}
+        weight: 0.33692008
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0102112135, y: 0.0073442464, z: 0.041356843}
+        weight: 0.05359155
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005
+        bindPosition: {x: -0.010211189, y: 0.043766167, z: 0.037566833}
+        weight: 0.0048484653
+    - vertexIndex: 2950
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.011999233, y: 0.03610143, z: -0.002358552}
+        weight: 0.8120301
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.01199927, y: 0.010491464, z: 0.0488646}
+        weight: 0.18276072
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.011999298, y: 0.08488651, z: 0.03810518}
+        weight: 0.005209194
+    - vertexIndex: 3010
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.021311792, y: 0.011507064, z: 0.04236579}
+        weight: 0.7100785
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.021311758, y: 0.029983697, z: -0.004775005}
+        weight: 0.27763987
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.021311814, y: 0.08328809, z: 0.031724647}
+        weight: 0.012281677
+    - vertexIndex: 3023
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.015396217, y: 0.032947093, z: 0.0048315367}
+        weight: 0.95722437
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.015396247, y: 0.0027845588, z: 0.04736431}
+        weight: 0.04080522
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.015396279, y: 0.07720453, z: 0.039728254}
+        weight: 0.00197044
+    - vertexIndex: 3035
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.01631194, y: 0.009525486, z: 0.04675067}
+        weight: 0.69359165
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.016311904, y: 0.033827096, z: -0.0018798168}
+        weight: 0.29753068
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.016311968, y: 0.08317282, z: 0.036535118}
+        weight: 0.008877632
+    - vertexIndex: 3048
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.006978688, y: 0.051463116, z: -0.006077765}
+        weight: 1
+    - vertexIndex: 3061
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012509987, y: 0.035736892, z: -0.002628307}
+        weight: 0.57551235
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012510023, y: 0.010674683, z: 0.048449766}
+        weight: 0.4147734
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.012510051, y: 0.0848935, z: 0.03765174}
+        weight: 0.0097142495
+    - vertexIndex: 3080
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.00465027, y: 0.04916896, z: -0.0070212074}
+        weight: 0.9029945
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0046503185, y: 0.017907063, z: 0.060591057}
+        weight: 0.09349227
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.004650352, y: 0.09628706, z: 0.046012674}
+        weight: 0.0035132112
+    - vertexIndex: 3092
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000051724736, y: 0.049833946, z: -0.0072316397}
+        weight: 0.9319543
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000043768985, y: 0.018258246, z: 0.06119369}
+        weight: 0.065579295
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.00000007748943, y: 0.096845396, z: 0.046430714}
+        weight: 0.0024663545
+    - vertexIndex: 3145
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.010468307, y: 0.046913154, z: 0.001553125}
+        weight: 0.98510855
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.010468349, y: 0.00904673, z: 0.060271062}
+        weight: 0.01489143
+    - vertexIndex: 3270
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0000000013989205, y: 0.030253768, z: 0.0019558442}
+        weight: 0.5890346
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000031546804, y: 0.004999411, z: 0.044105776}
+        weight: 0.400986
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.000000009105748, y: 0.005596497, z: 0.00954807}
+        weight: 0.009979321
+    - vertexIndex: 3300
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.007522907, y: 0.002074197, z: -0.0011885399}
+        weight: 0.45108348
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.007522902, y: 0.025671406, z: -0.008372915}
+        weight: 0.3709069
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0075229346, y: 0.014071405, z: 0.037369296}
+        weight: 0.17800963
+  - sourceKey: 1b62b9cad696b81469fba67da80a8e72:2682626213445735142
+    vertices:
+    - vertexIndex: 12
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.009111219, y: 0.044892795, z: -0.0021968787}
+        weight: 0.9965471
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.009111177, y: 0.017924253, z: 0.05571816}
+        weight: 0.0034528505
+    - vertexIndex: 40
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0045585027, y: 0.05007572, z: -0.004645401}
+        weight: 0.9775154
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.004558456, y: 0.021450065, z: 0.06023774}
+        weight: 0.021185983
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.0045584254, y: 0.099411964, z: 0.04430603}
+        weight: 0.0012985518
+    - vertexIndex: 126
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.011783478, y: 0.03152232, z: 0.0023815127}
+        weight: 0.833444
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.011783508, y: 0.0105244005, z: 0.043677643}
+        weight: 0.16655605
+    - vertexIndex: 676
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.016282989, y: 0.034542978, z: 0.0009490221}
+        weight: 0.654616
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.016282955, y: 0.012584635, z: 0.046310518}
+        weight: 0.34538406
+    - vertexIndex: 754
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.019850349, y: 0.012287332, z: 0.04895464}
+        weight: 0.67486036
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.019850383, y: 0.037057485, z: 0.0018191036}
+        weight: 0.32513964
+    - vertexIndex: 771
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.013251997, y: 0.045447603, z: -0.00068702886}
+        weight: 0.98497903
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.013251956, y: 0.016572883, z: 0.056590658}
+        weight: 0.015020958
+    - vertexIndex: 788
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 5.226827e-10, y: 0.05492707, z: 0.00073075166}
+        weight: 0.9737623
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000047314177, y: 0.017269049, z: 0.06615024}
+        weight: 0.02464011
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.00000008575063, y: 0.09786686, z: 0.051380716}
+        weight: 0.0015976538
+    - vertexIndex: 806
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.006036908, y: 0.0501384, z: -0.005313125}
+        weight: 0.96997994
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0060368613, y: 0.022115275, z: 0.06015242}
+        weight: 0.030020095
+    - vertexIndex: 821
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.011783474, y: 0.03152232, z: 0.0023815297}
+        weight: 0.833444
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.011783444, y: 0.0105244005, z: 0.04367766}
+        weight: 0.16655605
+    - vertexIndex: 833
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0050299154, y: 0.049265794, z: -0.0071765506}
+        weight: 0.9974955
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0050298683, y: 0.023741899, z: 0.058892306}
+        weight: 0.0025044896
+    - vertexIndex: 848
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.006036908, y: 0.0501384, z: -0.005313125}
+        weight: 0.96997994
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0060368613, y: 0.022115275, z: 0.06015242}
+        weight: 0.030020095
+    - vertexIndex: 897
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0000000022418247, y: 0.032585986, z: 0.003134312}
+        weight: 0.984626
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000032100953, y: 0.010023272, z: 0.044880543}
+        weight: 0.014027492
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.000000057776404, y: 0.08290212, z: 0.034618918}
+        weight: 0.0013465503
+    - vertexIndex: 1015
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0073071206, y: 0.028689362, z: -0.004245115}
+        weight: 0.72197026
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.0073071155, y: 0.0012105107, z: 0.0008098508}
+        weight: 0.2718896
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.007307089, y: 0.016368201, z: 0.039460078}
+        weight: 0.0061401506
+    - vertexIndex: 1123
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.017952282, y: 0.03751061, z: 0.009961339}
+        weight: 0.9397312
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.017952252, y: 0.004442809, z: 0.051182814}
+        weight: 0.05809603
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.017952219, y: 0.08022026, z: 0.04259815}
+        weight: 0.0021727907
+    - vertexIndex: 2275
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000004453687, y: 0.05147702, z: -0.006226702}
+        weight: 0.9836539
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000043814996, y: 0.023300238, z: 0.06125803}
+        weight: 0.016346093
+    - vertexIndex: 2359
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0239452, y: 0.01546227, z: 0.04255188}
+        weight: 0.53401077
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.023945168, y: 0.031507157, z: -0.0026830463}
+        weight: 0.4584448
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.02394522, y: 0.08700288, z: 0.030354014}
+        weight: 0.00754444
+    - vertexIndex: 2370
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000044422768, y: 0.053217057, z: -0.0062107514}
+        weight: 0.9836539
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000045031754, y: 0.023666373, z: 0.06295919}
+        weight: 0.016346093
+    - vertexIndex: 2394
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.017316079, y: 0.013571483, z: 0.047165412}
+        weight: 0.5764409
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.017316045, y: 0.035593554, z: 0.00017372168}
+        weight: 0.42355913
+    - vertexIndex: 2409
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.019196104, y: 0.03770364, z: 0.0026256528}
+        weight: 0.52634746
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.019196138, y: 0.011642141, z: 0.049761962}
+        weight: 0.47253135
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.019196166, y: 0.08629599, z: 0.03848292}
+        weight: 0.0011212138
+    - vertexIndex: 2421
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.004558496, y: 0.05007572, z: -0.0046454077}
+        weight: 0.9775154
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0045585427, y: 0.021450065, z: 0.06023773}
+        weight: 0.021185985
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.0045585735, y: 0.099411964, z: 0.044306014}
+        weight: 0.0012985507
+    - vertexIndex: 2436
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000004576307, y: 0.05040286, z: -0.006398135}
+        weight: 0.9836539
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000043038515, y: 0.023231868, z: 0.060172427}
+        weight: 0.016346093
+    - vertexIndex: 2482
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.010712894, y: 0.04683951, z: 0.00688086}
+        weight: 0.9594257
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.010712932, y: 0.009494633, z: 0.059608746}
+        weight: 0.038054634
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.01071297, y: 0.088157326, z: 0.0483878}
+        weight: 0.0025196916
+    - vertexIndex: 2603
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0000000022418247, y: 0.032585986, z: 0.003134312}
+        weight: 0.984626
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000032100953, y: 0.010023272, z: 0.044880543}
+        weight: 0.014027492
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.000000057776404, y: 0.08290212, z: 0.034618918}
+        weight: 0.0013465503
+    - vertexIndex: 2625
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008998255, y: 0.03150325, z: 0.0012619724}
+        weight: 0.5841194
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.00899827, y: 0.0033622568, z: 0.006607751}
+        weight: 0.34206927
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.008998285, y: 0.011612492, z: 0.043413457}
+        weight: 0.07381136
+  - sourceKey: 0b787990741524343b6b9f9e1637aa26:-8729143336603939707
+    vertices:
+    - vertexIndex: 15
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.010470749, y: 0.045646984, z: -0.0061345617}
+        weight: 0.92585886
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.010470703, y: 0.01626944, z: 0.057349365}
+        weight: 0.070314035
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.010470672, y: 0.093515195, z: 0.04366596}
+        weight: 0.0038270708
+    - vertexIndex: 52
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0056518987, y: 0.049900033, z: -0.0072623305}
+        weight: 0.9860947
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.00565185, y: 0.018302688, z: 0.061251435}
+        weight: 0.013905267
+    - vertexIndex: 272
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000023853186, y: 0.041672543, z: -0.003334911}
+        weight: 0.8344398
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000038685084, y: 0.012666134, z: 0.054085854}
+        weight: 0.15799227
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.00000007020416, y: 0.08892468, z: 0.04206547}
+        weight: 0.0075678322
+    - vertexIndex: 1002
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0120218955, y: 0.036163066, z: -0.0029455314}
+        weight: 0.67085946
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012021859, y: 0.011077684, z: 0.048795987}
+        weight: 0.31829882
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.01202183, y: 0.08539959, z: 0.037813473}
+        weight: 0.01084173
+    - vertexIndex: 1064
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.021311732, y: 0.011507064, z: 0.04236582}
+        weight: 0.67929035
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.021311766, y: 0.029983697, z: -0.0047749747}
+        weight: 0.30712375
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.02131171, y: 0.08328809, z: 0.03172472}
+        weight: 0.013585927
+    - vertexIndex: 1078
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.015908845, y: 0.04642255, z: -0.0026565795}
+        weight: 0.87403876
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.0159088, y: 0.0130463, z: 0.058868974}
+        weight: 0.119147204
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.015908765, y: 0.09113954, z: 0.04632192}
+        weight: 0.0068141194
+    - vertexIndex: 1094
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0000000031948257, y: 0.04863618, z: 0.00446668}
+        weight: 0.95254993
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000004476861, y: 0.006582109, z: 0.06259124}
+        weight: 0.044364784
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.000000087234454, y: 0.08663803, z: 0.0522698}
+        weight: 0.0030853217
+    - vertexIndex: 1112
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000056522484, y: 0.0519118, z: -0.0079024155}
+        weight: 1
+    - vertexIndex: 1126
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012263247, y: 0.011473585, z: 0.04683562}
+        weight: 0.72361207
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.012263283, y: 0.034337293, z: -0.0037618165}
+        weight: 0.26810932
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.012263221, y: 0.08499988, z: 0.03585388}
+        weight: 0.008278646
+    - vertexIndex: 1138
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0046502794, y: 0.04916896, z: -0.007021201}
+        weight: 1
+    - vertexIndex: 1152
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0050839004, y: 0.04943644, z: -0.008690473}
+        weight: 1
+    - vertexIndex: 1207
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000009668091, y: 0.024714587, z: -0.0135169355}
+        weight: 0.57984185
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000025253701, y: 0.018880254, z: 0.035307392}
+        weight: 0.4201582
+    - vertexIndex: 1332
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000009668091, y: 0.024714587, z: -0.0135169355}
+        weight: 0.57984185
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000025253701, y: 0.018880254, z: 0.035307392}
+        weight: 0.4201582
+    - vertexIndex: 1479
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.021311732, y: 0.011507064, z: 0.04236582}
+        weight: 0.67929035
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.021311766, y: 0.029983697, z: -0.0047749747}
+        weight: 0.30712375
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.02131171, y: 0.08328809, z: 0.03172472}
+        weight: 0.013585927
+    - vertexIndex: 2724
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000005396185, y: 0.05060474, z: -0.0075444113}
+        weight: 1
+    - vertexIndex: 2790
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.01631194, y: 0.009525486, z: 0.04675067}
+        weight: 0.6582802
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.016311904, y: 0.033827096, z: -0.0018798168}
+        weight: 0.33440915
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.016311968, y: 0.08317282, z: 0.036535118}
+        weight: 0.0073106005
+    - vertexIndex: 2800
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000005003614, y: 0.053059608, z: -0.0069955606}
+        weight: 1
+    - vertexIndex: 2824
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012263315, y: 0.012049738, z: 0.0475329}
+        weight: 0.60381126
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012263278, y: 0.03514399, z: -0.004170995}
+        weight: 0.39235488
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.012263341, y: 0.0858023, z: 0.036271337}
+        weight: 0.0038338949
+    - vertexIndex: 2834
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.006978688, y: 0.051463116, z: -0.006077765}
+        weight: 0.9836366
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.006978737, y: 0.017489845, z: 0.06303629}
+        weight: 0.016363395
+    - vertexIndex: 2850
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012263315, y: 0.012049738, z: 0.0475329}
+        weight: 0.60381126
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012263278, y: 0.03514399, z: -0.004170995}
+        weight: 0.39235488
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.012263341, y: 0.0858023, z: 0.036271337}
+        weight: 0.0038338949
+    - vertexIndex: 2864
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0050838883, y: 0.04943644, z: -0.00869048}
+        weight: 1
+    - vertexIndex: 2874
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.009400801, y: 0.049754236, z: -0.006545124}
+        weight: 0.9122773
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009400849, y: 0.017570958, z: 0.06126651}
+        weight: 0.087722726
+    - vertexIndex: 2941
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.015396216, y: 0.032438748, z: 0.0038292822}
+        weight: 0.91748756
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.015396247, y: 0.0036508907, z: 0.046648487}
+        weight: 0.07943468
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.015396277, y: 0.077723235, z: 0.03873132}
+        weight: 0.0030777103
+    - vertexIndex: 3052
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.008322488, y: 0.014816157, z: 0.037138227}
+        weight: 0.51565075
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008322454, y: 0.025609335, z: -0.009150215}
+        weight: 0.48434922
+  - sourceKey: 3095f524687464f428b2e9519f70b147:4986841198743352913
+    vertices:
+    - vertexIndex: 36
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.011988545, y: 0.067076676, z: -0.0024387725}
+        weight: 0.9468038
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.011988482, y: 0.017483281, z: 0.08527774}
+        weight: 0.0501705
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.01198843, y: 0.13015668, z: 0.06768247}
+        weight: 0.0030256894
+    - vertexIndex: 73
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.009161815, y: 0.07489778, z: 0.0023531886}
+        weight: 0.9876964
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.00916175, y: 0.014523658, z: 0.09395952}
+        weight: 0.012303585
+    - vertexIndex: 86
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000003597479, y: 0.074246146, z: -0.005029919}
+        weight: 0.9951504
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000006559125, y: 0.021583995, z: 0.09170421}
+        weight: 0.0048496067
+    - vertexIndex: 362
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.009161819, y: 0.07489778, z: 0.0023531753}
+        weight: 0.9876964
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009161884, y: 0.014523658, z: 0.0939595}
+        weight: 0.012303585
+    - vertexIndex: 376
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000003597479, y: 0.074246146, z: -0.005029919}
+        weight: 0.9951504
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000006559125, y: 0.021583995, z: 0.09170421}
+        weight: 0.0048496067
+    - vertexIndex: 1557
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.00000000570122, y: 0.0740908, z: -0.007971162}
+        weight: 0.9979174
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000006502137, y: 0.024419524, z: 0.09090746}
+        weight: 0.002082592
+    - vertexIndex: 1618
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.012901119, y: 0.06753857, z: 0.0026831862}
+        weight: 0.9435995
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012901058, y: 0.012587394, z: 0.086851925}
+        weight: 0.05276982
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.012901003, y: 0.12626192, z: 0.071040824}
+        weight: 0.0036306572
+    - vertexIndex: 1642
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.023862612, y: 0.011587618, z: 0.06971172}
+        weight: 0.51252025
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.023862662, y: 0.05059652, z: -0.00010122665}
+        weight: 0.47880715
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.023862569, y: 0.11865889, z: 0.055646647}
+        weight: 0.008672611
+    - vertexIndex: 1657
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.023862612, y: 0.011587618, z: 0.06971172}
+        weight: 0.51252025
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.023862662, y: 0.05059652, z: -0.00010122665}
+        weight: 0.47880715
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.023862569, y: 0.11865889, z: 0.055646647}
+        weight: 0.008672611
+    - vertexIndex: 1673
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.008127114, y: 0.07298847, z: -0.0049241744}
+        weight: 0.9862792
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.008127045, y: 0.02120495, z: 0.09050037}
+        weight: 0.013720809
+    - vertexIndex: 1687
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000006965695, y: 0.07264593, z: -0.009739022}
+        weight: 1
+    - vertexIndex: 1737
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.0079102805, y: 0.018135741, z: -0.00064813305}
+        weight: 0.4658579
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.007910288, y: 0.052047975, z: -0.012308654}
+        weight: 0.37571195
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue/DEF-tongue.001
+        bindPosition: {x: -0.0079102805, y: -0.0000987144, z: -0.0006480684}
+        weight: 0.15843017
+    - vertexIndex: 1866
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.018581191, y: 0.042075697, z: 0.0013956814}
+        weight: 0.52566576
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.018581148, y: 0.008258051, z: 0.061726775}
+        weight: 0.4743342
+    - vertexIndex: 1884
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.008879176, y: 0.018406484, z: 0.0036269978}
+        weight: 0.45147407
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.008879186, y: 0.052746534, z: -0.008082303}
+        weight: 0.43853912
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue/DEF-tongue.001
+        bindPosition: {x: -0.008879176, y: 0.00017201278, z: 0.0036270637}
+        weight: 0.10998678
+    - vertexIndex: 1897
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.010817535, y: 0.036870122, z: -0.01185938}
+        weight: 0.7107982
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.010817529, y: 0.0029894607, z: -0.0017248477}
+        weight: 0.26047102
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.010817489, y: 0.020048378, z: 0.05374038}
+        weight: 0.02873075
+    - vertexIndex: 3307
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008127106, y: 0.07298847, z: -0.004924186}
+        weight: 0.9862792
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.008127175, y: 0.02120495, z: 0.09050036}
+        weight: 0.013720809
+    - vertexIndex: 3368
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012901123, y: 0.06753857, z: 0.0026831678}
+        weight: 0.9435995
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012901183, y: 0.012587394, z: 0.0868519}
+        weight: 0.05276982
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.012901239, y: 0.12626192, z: 0.07104078}
+        weight: 0.0036306577
+    - vertexIndex: 3381
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.02554127, y: 0.012866183, z: 0.06847758}
+        weight: 0.71270347
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.02554122, y: 0.04967293, z: -0.0016194007}
+        weight: 0.27759624
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.025541311, y: 0.11935516, z: 0.054011635}
+        weight: 0.009700317
+    - vertexIndex: 3403
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.012828343, y: 0.066293925, z: -0.0039728926}
+        weight: 0.8447692
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.012828406, y: 0.018808316, z: 0.084177524}
+        weight: 0.15523082
+    - vertexIndex: 3424
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.011967278, y: 0.021119304, z: 0.053408094}
+        weight: 0.6175858
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.011967231, y: 0.03678086, z: -0.012977125}
+        weight: 0.3824142
+    - vertexIndex: 3438
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008008056, y: 0.072800964, z: -0.011174213}
+        weight: 1
+    - vertexIndex: 3448
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008127106, y: 0.07298847, z: -0.004924186}
+        weight: 0.9862792
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.008127175, y: 0.02120495, z: 0.09050036}
+        weight: 0.013720809
+    - vertexIndex: 3622
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.00000001157803, y: 0.035489094, z: -0.016187401}
+        weight: 0.7885462
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.0000000058838467, y: 0.0020499018, z: -0.0061696516}
+        weight: 0.20083106
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000036794905, y: 0.02396804, z: 0.0514436}
+        weight: 0.01062274
+    - vertexIndex: 3643
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.010817518, y: 0.036870122, z: -0.011859396}
+        weight: 0.7107982
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.010817525, y: 0.0029894607, z: -0.0017248683}
+        weight: 0.26047102
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.010817565, y: 0.020048378, z: 0.053740364}
+        weight: 0.02873075
+  - sourceKey: 8d21faf3c63aea945bc6e5cec6a3861d:-4596125681841169832
+    vertices:
+    - vertexIndex: 21
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0066423262, y: 0.047461748, z: -0.006727513}
+        weight: 1
+    - vertexIndex: 57
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0066423262, y: 0.047461748, z: -0.006727513}
+        weight: 1
+    - vertexIndex: 155
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000010448304, y: 0.03939258, z: -0.0014608208}
+        weight: 0.9717476
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000034489407, y: 0.020628313, z: 0.048219875}
+        weight: 0.02697911
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.00000005600826, y: 0.09396989, z: 0.03355948}
+        weight: 0.0012733142
+    - vertexIndex: 191
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0035368472, y: 0.049691807, z: -0.007442914}
+        weight: 1
+    - vertexIndex: 793
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0037247154, y: 0.05090785, z: -0.009459662}
+        weight: 1
+    - vertexIndex: 861
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.010354153, y: 0.046806805, z: -0.004844505}
+        weight: 0.99169034
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.01035411, y: 0.02555598, z: 0.05471128}
+        weight: 0.008309643
+    - vertexIndex: 878
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.000000003052216, y: 0.048015054, z: 0.004267244}
+        weight: 0.97925705
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000041405187, y: 0.016931191, z: 0.057888847}
+        weight: 0.014616411
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005
+        bindPosition: {x: 0.00000007251877, y: 0.057654418, z: 0.05069441}
+        weight: 0.0051152026
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.000000073273775, y: 0.09433491, z: 0.043904748}
+        weight: 0.0010113316
+    - vertexIndex: 897
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0037247154, y: 0.05090785, z: -0.009459662}
+        weight: 1
+    - vertexIndex: 911
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.009758634, y: 0.028850552, z: 0.00078619434}
+        weight: 0.6100946
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.009758607, y: 0.01612353, z: 0.038427517}
+        weight: 0.38663548
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.009758591, y: 0.086003855, z: 0.026298234}
+        weight: 0.0032699818
+    - vertexIndex: 924
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0028177588, y: 0.049693048, z: -0.0093955705}
+        weight: 1
+    - vertexIndex: 937
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000056584817, y: 0.049288657, z: -0.007911175}
+        weight: 1
+    - vertexIndex: 994
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.00927057, y: 0.03183447, z: 0.0014876242}
+        weight: 0.83289266
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.009270541, y: 0.016093737, z: 0.041492622}
+        weight: 0.16370344
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.009270523, y: 0.0871714, z: 0.02913242}
+        weight: 0.0034039076
+    - vertexIndex: 1115
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000017965466, y: 0.023610182, z: 0.02511769}
+        weight: 0.5127157
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000006750419, y: 0.017507179, z: -0.009437769}
+        weight: 0.48728427
+    - vertexIndex: 1138
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.000000003871357, y: 0.024513023, z: 0.0054125153}
+        weight: 0.5739823
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.000000012845788, y: 0.0049414937, z: 0.010775918}
+        weight: 0.2602723
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000025184384, y: 0.010658399, z: 0.03521046}
+        weight: 0.16574542
+    - vertexIndex: 2432
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.006642317, y: 0.047461748, z: -0.0067275222}
+        weight: 1
+    - vertexIndex: 2494
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.013716323, y: 0.017806305, z: 0.037432607}
+        weight: 0.6036773
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.013716295, y: 0.028249022, z: -0.001073853}
+        weight: 0.3934319
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.013716337, y: 0.0871656, z: 0.024725968}
+        weight: 0.0028908206
+    - vertexIndex: 2511
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000013251802, y: 0.052407406, z: -0.0018527946}
+        weight: 1
+    - vertexIndex: 2536
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.013212251, y: 0.028510338, z: 0.00139788}
+        weight: 0.53371334
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.013212277, y: 0.015452097, z: 0.038229756}
+        weight: 0.46275312
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.013212293, y: 0.08530846, z: 0.026377868}
+        weight: 0.0035335314
+    - vertexIndex: 2550
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.009758635, y: 0.028850552, z: 0.00078618043}
+        weight: 0.6100946
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009758662, y: 0.01612353, z: 0.038427506}
+        weight: 0.38663548
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.009758678, y: 0.086003855, z: 0.026298203}
+        weight: 0.003269983
+    - vertexIndex: 2564
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000049374176, y: 0.05029578, z: -0.006903057}
+        weight: 1
+    - vertexIndex: 2577
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000049353956, y: 0.04952546, z: -0.0069002295}
+        weight: 1
+    - vertexIndex: 2633
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0089057265, y: 0.018928543, z: 0.028426986}
+        weight: 0.6606264
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008905703, y: 0.019708915, z: -0.004144231}
+        weight: 0.33937362
+    - vertexIndex: 2756
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.00929137, y: 0.023891859, z: 0.0041456576}
+        weight: 0.6788304
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009291392, y: 0.011758136, z: 0.03432652}
+        weight: 0.3211696
+    - vertexIndex: 2778
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0072215274, y: 0.019747475, z: -0.0036279687}
+        weight: 0.55900323
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.0072215316, y: 0.0011075995, z: 0.0013026843}
+        weight: 0.3296974
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0072215507, y: 0.018433314, z: 0.028577855}
+        weight: 0.11129938
+  - sourceKey: 7f01b32c4c43f6b42979e83dbc92ae36:4180565867295438512
+    vertices:
+    - vertexIndex: 24
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0056162206, y: 0.038157385, z: -0.011205421}
+        weight: 0.92364633
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.005616178, y: 0.019573841, z: 0.048929848}
+        weight: 0.07635367
+    - vertexIndex: 53
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.004312538, y: 0.040357787, z: -0.013403604}
+        weight: 0.9976091
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.004312492, y: 0.022201166, z: 0.050594456}
+        weight: 0.002390921
+    - vertexIndex: 281
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0044111307, y: 0.040783588, z: -0.014540157}
+        weight: 1
+    - vertexIndex: 1471
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.016311876, y: 0.009478941, z: 0.04109993}
+        weight: 0.62037206
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.016311908, y: 0.02830375, z: -0.0030739608}
+        weight: 0.3796279
+    - vertexIndex: 1484
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.011874254, y: 0.039200664, z: -0.006898068}
+        weight: 0.78520805
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.011874213, y: 0.015600258, z: 0.050892577}
+        weight: 0.21479197
+    - vertexIndex: 1501
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000005767871, y: 0.046833042, z: -0.008064128}
+        weight: 0.9903584
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000004154436, y: 0.018412152, z: 0.05808327}
+        weight: 0.009641588
+    - vertexIndex: 1519
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0065893047, y: 0.040789828, z: -0.0145236645}
+        weight: 0.9683365
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.006589258, y: 0.023388721, z: 0.050770283}
+        weight: 0.031663477
+    - vertexIndex: 1531
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.012747348, y: 0.0096404385, z: 0.04054738}
+        weight: 0.5143316
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.01274738, y: 0.027800087, z: -0.0033527345}
+        weight: 0.4856684
+    - vertexIndex: 1546
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0045717163, y: 0.04108615, z: -0.017074594}
+        weight: 1
+    - vertexIndex: 1559
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000011840466, y: 0.040736042, z: -0.016554218}
+        weight: 1
+    - vertexIndex: 1612
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.008449402, y: 0.030437335, z: -0.0078824}
+        weight: 0.7498368
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.008449366, y: 0.014638284, z: 0.042126764}
+        weight: 0.2501632
+    - vertexIndex: 1727
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000089957055, y: 0.019187644, z: -0.01257693}
+        weight: 0.8377431
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000021544409, y: 0.016750729, z: 0.030121272}
+        weight: 0.08234373
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.0000000046323505, y: 0.0015173714, z: -0.0038859495}
+        weight: 0.079913184
+    - vertexIndex: 1750
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.007522915, y: 0.020148061, z: -0.009567071}
+        weight: 0.7485514
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.007522909, y: 0.0015232412, z: -0.0007265747}
+        weight: 0.16428736
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.007522885, y: 0.01402486, z: 0.031718545}
+        weight: 0.08716121
+    - vertexIndex: 2010
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0056162206, y: 0.038157385, z: -0.011205421}
+        weight: 0.92364633
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.005616178, y: 0.019573841, z: 0.048929848}
+        weight: 0.07635367
+    - vertexIndex: 3028
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0117855705, y: 0.038672194, z: -0.008109829}
+        weight: 0.7926124
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0117856115, y: 0.016666563, z: 0.050111152}
+        weight: 0.20738763
+    - vertexIndex: 3100
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.014551768, y: 0.008238428, z: 0.041874524}
+        weight: 0.5701814
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.014551737, y: 0.02878738, z: -0.0016937645}
+        weight: 0.42981857
+    - vertexIndex: 3109
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000011259631, y: 0.043705646, z: -0.015742153}
+        weight: 0.9988864
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000003815728, y: 0.025217142, z: 0.05334779}
+        weight: 0.0011135936
+    - vertexIndex: 3135
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.014551768, y: 0.008238428, z: 0.041874524}
+        weight: 0.5701814
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.014551737, y: 0.02878738, z: -0.0016937645}
+        weight: 0.42981857
+    - vertexIndex: 3148
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.014551768, y: 0.008238428, z: 0.041874524}
+        weight: 0.5701814
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.014551737, y: 0.02878738, z: -0.0016937645}
+        weight: 0.42981857
+    - vertexIndex: 3162
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000011987928, y: 0.04142121, z: -0.016760385}
+        weight: 1
+    - vertexIndex: 3175
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000011987928, y: 0.04142121, z: -0.016760385}
+        weight: 1
+    - vertexIndex: 3229
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.009443387, y: 0.039419748, z: -0.003541746}
+        weight: 0.9365816
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009443427, y: 0.012373727, z: 0.05184256}
+        weight: 0.06341839
+    - vertexIndex: 3349
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00000002589544, y: 0.007676668, z: 0.036204446}
+        weight: 0.61501145
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000017090555, y: 0.023132168, z: -0.0023894696}
+        weight: 0.38498858
+    - vertexIndex: 3371
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.008810491, y: 0.021889813, z: -0.0034559257}
+        weight: 0.75988007
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.008810519, y: 0.008444619, z: 0.034758408}
+        weight: 0.15773626
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.008810501, y: 0.0013366384, z: 0.005625188}
+        weight: 0.08238366
+  - sourceKey: 40545d857e3a0f145b271d8f03fcd9de:-6401094670691127704
+    vertices:
+    - vertexIndex: 18
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.00641026, y: 0.044829644, z: -0.005187703}
+        weight: 1
+    - vertexIndex: 48
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.00641026, y: 0.044829644, z: -0.005187703}
+        weight: 1
+    - vertexIndex: 199
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.006410253, y: 0.044829644, z: -0.005187712}
+        weight: 1
+    - vertexIndex: 230
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0025060887, y: 0.046887524, z: -0.006304073}
+        weight: 1
+    - vertexIndex: 875
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.022083886, y: 0.008212768, z: 0.02745809}
+        weight: 0.70471334
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.022083903, y: 0.016412983, z: 0.0060980306}
+        weight: 0.25469962
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.022083875, y: 0.07444246, z: 0.019280935}
+        weight: 0.04058709
+    - vertexIndex: 894
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.009165361, y: 0.043291103, z: 0.0027619381}
+        weight: 0.9980362
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.009165324, y: 0.017363593, z: 0.052949756}
+        weight: 0.001963809
+    - vertexIndex: 907
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0055748317, y: 0.04800327, z: 0.00069290254}
+        weight: 1
+    - vertexIndex: 924
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.003724714, y: 0.048305906, z: -0.0073837438}
+        weight: 1
+    - vertexIndex: 938
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.009758517, y: 0.016489413, z: 0.038288943}
+        weight: 0.59345317
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.009758544, y: 0.028795611, z: 0.000398825}
+        weight: 0.4041743
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.0097585, y: 0.08628676, z: 0.026027981}
+        weight: 0.0023724956
+    - vertexIndex: 952
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0026234647, y: 0.046695877, z: -0.007917111}
+        weight: 1
+    - vertexIndex: 965
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.008161317, y: 0.04431496, z: -0.0053657945}
+        weight: 1
+    - vertexIndex: 1020
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.008716054, y: 0.021881344, z: 0.003610354}
+        weight: 0.8859768
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.008716034, y: 0.011839387, z: 0.032247562}
+        weight: 0.11402321
+    - vertexIndex: 1146
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.007459901, y: 0.021032121, z: 0.0033317485}
+        weight: 0.72519875
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: -0.007459896, y: 0.0013710934, z: 0.0074802293}
+        weight: 0.16989206
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.007459881, y: 0.01192492, z: 0.031357907}
+        weight: 0.10490927
+    - vertexIndex: 1265
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: -0.022083886, y: 0.008212768, z: 0.02745809}
+        weight: 0.70471334
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.022083903, y: 0.016412983, z: 0.0060980306}
+        weight: 0.25469962
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: -0.022083875, y: 0.07444246, z: 0.019280935}
+        weight: 0.04058709
+    - vertexIndex: 2056
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.0029436653, y: 0.047637638, z: -0.006926388}
+        weight: 1
+    - vertexIndex: 2114
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.010967694, y: 0.04445868, z: -0.0036420268}
+        weight: 0.9765949
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.010967734, y: 0.023867687, z: 0.052684106}
+        weight: 0.023405101
+    - vertexIndex: 2123
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -2.8937527e-10, y: 0.04992098, z: -0.00040463355}
+        weight: 1
+    - vertexIndex: 2144
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.013212903, y: 0.029334007, z: 0.0011607952}
+        weight: 0.5637418
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.01321293, y: 0.015864087, z: 0.038981356}
+        weight: 0.43283275
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.013212947, y: 0.08598088, z: 0.026909376}
+        weight: 0.0034254624
+    - vertexIndex: 2158
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.009758571, y: 0.016489413, z: 0.03828893}
+        weight: 0.5934533
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.009758544, y: 0.028795611, z: 0.00039881104}
+        weight: 0.40417424
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.009758588, y: 0.08628676, z: 0.026027948}
+        weight: 0.0023724956
+    - vertexIndex: 2171
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.0000000050165108, y: 0.0475195, z: -0.0070136334}
+        weight: 1
+    - vertexIndex: 2185
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: -0.000000004511132, y: 0.046711087, z: -0.0063070627}
+        weight: 1
+    - vertexIndex: 2235
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.000000003944259, y: 0.045261253, z: 0.0055144127}
+        weight: 0.98002166
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.000000039679172, y: 0.015110325, z: 0.055475697}
+        weight: 0.015449333
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005
+        bindPosition: {x: 0.00000006994889, y: 0.05522306, z: 0.048897926}
+        weight: 0.0034600664
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004
+        bindPosition: {x: 0.00000007074984, y: 0.091717325, z: 0.042392436}
+        weight: 0.0010689627
+    - vertexIndex: 2362
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.00871606, y: 0.021881344, z: 0.0036103413}
+        weight: 0.8859768
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.00871608, y: 0.011839387, z: 0.032247547}
+        weight: 0.11402321
+    - vertexIndex: 2391
+      influences:
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw
+        bindPosition: {x: 0.004771554, y: 0.017485881, z: -0.003376341}
+        weight: 0.8157471
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006/DEF-jaw/DEF-tongue
+        bindPosition: {x: 0.0047715567, y: -0.0014838014, z: 0.00045001457}
+        weight: 0.16690683
+      - bonePath: Cat_Domestic_Shorthair/root/DEF-spine/DEF-spine.001/DEF-spine.002/DEF-spine.003/DEF-spine.004/DEF-spine.005/DEF-spine.006
+        bindPosition: {x: 0.0047715753, y: 0.017691713, z: 0.026426544}
+        weight: 0.01734609
+  breeds:
+  - breedId: domestic-shorthair
+    profileIndex: 0
+  - breedId: domestic-shorthair-orange
+    profileIndex: 0
+  - breedId: khao-manee
+    profileIndex: 0
+  - breedId: british-shorthair
+    profileIndex: 1
+  - breedId: domestic-longhair
+    profileIndex: 2
+  - breedId: maine-coon
+    profileIndex: 3
+  - breedId: oriental-shorthair
+    profileIndex: 4
+  - breedId: persian
+    profileIndex: 5
+  - breedId: russian-blue
+    profileIndex: 0
+  - breedId: sphynx
+    profileIndex: 6

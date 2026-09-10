@@ -1,4 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-GuestContinueButton (x:630.00, y:449.00, width:660.00, height:76.00)
-GoogleSignInButton (x:630.00, y:553.00, width:660.00, height:84.00)
-AccountBackButton (x:830.00, y:221.00, width:260.00, height:62.00)

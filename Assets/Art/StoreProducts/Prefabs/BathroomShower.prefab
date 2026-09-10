@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 3303455512161361334}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.12, y: 0.125, z: 0.05}
+  m_LocalPosition: {x: -0.264, y: 0.11, z: 0.044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 1476244351626386543}
   - component: {fileID: 8724528069515319462}
   - component: {fileID: 1452137099557979244}
+  - component: {fileID: 7892965889500600920}
   m_Layer: 0
   m_Name: BathroomShower
   m_TagString: Untagged
@@ -68,6 +69,7 @@ Transform:
   - {fileID: 8766086131945333982}
   - {fileID: 8029316306019907332}
   - {fileID: 1828949437316257453}
+  - {fileID: 7783301961536754278}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3913035087796520445
@@ -99,7 +101,7 @@ MonoBehaviour:
   productId: bathroom.shower
   movableRoot: {fileID: 5507687714937815194}
   legacySlots: []
-  footprintSize: {x: 1.65, y: 1.28}
+  footprintSize: {x: 1.452, y: 1.1264}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -136,6 +138,7 @@ MonoBehaviour:
   unlockedContent: {fileID: 5579945502635698467}
   doorPoint: {fileID: 8766086131945333982}
   standPoint: {fileID: 8029316306019907332}
+  waterOutlet: {fileID: 7783301961536754278}
   rinseDuration: 2.6
   shakeDuration: 0.65
   energyRestore: 6
@@ -151,6 +154,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7892965889500600920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3811894361318688167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.88
 --- !u!1 &4052965246805197952
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,7 +192,7 @@ Transform:
   m_GameObject: {fileID: 4052965246805197952}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.33, y: 0, z: 0.95}
+  m_LocalPosition: {x: -0.2904, y: 0, z: 0.83599997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -209,7 +225,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.88, y: 0.88, z: 0.88}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2212284280562712105}
@@ -261,7 +277,38 @@ Transform:
   m_GameObject: {fileID: 5620230705295975592}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.33, y: 0, z: 1.05}
+  m_LocalPosition: {x: -0.2904, y: 0, z: 0.92399997}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5507687714937815194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8352545009216265715
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7783301961536754278}
+  m_Layer: 0
+  m_Name: RinseWaterOutlet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7783301961536754278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8352545009216265715}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.4938611, z: 0.023059608}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -330,39 +377,39 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 8f8ec4f39578b4a4a970ba39390c2bdd, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 31777db48e73a0d44b0c31715315c57d, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: e03d5c9d9d2732c47994cb3e02ce4d08, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a972b444a223344ea4e66c67d3b9c8c, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 386e37846da3ae24e97eb9689290d9d5, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: a692b6c9649d04844b496109af9d3fcb, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: bb6fe5d2ac8736f45bbd11461c819dfb, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[7]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2bc3ca279f435244ca8d5b44679ef5fa, type: 2}
     - target: {fileID: -7511558181221131132, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: 'm_Materials.Array.data[8]'
       value: 
-      objectReference: {fileID: 2100000, guid: c389359af3b2c5f46ad92767feff9bce, type: 2}
+      objectReference: {fileID: 2100000, guid: c6f70e0a67d08784db7e4c6885bd766d, type: 2}
     - target: {fileID: 919132149155446097, guid: db10aab4b2a13cd4bb8234b3cd2874c7, type: 3}
       propertyPath: m_Name
       value: BathroomShower_PremiumModel

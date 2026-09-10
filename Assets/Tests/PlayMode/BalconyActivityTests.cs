@@ -92,7 +92,7 @@ public sealed class BalconyActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 45f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         // The tour runs ten routines in a row, so every message names the one
@@ -175,6 +175,7 @@ public sealed class BalconyActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (shake.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(shake);
             maxSwing = Mathf.Max(maxSwing, Quaternion.Angle(feederHome, feeder.localRotation));
             yield return null;
         }
@@ -223,6 +224,7 @@ public sealed class BalconyActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (knock.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(knock);
             lowestY = Mathf.Min(lowestY, glass.localPosition.y);
             maxTilt = Mathf.Max(maxTilt, Quaternion.Angle(homeRotation, glass.localRotation));
             yield return null;

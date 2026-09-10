@@ -22,10 +22,12 @@ public sealed class LivingFurnitureTests
             if(HomeStoreService.IsLivingRoomCollectionProduct(p.Id)||CatCollectionPolicy.IsCatItem(p.Id))
             {owned.Add(p.Id);if(CatCollectionPolicy.IsCatItem(p.Id))stored.Add(p.Id);}
         state.ownedProductIds=owned.ToArray();state.storedProductIds=stored.ToArray();HomeStoreService.ApplySavedState(state);
+        yield return null;Physics.SyncTransforms();CatRoomArrangement.Request(catScene()).Invalidate();
         foreach(var id in new[]{HomeStoreService.CloudBedId,HomeStoreService.FeatherToyId,HomeStoreService.PlayTunnelId,HomeStoreService.BallBasketId,HomeStoreService.ToyMouseId})
             Assert.That(HomeStoreService.TrySetStored(id,false),Is.True,id);
         yield return null;Physics.SyncTransforms();
     }
+    static UnityEngine.SceneManagement.Scene catScene()=>UnityEngine.SceneManagement.SceneManager.GetSceneByName("LivingRoom_Level01");
     [UnityTest] public IEnumerator SofaAndTable_AllTenBreeds_JumpTouchAndReturnToOpenFloor()
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
@@ -46,13 +48,23 @@ public sealed class LivingFurnitureTests
                     int samples=0;float maxGap=0;float deadline=Time.realtimeSinceStartup+18;
                     while(activity.IsRunning && Time.realtimeSinceStartup<deadline)
                     {
+            RoomPlayModeSupport.StopObservedRest(activity);
                         yield return new WaitForEndOfFrame();
                         var animation=cat.GetComponent<CatActivityAnimation>();
                         if(animation.ContactSurface!=activity.Perch)continue;
                         var skin=cat.GetComponentInChildren<SkinnedMeshRenderer>();skin.BakeMesh(mesh,true);
                         float min=float.PositiveInfinity;var vertices=mesh.vertices;
                         foreach(int index in breeds.Get(i).ContactVertexIndices)
+                        {
                             min=Mathf.Min(min,skin.transform.TransformPoint(vertices[index]).y);
+                            if(activity.Kind==CatActivityKind.SofaLounge)
+                            {
+                                Vector3 local=activity.Perch.InverseTransformPoint(skin.transform.TransformPoint(vertices[index]));
+                                var size=activity.Perch.GetComponent<CatActivitySurface>().Size;
+                                Assert.That(Mathf.Abs(local.x),Is.LessThan(size.x*.5f+.08f),breeds.Get(i).Id+" sofa depth");
+                                Assert.That(Mathf.Abs(local.z),Is.LessThan(size.y*.5f+.08f),breeds.Get(i).Id+" sofa cushion width");
+                            }
+                        }
                         maxGap=Mathf.Max(maxGap,Mathf.Abs(min-activity.Perch.position.y));samples++;
                     }
                     report.AppendLine(breeds.Get(i).Id+","+activity.Kind+","+samples+","+maxGap+","+activity.DidPush);

@@ -31,18 +31,14 @@ public sealed class OvenWarmthActivity : CatActivity
     public float BaskDuration => Mathf.Max(0.5f, baskDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
+    public override float EnergyCost => 0f;
+    public override bool SupportsContinuousRest=>true;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
         if (baskPoint == null || doorPoint == null)
         {
             failureReason = "THE OVEN IS NOT READY";
-            return false;
-        }
-
-        if (Energy != null && Energy.CurrentEnergy >= WideAwakeEnergy)
-        {
-            failureReason = "I AM WIDE AWAKE!";
             return false;
         }
 
@@ -76,6 +72,7 @@ public sealed class OvenWarmthActivity : CatActivity
         Vector3 toDoor = new Vector3(door.x - bask.x, 0f, door.z - bask.z);
         Vector3 alongDoor = Vector3.Cross(Vector3.up, toDoor);
         Quaternion sideOn = LookTowards(alongDoor, toBask);
+        sideOn = CatActivityFacing.AlongAxis(Cat, bask, sideOn);
         yield return Move(bask, bask, toBask, sideOn, 0.28f);
 
         Vector3 folded = originalScale;
@@ -86,7 +83,7 @@ public sealed class OvenWarmthActivity : CatActivity
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sleep, baskPoint);
-        while (elapsed < BaskDuration)
+        while (KeepResting)
         {
             elapsed += Time.deltaTime;
             float breath = Mathf.Sin(elapsed * 2.4f) * 0.038f;
@@ -108,8 +105,6 @@ public sealed class OvenWarmthActivity : CatActivity
         yield return Move(bask, bask, sideOn, away, 0.24f);
 
         RestoreCat();
-        if (Energy != null)
-            Energy.RestoreEnergy(EnergyRestore);
         CompleteActivity("TOASTY!");
     }
 
@@ -175,11 +170,13 @@ public sealed class OvenWarmthActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

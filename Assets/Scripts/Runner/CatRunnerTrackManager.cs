@@ -39,6 +39,8 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     private Quaternion[] initialSegmentRotations = Array.Empty<Quaternion>();
     private System.Random random;
     private System.Random sceneryRandom;
+    private readonly List<int> obstacleBag=new List<int>();
+    private int previousObstacle=-1;
     private float untilNextObstacle;
     private float untilNextElevation;
     private float untilNextPowerUp;
@@ -53,8 +55,8 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     private int lastSceneryVariant = -1;
     private bool tutorialSafety;
 
-    public float ObjectApproachSpeedMultiplier =>
-        Mathf.Max(1f, objectApproachSpeedMultiplier);
+    // A single physical world: props and supporting road must cover the same distance.
+    public float ObjectApproachSpeedMultiplier => 1f;
     public int SpawnedCoins => spawnedCoins;
     public int ActiveObjectCount => activeObjects.Count;
     public int PooledObjectCount
@@ -68,6 +70,18 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         }
     }
     public float CurrentRoadSlope => GetRoadSlope(travelledDistance);
+    // Top of the authored limestone and brass inlay, measured in BoulevardStreet.
+    public const float PavingSurfaceHeight = .033f;
+
+    public float SampleSurfaceHeightAt(float lanePosition, float localZ)
+    {
+        float height = PavingSurfaceHeight + GetRoadHeight(travelledDistance + localZ) -
+                       GetRoadHeight(travelledDistance);
+        foreach (var item in activeObjects)
+            if (item != null && item.TrySamplePlatformHeightAt(lanePosition, localZ, out float support))
+                height = Mathf.Max(height, support);
+        return height;
+    }
     public float CurrentObstacleInterval => GetObstacleInterval(
         game != null ? game.CurrentCurtainNumber : 1,
         firstCurtainObstacleInterval,
@@ -149,10 +163,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         float runnerDistance = game.CurrentSpeed * Time.deltaTime;
         ScrollSegments(runnerDistance);
 
-        // The corridor is a visual speed reference. Obstacles and coins need a
-        // stronger closing speed so they clearly approach the cat instead of
-        // appearing to ride forward with the scrolling floor.
-        ScrollObjects(runnerDistance * ObjectApproachSpeedMultiplier);
+        ScrollObjects(runnerDistance);
 
         // TrackManager runs before CatRunnerGameController (execution order -50).
         // Include the current frame's delta so the pool reaches the same schedule the
@@ -202,6 +213,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         }
         activeObjects.Clear();
         random = new System.Random(7301 + attemptNumber * 97);
+        obstacleBag.Clear();previousObstacle=-1;
         sceneryRandom = new System.Random(9119 + attemptNumber * 113);
         attemptNumber++;
         // History must be cleared before the opening corridor is painted.
@@ -380,6 +392,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
                     game.MagnetRange,
                     -1.25f,
                     position.z));
+                Vector3 beforeAttraction=position;
                 position.x = Mathf.MoveTowards(
                     position.x,
                     player.LanePosition,
@@ -388,6 +401,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
                     position.y,
                     player.Height + .42f,
                     attraction * .62f * Time.deltaTime);
+                if(!IsPickupPathClear(item,beforeAttraction,position))position=beforeAttraction;
             }
             itemTransform.localPosition = position;
 
@@ -580,7 +594,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         for (int offset = 0; offset < 3; offset++)
         {
             int lane = (start + offset) % 3 - 1;
-            if (!HasHazardNearLane(lane, spawnZ, 4.5f))
+            if (!HasHazardNearLane(lane, spawnZ, 6.8f) && !HasPickupNearLane(lane,spawnZ,6.8f))
             {
                 selectedLane = lane;
                 break;
@@ -591,6 +605,14 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
 
         GameObject template = platformTemplates[random.Next(0, platformTemplates.Length)];
         Spawn(template, selectedLane, spawnZ, 0f);
+    }
+
+    private bool HasPickupNearLane(int lane,float z,float clearance)
+    {
+        foreach(var item in activeObjects)
+            if(item!=null&&item.IsPickup&&Mathf.Abs(item.transform.localPosition.x-lane*laneWidth)<.75f&&
+               Mathf.Abs(item.transform.localPosition.z-z)<clearance)return true;
+        return false;
     }
 
     private int PickLaneAvoiding(CatRunnerTrackObjectKind kind, float spawnZ)
@@ -711,14 +733,69 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
 
     private void SpawnCoin(int lane, float z, float y)
     {
-        Spawn(coinTemplate, lane, z, y);
+        // Keep the scheduled coin: move it into a clear lane instead of hiding it inside furniture.
+        var coin=coinTemplate.GetComponent<CatRunnerTrackObject>();
+        foreach(int candidate in new[]{lane,0,-1,1})
+        {
+            float lift=y-GetPlatformHeightAt(lane,z)+GetPlatformHeightAt(candidate,z);
+            if(!HasVisualConflict(coin,new Vector3(candidate*laneWidth,lift,z)))
+            {Spawn(coinTemplate,candidate,z,lift);return;}
+        }
+        // At most two hazard lanes are allowed, but staggered rows may occupy all
+        // three within the padding envelope. Keep this coin in the next clear gap.
+        for(int step=1;step<=48;step++)
+        {
+            float next=z+step*.5f;float lift=y-GetPlatformHeightAt(lane,z)+GetPlatformHeightAt(lane,next);
+            if(!HasVisualConflict(coin,new Vector3(lane*laneWidth,lift,next)))
+            {Spawn(coinTemplate,lane,next,lift);return;}
+        }
+    }
+
+    private bool HasVisualConflict(CatRunnerTrackObject incoming,Vector3 position)
+    {
+        var bounds=incoming.VisualBoundsAt(position);
+        // Reserve the complete future bob, even when a pooled medal is currently
+        // at the opposite phase. Leave visible air above an obstacle.
+        if(incoming.IsPickup)bounds.Expand(new Vector3(.04f,.20f,.04f));
+        foreach(var item in activeObjects)
+        {
+            if(item==null||(!item.IsHazard&&!item.IsPickup))continue;
+            var other=item.transform.localPosition;other.y=item.RuntimeBaseHeight;
+            var otherBounds=item.VisualBoundsAt(other);
+            if(item.IsPickup)otherBounds.Expand(new Vector3(.04f,.20f,.04f));
+            if(bounds.Intersects(otherBounds))return true;
+        }
+        return false;
+    }
+
+    private bool IsPickupPathClear(CatRunnerTrackObject coin,Vector3 from,Vector3 to)
+    {
+        var coinBounds=coin.VisualBoundsAt(Vector3.zero);
+        foreach(var item in activeObjects)
+        {
+            if(item==null||!item.IsHazard)continue;
+            var bounds=item.VisualBoundsAt(item.transform.localPosition);bounds.Expand(coinBounds.size);
+            Vector3 origin=from+coinBounds.center,delta=to-from;
+            if(bounds.Contains(origin)||bounds.Contains(to+coinBounds.center))return false;
+            if(delta.sqrMagnitude>.000001f&&bounds.IntersectRay(new Ray(origin,delta.normalized),out float distance)&&distance<=delta.magnitude)return false;
+        }
+        return true;
     }
 
     private void SpawnObstacle(int lane, float z)
     {
         if (obstacleTemplates == null || obstacleTemplates.Length == 0)
             return;
-        GameObject template = obstacleTemplates[random.Next(0, obstacleTemplates.Length)];
+        if(obstacleBag.Count==0)
+        {
+            for(int i=0;i<obstacleTemplates.Length;i++)obstacleBag.Add(i);
+            for(int i=obstacleBag.Count-1;i>0;i--)
+            {int swap=random.Next(i+1);int value=obstacleBag[i];obstacleBag[i]=obstacleBag[swap];obstacleBag[swap]=value;}
+            if(obstacleBag.Count>1 && obstacleBag[obstacleBag.Count-1]==previousObstacle)
+            {int value=obstacleBag[0];obstacleBag[0]=previousObstacle;obstacleBag[obstacleBag.Count-1]=value;}
+        }
+        previousObstacle=obstacleBag[obstacleBag.Count-1];obstacleBag.RemoveAt(obstacleBag.Count-1);
+        GameObject template = obstacleTemplates[previousObstacle];
         Spawn(template, lane, z, GetPlatformHeightAt(lane, z));
     }
 
@@ -749,8 +826,14 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         const float spawnZ = 27f;
         int lane = PickLaneAvoiding(CatRunnerTrackObjectKind.Obstacle, spawnZ);
         GameObject template = powerUpTemplates[random.Next(0, powerUpTemplates.Length)];
-        float height = GetPlatformHeightAt(lane, spawnZ) + .52f;
-        Spawn(template, lane, spawnZ, height);
+        var definition=template.GetComponent<CatRunnerTrackObject>();
+        for(int gap=0;gap<8;gap++)for(int offset=0;offset<3;offset++)
+        {
+            int candidate=(lane+1+offset)%3-1;float z=spawnZ+gap*.75f;
+            float height=GetPlatformHeightAt(candidate,z)+.62f;
+            if(HasVisualConflict(definition,new Vector3(candidate*laneWidth,height,z)))continue;
+            Spawn(template,candidate,z,height);return;
+        }
     }
 
     private float GetPowerUpInterval()
@@ -765,13 +848,15 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     {
         if (template == null)
             return;
+        var definition=template.GetComponent<CatRunnerTrackObject>();
+        if(definition!=null&&(definition.IsHazard||definition.IsPickup)&&HasVisualConflict(definition,new Vector3(lane*laneWidth,y,z)))return;
 
         CatRunnerTrackObject item = TakeFromPool(template);
         if (item == null)
             return;
         GameObject instance = item.gameObject;
         instance.name = template.name.Replace("_Template", string.Empty);
-        instance.transform.localPosition = new Vector3(lane * laneWidth, y, z);
+        instance.transform.localPosition = new Vector3(lane * laneWidth,y+GetRoadHeight(travelledDistance+z)-GetRoadHeight(travelledDistance),z);
         instance.transform.localRotation = template.transform.localRotation;
         instance.transform.localScale = template.transform.localScale;
         item.InitializeRuntime(y);

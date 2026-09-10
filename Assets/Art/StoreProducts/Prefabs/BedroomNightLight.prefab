@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 463533770123726236}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.62}
+  m_LocalPosition: {x: 0, y: 0, z: -0.49600002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6981131582007461411}
   - component: {fileID: 5576691056906004976}
   - component: {fileID: 6487767835640154200}
+  - component: {fileID: 7353017652349548977}
   m_Layer: 0
   m_Name: BedroomNightLight
   m_TagString: Untagged
@@ -98,7 +99,7 @@ MonoBehaviour:
   productId: bedroom.night-light
   movableRoot: {fileID: 6034626931436844758}
   legacySlots: []
-  footprintSize: {x: 0.48, y: 0.48}
+  footprintSize: {x: 0.384, y: 0.384}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -137,6 +138,27 @@ MonoBehaviour:
   reactionKind: 0
   lookDuration: 2.8
   completeMessage: SO WARM.
+  visibleLookTargets:
+  - {x: -9.155273e-10, y: 0.37940675, z: -0.146688}
+  - {x: -0.000000007218807, y: 0.51625407, z: 0.095616}
+  - {x: 0.15633786, y: 0.36295858, z: 0.0000000053274416}
+  - {x: -0.06392511, y: 0.516254, z: -0.08015965}
+  - {x: 0.103326775, y: 0.52224, z: -0.023583604}
+  - {x: -0.12647998, y: 0.36295858, z: -0.091893084}
+  - {x: 0.10123156, y: 0.4244783, z: -0.0936379}
+  - {x: 0.02358366, y: 0.52224, z: -0.10332675}
+  - {x: 0.12647998, y: 0.36295858, z: -0.09189308}
+  - {x: -0.07924798, y: 0.45481402, z: -0.09937395}
+  - {x: 0.1386452, y: 0.4244783, z: 0.0000000055247438}
+  - {x: 0.07924807, y: 0.45481402, z: -0.0993739}
+  - {x: 0.10461046, y: 0.36295858, z: -0.11618167}
+  - {x: -0.10461046, y: 0.36295858, z: -0.11618167}
+  - {x: 0.007561777, y: 0.4012027, z: -0.15742293}
+  - {x: -0.000000007740649, y: 0.516254, z: -0.10252799}
+  - {x: 0.102528, y: 0.51625407, z: 0.000000015137257}
+  - {x: -0.0075617754, y: 0.4012027, z: -0.15742293}
+  - {x: 0.008221182, y: 0.3803833, z: -0.146688}
+  - {x: 0.022814628, y: 0.516254, z: -0.0999574}
 --- !u!114 &6487767835640154200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +171,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7353017652349548977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2358109909082412254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.8
 --- !u!1 &3772068874835351030
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,7 +211,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7230748154685454518}
@@ -228,7 +263,7 @@ Transform:
   m_GameObject: {fileID: 6991295455257371193}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.72768, z: -0.03}
+  m_LocalPosition: {x: 0, y: 0.582144, z: -0.024}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -297,27 +332,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: f8c1eb866786aff4bb18126505661642, type: 2}
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6a9a38645dd6ab44c96ab40ab4d4c5f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: f9f17f43d34a9244f98831a8d5ae944d, type: 2}
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: d0cdd28d5a647024eafb26a31ab8e338, type: 2}
     - target: {fileID: -7511558181221131132, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 66930c74da216ac43a8fc2724daf08ab, type: 2}
     - target: {fileID: 919132149155446097, guid: f801bbb4b4bcc9d42bc74ca236f1948f, type: 3}
       propertyPath: m_Name
       value: BedroomNightLight_PremiumModel

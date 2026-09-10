@@ -33,8 +33,7 @@ public static class PremiumUiElements
         var graphic = rect.gameObject.AddComponent<LowPolyPanelGraphic>();
         PremiumUiStyle.ConfigureSurface(graphic, color, radius, 2f);
         graphic.raycastTarget = raycast;
-        graphic.ConfigureElevation(radius > 0 && color.a > .98f);
-        graphic.ConfigureReferenceFinish(radius>0 && color.a>.98f);
+        ModernUiArt.Surface(graphic, graphic.color, radius, radius > 0 && color.a > .98f && height >= 120);
         return graphic;
     }
 
@@ -61,7 +60,7 @@ public static class PremiumUiElements
         Color color, float x, float y, float width, float height, out TMP_Text label)
     {
         var root = Rect(name, parent); At(root, x, y, width, height);
-        var surface = Panel("Visual", root, color, 0, 0, width, height, Mathf.Min(42f,height*.5f), true);
+        var surface = Panel("Visual", root, color, 0, 0, width, height, Mathf.Min(16f,height*.25f), true);
         Fill(surface.rectTransform);
         var button = root.gameObject.AddComponent<Button>();
         button.targetGraphic = surface; button.transition = Selectable.Transition.None;
@@ -71,6 +70,7 @@ public static class PremiumUiElements
         label.rectTransform.offsetMin = new Vector2(20,6); label.rectTransform.offsetMax = new Vector2(-20,-6);
         if (!string.IsNullOrEmpty(key)) Localize(label, key);
         root.gameObject.AddComponent<PremiumButtonFx>().Configure(surface.rectTransform, surface, button, false);
+        ModernUiArt.Action(button, ModernUiArt.IsLight(color));
         return button;
     }
 }

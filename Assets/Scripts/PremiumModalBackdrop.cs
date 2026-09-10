@@ -35,8 +35,10 @@ public sealed class PremiumModalBackdrop : MonoBehaviour
         int w=Mathf.Clamp(Screen.width/3,320,960),h=Mathf.Max(180,Mathf.RoundToInt(w*Screen.height/(float)Screen.width));
         var source=RenderTexture.GetTemporary(w,h,24,RenderTextureFormat.ARGB32);
         RenderTexture medium=null;
+        Rect worldViewport=camera.rect;
         try
         {
+            camera.rect=new Rect(0,0,1,1);
             var request=new UniversalRenderPipeline.SingleCameraRequest{destination=source};
             if(!RenderPipeline.SupportsRenderRequest(camera,request))return;
             RenderPipeline.SubmitRenderRequest(camera,request);
@@ -50,6 +52,7 @@ public sealed class PremiumModalBackdrop : MonoBehaviour
         }
         finally
         {
+            camera.rect=worldViewport;
             RenderTexture.ReleaseTemporary(source);
             if(medium!=null)RenderTexture.ReleaseTemporary(medium);
         }

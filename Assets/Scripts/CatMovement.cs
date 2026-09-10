@@ -19,7 +19,7 @@ public enum CatInputCategory
 public class CatMovement : MonoBehaviour
 {
     [Header("Hareket Ayarları")]
-    [SerializeField] private float moveSpeed = 2.2f;
+    [SerializeField] private float moveSpeed = HomeRunSpeed;
     [SerializeField] private float rotationSpeed = 12f;
     [SerializeField] private float gravity = -20f;
 
@@ -29,7 +29,6 @@ public class CatMovement : MonoBehaviour
 
     [Header("Animasyon Ayarları")]
     [SerializeField] private string speedParameterName = "Speed";
-    [SerializeField] private float animationDampTime = 0.1f;
 
     [Header("Mobil Kontrol")]
     [SerializeField] private MobileJoystick mobileJoystick;
@@ -54,6 +53,15 @@ public class CatMovement : MonoBehaviour
     private readonly Dictionary<Object, CatInputCategory> inputBlockOwners =
         new Dictionary<Object, CatInputCategory>();
     private float movementInputMagnitude;
+    private EnergySystem energySystem;
+    private bool running;
+    private bool hasLocomotionRate;
+    private float currentGroundSpeed;
+    private float requestedGroundSpeed;
+    private CatHomeLocomotionCatalog.Entry locomotionProfile;
+    private static readonly int LocomotionRateHash=Animator.StringToHash("LocomotionRate");
+    public float GroundSpeed=>currentGroundSpeed;
+    public bool IsRunning=>CatHomeLocomotionCatalog.RunBlendForSpeed(currentGroundSpeed)>.5f && !IsMovementLocked;
 
     private float NeedsSpeedMultiplier =>
         Mathf.Min(
@@ -91,7 +99,7 @@ public class CatMovement : MonoBehaviour
     public bool AreWorldActionsBlocked => IsInputCategoryBlocked(CatInputCategory.WorldActions);
     public bool IsJoystickInputActive =>
         mobileJoystick != null && mobileJoystick.Direction.sqrMagnitude > 0.001f;
-    public bool IsMovementInputActive => movementInputMagnitude > 0.15f;
+    public bool IsMovementInputActive => movementInputMagnitude > 0.08f;
     public bool IsIdle => !IsMovementLocked && !IsMovementInputActive;
 
     /// <summary>
@@ -120,10 +128,13 @@ public class CatMovement : MonoBehaviour
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        // Keep sub-millimetre analog steps even at high frame rates.
+        characterController.minMoveDistance = 0f;
         animator = GetComponentInChildren<Animator>();
         speedParameterHash = Animator.StringToHash(speedParameterName);
         ResolveSceneReferences();
         physicalFootprintRadius = ResolvePhysicalFootprintRadius();
+        ResolveLocomotionRate();
     }
 
     public void RebindAnimator(Animator replacement)
@@ -133,6 +144,16 @@ public class CatMovement : MonoBehaviour
         animator = replacement;
         speedParameterHash = Animator.StringToHash(speedParameterName);
         physicalFootprintRadius = ResolvePhysicalFootprintRadius();
+        ResolveLocomotionRate();
+    }
+
+    private void ResolveLocomotionRate()
+    {
+        hasLocomotionRate=false;
+        if(animator!=null)foreach(var p in animator.parameters)if(p.nameHash==LocomotionRateHash)hasLocomotionRate=true;
+        var tag = animator != null ? animator.GetComponentInParent<CatBreedVisualTag>() : null;
+        var catalog = Resources.Load<CatHomeLocomotionCatalog>(CatHomeLocomotionCatalog.ResourceName);
+        locomotionProfile = catalog != null ? catalog.Find(tag != null ? tag.BreedId : CatBreedCatalog.DefaultBreedId) : null;
     }
 
     public void ResolveSceneReferences()
@@ -145,6 +166,7 @@ public class CatMovement : MonoBehaviour
 
         if (roomBoundary == null || roomBoundary.gameObject.scene != gameObject.scene)
             roomBoundary = HomeRoomBoundary.FindFor(gameObject.scene);
+        if(energySystem==null)energySystem=FindAnyObjectByType<EnergySystem>(FindObjectsInactive.Include);
     }
 
     private void Start()
@@ -155,15 +177,18 @@ public class CatMovement : MonoBehaviour
         CatHomeSaveSystem.Initialize(this);
         ProgressionService.Initialize(this);
         CatIdleBehavior.EnsureOn(this);
+        CatVoice.EnsureOn(this);
+        if(GetComponent<CatCommandActivity>()==null)gameObject.AddComponent<CatCommandActivity>();
     }
 
     private void Update()
     {
         RemoveDestroyedInputBlockOwners();
         RemoveDestroyedMovementLockOwners();
-        if (IsMovementLocked)
+        if (IsMovementLocked || characterController==null || !characterController.enabled)
         {
             movementInputMagnitude = 0f;
+            currentGroundSpeed=0f;running=false;
             UpdateAnimation(0f);
             return;
         }
@@ -172,9 +197,15 @@ public class CatMovement : MonoBehaviour
         movementInputMagnitude = input.magnitude;
         Vector3 moveDirection = GetCameraRelativeDirection(input);
 
-        UpdateAnimation(input.magnitude);
         RotateCat(moveDirection);
+        Vector3 previous=transform.position;
         MoveCat(moveDirection);
+        Vector3 distance=transform.position-previous;distance.y=0;
+        // Controller depenetration can move an idle cat a few millimetres. It
+        // is not a walking step; never animate it as intentional locomotion.
+        currentGroundSpeed=Mathf.Min(requestedGroundSpeed,
+            distance.magnitude/Mathf.Max(Time.deltaTime,.0001f));
+        UpdateAnimation(currentGroundSpeed);
     }
 
     private Vector2 ReadInput()
@@ -239,29 +270,41 @@ public class CatMovement : MonoBehaviour
         if (animator == null)
             return;
 
-        float adjustedMovementAmount = movementAmount * NeedsSpeedMultiplier;
+        if (movementAmount < .025f)
+        {
+            // Reset only locomotion parameters, never Animator.speed or the
+            // current state: care, commands and furniture own their own poses.
+            animator.SetFloat(speedParameterHash, 0f);
+            if (hasLocomotionRate) animator.SetFloat(LocomotionRateHash, 1f);
+            return;
+        }
 
-        animator.SetFloat(
-            speedParameterHash,
-            adjustedMovementAmount,
-            animationDampTime,
-            Time.deltaTime
-        );
+        float runBlend = CatHomeLocomotionCatalog.RunBlendForSpeed(movementAmount);
+        float rate = locomotionProfile != null
+            ? locomotionProfile.PlaybackRate(movementAmount, runBlend,
+                transform.TransformVector(Vector3.forward).magnitude)
+            // Legacy/custom controllers without a measured breed remain usable.
+            // Shipped breeds are required to have a measured profile by validation.
+            : movementAmount / Mathf.Lerp(.65f, 1.8f, runBlend);
+        if (hasLocomotionRate) animator.SetFloat(LocomotionRateHash, rate);
+        // Damping Speed independently of cadence blends in Idle while the body
+        // already travels at full speed. Both now describe the same frame.
+        animator.SetFloat(speedParameterHash, Mathf.Lerp(.35f, 1f, runBlend));
     }
 
     private void RotateCat(Vector3 direction)
     {
-        if (direction.sqrMagnitude < 0.001f)
+        if (direction.magnitude <= .08f)
             return;
 
         Quaternion targetRotation =
             Quaternion.LookRotation(direction, Vector3.up) *
             Quaternion.Euler(0f, modelForwardOffset, 0f);
 
-        transform.rotation = Quaternion.Slerp(
+        transform.rotation = Quaternion.RotateTowards(
             transform.rotation,
             targetRotation,
-            rotationSpeed * Time.deltaTime
+            TurnDegreesPerSecond(IsRunning) * Time.deltaTime
         );
     }
 
@@ -272,8 +315,16 @@ public class CatMovement : MonoBehaviour
 
         verticalVelocity += gravity * Time.deltaTime;
 
-        Vector3 horizontalVelocity =
-            direction * moveSpeed * NeedsSpeedMultiplier;
+        float strength=direction.magnitude;
+        bool hasEnergy=energySystem==null || energySystem.CurrentEnergy>1f;
+        running=hasEnergy && (running?strength>.76f:strength>.88f);
+        float targetSpeed=GroundSpeedForInput(strength,running,moveSpeed)*NeedsSpeedMultiplier;
+        Vector3 forward=Quaternion.Euler(0,-modelForwardOffset,0)*transform.forward;
+        forward.y=0;forward.Normalize();
+        // Pivot briefly for a reverse command, then walk a curved path with the body facing its travel.
+        bool aligned=direction.sqrMagnitude>.0001f && Vector3.Dot(forward,direction.normalized)>.5f;
+        requestedGroundSpeed = aligned ? targetSpeed : 0f;
+        Vector3 horizontalVelocity=aligned?forward*targetSpeed:Vector3.zero;
 
         Vector3 velocity = horizontalVelocity;
         velocity.y = verticalVelocity;
@@ -289,6 +340,19 @@ public class CatMovement : MonoBehaviour
         }
 
         characterController.Move(movement);
+    }
+
+    public const float NormalWalkSpeed=.65f;
+    public const float HomeRunSpeed=1.5f;
+    public static float TurnDegreesPerSecond(bool run)=>run?320f:220f;
+    public static float GroundSpeedForInput(float strength,bool run,float maximum=HomeRunSpeed)
+    {
+        strength=Mathf.Clamp01(strength);
+        if(strength<=.08f)return 0f;
+        // Existing scenes store the old 2.2 value. Apply the home ceiling here
+        // so updating locomotion never requires rewriting eight room scenes.
+        if(run)return Mathf.Lerp(.85f,Mathf.Clamp(maximum,.85f,HomeRunSpeed),Mathf.InverseLerp(.76f,1f,strength));
+        return Mathf.Lerp(NormalWalkSpeed,.85f,Mathf.InverseLerp(.08f,.88f,strength));
     }
 
     private float ResolvePhysicalFootprintRadius()
@@ -410,6 +474,10 @@ public class CatMovement : MonoBehaviour
 
     public bool IsInputCategoryBlocked(CatInputCategory category)
     {
+        // The home scene stays loaded underneath both mini games. Their keys
+        // must not also move or pet the hidden home cat, including launch frames.
+        if (category != CatInputCategory.None && HomeUiFlow.IsMiniGameVisible)
+            return true;
         RemoveDestroyedInputBlockOwners();
         foreach (CatInputCategory categories in inputBlockOwners.Values)
             if ((categories & category) != 0)
@@ -474,6 +542,9 @@ public class CatMovement : MonoBehaviour
                 position,
                 physicalFootprintRadius + roomEdgeClearance);
 
+        position=CatBedObstacle.ResolveSavedPosition(this,position);
+        position=CatCareStationObstacle.ResolveSavedPosition(this,position);
+        position=RoomDoorObstacle.ResolveSavedPosition(this,position);
         transform.SetPositionAndRotation(position, rotation);
 
         if (controllerWasEnabled && characterController != null)

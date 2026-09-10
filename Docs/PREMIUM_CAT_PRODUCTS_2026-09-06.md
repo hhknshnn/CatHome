@@ -1,5 +1,9 @@
 # Premium kedi eşyaları — 6 Eylül 2026
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 CAT mağazasındaki 17 ürün yeniden modellendi. Kaynak: `ArtSource/Blender/PetProducts/build_pet_collection.py`; Blender dosyaları ve ölçüm kayıtları aynı klasörde. Unity modelleri `Assets/Art/PremiumPet/Models`, gerçek ürün prefablari `Assets/Art/StoreProducts/Prefabs` içinde.
 
 - Top sepeti: gerçek top kovalamaca; atış hedefi doluysa erişilebilir zemine gider.

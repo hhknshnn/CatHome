@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 9149604826075555075}
   - component: {fileID: 7281653185842646363}
   - component: {fileID: 3720338417074804803}
+  - component: {fileID: 8374507540960867767}
   m_Layer: 0
   m_Name: GardenDaisyBed
   m_TagString: Untagged
@@ -254,6 +255,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &8374507540960867767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7112321302682911248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &8617353795559147198
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,31 +362,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: b0b3fa28ee72390419e68606f87ae82e, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: c1028093b929a5b4796da7240e1ed6c1, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 5fdfcc88b3260434d9fa8be7fce94d88, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 71488629bac628546ac411accb339777, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: 282cafd24c81fc544b3d615c83b252b6, type: 2}
     - target: {fileID: -7511558181221131132, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 25b9a9e0d09367845a1d50dc18f529a1, type: 2}
     - target: {fileID: 919132149155446097, guid: d3558eeaf2c25d1469cec7456520ae79, type: 3}
       propertyPath: m_Name
       value: GardenDaisyBed_PremiumModel

@@ -6,6 +6,29 @@ using UnityEngine.Rendering;
 public sealed class PremiumVisualInvariantTests
 {
     [Test]
+    public void PlayfulModels_FirstUvChannelUsesPaletteCellCenters()
+    {
+        foreach (string name in new[] { "PlayfulSkateboard", "PlayfulToyTrain", "PlayfulParcelStack", "PlayfulDuck", "PlayfulDonutStack", "PlayfulFlowerCart", "BonusScoreStar", "BonusGift" })
+        {
+            var model = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/MiniGames/Playful/Models/" + name + ".fbx");
+            Assert.That(model, Is.Not.Null, name);
+            foreach (var filter in model.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var uv = filter.sharedMesh.uv;
+                Assert.That(uv.Length, Is.EqualTo(filter.sharedMesh.vertexCount), name);
+                foreach (var point in uv)
+                {
+                    float cell = (point.x * 256f - 8f) / 16f;
+                    Assert.That(point.y, Is.EqualTo(.5f).Within(.001f), name + " must use UV0, including converted text.");
+                    Assert.That(cell, Is.EqualTo(Mathf.Round(cell)).Within(.001f), name);
+                    Assert.That(cell, Is.InRange(0f, 13f), name);
+                    if (name == "BonusScoreStar") Assert.That(Mathf.RoundToInt(cell), Is.EqualTo(4).Or.EqualTo(7), "Gold star and ink lettering.");
+                }
+            }
+        }
+    }
+
+    [Test]
     public void PremiumCurrencyArt_IsAuthoredAndImportable()
     {
         Assert.That(

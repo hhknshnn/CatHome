@@ -1,0 +1,344 @@
+[
+  {
+    "id": "01",
+    "file": "01-home-hero.png",
+    "title": "Ana oyun ve salon",
+    "group": "Ev",
+    "states": [
+      "Ana oyun HUD"
+    ],
+    "prompt": "Use case: ui-mockup. Create ONE exceptionally polished high fidelity landscape Cat Home mobile game HOME GAMEPLAY design proposal, 16:9, ideally 2560x1440. Input image is REFERENCE ONLY for the exact room floorplan, current orange cat identity, front centered room camera and existing functions. This is a fresh professional modern vibrant premium redesign, not an implemented screenshot.\nPreserve TV wall unit at left, bookshelf back left, mint small cat bed against back wall middle, food and water tray back wall just right of bed, coral armchair back right, sofa at right facing left, coffee table and rug at right, clear middle walking corridor. No moving the furniture into an invented plan. Keep natural adult quadruped orange shorthair cat proportions, angular distinctive face, cream muzzle, green eyes; improve soft bevel appearance and lighting without giant baby eyes or plush fur. Cat is in open middle foreground, naturally about one fifth sofa width.\nArt direction: beautifully authored contemporary stylized 3D cozy game, crisp soft sculpted edges, tactile woven sofa fabric, satin glazed ceramics, subtly grained warm wood, deep blue-teal accent wall, coral upholstery, warm sun patches from right window, gentle cool fill and grounded contact shadows. Lively, curated, rich material separation. No ubiquitous gold trims, no washed out beige haze, no childish primary-color blocks, no photoreal house.\nUI extremely carefully typeset modern rounded geometric sans with humanist body, precise Turkish text; strong navy ink #172841, azure #2779F5 primary, pale cool white panels, coral #FF695A accent, sunny yellow used only reward. Top left compact cat portrait/name 'lokiș' use name 'Loki' to avoid ambiguity and 'Seviye 30'. Top central three compact readable needs showing 'Tokluk 76%' 'Su 38%' 'Enerji 76%' with tiny ceramic icons and fine progress lines, top right coin '1.874', gem '2', menu button. UI is subtle lightweight crafted overlay, clear flat info with only actionable buttons a little raised. World dominates. Bottom a thin light cool-white navigation rail exactly ~7.4% screen height with FOUR evenly spaced destinations 'Mağaza' 'Oda' 'Birlikte' 'Oyunlar', clean elegant three-dimensional icon to left, no colored pill around every label. Bottom left above rail a translucent cyan analog control. Bottom right above rail a compact action card 'Oyun tüneli' and blue button 'Oyna'. The cat is actually near front opening of a small mint play tunnel in right foreground, unobstructed center. All text legible, no extraneous invented statistics, no banners of marketing copy, no watermark or device mockup. Deliver a complete edge-to-edge game mockup. Tiny upper middle badge 'TASARIM ÖNERİSİ' is optional but keep UI disciplined.",
+    "note": "Ana görsel kalite hedefi. Kamera, kedi ölçeği ve alt şerit için PLAN.md içindeki ölçüler esas alınır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-bccd7883-ad08-42d0-bdcc-9aa3d40ceb01.png"
+  },
+  {
+    "id": "02",
+    "file": "02-opening.png",
+    "title": "Açılış ve ilk giriş",
+    "group": "Başlangıç",
+    "states": [
+      "Açılış / Devam et",
+      "Yükleme",
+      "Google / misafir seçimi",
+      "Ana menü çekmecesi"
+    ],
+    "prompt": "Board topic OPENING AND NAVIGATION. Quadrant 1: lush sunlit cat lounge title menu, huge elegant 'CAT HOME', orange tabby foreground and black cat/Maine Coon behind, left clear title 'Yuvana hoş geldin', primary 'Devam et', small secondary 'Yeni oyun', small top settings icon. Quadrant 2: beautiful near fullbleed lounge crop, sleeping cat, tasteful progress track 'Yuvan hazırlanıyor', loading paw mark, not fake percent. Quadrant 3: first account choice, cat sitting left on sapphire seat, right 'Yuvan yanında olsun', branded Google sign-in white button 'Google ile devam et', quiet 'Misafir olarak oyna', short note 'İlerlemene buradan devam edebilirsin'. Quadrant 4: Home room mostly visible, right tidy navigation drawer with portrait header and six calm rows 'Mağaza', 'Görevler', 'Kedim', 'Odalar', 'Ayarlar', 'Ana menü'; obvious close icon. Different screen compositions, same polished design.",
+    "note": "Açılış, yükleme, hesap seçimi ve menü. Google düğmesi uygulamada resmî sağlayıcı varlığıyla hazırlanır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-b9dbef4e-cb50-4290-bbad-7af827f1f0e5.png"
+  },
+  {
+    "id": "03",
+    "file": "03-home-actions.png",
+    "title": "Bakım ve ev etkileşimleri",
+    "group": "Ev",
+    "states": [
+      "Yakın bakım / Su iç",
+      "Süren dinlenme / Kalk",
+      "Sevme / duygu balonu",
+      "Meşgul / ulaşılamayan eylem"
+    ],
+    "prompt": "Board topic HOME INTERACTION STATES. All screens show same front-centered room and existing four-item bottom dock. Q1: orange cat truly near open front of water bowl tray at back wall, contextual bottom right clean photo card 'Su kabı' blue action 'Su iç', subtle cyan cue at interaction point, top 'Su 18%' with drop icon. Q2: orange cat actually comfortably loafing on coral sofa cushion, contextual card 'İkili koltuk', visible status 'Dinleniyor', thin energy progress 'Enerji 64%', clear blue 'Kalk', no coins or rewards, a tiny quiet moon thought bubble. Q3: gently petting standing cat, small fingertip gesture illustration, one organic soft white speech bubble 'Mırr…' and two small fading coral hearts near head, no reward screen, visible open room. Q4: room background and compact companion action sheet: 'Loki şu an su içiyor', command thumbnails greyed with text 'Birazdan hazır', separate small neutral contextual message 'Ön tarafa yaklaş', no distant action button implying teleport. World remains dominant and cat/action connected.",
+    "note": "Bakım eylemi, kalıcı dinlenme, sevme ve meşgul durumu. El, dokunma hareketini anlatır; yeni insan karakteri değildir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-4db7074d-c0f7-48f0-8540-98a2401f7966.png"
+  },
+  {
+    "id": "04",
+    "file": "04-dialogue-onboarding.png",
+    "title": "Diyalog, balon ve tanışma",
+    "group": "Başlangıç",
+    "states": [
+      "İsim verme",
+      "Hikâye diyaloğu",
+      "Dört adımlı öğretici",
+      "Konuşma / düşünce balonları"
+    ],
+    "prompt": "Board topic DIALOGUE AND FIRST MEETING. Q1: naming screen over softly softened room, large polished orange cat portrait at left, slim white speech-shaped card right, heading 'Sana ne diyelim?', active text field 'Loki', blue button 'Tanışalım', small step '1 / 4'. Q2: narrative dialogue over room, broad but low-height bottom speech card with protruding circular true cat portrait, speaker 'Loki', exact short copy 'Birlikte evi keşfedelim mi?', blue small 'Devam' at right, slim step dots, no huge empty rectangle. Q3: contextual onboarding movement tutorial, dimmed world except left joystick spotlight, small connected instruction card 'Patiyi sürükle, birlikte yürüyelim.', progress '2 / 4', clear 'Atla'; cat in scene remains visible. Q4: art-directed sheet showing three believable in-world reactions on mini home vignettes: a pointed speech balloon 'Biraz su iyi gelir.', a softly scalloped thought bubble with moon icon while sleeping, a compact contented 'Mırr…' near cat. Organic precise silhouettes, small pastel rim and soft contact shadow, not generic rectangles; use body text size easily read. Include small caption 'Konuşma / Düşünce / Tepki'.",
+    "note": "Dört tanışma adımı, isim alanı ve üç balon ailesi. Balon kuyrukları ilgili kediye bağlanır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-6cd15695-174a-47f5-a9c4-03576f08925d.png"
+  },
+  {
+    "id": "05",
+    "file": "05-store.png",
+    "title": "Mağaza ve katalog kartları",
+    "group": "Koleksiyon",
+    "states": [
+      "Kedi eşyaları",
+      "Oda mobilyaları",
+      "Oda satın alma",
+      "Sahiplik ve koleksiyon durumları"
+    ],
+    "prompt": "Board topic STORE CATALOG, modern editorial product-first UI. Q1: store 'Mağaza', slim top tabs 'Kedi eşyaları / Mobilyalar / Odalar', balance at top right, 4 large tactile product photographs: 'Top sepeti', 'Tırmalama direği', 'Uyku minderi', 'Oyun tüneli', lower prices and ownership badges, image takes 65% of card, small 'Odaya ekle' and 'Kaldır' where relevant. No developer free test labels. Q2: 'Mobilyalar' tab selected, room selector 'Salon', three beautifully lit isolated pieces coral two-seater sofa, natural-wood TV stand and armchair on tonal cool-blue/lilac photo backdrops, titles and blue buy buttons, clear scroll hint. Q3: 'Odalar' selected, horizontal landscape room photos 'Salon', 'Mutfak', 'Bahçe', selected/current vs locked visually distinct with real silhouettes still visible; a short locked label 'Önceki odayı tamamla'. Q4: close-up designed state panel with four product cards: 'Satın alınabilir', 'Koleksiyonda', 'Odada', 'Kilitli'; '5 / 5 eşya · 1 / 1 yatak' counter below, and short 'Kaldırdıkların koleksiyonunda kalır.' No fake sale percentages or premium membership.",
+    "note": "103 kanonik ürüne yayılacak kart sistemi. Ürün fotoğrafları ve fiyatlar burada temsilîdir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-31df9494-32b7-4e23-9a1b-8db2e621ce23.png"
+  },
+  {
+    "id": "06",
+    "file": "06-purchase.png",
+    "title": "Satın alma ve elmas akışları",
+    "group": "Koleksiyon",
+    "states": [
+      "Ürün satın alma",
+      "Ön koşul ilişkisi",
+      "Yetersiz jeton / elmas onayı",
+      "Elmas paketi / hizmet durumu"
+    ],
+    "prompt": "Board topic PURCHASE MODALS. Four carefully drawn landscape screens with softened room/store behind. Q1: elegant centered purchase card 'Tırmalama direği', large product photo left, concise benefit right, clear blue '250 jetonla al', separate secondary 'Elmasla al', quiet 'Vazgeç', illustrative economy only. Q2: prerequisite purchase card 'Önce kitaplık gerekli', requested colorful book set small on left connected by a thin arrow to required wooden bookshelf large on right; 'Kitaplığı incele' explicit, original desired item remains visible, no accidental purchase. Q3: two compact alternative purchase states side by side within the landscape: 'Jetonun yetmiyor', clear shortfall and 'Oyunlara git'; another small confirmation '11 elmas harcansın mı?' with bookcase thumbnail, 'Vazgeç' and '11 elmasla al'. Q4: diamond package sheet with three crystalline blue gem renders and amounts '50', '150', '400', price spaces explicitly 'Fiyat yükleniyor' instead of invented real-money prices, bottom neutral service toast 'Mağazaya bağlanılamadı' and 'Tekrar dene'. No invented discounts, no fake payment success. Glassy gems, beautiful legible UI, no ornate banners.",
+    "note": "Ön koşul, yetersiz jeton ve elmas onayı ayrı durumlar. Örnek tutarlar mevcut ekonomiyi değiştirmez.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-19e60c14-0e4d-465a-a9f5-d1559c43ef20.png"
+  },
+  {
+    "id": "07",
+    "file": "07-room-navigation.png",
+    "title": "Oda seçimi ve eşya yönetimi",
+    "group": "Ev",
+    "states": [
+      "Sekiz oda seçimi",
+      "Kilitli oda ayrıntısı",
+      "CAT koleksiyonu yönetimi",
+      "Oda geçişi"
+    ],
+    "prompt": "Board topic ROOM NAVIGATION AND OWNED ITEM MANAGEMENT. Q1: sophisticated 'Odalar' full panel showing eight landscape photo thumbnails in neat 4 by 2 grid, labels 'Salon', 'Banyo', 'Mutfak', 'Yatak odası', 'Balkon', 'Veranda', 'Üst kat', 'Bahçe'; current Salon badge 'Buradasın', collection fraction under room; bright varied material palettes with consistent frontal game-room camera. Q2: locked garden detail, luscious 3D garden photo large at left, right title 'Bahçe', visible lock and short requirement 'Önceki koleksiyonu tamamla', neutral button 'Koleksiyona bak'. Q3: real living room with small bottom product inventory sheet 'Koleksiyonum', five fixed item slots and '5 / 5 eşya · 1 / 1 yatak'; selected mint tunnel softly outlined at its assigned place and calm buttons 'Kaldır'/'Bitti'. Do NOT show free-drag arrows, rotation handles or arbitrary furniture movement. Q4: short room-transition design, fullbleed kitchen softly revealed behind elegant small center room badge 'Mutfak', gentle crossfade visual with no loading spinner if unnecessary; maintain centered frontal view and lower 4-destination rail.",
+    "note": "Sekiz oda ve sabit yere eşya ekleme/kaldırma. Oda açma koşulları gerçek katalogdan alınır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-49c83a27-74ba-49e8-82f4-4a5b1d80dd7f.png"
+  },
+  {
+    "id": "08",
+    "file": "08-interior-worlds.png",
+    "title": "İç mekân sanat yönü",
+    "group": "Dünya",
+    "states": [
+      "Salon",
+      "Banyo",
+      "Mutfak",
+      "Yatak odası"
+    ],
+    "prompt": "Board topic FOUR INTERIOR ROOM ART DIRECTION. Override generic UI-grid content: four lavish landscape stylized GAME ENVIRONMENT concept frames with only a slim name label each, no extra HUD. Same front centered slightly elevated dollhouse game camera across rooms, complete visible floor and clear middle walking corridor, detailed yet mobile-minded bevelled models and textured material surfaces, natural small orange tabby provides consistent scale. These are MATERIAL/LIGHTING concepts, not new construction floorplans. Q1 'Salon': follow reference relative arrangement exactly TV left/bookshelf back left/mint cat bed at back/care tray back right/armchair back right/sofa right/coffee table right, rich teal accent wall, coral upholstery, natural wood, cream paneling, restrained gold details. Q2 'Banyo': bright aqua/seafoam glazed tiles, warm ivory terrazzo, vanity against rear left and shower rear right, existing room furniture array arranged against perimeter, clean open central floor; wet ceramic and folded fabric distinction, no cat food or water care station. Q3 'Mutfak': buttery yellow and cobalt cabinets on back/perimeter, glazed sage backsplash, honey wood accents, soft daylight, distinct miniature interaction furnishings around perimeter, open middle, no extra food-care station. Q4 'Yatak odası': dusky periwinkle and soft rose textiles, pale ash wood, upholstered daybed along rear/side, quiet warm pool of light, curtains framing window and cozy ottoman/perimeter activity props; no new sleep gameplay. Avoid realistic architectural photography, extreme fisheye, isometric overhead, gigantic cat, shiny plastic on all surfaces.",
+    "note": "Malzeme ve ışık panosu; yeni oda yerleşim planı değildir. Mevcut ürünler, girişler ve ölçekler korunur.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-bc3439b7-78c2-4801-b39d-3d7c08a250a2.png"
+  },
+  {
+    "id": "09",
+    "file": "09-outdoor-worlds.png",
+    "title": "Dış mekânlar ve üst kat",
+    "group": "Dünya",
+    "states": [
+      "Bahçe",
+      "Balkon",
+      "Avlu",
+      "Üst kat"
+    ],
+    "prompt": "Board topic FOUR MORE WORLD ART CONCEPTS. Four lush complete landscape environment scenes, no HUD except room name. Same small adult orange game cat, material fidelity and color family as reference. Art target only, keep broad center walking corridor and furniture at perimeter. Q1 'Bahçe': manicured colorful garden, gentle stylized foliage, wood bench, bird feeder, yarn game prop, leafy fence perimeter, grey stone path in open center; no extra buildings in playing area. Q2 'Balkon': compact elevated balcony with teal cushions, terracotta pots, woven lounge furniture at back/sides; distant pale blue sky/city, front rail visually cut away to see cat's feet. Q3 'Avlu': pergola with stretched ivory canvas, warm stone floor, pale oak outdoor bench and furniture at sides, lush plants outside walking corridor, warm and cool dappled lighting. Q4 'Üst kat': airy loft room with roof visually cut away, bookshelf, low turntable console centered toward back wall, record spinning horizontally, little book pile left foreground, warm reading corner, small hanging lamp and ink blue accents, no spiral staircase filling center. Keep cat-sized interaction products but no CAT toy tunnel or added care bowls in these rooms. No photoreal architectural photography; polished authored stylized 3D game art.",
+    "note": "Diğer dört ortamın malzeme ve ışık panosu. Avlu/Patio adı mevcut yerelleştirmeden alınır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-e5ea84c4-9cc8-474d-904a-5dd20fe48f9e.png"
+  },
+  {
+    "id": "10",
+    "file": "10-my-cat.png",
+    "title": "Kedim ve ırk seçimi",
+    "group": "Kedi",
+    "states": [
+      "Kedim özeti",
+      "On ırk vitrini",
+      "İsim / renk düzenleme",
+      "Kilitli / seçili ırk"
+    ],
+    "prompt": "Board topic MY CAT, distinctive high fidelity CHARACTER SHOWROOM, not generic settings cards. Q1: 'Kedim' full screen with very large three-quarter orange tabby preview on softly lit oval cool-blue floor at left, right elegant identity 'Loki', 'Turuncu kısa tüylü', 'Seviye 30', short bond progress, modest 'İsmi düzenle', top tabs 'Kedim / Irklar'. Q2: 'Irklar' showroom, big selected Maine Coon facing front three-quarter and ten small coherent real breed portrait choices in two rows below; all realistic breed body traits stylized, no outfits. Ten choices represented include orange domestic shorthair, black shorthair, Maine Coon, Siamese, British Shorthair, Persian, Ragdoll, Bengal, Sphynx, Oriental Shorthair as visual placeholders (no breed label list necessary). Q3: same orange cat and focused edit sheet with 'İsim' field 'Loki', small existing coat-color swatches, 'Kaydet' and 'Vazgeç', no accessory shop. Q4: two comparison showroom cards 'Seçili' orange tabby with check badge and locked other cat with honest 'Henüz açılmadı', muted 'Koşulları gör'. Preserve identity same style across preview and thumbnails, no inconsistent photographic cats.",
+    "note": "Aynı seçili kedinin profil, seçim ve düzenlemede tutarlılığı. Irkların gerçek listesi katalogdaki on varlıktır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-1f4d5e54-1831-4faa-b16b-3f2dbcc80405.png"
+  },
+  {
+    "id": "11",
+    "file": "11-together-guide.png",
+    "title": "Birlikte ve altı bölüm rehber",
+    "group": "Kedi",
+    "states": [
+      "Miyavla / Otur / Loaf",
+      "Dinlenmeyi bitirme",
+      "Altı bölüm rehber",
+      "Görsel rehber sayfası"
+    ],
+    "prompt": "Board topic COMPANIONSHIP AND GAME GUIDE. Q1: gorgeous 'Birlikte' companion screen with three broad image-led command tiles showing the SAME orange game cat exactly in standing meow, sitting, and paws-tucked loaf positions; Turkish action labels exactly 'Miyavla', 'Otur', 'Loaf', small needs footer 'Tokluk 76% · Su 38% · Enerji 64%', very little prose. Q2: active rest companion sheet, large cat loaf pose lit lavender, 'Loki dinleniyor', clear blue 'Kalk · Dinlenmeyi bitir', 'Miyavla' unavailable while active, no reward currency or XP popup. Q3: guide overview 'Oyun rehberi', six beautifully illustrated chapter tiles in 3 by 2 grid: 'İlk adımlar', 'Bakım', 'Eşyalar ve odalar', 'Birlikte', 'Mini oyunlar', 'Kayıt ve ayarlar'. Q4: inside guide 'Bakım' selected from slim numbered chapter sidebar 1 to 6, three sequential illustrations approach bowl / tap 'Su iç' / satisfied cat; concise text and visible vertical scrollbar, page label '2 / 6', next arrow. Not a video playback, not long unreadable body copy, do not show new mechanics.",
+    "note": "Üç gerçek komut ve altı bölüm rehber. Poz fotoğrafı, odadaki kediyi başka yere taşımaz.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-b93ae1a1-03c6-4f3e-874e-0be3e17297fa.png"
+  },
+  {
+    "id": "12",
+    "file": "12-quests-return.png",
+    "title": "Görevler ve geri dönüş",
+    "group": "İlerleme",
+    "states": [
+      "Bölüm görevleri",
+      "Günlük görevler",
+      "Tamamlandı / ödülü alındı",
+      "Sen yokken özeti"
+    ],
+    "prompt": "Board topic QUESTS AND RETURN, four polished distinct landscape screens. Q1: 'Görevler' panel with slim tabs 'Bölüm / Günlük', gentle room vignette at left and three clear task rows at right, each short title, readable progress track and reward: 'Loki ile ilgilen', 'Bir oyuna katıl', 'Yuvanı tamamla'. Q2: 'Günlük' selected, clear illustrated row tasks 'Su iç' progress '0 / 1', 'Runner oyna' '1 / 1', 'Kedinle vakit geçir' '2 / 3'; completed eligible row has blue 'Ödülü al', no streak subscription calendar. Q3: modest completion states side by side, a short compact notification 'Görev tamamlandı' with check, and subdued row 'Ödül alındı', no repeated claim button, small inviting empty state 'Bugünlük tamam!', cat asleep on mint cushion. Q4: 'Hoş geldin, Loki seni bekledi.' return overview with big relaxed cat photo, short 'Biraz su iyi gelir.', needs before/after in compact rows and primary 'Eve dön'; small optional 'Ayrıntılar', no celebratory coins for depleted needs, room softly blurred behind. All numbers are illustrative; no fake new economy.",
+    "note": "Görev ve dönüş verileri örnek. Dönüş ekranı otomatik ihtiyaç doldurma veya yeni ödül tanımlamaz.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-a70b7898-e288-4800-9c9f-97ddd049a64d.png"
+  },
+  {
+    "id": "13",
+    "file": "13-celebrations.png",
+    "title": "Kutlamalar ve bildirimler",
+    "group": "İlerleme",
+    "states": [
+      "Seviye yükseldi",
+      "Oda koleksiyonu tamamlandı",
+      "Tanışma tamamlandı",
+      "Küçük ödül / başarı bildirimi"
+    ],
+    "prompt": "Board topic CELEBRATIONS; deliberately four distinct layouts, cinematic but restrained, no generic blue header bar with repeated beige rectangle. Q1: 'Seviye 31!' large sculpted azure number beside proud orange cat on small cool white platform, luminous short golden confetti, real reward tray illustrated '+100' coin, bottom strong 'Devam et', room softly softened fullscreen behind without HUD. Q2: 'Salon tamamlandı!' wide beautiful framed room photograph prominent, simple '10 / 10 eşya', little photo-corner ribbon, reward '+500 jeton · +15 bağ', blue 'Ödülü al'; room image bigger than text, not only cat portrait. Q3: 'Artık birlikteyiz!' intimate cat leaning happily toward camera with small coral hearts, first-meeting four dots all filled, 'Birlikte keşfet' button, no invented currency award. Q4: active home screen with a small tasteful top-right success toast 'Görev tamamlandı' and compact coin '+20', no modal, cat free to move; show a very small in-board timing strip of toast entering and fading rather than constant particles. All rewards illustrative values, not new economy. Beautiful composition, not casino spectacle.",
+    "note": "Üç ayrı kutlama ve küçük bildirim. Birden çok bildirim çizimi ardışık hareket evrelerini gösterir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-d19f16e7-165d-42cb-85cc-bf3511b3336a.png"
+  },
+  {
+    "id": "14",
+    "file": "14-games-lobby.png",
+    "title": "Oyun merkezi ve girişler",
+    "group": "Oyunlar",
+    "states": [
+      "Oyun merkezi",
+      "Runner giriş",
+      "Catch giriş",
+      "Can yok / reklam hazır değil"
+    ],
+    "prompt": "Board topic GAME HUB AND WELCOME. Q1: 'Oyunlar' screen: two very large editorial landscape cards side by side. 'Cat Runner': dynamic orange cat running down layered colorful Mediterranean-inspired town, blue-teal street, tactile cloth awnings, warm facades, visible safe obstacle lanes. 'Cat Catch': orange cat pouncing toward a small stitched toy mouse in a lush garden club arena. Each card has small '5 / 5 can' and a blue 'Oyna', quiet 'Sıralama'. Q2: Runner welcome full-bleed game street scene at left 60%, clean cool white right column title 'Cat Runner', 'Rekor 14.440', '5 / 5 can', three simple swipe gesture icons, primary 'Koşuya başla', text 'Eve dön'. Q3: Catch welcome bright arena hero with poised cat and mouse, right column 'Cat Catch', '60 saniye', '5 / 5 can', concise 'Fareye dokun, patinle yakala.', blue 'Ava başla', quiet 'Eve dön'. Q4: no-lives state over lobby, paw-shaped heart reserve empty, heading 'Canların yenileniyor', illustrative countdown '04:32', greyed single option 'Reklam şu an hazır değil', clear 'Eve dön'; tiny separate note card showing only when available 'Reklam izle · 1 can'. Do not show overlapping enabled start and ad buttons. No new games.",
+    "note": "Yalnız mevcut Runner ve Catch. Can/reklam seçenekleri gerçek hizmet durumuna göre görünür.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-a5ab4318-6092-465f-8c05-9d607f4314a8.png"
+  },
+  {
+    "id": "15",
+    "file": "15-runner.png",
+    "title": "Runner dünya ve oynanış",
+    "group": "Oyunlar",
+    "states": [
+      "Runner aktif oyun",
+      "Şerit değiştirme öğretimi",
+      "Zıplama / iniş",
+      "Eğilme / toparlanma"
+    ],
+    "prompt": "Board topic RUNNER LIVE GAMEPLAY. Four distinct complete landscape gameplay mockups, rear chase camera, clear three lanes and small natural adult orange cat seen from BEHIND running away from viewer; no cat facing viewer in active game. Rich colorful stylized town with teal paving, terracotta/coral/azure facades, deep recessed shop windows, striped fabric awnings, warm sun/cool shadows, hand-authored varied depth. This should be vastly more polished than block houses. Keep obstacles functional and realistic size, gold paw coins visible in safe lanes never inside obstacles. Q1: active run, compact top score '1.240', small coin '24', lives represented three small hearts, top right pause, tiny distance '124 m', all gameplay screen center open. Q2: same town, short translucent gesture tutorial bottom 'Şerit değiştirmek için kaydır', clean curved left-right gesture arrow above cat, highlighted destination lane, '1 / 3'. Q3: cat midair over low woven basket obstacle, clearly above ground with separated shadow, safe forward landing, brief 'Zıpla' gesture, bottom inset two tiny side pose silhouettes 'Uçuş / İniş'. Q4: cat naturally crouched on all four bent limbs under fabric arch with clear space above back, exact text 'Eğil', no crushed Y-scale; two tiny side pose insets 'Eğilme / Kalkış'. Obstacles/decor contrast prioritizes safety and readability, no neon speedlines or purple ramp. UI tactile cool white/navy/azure consistent.",
+    "note": "Oyun alanının okunması ve çevre kalitesi hedefi. Küçük yan poz çizimleri anlatım amaçlıdır; kalıcı HUD değildir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-6ef6e0dd-b523-4f58-a85b-8927267f4c87.png"
+  },
+  {
+    "id": "16",
+    "file": "16-catch.png",
+    "title": "Catch arena ve av evreleri",
+    "group": "Oyunlar",
+    "states": [
+      "Catch aktif oyun",
+      "Hedef seçimi",
+      "Hazırlık / atılma / temas",
+      "Kaçırma / toparlanma"
+    ],
+    "prompt": "Board topic CAT CATCH GAMEPLAY. Show a complete open rectangular 8 by 6 garden game arena with high slightly angled overhead camera showing entire action area; plants, club facade, soft benches at perimeter, cool pale clay playing surface, warm light, nuanced material and rich green foliage. Same natural adult orange cat and stitched purple/rose toy mice. Q1: active gameplay, cat in center running to a toy mouse, compact top timer '00:42', score '2.480', mouse count '18', pause; arena uncluttered, 4 visible mice. Q2: first tutorial 'Fareye dokun', a simple small hand pointer over one mouse, thin coral ring only under selected mouse, cat looking/turning toward it; no instant capture. Q3: large arena scene plus three clear small sequential pose thumbnails below labelled 'Hazırlık', 'Atılma', 'Pati teması', same orange cat compresses limbs naturally then pounces, single front paw actually contacts ONE toy mouse at final stage, tiny restrained gold star contact feedback. Q4: miss state cat landing beside escaped mouse, small message 'Kaçtı! Yeniden dene.', combo indicator calmly resets, no dramatic red fullscreen; small recovery thumbnail cat stabilizing paws on floor. A readable high quality game, no permanent arrows or giant explosive particles hiding feet. The cat is not catching while idle.",
+    "note": "Seçim, hazırlık, atılma ve gerçek pati teması. Efekt fiziksel yakalama kuralının yerine geçmez.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-3ecad294-8df8-4073-9d49-d100e6c420c3.png"
+  },
+  {
+    "id": "17",
+    "file": "17-results-pause.png",
+    "title": "Duraklatma, sonuç ve ödül",
+    "group": "Oyunlar",
+    "states": [
+      "Ortak duraklatma",
+      "Runner sonuç",
+      "Catch sonuç",
+      "İsteğe bağlı reklam ödülü durumları"
+    ],
+    "prompt": "Board topic PAUSE AND RESULTS. Q1: frozen runner world softly blurred, compact centered 'Bir mola' card, one large azure 'Devam et', two tiny audio/reduced motion toggles, quiet 'Eve dön', clean close icon, no giant empty panel. Q2: Runner results asymmetric full screen, orange game cat proud at left on street, big right navy 'Yeni rekor!' and '14.820', smaller '1.482 m' and coin '+120', blue 'Yeniden oyna', quiet 'Eve dön'; no extra chart. Q3: Catch results with cat and ONE little stitched toy mouse at left, large 'Harika av!' '3.480', separate '25 fare' and '+200 jeton', 'Yeniden avlan', 'Eve dön'; same system different scene. Q4: two alternative compact bottom sheets over results, first 'Ödülü ikiye katla' with clear voluntary button 'Reklam izle' and equally legible 'Şimdi değil'; second 'Reklam tamamlanmadı' with 'Ödül değişmedi' and 'Sonuçlara dön'. Explicit small caption 'Alternatif durumlar'. Avoid pretending watching ad or receiving purchase occurred. Illustrative scores, no new system.",
+    "note": "İki oyunda aynı eylem düzeni. Reklam seçenekleri alternatif servis durumlarıdır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-0f035a7c-cd72-41dd-9f10-762f8e93df79.png"
+  },
+  {
+    "id": "18",
+    "file": "18-online.png",
+    "title": "Sıralama, hesap ve gizlilik",
+    "group": "Sistem",
+    "states": [
+      "Dolu sıralama",
+      "Boş / yüklenen / çevrimdışı liste",
+      "Hesap ve eşitleme durumu",
+      "Gizlilik ve veri işlemleri"
+    ],
+    "prompt": "Board topic ONLINE AND ACCOUNT SERVICES, four landscape game UI screens, polished but calm. Q1: 'Sıralama' with slim game tabs 'Runner / Catch', period tabs 'Günlük / Haftalık', compact first-three podium using small cat portraits, list of 5 players with scores, current 'Loki' row highlighted at bottom, no fabricated claim of live global players; small footer 'Örnek veriler'. Q2: three alternative list states shown in a thoughtful 3-column comparison inside this screen: a quiet loading skeleton 'Yükleniyor', playful cat with empty trophy 'Henüz skor yok', cloud-off badge 'Çevrimdışı kopya' with clear 'Tekrar dene'. Q3: 'Hesabım' clean centered panel with profile and separate rows 'Google hesabı bağlı', 'Son eşitleme: Bugün 14:32', neutral synchronization status icon, buttons 'Şimdi eşitle' and 'Çıkış yap'. A small alternative error strip 'Eşitleme tamamlanamadı' is clearly detached from account connected state. Q4: 'Gizlilik ve veriler' grouped rows 'Gizlilik ilkesi', 'Veri talebi', 'Bulut hesabını sil', small plain destructive button separated at bottom, calm clear language, no invented legal promise or email address. Cool-white/navy interface over subtle blue lounge backdrop, no ornate casino podium.",
+    "note": "Sıralama oyuncuları ve eşitleme zamanı örnek veri. Hesap bağlılığı ile eşitleme başarısı farklı bilgilerdir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-e921f9c2-4f2e-46fe-b5b9-17bf8d7bbdf6.png"
+  },
+  {
+    "id": "19",
+    "file": "19-settings-confirm.png",
+    "title": "Ayarlar, onaylar ve yapımcılar",
+    "group": "Sistem",
+    "states": [
+      "Ses / titreşim / dil / hareket",
+      "Yeni oyun onayı",
+      "Veri silme onayı",
+      "Yapımcılar / ışık tercihi"
+    ],
+    "prompt": "Board topic SETTINGS AND IMPORTANT CONFIRMATIONS. Q1: 'Ayarlar' with grouped tidy existing toggles 'Müzik', 'Ses efektleri', 'Oyun sesleri', 'Titreşim', 'Azaltılmış hareket', a clear language row 'Türkçe', account link; modern blue thumb controls, no fake equalizer or extra settings. Q2: new game reset dialog with modest cat portrait, title 'Yeni oyun başlatılsın mı?', exact copy 'Mevcut yerel ilerlemen sıfırlanır.', big safe blue 'Vazgeç', distinct muted-red 'İlerlemeyi sıfırla', no decorative confetti. Q3: cloud deletion confirmation with cloud icon, title 'Bulut hesabı silinsin mi?', exact copy 'Bu işlem geri alınamaz.', buttons 'Vazgeç' and red 'Bulut hesabını sil'; do not say local progress necessarily deleted. Q4: left compact credits sheet 'Yapımcılar', restrained Cat Home wordmark and small elegant section labels 'Ekip', 'Varlıklar ve lisanslar', 'Sürüm' without inventing names. To its right a clearly separate component example 'Işık tercihi' with three small scene thumbnails 'Loş', 'Dengeli', 'Aydınlık' and a small clock '18:42'. These are alternative panels, not one cluttered screen. Everything legible in Turkish, respectful controls.",
+    "note": "Geri dönüşü olmayan işlemler için açık hedef. Işık tercihi yalnız mevcut etkin kullanıcı yolunda uygulanır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-e406b5c8-eee1-4321-bf93-d988c36dc3d3.png"
+  },
+  {
+    "id": "20",
+    "file": "20-motion-storyboard.png",
+    "title": "Arayüz ve mini oyun hareket panosu",
+    "group": "Hareket",
+    "states": [
+      "Panel açılma / kapanma",
+      "Konuşma ve bildirim geçişi",
+      "Runner zıplama / eğilme",
+      "Catch av poz sırası"
+    ],
+    "prompt": "Override standard 2x2 screens. Create a beautifully art-directed animation storyboard sheet in FOUR HORIZONTAL ROWS, each row has FOUR equal keyframes left to right and a readable Turkish row title, large 2560x1600 composition, navy thin gutters. Reference supplies same styled cat and UI. Row1 'Panel açılışı': 0 ms room scene, 80 ms cool-white modal subtly moving up, 160 ms nearly settled, 200 ms full modal with 'Birlikte' and blue action, no huge scale bounce. Row2 'Balon ve bildirim': compact speech bubble 'Mırr…' appearing at cat, fully visible, brief heart/coin toast at corner, fading out cleanly. Row3 'Runner: zıpla ve eğil': exact side-view orange cat with ground reference line; takeoff bent hind legs, midair normal spine, soft forepaw landing, natural four-bent-leg crouch with head clear of low fabric arch; no squashed body. Row4 'Catch: hazırlık ve temas': exact same side-view cat watching a purple mouse, low preparation, forward pounce with stable orientation, front paws visibly contact ONE mouse then stable posture. Each frame numbered 1–4, compact text under relevant frame. No duplicate limbs, no anatomy distortion, never show Y squash. This is a motion CONCEPT storyboard, not actual frames. Professional motion design presentation, spare labels and generous spacing.",
+    "note": "Anahtar poz çizelgesi; gerçek oyun klibi değildir. Kesin UI ve fizik süreleri MOTION.md dosyasında ayrılır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-d365d3f0-bd46-46ca-b113-0f0edc1b68ab.png"
+  },
+  {
+    "id": "21",
+    "file": "21-responsive.png",
+    "title": "Tablet, geniş ekran ve klavye",
+    "group": "Sistem",
+    "states": [
+      "4:3 tablet HUD",
+      "20:9 geniş HUD",
+      "Mobil klavye / isim alanı",
+      "Uzun Türkçe metin / kaydırma"
+    ],
+    "prompt": "Board topic ADAPTIVE GAME INTERFACES. Four labeled design panels on navy sheet, carefully respecting different ASPECT RATIOS (do not force all same ratio). Q1 'Tablet 4:3': actual 4:3 home screen with compact top needs and balances, same centered frontal room view, 4 fixed destinations 'Mağaza / Oda / Birlikte / Oyunlar' in 80-reference-pixel lower rail, controls safe. Q2 'Geniş ekran 20:9': actual wide landscape screen, same home scene preserves visual room framing without stretching cat, UI hugs safe margins, four bottom nav labels remain centrally balanced, avoid huge empty stretched pills. Q3 'Klavye açık': landscape naming dialogue with cat portrait at left, input 'Loki' and blue 'Tamam' lifted above a visible standard Turkish keyboard filling bottom half; field and button not obscured by keyboard; small calm helper 'İsmi buradan değiştirebilirsin'. Q4 'Uzun metin': tablet guide page 'Eşyalar ve odalar', large legible Turkish body in scroll container and a clear vertical scrollbar, fixed title/close outside scrolling content, separate footer '3 / 6'. Do not claim these illustrations prove actual responsiveness; tiny board caption 'Yerleşim önerileri'. Same quality and colors.",
+    "note": "Yerleşim örnekleri; gerçek cihazda responsive davranış kanıtı değildir.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-948916c5-4234-4ff3-978f-c12a34ceec53.png"
+  },
+  {
+    "id": "22",
+    "file": "22-design-system.png",
+    "title": "Renk, ikon ve bileşen sistemi",
+    "group": "Sistem",
+    "states": [
+      "Renk / malzeme / tipografi",
+      "İkon ailesi",
+      "Buton ve kart durumları",
+      "Balon / sekme / bildirim ailesi"
+    ],
+    "prompt": "Override gameplay screens: design a premium Cat Home VISUAL SYSTEM board organized in four clearly spaced quadrants. Q1 'Renk ve malzeme': exact swatches labeled '#172841', '#2779F5', '#FF695A', '#FFC857', '#F7FAFF'; three tactile material sample objects woven coral fabric, mint glazed ceramic, natural oak; modern rounded heading typography sample 'Birlikte güzel bir gün.' and body 'Çığ, şefkat, özgürlük, İstanbul.' verifying Turkish accents. Q2 'İkon ailesi': 16 small highly coherent 3D icon renders, common light and soft bevels: shopping bag, coral armchair, two paws, controller, food bowl, water drop, moon, cat face, quest list, settings cog, padlock, small heart, clock, toy mouse, plus, check; mint/azure/coral palette not all gold. Q3 'Bileşen durumları': show clearly labeled identical main buttons in 'Normal', 'Basılı', 'Devre dışı', 'Odak'; selected product card versus owned card with image above and restrained text; no excessive pills. Q4 'Balon ve gezinme': organic speech 'Biraz oynayalım mı?', scalloped moon thought, subtle success toast 'Kaydedildi', four-destination rail with exact labels 'Mağaza / Oda / Birlikte / Oyunlar', and thin selected-tab underline. This is a design system sheet, all components are sharp readable polished game UI, airy contemporary layout.",
+    "note": "Renk, tipografi, ikon ve bileşen ailesi. Kanonik para ikonları ve Türkçe fontlar uygulamada korunur.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-3c2e233d-2c67-4400-9909-db70a2e9c988.png"
+  },
+  {
+    "id": "23",
+    "file": "23-home-animation.png",
+    "title": "Ev içindeki hareket ve etkileşim aileleri",
+    "group": "Hareket",
+    "states": [
+      "Yemek / içmek / incelemek",
+      "Uyku / uyanma / dinlenme",
+      "Tırmalama / yoğurma / tünel",
+      "Top / çıkma / duş / izleme"
+    ],
+    "prompt": "Override standard four-screens layout. Create ONE rich Cat Home household ANIMATION CONCEPT sheet with TWELVE equal vignettes in a precise 4 columns by 3 rows grid, each framed by thin navy gutters, header 'CAT HOME / EVDE HAREKET'. All vignettes same orange adult tabby game character, clear full body and actual paw-object contact, high quality tactile cozy materials, no duplicated limbs or human bodies. Each vignette has a short readable Turkish caption: 1 'Mama ve su' cat bending head into ceramic bowl; 2 'İnceleme' cat sniffing a bowl without eating; 3 'Uyku ve uyanma' sleeping then head raised tiny double pose on mint bed; 4 'Otur / Loaf / Kalk' three small distinct side poses on floor, spine never squashed. 5 'Tırmalama' cat upright supported rear legs, front paws on sisal post; 6 'Yoğurma' alternating front paws kneading soft mat; 7 'Tünel oyunu' cat entering OPEN mouth of mint tunnel, short arrow along actual tunnel axis; 8 'Top ve yumak' front paw actually nudging ball on floor. 9 'Çıkma ve inme' cat stepping onto low stool, forepaws supported; 10 'Duş ve bakım' cat on OPEN half shower floor with very light droplets; 11 'Salıncakta dinlenme' cat supported on cozy swinging seat, slight tilt only; 12 'Bakış ve nesne oyunu' cat gazing at record player with horizontal disk, tiny inset one paw nudging paper roll. These represent entry/action/exit families; no new reward labels. Stylized 3D game animation storyboard, consistent small cat scale, clear physical contact.",
+    "note": "Mevcut ev etkinliklerinin temsilî hareket aileleri. Ürün başına giriş/çıkış doğrulaması ayrıca yapılır.",
+    "source": "C:\\Users\\HAKAN\\.codex\\generated_images\\01a08005-283e-7513-9bf2-6af70865585f\\exec-a1a1289e-cb3a-4375-87de-d8311b08d1be.png"
+  }
+]

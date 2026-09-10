@@ -121,10 +121,12 @@ MonoBehaviour:
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
+  requiredProductAttachment: {fileID: 0}
   roomMinimum: {x: -3.78, y: -2.88}
   roomMaximum: {x: 3.78, y: 2.78}
   collisionClearance: 0.09
   validationHeight: 0.7
+  hungHeight: 0
 --- !u!1001 &1358637967710282687
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -189,6 +191,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: StereoSystem_Model
       objectReference: {fileID: 0}
+    - target: {fileID: 1227826567523962181, guid: dfab47eb0717f3a4eadbf92fd10ba175, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9d88eeeb2ec3533488b294f098187deb, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

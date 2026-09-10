@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4670680549570588753}
   - component: {fileID: 2251094857310264279}
   - component: {fileID: 8248741815427586147}
+  - component: {fileID: 9045358801005683001}
   m_Layer: 0
   m_Name: LoftFloorCushions
   m_TagString: Untagged
@@ -120,6 +121,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &9045358801005683001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553655041222948051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &1472431840093547114
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,27 +349,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4dd38da38c6541648b225987d6627a57, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ad1133ff17a2850498580535037d47eb, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: cf4af19d131484c4fb19f58d7b1c910d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 1a264fa8dd50c0241b9559bf200452da, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c341b3dbda9e89449833172ab534378, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 7354b8f86a426904b980eae9fa1f9196, type: 2}
     - target: {fileID: 919132149155446097, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: m_Name
       value: LoftFloorCushions_PremiumModel

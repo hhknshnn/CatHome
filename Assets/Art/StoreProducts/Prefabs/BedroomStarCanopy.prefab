@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3111106091648867131}
   - component: {fileID: 5848198299819446301}
   - component: {fileID: 3284265931094089989}
+  - component: {fileID: 1226092210365068207}
   m_Layer: 0
   m_Name: BedroomStarCanopy
   m_TagString: Untagged
@@ -120,6 +121,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &1226092210365068207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2268646850266566866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &2894745654753563409
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,27 +361,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4063e0e89760d1945a7e18aea92d5f3f, type: 2}
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 62a13641c06873d4196c4d819e65a916, type: 2}
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: c389359af3b2c5f46ad92767feff9bce, type: 2}
+      objectReference: {fileID: 2100000, guid: 76390fe6e1742664c86bf27bbbb2da8b, type: 2}
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 15a19d7c22a16ec4088abdd0323a911b, type: 2}
     - target: {fileID: -7511558181221131132, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: 332219d5de9979144869dcc4b106cf34, type: 2}
     - target: {fileID: 919132149155446097, guid: cc65bbea60f3bb34e8c782ab77e92a46, type: 3}
       propertyPath: m_Name
       value: BedroomStarCanopy_PremiumModel

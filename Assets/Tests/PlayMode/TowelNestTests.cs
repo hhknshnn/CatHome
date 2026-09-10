@@ -74,12 +74,13 @@ public sealed class TowelNestTests
         float deadline = Time.realtimeSinceStartup + 30f;
         while (nest.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(nest);
             peakY = Mathf.Max(peakY, cat.transform.position.y);
             yield return null;
         }
         Time.timeScale = 1f;
 
-        Assert.That(nest.IsRunning, Is.False, "The nap must finish on its own.");
+        Assert.That(nest.IsRunning, Is.False, "The nap must finish after the player requests Get up.");
         Assert.That(peakY, Is.GreaterThan(floorY + 0.5f),
             "The cat must actually be lifted onto the towel stack.");
         Assert.That(cat.transform.position.y, Is.LessThan(floorY + 0.25f),
@@ -96,7 +97,7 @@ public sealed class TowelNestTests
     }
 
     [UnityTest]
-    public IEnumerator Nest_RefusesWhenTheCatIsWideAwake()
+    public IEnumerator Nest_AllowsRelaxingWhenTheCatIsWideAwake()
     {
         yield return RoomPlayModeSupport.LoadRoomAlone("Bathroom_Level01");
 
@@ -123,9 +124,11 @@ public sealed class TowelNestTests
         nest.RefreshUnlockPresentation();
 
         energy.ApplySavedValue(100f);
-        Assert.That(nest.TryStart(cat), Is.False,
-            "A wide awake cat has no reason to climb into the towels.");
-        Assert.That(nest.IsRunning, Is.False);
+        Assert.That(nest.TryStart(cat), Is.True,
+            "A full energy bar must not disable a purchased resting place.");
+        Assert.That(nest.EnergyCost, Is.Zero);
+        nest.enabled=false;
+        yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
         Assert.That(CatActivity.Active, Is.Null);
     }
 }

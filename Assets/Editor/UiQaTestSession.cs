@@ -7,6 +7,16 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class UiQaTestSession
 {
+    public static string ResultDirectory
+    {
+        get => SessionState.GetString("CatHome.QA.ResultDirectory", "Docs/QA/UIUX_2026-09-06");
+        set => SessionState.SetString("CatHome.QA.ResultDirectory", value);
+    }
+    public static string ResultFileName
+    {
+        get => SessionState.GetString("CatHome.QA.ResultFileName", string.Empty);
+        set => SessionState.SetString("CatHome.QA.ResultFileName", value);
+    }
     private static readonly TestRunnerApi api;
     static UiQaTestSession()
     {
@@ -36,8 +46,9 @@ public static class UiQaTestSession
         public void TestFinished(ITestResultAdaptor result){}
         public void RunFinished(ITestResultAdaptor result)
         {
-            string directory="Docs/QA/UIUX_2026-09-06";Directory.CreateDirectory(directory);
-            TestRunnerApi.SaveResultToFile(result,Path.Combine(directory,EditorQaSession.IsActive?"PlayMode.xml":"EditMode.xml"));
+            string directory=ResultDirectory;Directory.CreateDirectory(directory);
+            string file = string.IsNullOrEmpty(ResultFileName) ? (EditorQaSession.IsActive?"PlayMode.xml":"EditMode.xml") : ResultFileName;
+            TestRunnerApi.SaveResultToFile(result,Path.Combine(directory,file));
         }
     }
 }

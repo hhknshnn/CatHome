@@ -126,6 +126,7 @@ MonoBehaviour:
   roomMaximum: {x: 3.78, y: 2.78}
   collisionClearance: 0.09
   validationHeight: 0.7
+  hungHeight: 0
 --- !u!1001 &4734741714972549382
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -190,6 +191,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2280049085174923783, guid: de151d25ee1633746bd7fc13798aa0e2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c2b2650e6cd3b3847a2c965c222fcae1, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

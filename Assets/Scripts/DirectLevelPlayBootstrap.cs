@@ -56,7 +56,12 @@ public static class DirectLevelPlayBootstrap
             return;
         }
 
-        if (Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include) != null)
+        // Multi-scene editor entry can notify the room before the bootstrap's
+        // components are discoverable. Its scene already reserves the bootstrap;
+        // adding another copy would create competing loaders and save restores.
+        Scene bootstrap = SceneManager.GetSceneByPath(BootstrapScenePath);
+        if (bootstrap.IsValid() ||
+            Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include) != null)
             return;
 
         if (SceneUtility.GetBuildIndexByScenePath(BootstrapScenePath) < 0)

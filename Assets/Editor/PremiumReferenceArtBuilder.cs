@@ -40,6 +40,9 @@ public static class PremiumReferenceArtBuilder
                 case "FoodBar":case "ThirstUI":case "EnergyUI": Need(r);break;
                 case "CatShopButton": Identity(r);break;
                 case "HomeDock": Dock(r);break;
+                case "ActivityProgressBadge":
+                    r.anchorMin=r.anchorMax=new Vector2(1,0);r.pivot=new Vector2(.5f,.5f);
+                    r.anchoredPosition=new Vector2(-190,204);r.sizeDelta=new Vector2(280,66);break;
                 case "JoystickBackground": Joystick(r);break;
                 case "CoinEntry":case "DiamondEntry": Currency(r);break;
                 case "BondXpEntry": Bond(r);break;
@@ -120,37 +123,38 @@ public static class PremiumReferenceArtBuilder
     }
     static void Dock(RectTransform root)
     {
-        root.sizeDelta=new Vector2(916,122);root.anchoredPosition=new Vector2(0,91);
+        root.sizeDelta=new Vector2(820,64);root.anchoredPosition=new Vector2(0,40);
         var surround=Child(root,"DockEnamelTray");
         if(surround==null)surround=U.Panel("DockEnamelTray",root,PremiumUiStyle.WarmIvory,0,0,936,136,62).rectTransform;
-        surround.SetAsFirstSibling();
+        surround.SetAsFirstSibling();U.At(surround,0,0,1928,80);
+        var tray=surround.GetComponent<LowPolyPanelGraphic>();tray.ConfigureTutorialStyle(PremiumUiStyle.WarmIvory,0,1);tray.ConfigureReferenceFinish(false);tray.ConfigureElevation(false);tray.raycastTarget=false;
         foreach(var button in root.GetComponentsInChildren<Button>(true))
         {
             var rect=(RectTransform)button.transform;string icon;
-            if(button.name=="ShopButton"){U.At(rect,-319,0,248,98);icon="Shop";}
-            else if(button.name=="PlayCatRunnerButton"){U.At(rect,319,0,248,98);icon="Games";}
-            else if(button.name=="CurrentRoomStatus"){U.At(rect,0,0,350,98);icon="Rooms";}
+            if(button.name=="ShopButton"){U.At(rect,-288,0,220,56);icon="Shop";}
+            else if(button.name=="PlayCatRunnerButton"){U.At(rect,288,0,220,56);icon="Games";}
+            else if(button.name=="CurrentRoomStatus"){U.At(rect,0,0,316,56);icon="Rooms";}
             else continue;
             var visual=button.targetGraphic.transform;
             // An intentional art well keeps every silhouette clear of the rim.
             // The oversized, muted motif restores the reference's illustrated buttons.
-            float artX=icon=="Rooms"?-126:-77;
+            float artX=icon=="Rooms"?-122:-78;
             var well=Child(visual,"DockArtWell");
-            if(well==null)well=U.Panel("DockArtWell",visual,PremiumUiStyle.Mint,artX,0,72,72,32).rectTransform;
-            U.At(well,artX,0,72,72);well.SetAsFirstSibling();
+            if(well==null)well=U.Panel("DockArtWell",visual,PremiumUiStyle.Mint,artX,0,44,44,20).rectTransform;
+            U.At(well,artX,0,44,44);well.SetAsFirstSibling();
             var motif=Child(visual,"BackdropMotif");
             if(motif==null)motif=U.Rect("BackdropMotif",visual);
-            U.At(motif,icon=="Rooms"?125:72,0,94,82);
+            U.At(motif,icon=="Rooms"?124:76,0,46,44);
             var wash=motif.GetComponent<RawImage>();if(wash==null)wash=motif.gameObject.AddComponent<RawImage>();
             wash.texture=Resources.Load<Texture2D>("PremiumInterface/"+icon);wash.color=new Color(1,1,1,.19f);wash.raycastTarget=false;
             motif.SetSiblingIndex(1);
-            Icon(visual,icon,artX,0,68);
+            Icon(visual,icon,artX,0,38);
             foreach(var label in button.GetComponentsInChildren<TMP_Text>(true))
             {
-                if(label.name=="RunnerEnergyLabel"){Type(label,17);U.At(label.rectTransform,28,-24,258,26);}
+                if(label.name=="RunnerEnergyLabel"){Type(label,13);U.At(label.rectTransform,24,-15,238,18);}
                 else if(label.name=="RoomProgressLabel")
-                {Type(label,27);label.enableAutoSizing=true;label.fontSizeMin=22;label.fontSizeMax=27;U.At(label.rectTransform,28,13,258,40);}
-                else{Type(label,28);U.At(label.rectTransform,36,0,148,58);}
+                {Type(label,22);label.enableAutoSizing=true;label.fontSizeMin=18;label.fontSizeMax=22;U.At(label.rectTransform,24,8,238,28);}
+                else{Type(label,22);U.At(label.rectTransform,20,0,142,40);}
             }
         }
         var fit=root.GetComponent<PremiumHomeDockLayout>();if(fit==null)root.gameObject.AddComponent<PremiumHomeDockLayout>();

@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 2204231172316153411}
   - component: {fileID: 6911994583388707082}
   - component: {fileID: 3926350250877853957}
+  - component: {fileID: 674169309328911703}
   m_Layer: 0
   m_Name: GardenHammock
   m_TagString: Untagged
@@ -152,6 +153,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &674169309328911703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3129047442307027790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &3900627414191636900
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,23 +396,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 71488629bac628546ac411accb339777, type: 2}
     - target: {fileID: -7511558181221131132, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 4071819e90cdd21458df625edcb93bb1, type: 2}
     - target: {fileID: -7511558181221131132, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 25b9a9e0d09367845a1d50dc18f529a1, type: 2}
     - target: {fileID: -7511558181221131132, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 5fdfcc88b3260434d9fa8be7fce94d88, type: 2}
     - target: {fileID: 919132149155446097, guid: a1f87118df8f0fc409acba833ec0fd69, type: 3}
       propertyPath: m_Name
       value: HammockBed
@@ -506,19 +520,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: a4043288faba8884a9042d4e82d1574e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: b0b3fa28ee72390419e68606f87ae82e, type: 2}
     - target: {fileID: -7511558181221131132, guid: a4043288faba8884a9042d4e82d1574e, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: a4043288faba8884a9042d4e82d1574e, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 14adce2dfcb6eb943be1e84a0d2ee219, type: 2}
     - target: {fileID: -7511558181221131132, guid: a4043288faba8884a9042d4e82d1574e, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: be65fe7ceda89634b978b0db953f2c1f, type: 2}
     - target: {fileID: 919132149155446097, guid: a4043288faba8884a9042d4e82d1574e, type: 3}
       propertyPath: m_Name
       value: GardenHammock_PremiumModel

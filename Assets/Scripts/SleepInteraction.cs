@@ -53,6 +53,7 @@ public sealed class SleepInteraction : MonoBehaviour
     public event Action SleepStarted;
 
     public bool IsSleeping => sleepSequenceActive;
+    public Transform SleepSurface=>sleepPoint;
     public bool WantsActionButton => sleepSequenceActive || IsCatNearBed();
     public string CurrentButtonText => sleepSequenceActive ? wakeUpButtonText : sleepButtonText;
     public Transform TutorialBedTarget =>
@@ -76,6 +77,7 @@ public sealed class SleepInteraction : MonoBehaviour
     {
         ResolveCatReferences();
         speedParameterHash = Animator.StringToHash(speedAnimatorParameter);
+        if(GetComponent<CatSleepContactAlignment>()==null)gameObject.AddComponent<CatSleepContactAlignment>();
         satisfiedActionThreshold = GameBalanceConfig.GetSatisfiedActionThreshold();
         speechBubble = speechBubble != null ? speechBubble : GetComponent<CatSpeechBubble>() ?? gameObject.AddComponent<CatSpeechBubble>();
         sleepEffect = GetComponent<CatSleepZzzEffect>() ?? gameObject.AddComponent<CatSleepZzzEffect>();
@@ -83,6 +85,8 @@ public sealed class SleepInteraction : MonoBehaviour
 
     public bool TryHandleActionButton()
     {
+        if (!isActiveAndEnabled || catMovement == null || catMovement.AreWorldActionsBlocked || HomeUiFlow.IsHomeControlBlocked)
+            return false;
         if (sleepSequenceActive)
         {
             LogDecisionOnce("WakeUp");
@@ -96,7 +100,7 @@ public sealed class SleepInteraction : MonoBehaviour
         if (!IsCatNearBed())
             return false;
 
-        if (catMovement.IsMovementLocked)
+        if (CatActionState.IsBusy(catMovement))
             return false;
 
         ResolveEnergySystem();
@@ -245,6 +249,13 @@ public sealed class SleepInteraction : MonoBehaviour
             EnsureAwakeFallback();
     }
 
+    public void CancelForTransition()
+    {
+        // An idle bed must not reset a pose or controller owned by another action.
+        if (sleepSequenceActive || ownsMovementLock || sleepCoroutine != null)
+            WakeUp();
+    }
+
     private void MoveCatToBedInteractionPoint()
     {
         if (catTransform == null || bedInteractionPoint == null)
@@ -265,8 +276,7 @@ public sealed class SleepInteraction : MonoBehaviour
 
             if (forward.sqrMagnitude > 0.0001f)
             {
-                catTransform.rotation =
-                    Quaternion.LookRotation(forward.normalized, Vector3.up) *
+                catTransform.rotation = Quaternion.LookRotation(forward.normalized, Vector3.up) *
                     Quaternion.Euler(0f, modelForwardOffset, 0f);
             }
         }
@@ -291,9 +301,9 @@ public sealed class SleepInteraction : MonoBehaviour
             forward.y = 0f;
             if (forward.sqrMagnitude > 0.0001f)
             {
-                catTransform.rotation =
-                    Quaternion.LookRotation(forward.normalized, Vector3.up) *
+                Quaternion authored = Quaternion.LookRotation(forward.normalized, Vector3.up) *
                     Quaternion.Euler(0f, modelForwardOffset, 0f);
+                catTransform.rotation = CatActivityFacing.AlongAxis(catMovement, catTransform.position, authored);
             }
         }
         finally
@@ -305,12 +315,18 @@ public sealed class SleepInteraction : MonoBehaviour
 
     private bool IsCatNearBed()
     {
-        if (!isActiveAndEnabled || catTransform == null || bedInteractionPoint == null)
+        if (!isActiveAndEnabled || !HasVisibleBed())
             return false;
 
-        Vector3 difference = bedInteractionPoint.position - catTransform.position;
-        difference.y = 0f;
-        return difference.sqrMagnitude <= interactionDistance * interactionDistance;
+        return !float.IsPositiveInfinity(CareInteractionTarget.NearbyDistanceSquared(
+            bedInteractionPoint, catTransform, interactionDistance));
+    }
+
+    private bool HasVisibleBed()
+    {
+        return CareInteractionTarget.IsInRoom(sleepPoint, catTransform) &&
+            CareInteractionTarget.IsInRoom(bedInteractionPoint, catTransform) &&
+            CareInteractionTarget.IsVisibleInRoom(TutorialBedTarget, catTransform);
     }
 
     private bool ValidateSetup()
@@ -377,6 +393,12 @@ public sealed class SleepInteraction : MonoBehaviour
         if (bedInteractionPoint == null || sleepPoint == null)
         {
             failureReason = "Bed Interaction Point or Sleep Point is missing.";
+            return false;
+        }
+
+        if (!HasVisibleBed())
+        {
+            failureReason = "No visible bed is available in the cat's room.";
             return false;
         }
 
@@ -537,18 +559,6 @@ public sealed class SleepInteraction : MonoBehaviour
 
     private void OnDisable()
     {
-        if (sleepCoroutine != null)
-        {
-            StopCoroutine(sleepCoroutine);
-            sleepCoroutine = null;
-        }
-
-        sleepSequenceActive = false;
-        sleepEffect?.Stop();
-
-        if (ownsMovementLock && catMovement != null)
-            catMovement.SetMovementLocked(this, false);
-
-        ownsMovementLock = false;
+        CancelForTransition();
     }
 }

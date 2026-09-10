@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 178864316760974098}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.19087718, y: 0, z: -0.47719297}
+  m_LocalPosition: {x: -0.16033684, y: 0, z: -0.40084207}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 4520232444522125739}
   - component: {fileID: 5959437897483302935}
   - component: {fileID: 4250271130888405337}
+  - component: {fileID: 7435497585323067455}
   m_Layer: 0
   m_Name: BathroomGroomingCart
   m_TagString: Untagged
@@ -100,7 +101,7 @@ MonoBehaviour:
   productId: bathroom.grooming-cart
   movableRoot: {fileID: 2249636811936255679}
   legacySlots: []
-  footprintSize: {x: 0.92, y: 0.64}
+  footprintSize: {x: 0.77279997, y: 0.5376}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -152,6 +153,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7435497585323067455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1040540528156695736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.84
 --- !u!1 &3754532509799078872
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,7 +191,7 @@ Transform:
   m_GameObject: {fileID: 3754532509799078872}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.8}
+  m_LocalPosition: {x: 0, y: 0, z: -0.672}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -208,7 +222,7 @@ Transform:
   m_GameObject: {fileID: 4813820158811433942}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.78}
+  m_LocalPosition: {x: 0, y: 0, z: -0.65519994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -241,7 +255,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.84, y: 0.84, z: 0.84}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3749397399985953024}
@@ -293,7 +307,7 @@ Transform:
   m_GameObject: {fileID: 8999342906103228142}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.19087718, y: 0, z: -0.47719297}
+  m_LocalPosition: {x: 0.16033684, y: 0, z: -0.40084207}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -362,27 +376,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 386e37846da3ae24e97eb9689290d9d5, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 31777db48e73a0d44b0c31715315c57d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a972b444a223344ea4e66c67d3b9c8c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 8f8ec4f39578b4a4a970ba39390c2bdd, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2bc3ca279f435244ca8d5b44679ef5fa, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: a692b6c9649d04844b496109af9d3fcb, type: 2}
     - target: {fileID: 919132149155446097, guid: 5c29f60f6ed36b94983545cd204827be, type: 3}
       propertyPath: m_Name
       value: BathroomGroomingCart_PremiumModel

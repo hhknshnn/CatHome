@@ -14,9 +14,15 @@ public static class PremiumTypography
         if (label == null) return;
         string name = label.name.ToLowerInvariant();
         bool isHeading = heading ?? (label.fontSize >= 34f || name.Contains("title") && !name.Contains("subtitle") || name == "wordmark");
-        bool action = name == "label" || name == "playlabel" || name == "actiontext" ||
+        // Legacy home action labels are named Text (TMP); their shared authored
+        // context identifies the action after the face has been rebuilt.
+        Transform context = label.transform.parent;
+        if (context != null && context.name == "ContextFace") context = context.parent;
+        bool contextAction = context != null && (context.name == "ActionButton" ||
+            context.name == "ActivityActionButton" || context.name == "ActivityProgressBadge");
+        bool action = name == "label" || name == "playlabel" || name == "actiontext" || name == "actionbuttontext" ||
             name == "roomprogresslabel" || name == "percentagetext" || name == "value" ||
-            name.EndsWith("labelfront") || name == "catname";
+            name.EndsWith("labelfront") || name == "catname" || contextAction;
         var font = isHeading || action ? (Emphasis != null ? Emphasis : Display) : Body;
         if (font == null) return;
         label.font = font;

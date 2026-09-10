@@ -16,6 +16,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     public const float MagnetDurationSeconds = 9f;
     public const float ShieldDurationSeconds = 12f;
     public const float DoubleCoinsDurationSeconds = 9f;
+    public const float ScoreStarDurationSeconds = 10f;
     public const int MaximumComboMultiplier = 5;
 
     [Header("Run")]
@@ -48,6 +49,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     [SerializeField] private TMP_Text welcomeEnergyText;
     [SerializeField] private Button welcomeStartButton;
     [SerializeField] private Button welcomeExitButton;
+    [SerializeField] private Button welcomeGamesButton;
     [SerializeField] private TMP_Text welcomeMissionsText;
     [SerializeField] private Button welcomeRewardedEnergyButton;
 
@@ -56,6 +58,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     [SerializeField] private TMP_Text resultTitle;
     [SerializeField] private TMP_Text resultDetails;
     [SerializeField] private Button collectButton;
+    [SerializeField] private Button resultGamesButton;
     [SerializeField] private Button retryButton;
     [SerializeField] private TMP_Text resultMissionsText;
     [SerializeField] private GameObject newBestBadge;
@@ -65,6 +68,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button pauseExitButton;
+    [SerializeField] private Button pauseGamesButton;
     [SerializeField] private Button reducedMotionButton;
     [SerializeField] private Button soundButton;
     [SerializeField] private Button hapticsButton;
@@ -92,6 +96,10 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private float magnetRemaining;
     private float shieldRemaining;
     private float doubleCoinsRemaining;
+    private float scoreStarRemaining;
+    private double scoreStarBonus;
+    private readonly System.Random giftRandom=new System.Random();
+    public CatRunnerPowerUpKind LastGrantedPowerUp { get; private set; }
     private int tutorialStage;
     private bool tutorialActive;
     private bool resultSettled;
@@ -104,22 +112,27 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private bool presentationCaptured;
     private bool exiting;
     private bool paused;
+    private bool showingWelcome;
+    private bool countdownActive;
     private CatRunnerResult latestResult;
     private bool doubleCoinsGranted;
 
     public bool IsRunning { get; private set; }
     public bool IsPaused => paused;
-    public bool IsGameplayActive => IsRunning && !paused;
+    public bool IsGameplayActive => IsRunning && !paused && !exiting;
     public int CollisionCount => collisions;
     public int ChancesRemaining => Mathf.Max(0, MaximumCollisionHits - collisions);
     public float ElapsedSeconds => Mathf.Max(0f, elapsed);
-    public int CurrentScore => CalculateScore(distance, coins) + comboScoreBonus;
+    public int EarnedScoreBonus => (int)Math.Min(int.MaxValue,(long)comboScoreBonus+(long)Math.Floor(scoreStarBonus));
+    public int CurrentScore => (int)Math.Min(int.MaxValue,(long)CalculateScore(distance, coins)+EarnedScoreBonus);
     public int BestScore => CatRunnerProgressService.BestScore;
     public int ComboMultiplier => comboMultiplier;
     public int MaximumCombo => maximumCombo;
     public bool IsMagnetActive => magnetRemaining > 0f;
     public bool IsShieldActive => shieldRemaining > 0f;
     public bool IsDoubleCoinsActive => doubleCoinsRemaining > 0f;
+    public bool IsScoreStarActive => scoreStarRemaining > 0f;
+    public float ScoreStarSecondsRemaining => scoreStarRemaining;
     public float MagnetRange => 7f;
     public int CurrentCurtainNumber => GetCurtainNumber(elapsed);
     public float CurrentDifficultyMultiplier => GetSpeedMultiplier(
@@ -187,6 +200,9 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void Awake()
     {
+        BindNavigation(welcomeGamesButton, ReturnToGamesFromWelcome);
+        BindNavigation(pauseGamesButton, ReturnToGamesFromPause);
+        BindNavigation(resultGamesButton, ReturnToGamesFromResult);
         if (player == null)
             player = FindAnyObjectByType<CatRunnerPlayer>(FindObjectsInactive.Include);
         if (track == null)
@@ -276,6 +292,13 @@ public sealed class CatRunnerGameController : MonoBehaviour
         }
     }
 
+    private static void BindNavigation(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null) return;
+        button.onClick.RemoveListener(action);
+        button.onClick.AddListener(action);
+    }
+
     private void Start()
     {
         EnterRunnerPresentation();
@@ -309,6 +332,9 @@ public sealed class CatRunnerGameController : MonoBehaviour
         float delta = Time.deltaTime;
         elapsed += delta;
         distance += CurrentSpeed * delta;
+        // Bank only points earned while the star is active. Expiry never removes score.
+        scoreStarBonus += CurrentSpeed * Mathf.Min(delta,scoreStarRemaining);
+        scoreStarRemaining = Mathf.Max(0f,scoreStarRemaining-delta);
         magnetRemaining = Mathf.Max(0f, magnetRemaining - delta);
         shieldRemaining = Mathf.Max(0f, shieldRemaining - delta);
         doubleCoinsRemaining = Mathf.Max(0f, doubleCoinsRemaining - delta);
@@ -348,6 +374,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         maximumCombo = Mathf.Max(maximumCombo, comboMultiplier);
         comboRemaining = 2.5f;
         int collectedValue = GetCollectedCoinValue(IsDoubleCoinsActive);
+        if(IsScoreStarActive)scoreStarBonus+=collectedValue*10+(comboMultiplier-1)*10;
         coins = coins > int.MaxValue - collectedValue
             ? int.MaxValue
             : coins + collectedValue;
@@ -380,10 +407,16 @@ public sealed class CatRunnerGameController : MonoBehaviour
     {
         if (!IsGameplayActive)
             return;
+        if(kind==CatRunnerPowerUpKind.MysteryGift)
+            kind=(CatRunnerPowerUpKind)giftRandom.Next(0,4);
+        LastGrantedPowerUp=kind;
         switch (kind)
         {
             case CatRunnerPowerUpKind.Magnet:
                 magnetRemaining = Mathf.Max(magnetRemaining, MagnetDurationSeconds);
+                break;
+            case CatRunnerPowerUpKind.ScoreStar:
+                scoreStarRemaining=Mathf.Max(scoreStarRemaining,ScoreStarDurationSeconds);
                 break;
             case CatRunnerPowerUpKind.Shield:
                 shieldRemaining = Mathf.Max(shieldRemaining, ShieldDurationSeconds);
@@ -433,7 +466,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     public void StartFromWelcome()
     {
-        if (exiting || IsRunning || startActionLocked)
+        if (!showingWelcome || exiting || IsRunning || startActionLocked)
             return;
 
         startActionLocked = true;
@@ -455,10 +488,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
         BeginAttempt();
     }
 
-    public void ExitFromWelcome()
+    public void ExitFromWelcome() => ExitWelcome(false);
+    public void ReturnToGamesFromWelcome() => ExitWelcome(true);
+
+    private void ExitWelcome(bool games)
     {
-        if (!exiting)
+        if (showingWelcome && !exiting)
         {
+            CatRunnerSessionContext.SetReturnToGames(games);
             exiting = true;
             if (audioController != null)
                 audioController.PlayButton();
@@ -477,7 +514,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     public void PauseRun()
     {
-        if (!IsRunning || paused || exiting)
+        if ((!IsRunning && !countdownActive) || paused || exiting)
             return;
         paused = true;
         Time.timeScale = 0f;
@@ -500,7 +537,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     public void ResumeRun()
     {
-        if (!IsRunning || !paused || exiting)
+        if ((!IsRunning && !countdownActive) || !paused || exiting)
             return;
         paused = false;
         Time.timeScale = 1f;
@@ -512,9 +549,9 @@ public sealed class CatRunnerGameController : MonoBehaviour
             RefreshTutorialText();
         }
         if (player != null)
-            player.SetRunning(true);
+            player.SetRunning(IsRunning);
         if (feedback != null)
-            feedback.SetRunning(true);
+            feedback.SetRunning(IsRunning);
         if (audioController != null)
         {
             audioController.SetPaused(false);
@@ -522,10 +559,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
         }
     }
 
-    public void ExitFromPause()
+    public void ExitFromPause() => ExitPaused(false);
+    public void ReturnToGamesFromPause() => ExitPaused(true);
+
+    private void ExitPaused(bool games)
     {
-        if (exiting)
+        if (!paused || exiting)
             return;
+        CatRunnerSessionContext.SetReturnToGames(games);
         exiting = true;
         paused = false;
         Time.timeScale = 1f;
@@ -561,6 +602,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private void ShowWelcome()
     {
         StopAllCoroutines();
+        showingWelcome = true;
+        countdownActive = false;
         Time.timeScale = 1f;
         IsRunning = false;
         paused = false;
@@ -581,6 +624,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         magnetRemaining = 0f;
         shieldRemaining = 0f;
         doubleCoinsRemaining = 0f;
+        scoreStarRemaining = 0f; scoreStarBonus = 0;
         latestResult = default;
         if (resultPanel != null)
             resultPanel.SetActive(false);
@@ -652,6 +696,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private void BeginAttempt()
     {
         StopAllCoroutines();
+        showingWelcome = false;
+        countdownActive = true;
         Time.timeScale = 1f;
         IsRunning = false;
         paused = false;
@@ -674,6 +720,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         magnetRemaining = 0f;
         shieldRemaining = 0f;
         doubleCoinsRemaining = 0f;
+        scoreStarRemaining = 0f; scoreStarBonus = 0;
         latestResult = default;
 
         if (resultPanel != null)
@@ -708,6 +755,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
         for (int value = 3; value >= 1; value--)
         {
+            if (exiting)
+                yield break;
             if (countdownLabel != null)
                 countdownLabel.text = value.ToString();
             if (feedback != null)
@@ -717,6 +766,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
             yield return new WaitForSeconds(0.65f);
         }
 
+        if (exiting)
+            yield break;
         if (countdownLabel != null)
         {
             countdownLabel.text = "RUN!";
@@ -724,6 +775,9 @@ public sealed class CatRunnerGameController : MonoBehaviour
             countdownLabel.gameObject.SetActive(false);
         }
 
+        if (exiting)
+            yield break;
+        countdownActive = false;
         IsRunning = true;
         startActionLocked = false;
         if (pauseButton != null)
@@ -811,6 +865,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void CompleteRun()
     {
+        if (!IsRunning || exiting)
+            return;
         IsRunning = false;
         paused = false;
         Time.timeScale = 1f;
@@ -828,7 +884,10 @@ public sealed class CatRunnerGameController : MonoBehaviour
         float playedDuration = Mathf.Max(0f, elapsed);
         if (player != null)
         {
-            player.SetRunning(false);
+            float supportHeight = track != null
+                ? track.SampleSurfaceHeightAt(player.LanePosition, 0f)
+                : player.SurfaceHeight;
+            player.CompleteRunOnSurface(supportHeight);
             player.PlayCelebration();
         }
 
@@ -845,7 +904,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         resultWasNewBest = score > previousBest;
         CatRunnerProgressService.SetPendingResult(latestResult, score);
         CatRunnerProgressService.RecordRunDistance(distance);
-        _ = CompetitionService.SubmitRunnerAsync(latestResult, comboScoreBonus, score);
+        _ = CompetitionService.SubmitRunnerAsync(latestResult, EarnedScoreBonus, score);
         ProgressionService.RecordProgress(QuestType.PlayRunner);
         // Persist the recovery record before payout. Settlement happens on the
         // next frame, when EconomyService can atomically save both its processed
@@ -923,10 +982,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     }
 
-    private void CollectAndReturnHome()
+    private void CollectAndReturnHome() => CollectAndReturn(false);
+    public void ReturnToGamesFromResult() => CollectAndReturn(true);
+
+    private void CollectAndReturn(bool games)
     {
-        if (exiting || resultActionLocked)
+        if (exiting || resultActionLocked || string.IsNullOrEmpty(latestResult.RunId))
             return;
+        CatRunnerSessionContext.SetReturnToGames(games);
         resultActionLocked = true;
         exiting = true;
         DisableResultActions();
@@ -937,7 +1000,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void CollectAndRetry()
     {
-        if (resultActionLocked || exiting)
+        if (resultActionLocked || exiting || string.IsNullOrEmpty(latestResult.RunId))
             return;
         resultActionLocked = true;
         DisableResultActions();
@@ -993,6 +1056,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     {
         if (!TrySettleLatestResult())
         {
+            CatRunnerSessionContext.SetReturnToGames(false);
             exiting = false;
             resultActionLocked = false;
             RefreshRetryButton();
@@ -1008,6 +1072,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         {
             DisableRunnerPresentation();
             RestoreHomePresentation();
+            CatRunnerSessionContext.RestoreRequestedNavigation();
             SceneManager.SetActiveScene(home);
             AsyncOperation unload = SceneManager.UnloadSceneAsync(gameObject.scene);
             if (unload != null)
@@ -1023,6 +1088,12 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private IEnumerator ExitWithoutRewardRoutine()
     {
         exiting = true;
+        IsRunning = false;
+        countdownActive = false;
+        if (player != null)
+            player.SetRunning(false);
+        if (feedback != null)
+            feedback.SetRunning(false);
         Time.timeScale = 1f;
 
         Scene home = SceneManager.GetSceneByName(
@@ -1031,6 +1102,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         {
             DisableRunnerPresentation();
             RestoreHomePresentation();
+            CatRunnerSessionContext.RestoreRequestedNavigation();
             SceneManager.SetActiveScene(home);
             AsyncOperation unload = SceneManager.UnloadSceneAsync(gameObject.scene);
             if (unload != null)
@@ -1077,15 +1149,17 @@ public sealed class CatRunnerGameController : MonoBehaviour
     {
         string summary = string.Empty;
         if (IsMagnetActive)
-            summary = $"MAGNET {Mathf.CeilToInt(magnetRemaining)}s";
+            summary = GameContentCopy.Text("Mıknatıs ","Magnet ")+Mathf.CeilToInt(magnetRemaining)+GameContentCopy.Text(" sn","s");
         if (IsShieldActive)
             summary = AppendPowerUp(
                 summary,
-                $"SHIELD {Mathf.CeilToInt(shieldRemaining)}s");
+                GameContentCopy.Text("Kalkan ","Shield ")+Mathf.CeilToInt(shieldRemaining)+GameContentCopy.Text(" sn","s"));
         if (IsDoubleCoinsActive)
             summary = AppendPowerUp(
                 summary,
-                $"2x COINS {Mathf.CeilToInt(doubleCoinsRemaining)}s");
+                GameContentCopy.Text("2× jeton ","2× coins ")+Mathf.CeilToInt(doubleCoinsRemaining)+GameContentCopy.Text(" sn","s"));
+        if(IsScoreStarActive)
+            summary=AppendPowerUp(summary,GameContentCopy.Text("2× skor ","2× score ")+Mathf.CeilToInt(scoreStarRemaining)+GameContentCopy.Text(" sn","s"));
         return summary;
     }
 
@@ -1120,6 +1194,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
         bool canRetry = RunnerEnergyService.CanStartRun();
         if (collectButton != null && resultPanel != null && resultPanel.activeSelf)
             collectButton.interactable = resultSettled && !resultActionLocked && !exiting;
+        if (resultGamesButton != null)
+            resultGamesButton.interactable = resultSettled && !resultActionLocked && !exiting;
         retryButton.interactable = canRetry && !resultActionLocked && !exiting;
         TMP_Text label = retryButton.GetComponentInChildren<TMP_Text>(true);
         if (label == null)
@@ -1139,6 +1215,8 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void DisableResultActions()
     {
+        if (resultGamesButton != null)
+            resultGamesButton.interactable = false;
         if (collectButton != null)
             collectButton.interactable = false;
         if (retryButton != null)
@@ -1151,7 +1229,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
     {
         if (resultDoubleCoinsButton == null)
             return;
-        bool canOffer = resultSettled &&
+        bool canOffer = !exiting && !resultActionLocked && resultSettled &&
                         !doubleCoinsGranted &&
                         latestResult.TotalCoins > 0 &&
                         CatRunnerRewardedAdBridge.IsPlacementReady(
@@ -1162,28 +1240,36 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void RequestDoubleCoinsAd()
     {
-        if (!resultSettled || doubleCoinsGranted || latestResult.TotalCoins <= 0)
+        if (exiting || resultActionLocked || !resultSettled || doubleCoinsGranted || latestResult.TotalCoins <= 0)
             return;
+        CatRunnerResult advertisedResult = latestResult;
         if (!CatRunnerRewardedAdBridge.TryShow(
                 CatRunnerRewardedAdBridge.DoubleCoinsPlacementId,
-                HandleDoubleCoinsAdFinished))
+                verified => HandleDoubleCoinsAdFinished(verified, advertisedResult)))
         {
             RefreshDoubleCoinsButton();
         }
     }
 
-    private void HandleDoubleCoinsAdFinished(bool verified)
+    private void HandleDoubleCoinsAdFinished(bool verified, CatRunnerResult advertisedResult)
     {
-        if (!verified || doubleCoinsGranted)
+        // The ad belongs to the round advertised when it opened. Retry/home
+        // may replace or destroy this controller before the provider replies.
+        bool currentResult = this != null && latestResult.RunId == advertisedResult.RunId;
+        if (!verified)
         {
-            RefreshDoubleCoinsButton();
+            if (currentResult)
+                RefreshDoubleCoinsButton();
             return;
         }
 
-        EconomyTransactionResult grant = CatRunnerRewardService.GrantDouble(latestResult);
-        if (grant.IsSettled)
-            doubleCoinsGranted = true;
-        RefreshDoubleCoinsButton();
+        EconomyTransactionResult grant = CatRunnerRewardService.GrantDouble(advertisedResult);
+        if (currentResult)
+        {
+            if (grant.IsSettled)
+                doubleCoinsGranted = true;
+            RefreshDoubleCoinsButton();
+        }
     }
 
     private void ApplyAccessibilityPreferences()
@@ -1245,14 +1331,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void OnApplicationPause(bool pauseStatus)
     {
-        if (pauseStatus && IsRunning && !paused)
+        if (pauseStatus)
             PauseRun();
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
 #if !UNITY_EDITOR
-        if (!hasFocus && IsRunning && !paused)
+        if (!hasFocus)
             PauseRun();
 #endif
     }
@@ -1375,6 +1461,9 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (welcomeGamesButton != null) welcomeGamesButton.onClick.RemoveListener(ReturnToGamesFromWelcome);
+        if (pauseGamesButton != null) pauseGamesButton.onClick.RemoveListener(ReturnToGamesFromPause);
+        if (resultGamesButton != null) resultGamesButton.onClick.RemoveListener(ReturnToGamesFromResult);
         Time.timeScale = 1f;
         RestoreHomePresentation();
         if (audioController != null)
@@ -1415,6 +1504,13 @@ public sealed class CatRunnerGameController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    public void EditorConfigureNavigation(Button welcomeGames, Button pauseGames, Button resultGames)
+    {
+        welcomeGamesButton = welcomeGames;
+        pauseGamesButton = pauseGames;
+        resultGamesButton = resultGames;
+    }
+
     public void EditorConfigure(
         CatRunnerPlayer runnerPlayer,
         CatRunnerTrackManager trackManager,

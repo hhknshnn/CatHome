@@ -25,6 +25,9 @@ public sealed class TitleCatShowcase : MonoBehaviour
     private float elapsed, nextFrame;
     private bool focused = true, reducedLastFrame, renderedFirstFrame;
     private readonly UniversalRenderPipeline.SingleCameraRequest request = new UniversalRenderPipeline.SingleCameraRequest();
+#if UNITY_EDITOR
+    private readonly RenderPipeline.StandardRequest posterRequest = new RenderPipeline.StandardRequest();
+#endif
     public bool IsLive => stage != null && texture != null && actors.Count == 3;
     public RenderTexture Output => texture;
     public int ActorCount => actors.Count;
@@ -132,11 +135,11 @@ public sealed class TitleCatShowcase : MonoBehaviour
 
     private void EnsureTexture()
     {
-        Vector2Int size = HdSize(Screen.width, Screen.height);
+        Vector2Int size = OutputSize();
         if (texture != null && texture.IsCreated() && texture.width == size.x && texture.height == size.y) return;
         ReleaseTexture();
         texture = new RenderTexture(size.x, size.y, 24, RenderTextureFormat.ARGB32)
-        { name = "Title Live Cats Full HD", antiAliasing = 4, useMipMap = false,
+        { name = "Title Live Cats", antiAliasing = MobilePresentation.IsMobile ? 2 : 4, useMipMap = false,
             filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
         texture.Create();
         // Keep the HD poster until the first normal frame populates the render scene.
@@ -146,11 +149,16 @@ public sealed class TitleCatShowcase : MonoBehaviour
         request.destination = texture;
     }
 
+    private static Vector2Int OutputSize() => MobilePresentation.IsMobile
+        ? MobilePresentation.ShowcaseSize(Screen.width, Screen.height)
+        : HdSize(Screen.width, Screen.height);
+
     private void LateUpdate()
     {
         if (!Application.isPlaying || (!focused && renderedFirstFrame) || !IsLive) return;
         bool reduced = CatRunnerProgressService.ReducedMotion;
-        bool resized = !texture.IsCreated() || texture.width != HdSize(Screen.width, Screen.height).x || texture.height != HdSize(Screen.width, Screen.height).y;
+        var size = OutputSize();
+        bool resized = !texture.IsCreated() || texture.width != size.x || texture.height != size.y;
         if (reduced && reducedLastFrame && !resized) return;
         if (!reduced && Time.unscaledTime < nextFrame) return;
         float delta = reduced ? 0f : Mathf.Min(.0667f, Time.unscaledTime - nextFrame + 1f / 30f);
@@ -201,6 +209,8 @@ public sealed class TitleCatShowcase : MonoBehaviour
         // Render requests are synchronous; restore the exact room state before its camera draws.
         var sun = RenderSettings.sun;
         bool fog = RenderSettings.fog;
+        var previousTarget = camera.targetTexture;
+        var previousActive = RenderTexture.active;
         maskedLights.Clear(); lightMasks.Clear();
         foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
         {
@@ -214,7 +224,20 @@ public sealed class TitleCatShowcase : MonoBehaviour
         try
         {
             if (GraphicsSettings.currentRenderPipeline != null)
-                RenderPipeline.SubmitRenderRequest(camera, request);
+            {
+#if UNITY_EDITOR
+                // SingleCameraRequest skips URP's volume update. An offline capture
+                // may have no valid post-process stack yet; the full camera path
+                // initializes the title volume and also completes its render graph.
+                if (!Application.isPlaying)
+                {
+                    posterRequest.destination = texture;
+                    RenderPipeline.SubmitRenderRequest(camera, posterRequest);
+                }
+                else
+#endif
+                    RenderPipeline.SubmitRenderRequest(camera, request);
+            }
             else { camera.targetTexture = texture; camera.Render(); camera.targetTexture = null; }
         }
         finally
@@ -222,6 +245,8 @@ public sealed class TitleCatShowcase : MonoBehaviour
             foreach (var light in lights) if (light != null) light.enabled = false;
             for (int i = 0; i < maskedLights.Count; i++) if (maskedLights[i] != null) maskedLights[i].cullingMask = lightMasks[i];
             RenderSettings.sun = sun; RenderSettings.fog = fog;
+            camera.targetTexture = previousTarget;
+            RenderTexture.active = previousActive;
         }
     }
 
@@ -257,16 +282,21 @@ public sealed class TitleCatShowcase : MonoBehaviour
     { stagePrefab = prefab; fallbackPoster = poster; catalog = breeds; }
     public Texture2D EditorCapture()
     {
-        image = GetComponent<RawImage>(); CreateStage();
+        var before = RenderTexture.active;
+        Texture2D still = null;
         try
         {
-            var before = RenderTexture.active;
+            image = GetComponent<RawImage>();
+            CreateStage();
+            if (texture == null)
+                throw new System.InvalidOperationException("The title stage could not create its poster render target.");
             RenderTexture.active = texture;
-            var still = new Texture2D(texture.width, texture.height, TextureFormat.RGB24, false);
+            still = new Texture2D(texture.width, texture.height, TextureFormat.RGB24, false);
             still.ReadPixels(new Rect(0, 0, texture.width, texture.height), 0, 0); still.Apply();
-            RenderTexture.active = before; return still;
+            return still;
         }
-        finally { Cleanup(); }
+        catch { DestroyOwned(still); throw; }
+        finally { RenderTexture.active = before; Cleanup(); }
     }
 #endif
 }

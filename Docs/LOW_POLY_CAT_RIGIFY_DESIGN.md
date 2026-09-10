@@ -1,5 +1,9 @@
 # Cat Home Low-Poly Cat + Rigify Design
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 ## Amaç
 
 Cat Home için sıfırdan, mobil oyuna uygun, sıcak ve sevimli bir low-poly kedi üretmek. Aynı geometri ve iskelet; ileride farklı tüy renkleri, desenler, göz renkleri ve aksesuarlarla tekrar kullanılacak. Blender çalışma rig'i Rigify tabanlı olacak; Unity dışa aktarımında yalnız deform kemikleri ve bake edilmiş animasyonlar kullanılacak.

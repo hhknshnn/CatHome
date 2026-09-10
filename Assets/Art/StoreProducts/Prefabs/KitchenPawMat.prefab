@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 2016921921027703510}
   - component: {fileID: 4327511400431961074}
   - component: {fileID: 1922570658393524683}
+  - component: {fileID: 7397732269945386593}
   m_Layer: 0
   m_Name: KitchenPawMat
   m_TagString: Untagged
@@ -237,6 +238,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7397732269945386593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6264684753796791738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &9018158767458813082
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,23 +362,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: d5fa6e696a29fca49a9733a12a85eaba, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 93b92c163f86c914d9a484dfe1b5ab71, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 705fdad1fad88a74a86333f0ef69ae65, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 56bb4a924a697a64fa62d194b11481b6, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 1e2aa14e222e0614a895c14f09d2a587, type: 2}
     - target: {fileID: 919132149155446097, guid: 3d8cf96c7b7af8143846220582b716c7, type: 3}
       propertyPath: m_Name
       value: KitchenPawMat_PremiumModel

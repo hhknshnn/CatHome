@@ -147,6 +147,7 @@ public static class PolyperfectCatIntegrationBuilder
             controller = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
 
         EnsureSpeedParameter(controller);
+        if(!controller.parameters.Any(p=>p.name=="LocomotionRate"))controller.AddParameter("LocomotionRate",AnimatorControllerParameterType.Float);
         AnimatorStateMachine machine = controller.layers[0].stateMachine;
 
         AnimationClip idle = RequireClip("Idle");
@@ -170,6 +171,8 @@ public static class PolyperfectCatIntegrationBuilder
         blendTree.AddChild(walk, .35f);
         blendTree.AddChild(run, 1f);
         machine.defaultState = locomotion;
+        locomotion.speedParameter="LocomotionRate";locomotion.speedParameterActive=true;
+        var rate=controller.parameters;for(int i=0;i<rate.Length;i++)if(rate[i].name=="LocomotionRate")rate[i].defaultFloat=1f;controller.parameters=rate;
 
         SetState(machine, "Pet", RequireClip("Sitting"), 1f, 470f, 10f);
         SetState(machine, "Eat", RequireClip("Eating"), 1f, 470f, 75f);

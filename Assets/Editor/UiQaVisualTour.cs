@@ -122,6 +122,7 @@ public static class UiQaVisualTour
         foreach(var button in Object.FindObjectsByType<Button>(FindObjectsSortMode.None))
         {
             if(!button.IsActive()||!button.IsInteractable()||button.targetGraphic==null||!button.targetGraphic.enabled||button.targetGraphic.color.a<.03f)continue;
+            if(button.GetComponentsInParent<Canvas>().Any(c=>!c.isActiveAndEnabled))continue;
             float alpha=1;foreach(var g in button.GetComponentsInParent<CanvasGroup>())alpha*=g.alpha;if(alpha<.05f)continue;
             var rect=ScreenRect(button.transform as RectTransform);if(rect.width>Screen.width*.9f&&rect.height>Screen.height*.7f)continue;
             bool clipped=false;foreach(var mask in button.GetComponentsInParent<RectMask2D>())if(!ScreenRect(mask.rectTransform).Overlaps(rect))clipped=true;

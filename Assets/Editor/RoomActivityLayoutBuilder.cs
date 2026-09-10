@@ -28,12 +28,20 @@ public static class RoomActivityLayoutBuilder
                     visual.SetActive(HomeStoreService.IsProductInRoomCollection(roomId, display.ProductId));
                 }
                 foreach (var activity in root.GetComponentsInChildren<CatActivity>(true))
-                    if (HomeStoreService.IsProductInRoomCollection(roomId, activity.StoreProductId)) activities.Add(activity);
+                    if (HomeStoreService.IsProductInRoomCollection(roomId, activity.StoreProductId) ||
+                        string.IsNullOrEmpty(activity.StoreProductId)) activities.Add(activity);
             }
             Physics.SyncTransforms();
             var floor = CatActivityMotion.ReachableFloor(new Vector3(0f, 0f, -2f));
             var changed = new HashSet<Transform>();
             var claimedAnchors = new List<Vector3>();
+            // Keep the planned product entries first; free ambient activities then take
+            // separate open anchors instead of competing with a newly bought product.
+            activities.Sort((a, b) =>
+            {
+                int group = string.IsNullOrEmpty(a.StoreProductId).CompareTo(string.IsNullOrEmpty(b.StoreProductId));
+                return group != 0 ? group : System.StringComparer.Ordinal.Compare(a.StoreProductId + a.name, b.StoreProductId + b.name);
+            });
             foreach (var activity in activities)
             {
                 var data = new SerializedObject(activity);
@@ -74,6 +82,32 @@ public static class RoomActivityLayoutBuilder
                     }
                 }
             }
+            var claimedEntries = new List<Vector3>();
+            foreach (var activity in activities)
+            {
+                var entry = activity.RoutineEntryPoint;
+                if (entry == null) continue;
+                Vector3 original = entry.position; original.y = 0;
+                Vector3 candidate = original;
+                if (IsClaimed(claimedEntries, candidate) || !HomeRoomLayoutPlanner.FitsPlayerView(candidate + Vector3.up * .35f))
+                {
+                    float best = float.PositiveInfinity;
+                    foreach (Vector3 point in floor)
+                    {
+                        float distance = (point - original).sqrMagnitude;
+                        if (distance >= best || IsClaimed(claimedEntries, point) || !CatActivityMotion.IsFloorClear(point, .30f) ||
+                            !HomeRoomLayoutPlanner.FitsPlayerView(point + Vector3.up * .35f)) continue;
+                        best = distance; candidate = point;
+                    }
+                    if (best > 2.25f) throw new System.InvalidOperationException(activity.Kind + ": no visible, distinct routine entrance");
+                    report.AppendLine(activity.name + "/visible-entry: " + original.ToString("F3") + " -> " + candidate.ToString("F3"));
+                    entry.position = candidate; PrefabUtility.RecordPrefabInstancePropertyModifications(entry);
+                    var data = new SerializedObject(activity);
+                    var anchor = data.FindProperty("interactionAnchor").objectReferenceValue as Transform;
+                    if (anchor != null) { anchor.position = candidate; PrefabUtility.RecordPrefabInstancePropertyModifications(anchor); }
+                }
+                claimedEntries.Add(candidate);
+            }
         }
         finally { foreach (var state in states) if (state.Key != null) state.Key.SetActive(state.Value); Physics.SyncTransforms(); }
         System.IO.Directory.CreateDirectory("Temp/FixedRoomAudit");
@@ -83,7 +117,7 @@ public static class RoomActivityLayoutBuilder
 
     private static bool IsClaimed(List<Vector3> points, Vector3 candidate)
     {
-        foreach (var point in points) if ((candidate - point).sqrMagnitude < .045f) return true;
+        foreach (var point in points) if ((candidate - point).sqrMagnitude < .3844f) return true;
         return false;
     }
 }

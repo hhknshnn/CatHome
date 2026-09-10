@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 5729568253742599707}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21541463, y: 0, z: -0.58}
+  m_LocalPosition: {x: 0.17663999, y: 0, z: -0.47559997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -58,7 +58,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.82, y: 0.82, z: 0.82}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4224720780215646916}
@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 4053039216588923750}
   - component: {fileID: 8862819620971978073}
   - component: {fileID: 8220533763044329718}
+  - component: {fileID: 4322892982930280732}
   m_Layer: 0
   m_Name: KitchenFeedingStation
   m_TagString: Untagged
@@ -153,7 +154,7 @@ MonoBehaviour:
   productId: kitchen.feeding-station
   movableRoot: {fileID: 6681446723289963941}
   legacySlots: []
-  footprintSize: {x: 1.35, y: 0.72}
+  footprintSize: {x: 1.107, y: 0.59040004}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -205,6 +206,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &4322892982930280732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490760056385963702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.82
 --- !u!1 &7905145147983946267
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 7905145147983946267}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21541463, y: 0.23414633, z: 0}
+  m_LocalPosition: {x: 0.17663999, y: 0.19199999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -261,7 +275,7 @@ Transform:
   m_GameObject: {fileID: 8151146546384762906}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.21541463, y: 0, z: -0.72}
+  m_LocalPosition: {x: 0.17663999, y: 0, z: -0.59040004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -330,27 +344,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: d5fa6e696a29fca49a9733a12a85eaba, type: 2}
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6c588fb3ef05cf041a9ee50c33b98817, type: 2}
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: c9c8036b9ddba6448a246facec9e90f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 1e2aa14e222e0614a895c14f09d2a587, type: 2}
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 046b79f562e406443a524a3c2f0d70b2, type: 2}
     - target: {fileID: -7511558181221131132, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 19184ad480c1bf74d83993d9884d5d56, type: 2}
     - target: {fileID: 919132149155446097, guid: e5ab2e55e503f324a87226a0dd6d35a8, type: 3}
       propertyPath: m_Name
       value: KitchenFeedingStation_PremiumModel

@@ -9,16 +9,18 @@ public static class CatchHuntRules
     public const float CatRunSpeed = 3.7f;
     public const float PounceTriggerDistance = 1.5f;
     public const float PounceMaximumDistance = 1.9f;
-    public const float PounceAlignmentDegrees = 70f;
+    public const float PounceAlignmentDegrees = 28f;
+    public const float TurnDegreesPerSecond = 300f;
 
     /// <summary>
     /// A chase that drags on this long lunges anyway. Guarantees the hunt always
     /// resolves instead of the cat trailing a mouse forever.
     /// </summary>
     public const float ForcedPounceAfterSeconds = 2.5f;
-    public const float PounceTravelSeconds = 0.34f;
+    public const float PounceTravelSeconds = 0.38f;
+    public const float PouncePrepareSeconds = 0.10f;
     public const float PounceRecoverSeconds = 0.38f;
-    public const float StrikeRadius = 0.62f;
+    public const float StrikeRadius = 0.32f;
     public const float TapTargetRadius = 0.9f;
 
     public const float MouseWanderSpeed = 1.5f;
@@ -49,9 +51,10 @@ public static class CatchHuntRules
         return facingAngleDegrees <= PounceAlignmentDegrees;
     }
 
-    public static bool ShouldForcePounce(float planarDistance, float chaseSeconds)
+    public static bool ShouldForcePounce(float planarDistance, float chaseSeconds, float facingAngleDegrees = 0f)
     {
-        return chaseSeconds >= ForcedPounceAfterSeconds && planarDistance <= PounceMaximumDistance;
+        return chaseSeconds >= ForcedPounceAfterSeconds && planarDistance <= PounceMaximumDistance &&
+               facingAngleDegrees <= PounceAlignmentDegrees;
     }
 
     public static float PounceDistanceFor(float planarDistance)

@@ -23,6 +23,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 internal static class RoomPlayModeSupport
 {
+    // Simulate the player's explicit stop after the fixture has observed contact.
+    internal static void StopObservedRest(CatActivity activity)
+    {if(activity!=null&&activity.IsWaitingForRestStop&&activity.RestingSeconds>=4f)activity.RequestRestStop();}
     private const float ActivityEnergy = 40f;
     private const float SipReadyThirst = 35f;
     private const float MealReadyHunger = 35f;

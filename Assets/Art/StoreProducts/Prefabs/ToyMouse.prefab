@@ -339,19 +339,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5a83173b308fad647bb2b102a157ea92, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: d2462f6b4d5a91346bcef1a46a53d182, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5a83173b308fad647bb2b102a157ea92, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2c5e81657545b574bb7fce262c91e7cb, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5a83173b308fad647bb2b102a157ea92, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b83dd743604dbc94998175bd39f29aa5, type: 2}
+      objectReference: {fileID: 2100000, guid: 9be4bc4a3f196fc42adf09b18132f39e, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5a83173b308fad647bb2b102a157ea92, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: a518f60afb00b7d4b9ac57a6dc82cf96, type: 2}
     - target: {fileID: 919132149155446097, guid: 5a83173b308fad647bb2b102a157ea92, type: 3}
       propertyPath: m_Name
       value: MovingMesh
@@ -417,15 +417,15 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 4f19c1c9bba43db43aba94d2bf1b213a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 2e65e4f316fda2c4f918c100998320fb, type: 2}
     - target: {fileID: -7511558181221131132, guid: 4f19c1c9bba43db43aba94d2bf1b213a, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: a39ef69d376f55146b7968939f1beb30, type: 2}
     - target: {fileID: -7511558181221131132, guid: 4f19c1c9bba43db43aba94d2bf1b213a, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: a518f60afb00b7d4b9ac57a6dc82cf96, type: 2}
     - target: {fileID: 919132149155446097, guid: 4f19c1c9bba43db43aba94d2bf1b213a, type: 3}
       propertyPath: m_Name
       value: Body

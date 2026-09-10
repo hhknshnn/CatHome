@@ -1,2 +1,0 @@
-Screen 1440x1080; SafeArea (x:0.00, y:0.00, width:1440.00, height:1080.00)
-DialoguePanel (x:86.40, y:27.71, width:1267.20, height:242.49)

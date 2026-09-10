@@ -94,9 +94,13 @@ public sealed class TunnelPlayActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
+        if (reaction != null)
+            reaction.CancelReaction();
         if (Cat != null)
         {
             if (originalScale.sqrMagnitude > 0.0001f)
@@ -105,7 +109,7 @@ public sealed class TunnelPlayActivity : CatActivity
         }
         if (characterController != null)
             characterController.enabled = true;
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

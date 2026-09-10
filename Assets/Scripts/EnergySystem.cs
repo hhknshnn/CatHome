@@ -62,10 +62,18 @@ public class EnergySystem : MonoBehaviour
     private void Update()
     {
         bool isSleeping = sleepInteraction != null && sleepInteraction.IsSleeping;
+        var companionRest = CatActivity.Active as CatCommandActivity;
         var rest = CatActivity.Active as CatEnrichmentActivity;
         var furnitureRest = CatActivity.Active as LivingFurnitureActivity;
-        bool isResting = (rest != null && rest.IsResting) || (furnitureRest != null && furnitureRest.IsResting);
-        if (isResting)
+        bool isResting = (rest != null && rest.IsResting) || (furnitureRest != null && furnitureRest.IsResting) ||
+            (CatActivity.Active != null && CatActivity.Active.IsRestingOnFurniture);
+        if (companionRest != null && companionRest.IsRecoveringEnergy)
+        {
+            // Only the settled sit/loaf hold earns gentle rest. Entering, getting
+            // up, cancelled commands and meowing never give an energy bonus.
+            currentEnergy += CatCommandActivity.RestEnergyPerSecond * Time.deltaTime;
+        }
+        else if (isResting)
         {
             currentEnergy += CatEnrichmentActivity.RestEnergyPerSecond * Time.deltaTime;
         }
@@ -76,6 +84,7 @@ public class EnergySystem : MonoBehaviour
         else
         {
             currentEnergy -= decreasePerSecond * Time.deltaTime;
+            if(catMovement!=null && catMovement.IsRunning)currentEnergy-=.12f*Time.deltaTime;
         }
 
         currentEnergy = Mathf.Clamp(currentEnergy, 0f, 100f);

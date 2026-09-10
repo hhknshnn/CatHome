@@ -1,2 +1,0 @@
-Screen 1440x1080; SafeArea (x:0.00, y:0.00, width:1440.00, height:1080.00)
-WelcomeBackButton (x:546.79, y:298.38, width:346.41, height:69.28)

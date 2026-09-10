@@ -99,6 +99,10 @@ public static class PremiumUiFactory
             PolishText(label, font);
 
         PremiumReferenceArtBuilder.PolishScreen(root);
+        JoyfulScreenBuilder.Polish(root);
+        ModernScreenBuilder.Polish(root);
+        PlayfulScreenBuilder.Polish(root);
+        MiniGameNavigationBuilder.Apply(root);
 
         foreach (RectTransform rect in root.GetComponentsInChildren<RectTransform>(true))
         {

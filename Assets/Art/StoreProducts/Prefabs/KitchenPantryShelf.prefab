@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5502448866526163693}
@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 1426762405792784879}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 4802184757787983311}
   - component: {fileID: 4731141624989771665}
   - component: {fileID: 1841404337722235156}
+  - component: {fileID: 682798074377481627}
   m_Layer: 0
   m_Name: KitchenPantryShelf
   m_TagString: Untagged
@@ -154,7 +155,7 @@ MonoBehaviour:
   productId: kitchen.pantry-shelf
   movableRoot: {fileID: 1480965851303052543}
   legacySlots: []
-  footprintSize: {x: 1.15, y: 0.55}
+  footprintSize: {x: 1.035, y: 0.495}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -206,6 +207,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &682798074377481627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6991112523347380456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.9
 --- !u!1 &7143566893132526796
 GameObject:
   m_ObjectHideFlags: 0
@@ -231,7 +245,7 @@ Transform:
   m_GameObject: {fileID: 7143566893132526796}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.21043478, y: 0.53373915, z: -0.019130435}
+  m_LocalPosition: {x: -0.1893913, y: 0.48036522, z: -0.01721739}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -262,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 7254926198960600352}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.86}
+  m_LocalPosition: {x: 0, y: 0, z: -0.774}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -294,7 +308,7 @@ Transform:
   m_GameObject: {fileID: 8042854825749638450}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7695651, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5926086, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -312,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
-  size: {x: 1.05, y: 0.49}
+  size: {x: 0.91, y: 0.42000002}
   overridePose: 1
   preferredPose: 2
   alignAlongSurface: 1
@@ -379,31 +393,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6c588fb3ef05cf041a9ee50c33b98817, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 1e2aa14e222e0614a895c14f09d2a587, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: d5fa6e696a29fca49a9733a12a85eaba, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 046b79f562e406443a524a3c2f0d70b2, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: c9c8036b9ddba6448a246facec9e90f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: 2e30283e80cc43b40881fe402757990f, type: 2}
     - target: {fileID: -7511558181221131132, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 8a292f9f396d6774f9d927bb1a39cdc3, type: 2}
     - target: {fileID: 919132149155446097, guid: de7e4750ff32b63499040fd7f54350da, type: 3}
       propertyPath: m_Name
       value: KitchenPantryShelf_PremiumModel

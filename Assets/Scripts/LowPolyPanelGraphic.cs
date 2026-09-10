@@ -28,6 +28,40 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     private Vector2[] frameFringePoints;
     private Vector2[] frameInsetPoints;
     [SerializeField] private bool referenceFinish;
+    [SerializeField] private bool modernFinish;
+    [SerializeField] private bool modernAction;
+    [SerializeField] private bool playfulAction;
+    private bool modernPressed;
+    private bool modernFocused;
+    private bool modernDisabled;
+
+    /// <summary>Content surfaces and controls share a thin, cool edge. Unlike
+    /// the legacy enamel treatment, the authored corner radius is never
+    /// expanded to half the height of a card.</summary>
+    public void ConfigureModernStyle(Color top, Color bottom, float radius,
+        bool elevated = false, bool action = false)
+    {
+        ConfigurePremiumStyle(top, bottom, radius, 1f, Color.clear, Color.clear, Color.clear);
+        modernFinish = true;
+        modernAction = action;
+        playfulAction = false;
+        referenceFinish = false;
+        softElevation = elevated;
+        cornerSegments = 12;
+        candyGlossStrength = innerGlowStrength = 0f;
+        SetVerticesDirty();
+    }
+    public void ConfigurePlayfulAction(Color top,Color bottom,float radius)
+    {ConfigureModernStyle(top,bottom,radius,true,true);playfulAction=true;SetVerticesDirty();}
+
+    public void SetInteractionState(bool pressed, bool focused, bool disabled)
+    {
+        if (modernPressed == pressed && modernFocused == focused && modernDisabled == disabled) return;
+        modernPressed = pressed;
+        modernFocused = focused;
+        modernDisabled = disabled;
+        if (modernFinish) SetVerticesDirty();
+    }
 
     public void ConfigureReferenceFinish(bool enabled)
     {
@@ -96,6 +130,12 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
     public void SetPremiumBaseColor(Color baseColor)
     {
+        if (modernFinish)
+        {
+            ConfigureModernStyle(Color.Lerp(baseColor, Color.white, modernAction ? .10f : .035f),
+                baseColor, cornerCut, softElevation, modernAction);
+            return;
+        }
         PremiumUiStyle.ConfigureAccentSurface(this, Color.Lerp(baseColor, Color.white, .035f),
             baseColor, cornerCut, Mathf.Min(2f, bevelWidth));
     }
@@ -107,6 +147,12 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         Rect rect = GetPixelAdjustedRect();
         if (rect.width <= 0.01f || rect.height <= 0.01f)
             return;
+
+        if (modernFinish)
+        {
+            DrawModernSurface(vh, rect);
+            return;
+        }
 
         bool shadowSurface = IsShadowSurface();
         bool metalSurface = IsMetalTone(color) ||
@@ -234,6 +280,59 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         // The inner white hairline catches the key light without a noisy shine band.
         var face=new Rect(rect.xMin+8.5f,rect.yMin+8.5f,rect.width-17f,rect.height-17f);
         AddInnerGlow(vh,face,Mathf.Max(0,radius-8.5f),segments,.08f,ref frameInsetPoints);
+    }
+
+    private void DrawModernSurface(VertexHelper vh, Rect rect)
+    {
+        float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
+        Color bottom = useVerticalGradient ? gradientBottom : color;
+        Color top = useVerticalGradient ? gradientTop : color;
+        float alpha = Mathf.Max(bottom.a, top.a);
+        if (alpha < .001f) return;
+        bool mask = GetComponent<Mask>() != null;
+        if (modernDisabled)
+        {
+            bottom = new Color32(175, 195, 216, 255);
+            top = new Color32(194, 211, 228, 255);
+        }
+        else if (modernPressed)
+        {
+            bottom = Color.Lerp(bottom, new Color32(15, 51, 113, 255), modernAction ? .25f : .07f);
+            top = Color.Lerp(top, bottom, .66f);
+        }
+        // Three small contact layers replace eight enamel rings and wide
+        // warm shadows. Masks and tracks never draw outside their bounds.
+        if (softElevation && !mask && alpha > .98f && !modernPressed)
+            for (int layer = 3; layer >= 1; layer--)
+            {
+                float spread = layer * .95f;
+                var depth = new Rect(rect.xMin - spread, rect.yMin - spread - 2f,
+                    rect.width + spread * 2, rect.height + spread * 2);
+                AddPolygon(vh, CreateRoundedRect(ref elevationPoints, depth, radius + spread, 12),
+                    new Color(.08f, .20f, .38f, modernAction ? .034f : .022f));
+            }
+        if (modernFocused && !modernDisabled && !mask)
+        {
+            var focus = new Rect(rect.xMin - 3, rect.yMin - 3, rect.width + 6, rect.height + 6);
+            DrawFrameLayer(vh, focus, radius + 3, 0, new Color32(123, 182, 255, 230), new Color32(170, 213, 255, 230), 12);
+        }
+        if (radius < .1f || rect.height < 16f || mask || alpha < .98f)
+        {
+            AddGradientPolygon(vh, CreateRoundedRect(ref outerPoints, rect, radius, 12), rect, bottom, top);
+            return;
+        }
+        Color edgeBottom = modernAction && !modernDisabled ? Color.Lerp(bottom, new Color32(15, 67, 168, 255), .35f) : new Color32(207, 223, 242, 255);
+        Color edgeTop = modernAction && !modernDisabled ? Color.Lerp(top, Color.white, .35f) : Color.white;
+        if(playfulAction&&!mask)
+        {
+            float depth=modernPressed?1f:Mathf.Min(6f,rect.height*.085f);
+            var foot=new Rect(rect.xMin,rect.yMin-depth,rect.width,rect.height);
+            Color baseTone=Color.Lerp(bottom,Color.black,modernDisabled?.12f:.28f);
+            DrawFrameLayer(vh,foot,radius,0,baseTone,baseTone,12);
+            edgeBottom=Color.Lerp(bottom,Color.black,.18f);
+        }
+        DrawFrameLayer(vh, rect, radius, 0, edgeBottom, edgeTop, 12);
+        DrawFrameLayer(vh, rect, radius, 1.1f, bottom, top, 12);
     }
 
     private void DrawFrameLayer(VertexHelper vh,Rect rect,float radius,float inset,Color bottom,Color top,int segments)

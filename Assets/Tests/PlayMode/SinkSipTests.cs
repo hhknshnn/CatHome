@@ -91,6 +91,7 @@ public sealed class SinkSipTests
         float deadline = Time.realtimeSinceStartup + 25f;
         while (sip.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(sip);
             closestToPerch = Mathf.Min(closestToPerch, Vector3.Distance(
                 cat.transform.position, perch.position));
             highestCat = Mathf.Max(highestCat, cat.transform.position.y);

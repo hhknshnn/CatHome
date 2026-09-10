@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.92, y: 0.92, z: 0.92}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4806666019765897759}
@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 3283194784624748283}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.82, y: 0.78, z: 0.18}
+  m_LocalPosition: {x: -0.7544, y: 0.7176, z: 0.16560002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 4105871109517117379}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.92}
+  m_LocalPosition: {x: 0, y: 0, z: 0.8464}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 8421952362152036597}
   - component: {fileID: 7516739112466938193}
   - component: {fileID: 3784825418828850389}
+  - component: {fileID: 6854231497292099629}
   m_Layer: 0
   m_Name: PatioPergolaArch
   m_TagString: Untagged
@@ -185,7 +186,7 @@ MonoBehaviour:
   productId: patio.pergola-arch
   movableRoot: {fileID: 7698830798028663607}
   legacySlots: []
-  footprintSize: {x: 2.4, y: 1}
+  footprintSize: {x: 2.2080002, y: 0.92}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -237,6 +238,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &6854231497292099629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7971608254449012355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.92
 --- !u!1 &8074433570178341001
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,7 +277,7 @@ Transform:
   m_GameObject: {fileID: 8074433570178341001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7900001, z: 0.11}
+  m_LocalPosition: {x: 0, y: 1.6468002, z: 0.1012}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -310,7 +324,7 @@ Transform:
   m_GameObject: {fileID: 8797950491498856157}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.74}
+  m_LocalPosition: {x: 0, y: 0, z: 0.6808}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -367,35 +381,35 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: ef3541ebcb57d5849838bc7b7ce44c76, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: baa39b2a8eb4f094d8d3dd23d1fecd78, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 1600f9216c8add946b48ed601288c9d1, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: a13ee50097439e44ebd5806da91dfa2a, type: 2}
+      objectReference: {fileID: 2100000, guid: 2414da902a2e7f841aa3f58dff8adc9e, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 32077a3559567954fbc55c6fcaa88d60, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: a8aefc829ee699f46bd76732a6e9eae2, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: f63cc92d8c05048428db093d7660755d, type: 2}
     - target: {fileID: -7511558181221131132, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: 'm_Materials.Array.data[7]'
       value: 
-      objectReference: {fileID: 2100000, guid: c389359af3b2c5f46ad92767feff9bce, type: 2}
+      objectReference: {fileID: 2100000, guid: d0be6d122a025b042a3caffab8c3e366, type: 2}
     - target: {fileID: 919132149155446097, guid: b1a208ff4c82b9c4e9445d23c21eadc0, type: 3}
       propertyPath: m_Name
       value: PatioPergolaArch_PremiumModel

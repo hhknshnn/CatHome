@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2494093001689590059}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5043796, y: 0, z: 0.62655765}
+  m_LocalPosition: {x: -0.6, y: 0, z: -0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 4986753038400127696}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.36437955, y: 0.73847586, z: -0.053442333}
+  m_LocalPosition: {x: -0.35206437, y: 0.7384758, z: 0.25603735}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -90,7 +90,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 449834622867049095}
@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 4950508525584838790}
   - component: {fileID: 5249463018490414112}
   - component: {fileID: 6445330758670213998}
+  - component: {fileID: 539633902329188642}
   m_Layer: 0
   m_Name: BathroomToilet
   m_TagString: Untagged
@@ -154,6 +155,7 @@ Transform:
   - {fileID: 8976106494626485400}
   - {fileID: 3709821813559552864}
   - {fileID: 437793109695024202}
+  - {fileID: 6129485461826115788}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5128961091445594618
@@ -185,7 +187,7 @@ MonoBehaviour:
   productId: bathroom.toilet
   movableRoot: {fileID: 6144156171194642719}
   legacySlots: []
-  footprintSize: {x: 0.94, y: 1.18}
+  footprintSize: {x: 0.658, y: 0.826}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -217,11 +219,12 @@ MonoBehaviour:
   interactionRadius: 1.1
   energyCost: 5
   interactionAnchor: {fileID: 437793109695024202}
-  routineEntryPoint: {fileID: 3709821813559552864}
+  routineEntryPoint: {fileID: 437793109695024202}
   lockedVisual: {fileID: 0}
   unlockedContent: {fileID: 5140364111289338165}
   rollPivot: {fileID: 3069561780555681178}
   swatPoint: {fileID: 3709821813559552864}
+  paperContactPoint: {fileID: 6129485461826115788}
   swats: 3
   spinPerSwat: 620
   spinDamping: 1.15
@@ -237,6 +240,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &539633902329188642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6481330796622592486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.7
+--- !u!1 &6765556982915140971
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6129485461826115788}
+  m_Layer: 0
+  m_Name: PaperContactPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6129485461826115788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6765556982915140971}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.24644506, y: 0.46162304, z: 0.23453613}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6144156171194642719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8898277854718157613
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +309,7 @@ Transform:
   m_GameObject: {fileID: 8898277854718157613}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.46437955, y: 0, z: 0.44655767}
+  m_LocalPosition: {x: -0.6, y: 0, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -331,27 +378,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 8f8ec4f39578b4a4a970ba39390c2bdd, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 31777db48e73a0d44b0c31715315c57d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a972b444a223344ea4e66c67d3b9c8c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2bc3ca279f435244ca8d5b44679ef5fa, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 386e37846da3ae24e97eb9689290d9d5, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: a692b6c9649d04844b496109af9d3fcb, type: 2}
     - target: {fileID: 919132149155446097, guid: 9b560fc2c874abf418c8007ca4801a71, type: 3}
       propertyPath: m_Name
       value: BathroomToilet_PremiumModel
@@ -418,15 +465,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.36437955
+      value: 0.35206437
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.73847586
+      value: -0.7384758
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.053442333
+      value: -0.25603735
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -459,15 +506,15 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 8f8ec4f39578b4a4a970ba39390c2bdd, type: 2}
     - target: {fileID: -7511558181221131132, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: a692b6c9649d04844b496109af9d3fcb, type: 2}
     - target: {fileID: -7511558181221131132, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 386e37846da3ae24e97eb9689290d9d5, type: 2}
     - target: {fileID: 919132149155446097, guid: 205919cfbc8f7cd498031ad3f8efa7d6, type: 3}
       propertyPath: m_Name
       value: ToiletPaperRoll

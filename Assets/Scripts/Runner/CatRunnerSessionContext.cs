@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Small scene-transition context. It carries only the positive care bonus;
@@ -6,6 +7,54 @@ using UnityEngine;
 /// </summary>
 public static class CatRunnerSessionContext
 {
+    private static string launchingScene;
+    private static bool returnToGames;
+    public static bool IsLaunching => !string.IsNullOrEmpty(launchingScene);
+
+    public static void SetReturnToGames(bool value) => returnToGames = value;
+
+    public static void RestoreRequestedNavigation()
+    {
+        if (!returnToGames)
+            return;
+        var loader = Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include);
+        var hub = Object.FindAnyObjectByType<GamesHubPanel>(FindObjectsInactive.Include);
+        if (loader == null || !loader.IsReady || loader.IsTransitioning || hub == null)
+            return;
+        returnToGames = false;
+        // Called after home canvases return but before additive unload finishes:
+        // the hub's input owner bridges the transition without an unlocked frame.
+        hub.ShowFromMiniGameReturn();
+    }
+
+    public static bool TryBeginLaunch(string sceneName)
+    {
+        // Reject a missing/disabled build scene before reserving the transition
+        // or cancelling the cat's current care activity.
+        if ((sceneName != CatRunnerLauncher.RunnerSceneName &&
+             sceneName != CatCatchLauncher.CatchSceneName) ||
+            !Application.CanStreamedLevelBeLoaded(sceneName))
+            return false;
+        LevelLoader loader = Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include);
+        if (loader == null || !loader.IsReady || !loader.HasCurrentRoom || loader.IsTransitioning)
+            return false;
+        // Both launchers share a reservation, including the frame before an
+        // additive scene is loaded and visible to HomeUiFlow.
+        if (IsLaunching ||
+            SceneManager.GetSceneByName(CatRunnerLauncher.RunnerSceneName).IsValid() ||
+            SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).IsValid())
+            return false;
+        launchingScene = sceneName;
+        returnToGames = false;
+        return true;
+    }
+
+    public static void CompleteLaunch(string sceneName)
+    {
+        if (launchingScene == sceneName)
+            launchingScene = null;
+    }
+
     public static int CareBonusPercent { get; private set; }
     public static string ReturnRoomId { get; private set; } =
         HomeRoomService.LivingRoomId;
@@ -36,6 +85,8 @@ public static class CatRunnerSessionContext
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetRuntimeState()
     {
+        launchingScene = null;
+        returnToGames = false;
         CareBonusPercent = 0;
         ReturnRoomId = HomeRoomService.LivingRoomId;
     }

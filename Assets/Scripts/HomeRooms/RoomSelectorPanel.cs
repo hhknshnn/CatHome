@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,6 +64,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
     private bool loaderEventsBound;
     private Vector3 panelBaseScale = Vector3.one;
     private Vector3 panelAuthoredScale = Vector3.one;
+    private readonly HashSet<PremiumButtonFx> suspendedCardFeedback = new HashSet<PremiumButtonFx>();
 
     public static bool IsAnyOpen =>
         activeInstance != null && activeInstance.state != PanelState.Closed;
@@ -79,6 +81,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         }
 
         activeInstance = this;
+        PremiumScrollInput.Ensure(roomScroll);
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();
         ResolveSceneReferences();
@@ -322,12 +325,11 @@ public sealed class RoomSelectorPanel : MonoBehaviour
             if (card.face != null)
             {
                 Color color = current
-                    ? PremiumUiStyle.Mint
-                    : PremiumUiStyle.Ivory;
-                card.face.SetPremiumBaseColor(color);
+                    ? JoyfulUiArt.SkyPaper
+                    : JoyfulUiArt.Paper;
+                JoyfulUiArt.Surface(card.face, color, 22f);
             }
-            if (card.button != null)
-                card.button.interactable = state == PanelState.Open;
+            SetCardInteractive(card, state == PanelState.Open);
         }
 
         if (state != PanelState.Travelling)
@@ -420,6 +422,8 @@ public sealed class RoomSelectorPanel : MonoBehaviour
 
     private void SetCanvasInteractive(bool value)
     {
+        if (!value)
+            SetCardsInteractive(false);
         if (rootGroup == null)
             return;
         rootGroup.interactable = value;
@@ -433,8 +437,26 @@ public sealed class RoomSelectorPanel : MonoBehaviour
     private void SetCardsInteractive(bool value)
     {
         for (int i = 0; i < cards.Length; i++)
-            if (cards[i].button != null)
-                cards[i].button.interactable = value;
+            SetCardInteractive(cards[i], value);
+    }
+
+    private void SetCardInteractive(RoomCard card, bool value)
+    {
+        if (card.button == null)
+            return;
+
+        // Opening, travelling and closing temporarily block every card. Keep
+        // their normal surfaces instead of painting them all as disabled choices.
+        // OnDisable also clears the clicked card's pressed/hovered feedback.
+        var feedback = card.button.GetComponent<PremiumButtonFx>();
+        if (!value && feedback != null && feedback.enabled)
+        {
+            suspendedCardFeedback.Add(feedback);
+            feedback.enabled = false;
+        }
+        card.button.interactable = value;
+        if (value && feedback != null && suspendedCardFeedback.Remove(feedback))
+            feedback.enabled = true;
     }
 
     private void SetFeedback(string value)

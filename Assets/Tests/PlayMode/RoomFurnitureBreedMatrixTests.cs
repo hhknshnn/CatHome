@@ -143,6 +143,7 @@ public sealed class RoomFurnitureBreedMatrixTests
                 CatActivityPose lastPose = CatActivityPose.Walk;
                 while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
                 {
+                    RoomPlayModeSupport.StopObservedRest(activity);
                     yield return null;
                     var animation = cat.GetComponent<CatActivityAnimation>();
                     productResponded |= activity.GetComponent<RoomProductFeedback>().IsResponding;
@@ -213,6 +214,10 @@ public sealed class RoomFurnitureBreedMatrixTests
 
     private static void Capture(CatActivity activity, CatMovement cat, string roomId)
     {
+        // The contact close-up below intentionally hides neighbours. Also keep an honest
+        // HD frame from the player's actual camera, with every neighbouring item visible.
+        var sceneCamera = Camera.main;
+        if (sceneCamera != null) CaptureRoomView(sceneCamera, activity.StoreProductId);
         var host = new GameObject("Furniture Matrix Camera");
         var camera = host.AddComponent<Camera>();
         Vector3 center = activity.transform.position;
@@ -255,6 +260,24 @@ public sealed class RoomFurnitureBreedMatrixTests
             foreach (var renderer in hidden) if (renderer != null) renderer.forceRenderingOff = false;
             RenderTexture.active = previous; camera.targetTexture = null; target.Release();
             Object.Destroy(texture); Object.Destroy(target); Object.Destroy(host);
+        }
+    }
+
+    private static void CaptureRoomView(Camera camera, string productId)
+    {
+        var target = new RenderTexture(1920, 1080, 24);
+        var previous = RenderTexture.active; var previousTarget = camera.targetTexture;
+        var texture = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
+        try
+        {
+            camera.targetTexture = target; camera.Render(); RenderTexture.active = target;
+            texture.ReadPixels(new Rect(0, 0, 1920, 1080), 0, 0); texture.Apply();
+            File.WriteAllBytes("Temp/FixedRoomAudit/Matrix/" + productId + "-room.png", texture.EncodeToPNG());
+        }
+        finally
+        {
+            camera.targetTexture = previousTarget; RenderTexture.active = previous;
+            target.Release(); Object.Destroy(texture); Object.Destroy(target);
         }
     }
 }

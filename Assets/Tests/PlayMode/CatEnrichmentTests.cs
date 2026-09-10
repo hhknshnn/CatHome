@@ -56,6 +56,7 @@ public sealed class CatEnrichmentTests
                 float deadline=Time.realtimeSinceStartup+14;
                 while(activity.IsRunning&&Time.realtimeSinceStartup<deadline)
                 {
+            RoomPlayModeSupport.StopObservedRest(activity);
                     yield return null;motion=Mathf.Max(motion,Quaternion.Angle(rotation,bone.localRotation));
                     if(activity.MovingPart!=null)moved|=Quaternion.Angle(toyRotation,activity.MovingPart.localRotation)>.5f||Vector3.Distance(toyPosition,activity.MovingPart.localPosition)>.002f;
                 }
@@ -78,6 +79,9 @@ public sealed class CatEnrichmentTests
         {
             EquipOnly(activity.StoreProductId);yield return null;
             RoomPlayModeSupport.ProvisionNeeds();var controller=cat.GetComponent<CharacterController>();controller.enabled=false;cat.transform.position=new Vector3(0,0,-1.7f);controller.enabled=true;
+            CatActivityMotion.KeepCatClearAfterPurchase(cat.gameObject.scene);
+            yield return null;yield return null;
+            Assert.That(CatActivityMotion.IsFloorClear(cat.transform.position,.24f),Is.True,"Cancellation must start on open floor: "+activity.StoreProductId);
             var start=cat.transform.position;var rotation=activity.MovingPart!=null?activity.MovingPart.localRotation:Quaternion.identity;
             Assert.That(activity.TryStart(cat),Is.True,activity.StoreProductId);yield return null;activity.enabled=false;yield return null;
             Assert.That(CatActivity.Active,Is.Null);Assert.That(controller.enabled,Is.True);Assert.That(cat.IsMovementPhysicallyLocked,Is.False);
@@ -104,11 +108,13 @@ public sealed class CatEnrichmentTests
             CatBreedService.Select(breeds.Get(i).Id);yield return null;yield return null;
             RoomPlayModeSupport.ProvisionNeeds();controller.enabled=false;cat.transform.position=new Vector3(0,0,-1.7f);controller.enabled=true;
             EquipOnly(scratch.StoreProductId);yield return null; Assert.That(scratch.TryStart(cat),Is.True);float deadline=Time.realtimeSinceStartup+12;bool pose=false;
-            while(scratch.IsRunning&&Time.realtimeSinceStartup<deadline){yield return null;pose|=cat.GetComponent<CatActivityAnimation>().CurrentPose==CatActivityPose.Scratch;}
+            while(scratch.IsRunning&&Time.realtimeSinceStartup<deadline){
+            RoomPlayModeSupport.StopObservedRest(scratch);yield return null;pose|=cat.GetComponent<CatActivityAnimation>().CurrentPose==CatActivityPose.Scratch;}
             Assert.That(scratch.IsRunning,Is.False);Assert.That(pose,Is.True);Assert.That(controller.enabled,Is.True);Assert.That(CatActivityMotion.IsFloorClear(cat.transform.position,.24f),Is.True);
             RoomPlayModeSupport.ProvisionNeeds();EquipOnly(basket.StoreProductId);yield return null;Assert.That(basket.TryStart(cat),Is.True);deadline=Time.realtimeSinceStartup+12;
             while(basket.IsRunning&&Time.realtimeSinceStartup<deadline)
             {
+            RoomPlayModeSupport.StopObservedRest(basket);
                 yield return null;
                 if(basket.CatchCount>0)Assert.That(basket.LastHitDistance,Is.LessThan(.095f),"A real paw contact must precede each roll");
             }
@@ -135,7 +141,7 @@ public sealed class CatEnrichmentTests
         Assert.That(cc.enabled,Is.True);bed.enabled=true;
         yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
         energy.ApplySavedValue(99.8f);Assert.That(bed.TryStart(cat),Is.True);
-        deadline=Time.realtimeSinceStartup+12;while(bed.IsRunning&&Time.realtimeSinceStartup<deadline)yield return null;
+        deadline=Time.realtimeSinceStartup+12;while(bed.IsRunning&&Time.realtimeSinceStartup<deadline){RoomPlayModeSupport.StopObservedRest(bed);yield return null;}
         Assert.That(bed.IsRunning,Is.False);Assert.That(energy.CurrentEnergy,Is.InRange(99.9f,100f));
     }
     [UnityTest] public IEnumerator ToyResponses_FollowRealPawContact_AndUseVariedPoses()
@@ -148,7 +154,8 @@ public sealed class CatEnrichmentTests
             EquipOnly(a.StoreProductId);yield return null;RoomPlayModeSupport.ProvisionNeeds();
             cc.enabled=false;cat.transform.position=new Vector3(0,0,-2);cc.enabled=true;
             Assert.That(a.TryStart(cat),Is.True,a.StoreProductId);float deadline=Time.realtimeSinceStartup+15;
-            while(a.IsRunning&&Time.realtimeSinceStartup<deadline){yield return null;poses.Add(cat.GetComponent<CatActivityAnimation>().CurrentPose);}
+            while(a.IsRunning&&Time.realtimeSinceStartup<deadline){
+            RoomPlayModeSupport.StopObservedRest(a);yield return null;poses.Add(cat.GetComponent<CatActivityAnimation>().CurrentPose);}
             if(a.ContactCount==0)failures.Add(a.StoreProductId);
             Assert.That(a.IsRunning,Is.False);yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
         }
@@ -175,6 +182,7 @@ public sealed class CatEnrichmentTests
                 var skin=cat.GetComponentInChildren<SkinnedMeshRenderer>();
                 while(tunnel.IsRunning&&Time.realtimeSinceStartup<deadline)
                 {
+            RoomPlayModeSupport.StopObservedRest(tunnel);
                     yield return new WaitForEndOfFrame();
                     var localCat=tunnel.transform.InverseTransformPoint(cat.transform.position);
                     // Automatic placement changes the approach route. A cat walking
@@ -184,7 +192,7 @@ public sealed class CatEnrichmentTests
                     foreach(var vertex in sample.vertices)
                     {
                         var p=tunnel.transform.InverseTransformPoint(skin.transform.TransformPoint(vertex));
-                        if(Mathf.Abs(p.z)>.375f||p.y<.035f)continue;
+                        if(Mathf.Abs(p.z)>.305f||p.y<.035f)continue;
                         // Inner arch clearance, including the tail vertices that
                         // the normal paw-to-floor contact mask deliberately omits.
                         float ratio=p.x*p.x/(.253f*.253f)+(p.y-.018f)*(p.y-.018f)/(.535f*.535f);

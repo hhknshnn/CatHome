@@ -83,6 +83,7 @@ public static class TitleShowcaseContentBuilder
             bloom.intensity.Override(.12f); bloom.threshold.Override(.95f); bloom.highQualityFiltering.Override(true);
             EditorUtility.SetDirty(profile); volume.sharedProfile = profile;
             foreach (var child in root.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = TitleCatShowcase.StageLayer;
+            ModernWorldArtBuilder.ApplyRoot(root.transform, HomeRoomService.LivingRoomId);
             AssetDatabase.SaveAssets();
             return PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
         }

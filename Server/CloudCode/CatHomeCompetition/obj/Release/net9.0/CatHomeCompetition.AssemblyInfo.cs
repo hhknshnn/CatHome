@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CatHomeCompetition")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+51975673bd3c7a8766fa7b0c99af83ebe97abf7e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca9483cbab023292027d3a4181430db55209f447")]
 [assembly: System.Reflection.AssemblyProductAttribute("CatHomeCompetition")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CatHomeCompetition")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

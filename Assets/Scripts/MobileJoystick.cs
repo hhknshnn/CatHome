@@ -11,6 +11,7 @@ public class MobileJoystick : MonoBehaviour,
     private float handleRange = 0.65f;
 
     private RectTransform background;
+    private int activePointer=int.MinValue;
 
     public Vector2 Direction { get; private set; }
 
@@ -21,11 +22,14 @@ public class MobileJoystick : MonoBehaviour,
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if(activePointer!=int.MinValue && activePointer!=eventData.pointerId)return;
+        activePointer=eventData.pointerId;
         OnDrag(eventData);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if(activePointer!=int.MinValue && activePointer!=eventData.pointerId)return;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             background,
             eventData.position,
@@ -53,11 +57,13 @@ public class MobileJoystick : MonoBehaviour,
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if(activePointer!=eventData.pointerId)return;
         CancelInput();
     }
 
     public void CancelInput()
     {
+        activePointer=int.MinValue;
         Direction = Vector2.zero;
 
         if (handle != null)
@@ -65,4 +71,6 @@ public class MobileJoystick : MonoBehaviour,
             handle.anchoredPosition = Vector2.zero;
         }
     }
+    private void OnDisable()=>CancelInput();
+    private void OnApplicationFocus(bool focused){if(!focused)CancelInput();}
 }

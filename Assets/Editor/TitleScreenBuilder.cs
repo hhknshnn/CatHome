@@ -88,7 +88,10 @@ public static class TitleScreenBuilder
         Stretch(safeArea);
         GetOrAdd<SafeAreaRect>(safeArea.gameObject);
 
-        BuildBackdrop(safeArea, font);
+        // Artwork covers the display, including Android's camera cutout inset.
+        // Only interactive controls belong to the safe area.
+        BuildBackdrop(root.transform as RectTransform, font);
+        safeArea.SetAsLastSibling();
         TitleScreenBindings bindings = BuildCard(safeArea, font);
         safeArea.gameObject.AddComponent<TitleScreenLayout>().EditorConfigure(
             safeArea.Find("BrandDockLayout") as RectTransform,
@@ -231,6 +234,17 @@ public static class TitleScreenBuilder
         Localize(bindings.NewGame.GetComponentInChildren<TMP_Text>(true), "title.new_game");
         bindings.HomeLevel = BuildStatPill(layout, font, "HomeLevelPill",
             PremiumUiStyle.Mint, new Vector2(340f, 64f), new Vector2(-80f, -426f), "Home level 1");
+        var journey=U.Panel("YourHomeJourney",layout,PremiumUiStyle.Mint,20,-333,540,94,22);
+        string[] journeyArt={"Paw","Rooms","Games"};
+        string[] journeyTr={"Bir bağ kur","Yuvanı kur","Birlikte oyna"};
+        string[] journeyEn={"Make a friend","Make it home","Play together"};
+        for(int i=0;i<3;i++)
+        {
+            float x=(i-1)*176;
+            var icon=U.Rect("JourneyIcon"+i,journey.transform);U.At(icon,x,15,46,46);
+            var image=icon.gameObject.AddComponent<RawImage>();image.texture=Resources.Load<Texture2D>("PremiumInterface/"+journeyArt[i]);image.raycastTarget=false;
+            U.Label("JourneyCopy"+i,journey.transform,font,18,Ink,x,-25,174,28,TextAlignmentOptions.Center).gameObject.AddComponent<BilingualCopyLabel>().Configure(journeyTr[i],journeyEn[i]);
+        }
 
         RectTransform utilities = CreateRect("TitleUtilities", safeArea);
         utilities.anchorMin = utilities.anchorMax = utilities.pivot = Vector2.one;
@@ -343,12 +357,22 @@ public static class TitleScreenBuilder
         scrimButton.targetGraphic = scrim;
         scrimButton.transition = Selectable.Transition.None;
 
-        var card=U.Panel("NewGameCard",overlay,Cream,0,0,960,560,32,true);
-        U.Localize(U.Label("NewGameTitle",card.transform,font,40,Ink,0,195,824,88),"new_game.title");
-        U.Localize(U.Label("NewGameBody",card.transform,font,24,Ink,0,60,824,148),"new_game.body");
-        statusText=U.Label("NewGameStatus",card.transform,font,20,new Color32(152,53,43,255),0,-61,824,64);
-        cancelButton=U.Action("NewGameCancelButton",card.transform,font,"new_game.cancel",PremiumUiStyle.Mint,-212,-185,400,80,out var cancelLabel);
-        confirmButton=U.Action("NewGameConfirmButton",card.transform,font,"new_game.confirm",new Color32(163,56,48,255),212,-185,400,80,out var confirmLabel);
+        var card=U.Panel("NewGameCard",overlay,Cream,0,0,1060,620,32,true);
+        var stage=PremiumMomentArt.Stage(card.transform,-326,0,338,552);
+        var portrait=U.Rect("YourCat",stage);U.At(portrait,0,36,244,244);
+        portrait.gameObject.AddComponent<Image>().raycastTarget=false;portrait.gameObject.AddComponent<SelectedCatPortrait>();
+        PremiumMomentArt.Caption(stage,"Yeni bir başlangıç,\nyeni bir yolculuk.","A fresh start,\na new journey.",0,-169,284,92,27);
+        U.Localize(U.Label("NewGameTitle",card.transform,font,37,Ink,176,215,574,94),"new_game.title");
+        U.Panel("ResetSummary",card.transform,new Color32(246,222,207,255),176,92,574,132,22);
+        U.Label("NewGameBody",card.transform,font,23,Ink,176,92,518,104).gameObject.AddComponent<BilingualCopyLabel>().Configure(
+            "SIFIRLANIR\nJetonlar, odalar, eşyalar, seviyeler ve skorlar.","RESETS\nCoins, rooms, items, levels and scores.");
+        U.Panel("KeptSummary",card.transform,PremiumUiStyle.Mint,176,-57,574,132,22);
+        U.Label("KeptBody",card.transform,font,23,Ink,176,-57,518,104).gameObject.AddComponent<BilingualCopyLabel>().Configure(
+            "KORUNUR\nElmaslar, satın alma hakları ve ayarlar.","STAYS WITH YOU\nDiamonds, purchase rights and settings.");
+        statusText=U.Label("NewGameStatus",card.transform,font,18,new Color32(152,53,43,255),176,-151,574,50);
+        cancelButton=U.Action("NewGameCancelButton",card.transform,font,"new_game.cancel",PremiumUiStyle.Mint,26,-222,274,80,out var cancelLabel);
+        confirmButton=U.Action("NewGameConfirmButton",card.transform,font,"new_game.confirm",new Color32(163,56,48,255),326,-222,274,80,out var confirmLabel);
+        confirmLabel.enableAutoSizing=true;confirmLabel.fontSizeMin=18;confirmLabel.fontSizeMax=24;
         confirmLabel.color=Color.white;
         scrimButton.gameObject.AddComponent<UiButtonRelay>().Configure(cancelButton);
         return group;

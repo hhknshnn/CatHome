@@ -112,3 +112,15 @@ InitTestScene*.unity*
 .vscode/
 *.slnx
 compile-check.log
+
+# Local QA evidence and captures; keep source assets and Docs/*.md versioned.
+/Docs/QA/
+/Assets/QA/
+/Assets/QA.meta
+/Assets/Screenshots/
+/Assets/Screenshots.meta
+
+# Local delivery archives duplicate the source images and videos.
+/Docs/**/*.zip
+/Docs/**/*.rar
+/Docs/**/*.7z

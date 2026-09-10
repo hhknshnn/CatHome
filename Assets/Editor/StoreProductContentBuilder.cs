@@ -99,9 +99,10 @@ public static class StoreProductContentBuilder
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         Dictionary<string, Material> materials = BuildMaterials();
         for (int i = 0; i < StoreCatalogAssets.PlaceableProducts.Length; i++)
-            BuildPrefab(StoreCatalogAssets.PlaceableProducts[i], materials);
+            BuildPrefab(StoreCatalogAssets.PlaceableProducts[i].WithoutRoomLayout(), materials);
         CatProductContentBuilder.BuildLegacyAssets(materials);
         RoomProductInteractionBuilder.UpgradePrefabs();
+        ModernWorldArtBuilder.ApplyCatalogPrefabs();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -112,8 +113,9 @@ public static class StoreProductContentBuilder
         var materials=new Dictionary<string,Material>(StringComparer.Ordinal);
         foreach(var guid in AssetDatabase.FindAssets("t:Material",new[]{MaterialFolder}))
         {var material=AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(guid));materials[material.name]=material;}
-        BuildPrefab(definition,materials);
+        BuildPrefab(definition.WithoutRoomLayout(),materials);
         RoomProductInteractionBuilder.UpgradePrefab(definition,new System.Text.StringBuilder());
+        ModernWorldArtBuilder.ApplyCatalogPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
         AssetDatabase.SaveAssets();
     }
 
@@ -869,7 +871,7 @@ public static class StoreProductContentBuilder
             "grill-watch", "GRILL", CatActivityKind.GrillWatch,
             QuestType.GardenWatch, 0, "STARE", 1.1f, 3f, anchor, null, visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.GardenGrillId);
-        activity.EditorConfigureLook(look, SitLookReaction.PawSwat, 2.8f, "SMELLS GOOD!");
+        activity.EditorConfigureLook(look, SitLookReaction.Sit, 2.8f, "SMELLS GOOD!");
     }
 
     /// <summary>Bath rim at an authored 0.700, water just under it.</summary>
@@ -920,6 +922,7 @@ public static class StoreProductContentBuilder
             QuestType.LitterDig, 0, "DIG", 1.1f, 4f, anchor, null, visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.GardenFlowerPotsId);
         activity.EditorConfigureDig(mouth, dig, 2.6f, 4);
+        BathroomActionPartsBuilder.Configure(root);
     }
 
     /// <summary>
@@ -1351,13 +1354,13 @@ public static class StoreProductContentBuilder
         // in is +Z here, offset to the walk-in half of the front.
         Transform door = new GameObject("RinseDoorPoint").transform;
         door.SetParent(root.transform, false);
-        door.localPosition = new Vector3(.33f, 0f, .95f);
+        door.localPosition = new Vector3(-.33f, 0f, .95f);
         Transform stand = new GameObject("RinseStandPoint").transform;
         stand.SetParent(root.transform, false);
-        stand.localPosition = new Vector3(.12f, .125f, .05f);
+        stand.localPosition = new Vector3(-.30f, .125f, .05f);
         Transform anchor = new GameObject("InteractionAnchor").transform;
         anchor.SetParent(root.transform, false);
-        anchor.localPosition = new Vector3(.33f, 0f, 1.05f);
+        anchor.localPosition = new Vector3(-.33f, 0f, 1.05f);
 
         ShowerRinseActivity activity = root.AddComponent<ShowerRinseActivity>();
         activity.EditorConfigure(
@@ -1374,6 +1377,8 @@ public static class StoreProductContentBuilder
             visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.BathroomShowerId);
         activity.EditorConfigureRinse(door, stand, 2.6f, .65f, 6f);
+        Transform outlet = MakePoint(root, "RinseWaterOutlet", new Vector3(0, 1.6975694f, .0262041f));
+        activity.EditorConfigureWaterOutlet(outlet);
     }
 
     /// <summary>
@@ -1638,7 +1643,7 @@ public static class StoreProductContentBuilder
             null,
             visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.BathroomMirrorId);
-        activity.EditorConfigureLook(look, SitLookReaction.PawSwat, 2.6f, "WHO IS THAT?");
+        activity.EditorConfigureLook(look, SitLookReaction.Sit, 2.6f, "WHO IS THAT?");
     }
 
     /// <summary>
@@ -1753,7 +1758,7 @@ public static class StoreProductContentBuilder
         // The roll axis as authored in build_bathroom_toilet.py. Measured, not
         // assumed: the FBX import mirrors X and the model child's 180 mirrors it
         // back, so only Z flips between authoring space and root space.
-        var authoredAxis = new Vector3(-.375f, .760f, .055f);
+        var authoredAxis = new Vector3(-.375f, .760f, -.245f);
         var axis = new Vector3(
             authoredAxis.x * modelScale,
             authoredAxis.y * modelScale,
@@ -1801,6 +1806,7 @@ public static class StoreProductContentBuilder
             visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.BathroomToiletId);
         activity.EditorConfigureSpin(pivot, swat, 3, 620f, 1.15f);
+        BathroomActionPartsBuilder.Configure(root);
     }
 
     private static bool TryBuildPremiumRoomProductPrefab(
@@ -5027,6 +5033,10 @@ public static class StoreProductContentBuilder
         // Embedded FBX slots deliberately use the canonical CH_* names, so
         // existing URP materials remain the single source of truth.
         ReplaceMaterials(model, materials);
+        if(definition.ProductId==HomeStoreService.BookshelfId)model.transform.localScale=Vector3.one*.8f;
+        if(definition.ProductId==HomeStoreService.ModernTelevisionId)model.transform.localScale=Vector3.one*.88f;
+        if(definition.ProductId==HomeStoreService.FloorLampId)model.transform.localScale=Vector3.one*.74f;
+        if(definition.ProductId==HomeStoreService.TallPlantId)model.transform.localScale=Vector3.one*.72f;
         bool authoredForCatalogFit =
             definition.ProductId == HomeStoreService.ArmchairId ||
             fileName.StartsWith("Bathroom", StringComparison.Ordinal) ||
@@ -5035,6 +5045,7 @@ public static class StoreProductContentBuilder
             fileName.StartsWith("Garden", StringComparison.Ordinal);
         if (authoredForCatalogFit)
             FitFixtureModel(model, definition);
+        if(definition.ProductId==HomeStoreService.ModernTelevisionId)CatTelevisionScreenBuilder.Apply(parent.gameObject);
         return true;
     }
 
@@ -5483,6 +5494,8 @@ public static class StoreProductContentBuilder
             // previews can show the complete ten-book set instead of an overlap.
             for (int i = 0; i < books.Count; i++)
             {
+                positions[i]*=.8f;
+                scales[i]*=.8f;
                 books[i].localPosition = positions[i];
                 books[i].localRotation = Quaternion.Euler(rotations[i]);
                 books[i].localScale = scales[i];
@@ -5621,7 +5634,7 @@ public static class StoreProductContentBuilder
             }
 
             Vector3 localPosition = definition.ProductId == HomeStoreService.ModernTelevisionId
-                ? new Vector3(0f, 0.62f, 0f)
+                ? new Vector3(0f, 0.60f, 0f)
                 : Vector3.zero;
             root.AddComponent<HomeRequiredProductAttachment>().EditorConfigure(
                 definition.ProductId,
@@ -5685,6 +5698,7 @@ public static class StoreProductContentBuilder
         BuildRoomSceneProducts(scene, roomId, null);
         if(roomId==HomeRoomService.LivingRoomId)CatProductContentBuilder.UpgradeLegacyStations(scene);
         RoomActivityLayoutBuilder.Configure(scene, roomId);
+        ModernWorldArtBuilder.Apply(scene, roomId);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         if (openedForBuild)
@@ -5698,6 +5712,8 @@ public static class StoreProductContentBuilder
     {
         if (!scene.IsValid() || !scene.isLoaded)
             throw new InvalidOperationException("Room scene must be loaded before products are authored.");
+
+        HomeRoomArrangementBuilder.EnsureRoomPlan(roomId);
 
         GameObject existing = FindNamedInScene(scene, SceneRootName);
         if (existing != null)
@@ -5769,6 +5785,8 @@ public static class StoreProductContentBuilder
                 placed,
                 Quaternion.Euler(0f, definition.DefaultYaw, 0f));
         }
+        HomeRoomArrangementBuilder.ConfigureApproaches(scene, roomId);
+        ModernWorldArtBuilder.ApplyRoot(root.transform, roomId);
     }
 
     private static GameObject CreateHierarchyGroup(string name, Transform parent)

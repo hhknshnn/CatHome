@@ -1,0 +1,96 @@
+{
+  "families": {
+    "Oak": {
+      "width": 512,
+      "height": 512,
+      "bytes": 410411,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Linen": {
+      "width": 512,
+      "height": 512,
+      "bytes": 419816,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Stone": {
+      "width": 512,
+      "height": 512,
+      "bytes": 350287,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Ceramic": {
+      "width": 512,
+      "height": 512,
+      "bytes": 320004,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Plaster": {
+      "width": 512,
+      "height": 512,
+      "bytes": 367651,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Leaf": {
+      "width": 512,
+      "height": 512,
+      "bytes": 265768,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Rattan": {
+      "width": 512,
+      "height": 512,
+      "bytes": 360511,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    },
+    "Suede": {
+      "width": 512,
+      "height": 512,
+      "bytes": 403780,
+      "source": "Blender Cycles emission bake",
+      "packed": [
+        "albedoHalf",
+        "roughnessVariation",
+        "height"
+      ]
+    }
+  },
+  "runtimeTextureSamplesPerPixel": 1,
+  "extraRuntimeLights": 0,
+  "geometryChanges": 0,
+  "textureTotalBytes": 2898228
+}

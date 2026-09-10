@@ -1,3 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-CancelDelete (x:569.00, y:343.00, width:378.00, height:80.00)
-ConfirmDelete (x:973.00, y:343.00, width:378.00, height:80.00)

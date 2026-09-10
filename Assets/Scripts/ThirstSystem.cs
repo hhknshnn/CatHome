@@ -22,6 +22,8 @@ public class ThirstSystem : MonoBehaviour
 
     private Coroutine drinkingCoroutine;
     private bool isDrinking;
+    private UnityEngine.Object drinkingOwner;
+    private Action drinkingCompleted;
 
     private readonly Color fullColor = new Color32(73, 169, 232, 255);
     private readonly Color thirstyColor = new Color32(246, 200, 76, 255);
@@ -30,6 +32,7 @@ public class ThirstSystem : MonoBehaviour
     private readonly Color textColor = new Color32(255, 244, 214, 255);
 
     public bool IsDrinking => isDrinking;
+    public bool IsDrinkingFor(UnityEngine.Object owner) => isDrinking && ReferenceEquals(drinkingOwner, owner);
     public bool CanDrink => !isDrinking && currentThirst < 99.9f;
     public float CurrentThirst => currentThirst;
 
@@ -71,7 +74,9 @@ public class ThirstSystem : MonoBehaviour
         UpdateUI();
     }
 
-    public bool BeginDrinking(float duration)
+    public bool BeginDrinking(float duration) => BeginDrinking(duration, null);
+
+    public bool BeginDrinking(float duration, UnityEngine.Object owner, Action onCompleted = null)
     {
         if (!isActiveAndEnabled || !CanDrink)
             return false;
@@ -83,6 +88,8 @@ public class ThirstSystem : MonoBehaviour
         }
 
         isDrinking = true;
+        drinkingOwner = owner;
+        drinkingCompleted = onCompleted;
         if (duration <= 0f)
         {
             CompleteDrinking();
@@ -116,12 +123,17 @@ public class ThirstSystem : MonoBehaviour
 
     private void CompleteDrinking()
     {
+        Action completed = drinkingCompleted;
+        drinkingCompleted = null;
         currentThirst = 100f;
         isDrinking = false;
+        drinkingOwner = null;
         drinkingCoroutine = null;
 
         UpdateUI();
 
+        try { completed?.Invoke(); }
+        catch (Exception exception) { Debug.LogException(exception, this); }
         try
         {
             Drank?.Invoke();
@@ -190,6 +202,7 @@ public class ThirstSystem : MonoBehaviour
 
     public void ApplySavedValue(float value)
     {
+        CancelDrinking(drinkingOwner);
         currentThirst = Mathf.Clamp(value, 0f, 100f);
         UpdateUI();
     }
@@ -217,8 +230,9 @@ public class ThirstSystem : MonoBehaviour
             percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
-    private void OnDisable()
+    public void CancelDrinking(UnityEngine.Object owner)
     {
+        if (!ReferenceEquals(drinkingOwner, owner)) return;
         if (drinkingCoroutine != null)
         {
             StopCoroutine(drinkingCoroutine);
@@ -226,7 +240,14 @@ public class ThirstSystem : MonoBehaviour
         }
 
         isDrinking = false;
+        drinkingOwner = null;
+        drinkingCompleted = null;
+        UpdateUI();
+    }
 
+    private void OnDisable()
+    {
+        CancelDrinking(drinkingOwner);
         if (catMovement != null)
             catMovement.SetThirstSpeedMultiplier(1f);
     }

@@ -1,0 +1,169 @@
+{
+  "png_verified": 23,
+  "javascript_syntax": "passed",
+  "html_references": "passed",
+  "browser_runtime": "Not run: local-file browser preview was security-blocked.",
+  "images": [
+    {
+      "file": "01-home-hero.png",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1929710,
+      "sha256": "8d31e478f749618995730efe49f849677cfeee6b9a72f1331d004f84c3b2cc64"
+    },
+    {
+      "file": "02-opening.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2207528,
+      "sha256": "dc89106967d5b339f398f435f1697dcee5a4f7d1317549a21d87de315d5fe8b6"
+    },
+    {
+      "file": "03-home-actions.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2161251,
+      "sha256": "d960626103a72b6800c6aa5a4fe886a3a1246a5393d01b8c8e11b6dbb60a01f2"
+    },
+    {
+      "file": "04-dialogue-onboarding.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1894713,
+      "sha256": "88e526bb6cd6493a634d2701e5f1e53d97ca15789226990495cfd645a923f6d3"
+    },
+    {
+      "file": "05-store.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1848307,
+      "sha256": "edaa8a36152cc33a6dfbf819ff257e064b1cf7ba2bd88581955e9765e4c228ef"
+    },
+    {
+      "file": "06-purchase.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1882298,
+      "sha256": "819ea0e193ca5c976b2c70b41ab1c6a32787a535069325d7c4bd5e2f8111ac20"
+    },
+    {
+      "file": "07-room-navigation.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2186504,
+      "sha256": "6e9a707adf4ee1b7e734f15f129262f2793c1e6833f9e38e116ff2c56deaf45c"
+    },
+    {
+      "file": "08-interior-worlds.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2450656,
+      "sha256": "d488f64166971fe7f04159581114ad764085067cd12f1924ef13921c39f44ed5"
+    },
+    {
+      "file": "09-outdoor-worlds.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2826303,
+      "sha256": "93b52117b845d0700ad05d78aa74c4c774c36fae763c8b4bdd8fc7e88ca20f9b"
+    },
+    {
+      "file": "10-my-cat.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1976818,
+      "sha256": "7258e9fe97c76253f0811a2df0473dbc07b30e7294986740e36ed56d6dfdedb5"
+    },
+    {
+      "file": "11-together-guide.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2097694,
+      "sha256": "4cb2eebd2104a20a2a8913bacf2ddcaf213047427333921fd5ec5c7898f23227"
+    },
+    {
+      "file": "12-quests-return.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1931253,
+      "sha256": "11ae52dc876b6c66583efa458bcbc571ceaf5593ef353ed80c2ff947c956a8f9"
+    },
+    {
+      "file": "13-celebrations.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2181472,
+      "sha256": "6c26d42f5ebe569505a9acc016acca146129a41f62c27b88aa223722cb1aa405"
+    },
+    {
+      "file": "14-games-lobby.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2205527,
+      "sha256": "02ebde7511d74cac4c251b71d5b4e041923a222856171487d9c2be5d40985fed"
+    },
+    {
+      "file": "15-runner.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2212478,
+      "sha256": "ee65131c0aff17c29a127a88fd5038a81f7e2cf99ce0d0302455d28104ed0975"
+    },
+    {
+      "file": "16-catch.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2243530,
+      "sha256": "b39f45706ae893586fbdb48baf651e583644af4e4b056cc9da86af9b1bce2f85"
+    },
+    {
+      "file": "17-results-pause.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1831146,
+      "sha256": "a4eebdfe100d036de2fe3abbbd8c6aff3f0b69f08d76721d0186758b5d1478c1"
+    },
+    {
+      "file": "18-online.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1985754,
+      "sha256": "9a2ec9d8bcf363fe5b92dc54939abcb9c3e301a8f77ec887591fde7319a42cda"
+    },
+    {
+      "file": "19-settings-confirm.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1941522,
+      "sha256": "bab02bb80a39781bb408a13949bc496b40214faec045b8f312969655412933f0"
+    },
+    {
+      "file": "20-motion-storyboard.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 2102148,
+      "sha256": "b7d0aa67669842b1ec46ad9d3fc1787e614615310b6b1f20f0f565391de7d6e7"
+    },
+    {
+      "file": "21-responsive.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1943115,
+      "sha256": "a9c6e1dc375b602f6c8294d7e72c13bd2e10381e6f8a2723e47268a262570293"
+    },
+    {
+      "file": "22-design-system.png",
+      "width": 1586,
+      "height": 992,
+      "bytes": 1655102,
+      "sha256": "205ac4e16a19521502e42643aa44c1c7ceb4e29c9969f6365d99221fef2b9dca"
+    },
+    {
+      "file": "23-home-animation.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2289218,
+      "sha256": "6a56aa5e204421d0043c550817999f791adafeb60cfb08b3cbe87cf5060f0537"
+    }
+  ]
+}

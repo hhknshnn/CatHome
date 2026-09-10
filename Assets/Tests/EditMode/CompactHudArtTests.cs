@@ -39,7 +39,9 @@ public sealed class CompactHudArtTests
                 Assert.That(icon.texture,Is.Not.Null);Assert.That(icon.rectTransform.anchoredPosition.y,Is.Zero);
                 var r=icon.rectTransform;var parent=b.targetGraphic.rectTransform;
                 Assert.That(Mathf.Abs(r.anchoredPosition.x)+r.sizeDelta.x/2,Is.LessThan(parent.rect.width/2-8));
-                Assert.That(r.sizeDelta.y,Is.LessThan(parent.rect.height-16));
+                Assert.That(Mathf.Abs(r.anchoredPosition.y)+r.sizeDelta.y/2,Is.LessThanOrEqualTo(parent.rect.height/2-4),
+                    "Dock artwork must keep four pixels of vertical clearance inside its compact button face.");
+                Assert.That(icon.raycastTarget,Is.False,"Dock artwork must leave input to its button.");
                 Assert.That(b.GetComponentsInChildren<RawImage>(true).Any(a=>a.name=="BackdropMotif"&&a.texture!=null),Is.True);
             }
         }

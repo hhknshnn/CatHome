@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6b65b3cfba54f4ab7c0bf962dd3f7f, type: 3}
+  m_Name: CatModernVisualCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::CatModernVisualCatalog
+  meshes:
+  - source: {fileID: -5384383481081143580, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    modern: {fileID: 4300000, guid: e28314ba151905e4cb97e640cf6579f0, type: 2}
+    softenedVertices: 3158
+    protectedFaceVertices: 164
+  - source: {fileID: 2682626213445735142, guid: 1b62b9cad696b81469fba67da80a8e72, type: 3}
+    modern: {fileID: 4300000, guid: 0ed50b42c348b1040a5277dd6dea45fc, type: 2}
+    softenedVertices: 3206
+    protectedFaceVertices: 132
+  - source: {fileID: -8729143336603939707, guid: 0b787990741524343b6b9f9e1637aa26, type: 3}
+    modern: {fileID: 4300000, guid: 8db62ae215e3ca74c95896bb547b7f3f, type: 2}
+    softenedVertices: 3520
+    protectedFaceVertices: 132
+  - source: {fileID: 4986841198743352913, guid: 3095f524687464f428b2e9519f70b147, type: 3}
+    modern: {fileID: 4300000, guid: c5f2a867c010e9e42a4df5fb0d17305f, type: 2}
+    softenedVertices: 3670
+    protectedFaceVertices: 516
+  - source: {fileID: -4596125681841169832, guid: 8d21faf3c63aea945bc6e5cec6a3861d, type: 3}
+    modern: {fileID: 4300000, guid: 93fad46a6f05b194991ab34a46b9be6d, type: 2}
+    softenedVertices: 3250
+    protectedFaceVertices: 156
+  - source: {fileID: 4180565867295438512, guid: 7f01b32c4c43f6b42979e83dbc92ae36, type: 3}
+    modern: {fileID: 4300000, guid: 011519f7d282aad4a8bba19008454402, type: 2}
+    softenedVertices: 3455
+    protectedFaceVertices: 516
+  - source: {fileID: -6401094670691127704, guid: 40545d857e3a0f145b271d8f03fcd9de, type: 3}
+    modern: {fileID: 4300000, guid: 7df0b8b13c21c5848958072f3679f4ac, type: 2}
+    softenedVertices: 3644
+    protectedFaceVertices: 140
+  materials:
+  - source: {fileID: 2100000, guid: 2a217bc7c87c78246b88f79f8a23977a, type: 2}
+    modern: {fileID: 2100000, guid: 548fd06c1418cf94bbcd867cc6623e03, type: 2}
+  - source: {fileID: 2100000, guid: ad30b6f1e08efec44abe5246b1bd72ec, type: 2}
+    modern: {fileID: 2100000, guid: 819bf1a7806d65f4e915bfd021c0dc16, type: 2}
+  - source: {fileID: 2100000, guid: c2527d5526b53ee4ba0ea65f6cd4c948, type: 2}
+    modern: {fileID: 2100000, guid: be8f6fc230a638e4f9fbe5dff8cf816b, type: 2}
+  - source: {fileID: 2100000, guid: 264bccc863f12d6409944046e7f9dc2f, type: 2}
+    modern: {fileID: 2100000, guid: 59df9dc66f978cf4c875faa15d4ac280, type: 2}
+  - source: {fileID: 2100000, guid: e5df672b4df2a9f45b72bcd50a351245, type: 2}
+    modern: {fileID: 2100000, guid: 76c46ca5af5ac6f4b8317f63bb6d32a1, type: 2}
+  - source: {fileID: 2100000, guid: c73faf8583d640b40a4243f42b9123f8, type: 2}
+    modern: {fileID: 2100000, guid: 156efc7d011d8b441bdc82ff309b4d8c, type: 2}
+  - source: {fileID: 2100000, guid: 0f9f345bd71baab4fb6347654b36f6a2, type: 2}
+    modern: {fileID: 2100000, guid: 8322e95762388fd47a5986b7b0f29425, type: 2}
+  - source: {fileID: 2100000, guid: 7a22b8793f25e1a44a7d78c869f2bd9a, type: 2}
+    modern: {fileID: 2100000, guid: 972e062d0f64b9b45852a553d39e8ecf, type: 2}
+  - source: {fileID: 2100000, guid: 79691ae82c6958a4ab46b6be00021e37, type: 2}
+    modern: {fileID: 2100000, guid: 144f70c71a6d1874b8624a776a60d4af, type: 2}
+  - source: {fileID: 2100000, guid: ee74a9e75f1fd01448cea29f2a9c168d, type: 2}
+    modern: {fileID: 2100000, guid: 77ffab5b6668cd84293f19613b7f59f7, type: 2}
+  portraits:
+  - breedId: domestic-shorthair
+    originalGuid: efd920e734abea84ab88a1c4641e5bc6
+    identity: {fileID: 21300000, guid: 08f8a0a54b884da4e8d0304e81fe6679, type: 3}
+    fullBody: {fileID: 21300000, guid: 1c59766f6b034394c9cc48e2be769a24, type: 3}
+  - breedId: domestic-shorthair-orange
+    originalGuid: eab47cc6997c81442b734bdb48f6ccc6
+    identity: {fileID: 21300000, guid: 0f06bb221b70c5c4997d25626260e9e4, type: 3}
+    fullBody: {fileID: 21300000, guid: 938a50df6ad96f94395fc24cc3cdc919, type: 3}
+  - breedId: khao-manee
+    originalGuid: 82da149c93a436844abe4720cdc15c09
+    identity: {fileID: 21300000, guid: 31bd9c55387d2634b8d03388a2d18192, type: 3}
+    fullBody: {fileID: 21300000, guid: 8e347c090fa8df243b317aef5cc82d27, type: 3}
+  - breedId: british-shorthair
+    originalGuid: 5481123619613c54ba2c7c63eea4be0b
+    identity: {fileID: 21300000, guid: 4d3cf72fdc53497469e0ff898e4b947c, type: 3}
+    fullBody: {fileID: 21300000, guid: d3fb7a0ece695e1408cef30105632e12, type: 3}
+  - breedId: domestic-longhair
+    originalGuid: 65c17ee9add7edf489a8fdcebee09077
+    identity: {fileID: 21300000, guid: 065a19cd5cb27cb40afef516cdd07b3f, type: 3}
+    fullBody: {fileID: 21300000, guid: 6132d62540b59a348b24871a856b5364, type: 3}
+  - breedId: maine-coon
+    originalGuid: 59c7a1a5c97e561439fefb8cb24aa03f
+    identity: {fileID: 21300000, guid: d1d0d0f567f0a334fa7956893ee777e3, type: 3}
+    fullBody: {fileID: 21300000, guid: c5f7111ae560917408b7f36e5cb2e804, type: 3}
+  - breedId: oriental-shorthair
+    originalGuid: 92289d2fb891e4642a2efc775a88d157
+    identity: {fileID: 21300000, guid: 9c603cdee683bcd4b8ac14cfc7eab3d4, type: 3}
+    fullBody: {fileID: 21300000, guid: 30e6a4386d8b6914194266043f2deebc, type: 3}
+  - breedId: persian
+    originalGuid: 40459c9c036d7774f859ef5990a5917e
+    identity: {fileID: 21300000, guid: 042746e1d4cdf0f4b8ba8c4e2a070d2c, type: 3}
+    fullBody: {fileID: 21300000, guid: 88d00e6079f597f4a8775b710fc2b045, type: 3}
+  - breedId: russian-blue
+    originalGuid: db93ef6acb4989b439796784dc128ec0
+    identity: {fileID: 21300000, guid: f59cd58b63310474ab4791e2724a503a, type: 3}
+    fullBody: {fileID: 21300000, guid: 42c111abf629dc34486720d0ea1bb3ba, type: 3}
+  - breedId: sphynx
+    originalGuid: ae459ca8bf105ca4ebad56c61f09d982
+    identity: {fileID: 21300000, guid: 8e69b3c6652da774a98396ef6d5f7c13, type: 3}
+    fullBody: {fileID: 21300000, guid: 2c0f80dc5880f9d4bbbab36929f20d53, type: 3}
+  revision: 5

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class CatSpeechBubble : MonoBehaviour
 {
-    private const int CurrentVisualVersion = 13;
+    private const int CurrentVisualVersion = 14;
     private const float HoldDuration = 1.75f;
     private const string VisualRootName = "CatSpeechBubbleVisual";
 
@@ -33,7 +33,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         if (!IsVisualHierarchyReady() || IsModalBlocking())
             return;
 
-        label.text = message;
+        label.text = GameContentCopy.CatReaction(message);
         ResizeToMessage();
         if (routine != null)
             StopCoroutine(routine);
@@ -52,7 +52,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
     private void EnsureVisualHierarchy()
     {
         gameplayCamera = Camera.main;
-        head = FindNamed(transform, "Head") ?? FindNamed(transform, "Neck") ?? transform;
+        head = FindNamed(transform, "DEF-spine.006") ?? FindNamed(transform, "Head") ?? FindNamed(transform, "Neck") ?? transform;
 
         Canvas hudCanvas = FindHudCanvas();
         visualRoot = ResolveSingleVisualRoot();
@@ -107,21 +107,21 @@ public sealed class CatSpeechBubble : MonoBehaviour
         RectTransform shadowTail = EnsureLayer(bubble, "ShadowTail", new Vector2(42f, 28f),
             new Vector2(0f, -48f), new Color32(10, 18, 27, 145), 0f, true, 0);
         RectTransform shadowPanel = EnsureLayer(bubble, "ShadowPanel", new Vector2(288f, 90f),
-            Vector2.zero, new Color32(10, 18, 27, 130), 13f, false, -1);
+            new Vector2(0,-3), new Color32(23, 51, 86, 26), 25f, false, -1);
         RectTransform orangeTail = EnsureLayer(bubble, "OrangeTail", new Vector2(42f, 28f),
-            new Vector2(0f, -42f), new Color32(211, 207, 195, 255), 0f, true, 1);
+            new Vector2(0f, -42f), new Color32(158, 202, 249, 255), 0f, true, 1);
         RectTransform orangeFrame = EnsureLayer(bubble, "OrangeFrame", new Vector2(280f, 82f),
-            Vector2.zero, new Color32(211, 207, 195, 255), 13f, false, -1);
+            Vector2.zero, new Color32(158, 202, 249, 255), 24f, false, -1);
         RectTransform creamTail = EnsureLayer(bubble, "CreamTail", new Vector2(42f, 28f),
-            new Vector2(0f, -39f), new Color32(221, 237, 227, 255), 0f, true, 2);
+            new Vector2(0f, -39f), new Color32(247, 250, 255, 255), 0f, true, 2);
         RectTransform creamFace = EnsureLayer(bubble, "CreamFace", new Vector2(276f, 78f),
-            Vector2.zero, new Color32(221, 237, 227, 255), 11f, false, -1);
+            Vector2.zero, new Color32(247, 250, 255, 255), 22f, false, -1);
 
         shadowTail.SetSiblingIndex(0); shadowPanel.SetSiblingIndex(1);
         orangeTail.SetSiblingIndex(2); orangeFrame.SetSiblingIndex(3);
         creamTail.SetSiblingIndex(4); creamFace.SetSiblingIndex(5);
         shadowTail.gameObject.SetActive(false);
-        shadowPanel.gameObject.SetActive(false);
+        shadowPanel.gameObject.SetActive(true);
 
         RectTransform text = EnsureRect(bubble, "Message", new Vector2(244f, 52f));
         text.anchoredPosition = new Vector2(0f, 2f);
@@ -308,7 +308,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         bubble.sizeDelta = new Vector2(width, height);
         SetLayerSize("ShadowPanel", new Vector2(width + 8f, height + 8f));
         SetLayerSize("OrangeFrame", new Vector2(width, height));
-        SetLayerSize("CreamFace", new Vector2(width - 14f, height - 14f));
+        SetLayerSize("CreamFace", new Vector2(width - 3f, height - 3f));
         SetTailY("ShadowTail", -height * .5f - 5f);
         SetTailY("OrangeTail", -height * .5f - 1f);
         SetTailY("CreamTail", -height * .5f + 5f);
@@ -333,13 +333,12 @@ public sealed class CatSpeechBubble : MonoBehaviour
     private IEnumerator ShowRoutine()
     {
         group.alpha = 0f;
-        bubble.localScale = Vector3.one * .65f;
-        bubble.localRotation = Quaternion.Euler(0f, 0f, -4f);
-        animationYOffset = -7f;
+        bubble.localScale = Vector3.one * .96f;
+        bubble.localRotation = Quaternion.identity;
+        animationYOffset = -5f;
         UpdatePosition();
 
-        yield return Animate(.16f, 0f, 1f, .65f, 1.08f, -7f, 3f, -4f, 1.5f);
-        yield return Animate(.12f, 1f, 1f, 1.08f, 1f, 3f, 0f, 1.5f, 0f);
+        yield return Animate(.18f, 0f, 1f, .96f, 1f, -5f, 0f, 0f, 0f);
 
         float elapsed = 0f;
         while (elapsed < HoldDuration)
@@ -348,12 +347,12 @@ public sealed class CatSpeechBubble : MonoBehaviour
             group.alpha = 1f;
             bubble.localScale = Vector3.one;
             bubble.localRotation = Quaternion.identity;
-            animationYOffset = Mathf.Sin(elapsed * 4.5f) * 1.2f;
+            animationYOffset = 0f;
             UpdatePosition();
             yield return null;
         }
 
-        yield return Animate(.24f, 1f, 0f, 1f, .78f, 0f, 13f, 0f, 2f);
+        yield return Animate(.14f, 1f, 0f, 1f, .98f, 0f, 4f, 0f, 0f);
         group.alpha = 0f;
         routine = null;
     }
@@ -362,6 +361,8 @@ public sealed class CatSpeechBubble : MonoBehaviour
         float duration, float fromAlpha, float toAlpha, float fromScale, float toScale,
         float fromY, float toY, float fromAngle, float toAngle)
     {
+        if(CatRunnerProgressService.ReducedMotion)
+        {group.alpha=toAlpha;bubble.localScale=Vector3.one;bubble.localRotation=Quaternion.identity;animationYOffset=0;UpdatePosition();yield break;}
         float elapsed = 0f;
         while (elapsed < duration)
         {
@@ -392,10 +393,11 @@ public sealed class CatSpeechBubble : MonoBehaviour
             return;
         }
 
-        Vector2 desired = (Vector2)screen + new Vector2(0f, bubble.rect.height * .5f + 34f + animationYOffset);
+        float uiScale = canvas != null ? Mathf.Max(.01f,canvas.scaleFactor) : 1f;
+        Vector2 desired = (Vector2)screen + new Vector2(0f, (bubble.rect.height * .5f + 34f + animationYOffset)*uiScale);
         Rect safe = Screen.safeArea;
-        float halfWidth = bubble.rect.width * .5f;
-        float halfHeight = bubble.rect.height * .5f;
+        float halfWidth = bubble.rect.width * .5f*uiScale;
+        float halfHeight = bubble.rect.height * .5f*uiScale;
         float minX = safe.xMin + halfWidth + 14f;
         float maxX = safe.xMax - halfWidth - 14f;
         float minY = safe.yMin + halfHeight + 14f;
@@ -405,7 +407,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         desired.x = Mathf.Clamp(desired.x, minX, maxX);
         desired.y = Mathf.Clamp(desired.y, minY, maxY);
         bubble.position = desired;
-        float tailX = Mathf.Clamp(screen.x - desired.x, -halfWidth + 34f, halfWidth - 34f);
+        float tailX = Mathf.Clamp((screen.x - desired.x)/uiScale, -bubble.rect.width*.5f + 34f, bubble.rect.width*.5f - 34f);
         for (int i = 0; i < tails.Length; i++)
             if (tails[i] != null)
                 tails[i].anchoredPosition = new Vector2(tailX + (i == 0 ? 4f : 0f), tails[i].anchoredPosition.y);
@@ -484,6 +486,7 @@ public sealed class CatSpeechBubbleGraphic : MaskableGraphic
 {
     [SerializeField] private float cornerCut = 12f;
     [SerializeField] private bool triangle;
+    private readonly Vector2[] points = new Vector2[48];
 
     public void Configure(Color32 layerColor, float cut, bool drawTriangle)
     {
@@ -507,13 +510,12 @@ public sealed class CatSpeechBubbleGraphic : MaskableGraphic
         }
 
         float cut = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .35f);
-        Vector2[] points =
+        for(int corner=0;corner<4;corner++)
         {
-            new Vector2(rect.xMin + cut, rect.yMin), new Vector2(rect.xMax - cut, rect.yMin),
-            new Vector2(rect.xMax, rect.yMin + cut), new Vector2(rect.xMax, rect.yMax - cut),
-            new Vector2(rect.xMax - cut, rect.yMax), new Vector2(rect.xMin + cut, rect.yMax),
-            new Vector2(rect.xMin, rect.yMax - cut), new Vector2(rect.xMin, rect.yMin + cut)
-        };
+            Vector2 center=corner==0?new Vector2(rect.xMin+cut,rect.yMin+cut):corner==1?new Vector2(rect.xMax-cut,rect.yMin+cut):corner==2?new Vector2(rect.xMax-cut,rect.yMax-cut):new Vector2(rect.xMin+cut,rect.yMax-cut);
+            for(int step=0;step<12;step++)
+            {float angle=(-180+corner*90+step/11f*90)*Mathf.Deg2Rad;points[corner*12+step]=center+new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*cut;}
+        }
         AddConvex(vh, points, color);
     }
 

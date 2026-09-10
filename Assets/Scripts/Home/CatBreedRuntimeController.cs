@@ -62,6 +62,8 @@ public static class CatBreedVisualFactory
             heartSpawn.localPosition = new Vector3(0f, .045f, .035f);
         }
 
+        CatModernVisual.Apply(root);
+
         return root;
     }
 
@@ -203,12 +205,16 @@ public sealed class CatBreedRuntimeController : MonoBehaviour
         {
             tag = currentRoot.gameObject.AddComponent<CatBreedVisualTag>();
             tag.Configure(entry.Id);
+            CatModernVisual.Apply(currentRoot.gameObject);
             bind(currentAnimator);
             return;
         }
 
         if (tag != null && string.Equals(tag.BreedId, entry.Id, StringComparison.Ordinal))
+        {
+            CatModernVisual.Apply(currentRoot.gameObject);
             return;
+        }
 
         Vector3 position = currentRoot.localPosition;
         Quaternion rotation = currentRoot.localRotation;

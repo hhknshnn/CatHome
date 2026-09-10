@@ -31,9 +31,13 @@ public static class RoomProductInteractionBuilder
         var root=PrefabUtility.LoadPrefabContents(path);
         try
         {
+            HomeRoomArrangementBuilder.ApplyProductScale(root, definition);
             ConfigureLivingRoomActivity(root,definition);
             if(root.GetComponent<RoomProductFeedback>()==null)root.AddComponent<RoomProductFeedback>();
+            BathroomActionPartsBuilder.Configure(root);
             ConfigurePhysicalGeometry(root,definition);ConfigureMeasuredPoints(root,definition);
+            SinkSipFacingBuilder.Configure(root, definition);
+            SitLookFacingBuilder.Configure(root, definition);
             ConfigureContactSurfaces(root,definition,report);ConfigureEntry(root);
             PrefabUtility.SaveAsPrefabAsset(root,path);
         }
@@ -91,6 +95,13 @@ public static class RoomProductInteractionBuilder
         foreach (var activity in root.GetComponentsInChildren<CatActivity>(true))
         {
             var data = new SerializedObject(activity);
+            if (activity is PaperSpinActivity paper && paper.UsesPaperTears)
+            {
+                // Entry spacing must never move the measured paw-contact stand.
+                // The paper routine walks from this open entrance to SwatPoint.
+                activity.EditorConfigureEntry(data.FindProperty("interactionAnchor").objectReferenceValue as Transform);
+                continue;
+            }
             Transform entry = null;
             foreach (string field in new[] { "floorPoint", "mountPoint", "mouthPoint", "doorPoint",
                          "scratchPoint", "standPoint", "approachPoint", "reachPoint", "swatPoint", "shovePoint", "interactionAnchor" })
@@ -109,7 +120,8 @@ public static class RoomProductInteractionBuilder
         var activity = root.GetComponent<CatActivity>();
         var property = activity == null ? null : new SerializedObject(activity).FindProperty(field);
         var point = property != null ? property.objectReferenceValue as Transform : null;
-        if (point != null) point.position = root.transform.TransformPoint(local);
+        var stamp = root.GetComponent<RoomProductScaleStamp>();
+        if (point != null) point.position = root.transform.TransformPoint(local * (stamp != null ? stamp.AppliedScale : 1f));
     }
 
     private static void ConfigureMeasuredPoints(GameObject root, StoreCatalogAsset d)
@@ -118,6 +130,30 @@ public static class RoomProductInteractionBuilder
         // FBXs. Slat gaps and a basin centre are not landing surfaces.
         switch (d.PrefabName)
         {
+            case "TallHouseplant":
+                SetPoint(root, "interactionAnchor", LivingRoomGazeLayoutBuilder.TallPlantEntryLocal);
+                break;
+            case "BathroomWallMirror":
+                // Stand beside the grooming cart below the mirror, leaving its own entrance distinct.
+                SetPoint(root, "interactionAnchor", new Vector3(-.78f, 0, -.85f));
+                var gaze = root.GetComponent<SitLookActivity>();
+                var gazeData = new SerializedObject(gaze);
+                gazeData.FindProperty("reactionKind").enumValueIndex = (int)SitLookReaction.Sit;
+                gazeData.ApplyModifiedPropertiesWithoutUndo();
+                break;
+            case "BathroomShower":
+                var outlet = root.transform.Find("RinseWaterOutlet");
+                if (outlet == null) { outlet = new GameObject("RinseWaterOutlet").transform; outlet.SetParent(root.transform, false); }
+                root.GetComponent<ShowerRinseActivity>().EditorConfigureWaterOutlet(outlet);
+                // Blender component measurement: 5 mm beneath the actual nozzle tips,
+                // converted through the premium model's import scale and 180-degree turn.
+                SetPoint(root, "waterOutlet", new Vector3(0, 1.6975694f, .0262041f));
+                // Measured front glass occupies root +X; the walk-in half is -X.
+                // The original +.33 entry sent the cat through glass and hid the rinse.
+                SetPoint(root, "doorPoint", new Vector3(-.33f, 0, .95f));
+                SetPoint(root, "standPoint", new Vector3(-.30f, .125f, .05f));
+                SetPoint(root, "interactionAnchor", new Vector3(-.33f, 0, 1.05f));
+                break;
             case "ClassicArmchair": SetPoint(root,"perchPoint",new Vector3(0,.34f,-.06f));break;
             case "KitchenSinkCabinet": SetPoint(root, "perchPoint", new Vector3(-.47f, .811f, -.10f)); break;
             case "BathroomTowelStorage": SetPoint(root, "nestPoint", new Vector3(0f, 1.7472f, 0f)); break;
@@ -275,15 +311,32 @@ public static class RoomProductInteractionBuilder
 
     private static void ConfigureLivingRoomActivity(GameObject root, StoreCatalogAsset d)
     {
+        if (d.ProductId == HomeStoreService.GameConsoleId || d.ProductId == HomeStoreService.StereoId || d.ProductId == HomeStoreService.TvUnitId)
+        {
+            foreach (var retired in root.GetComponents<CatActivity>()) UnityEngine.Object.DestroyImmediate(retired);
+            return;
+        }
         if (!HomeStoreService.IsLivingRoomCollectionProduct(d.ProductId) || root.GetComponent<CatActivity>() != null)
             return;
         var visual = root.transform.Find("VisualContent");
         if (visual == null) return;
         bool roomAtPlusZ = d.ProductId == HomeStoreService.BookshelfId ||
             d.ProductId == HomeStoreService.ModernPaintingId || d.ProductId == HomeStoreService.TvUnitId ||
-            d.ProductId == HomeStoreService.ModernTelevisionId || d.ProductId == HomeStoreService.BookSetId;
+            d.ProductId == HomeStoreService.ModernTelevisionId || d.ProductId == HomeStoreService.BookSetId ||
+            d.ProductId == HomeStoreService.GameConsoleId || d.ProductId == HomeStoreService.StereoId;
         float direction = roomAtPlusZ ? 1f : -1f;
         Vector3 approach = new Vector3(0f, 0f, direction * (d.Footprint.y * .5f + .42f));
+        // The three media activities share a cabinet but keep distinct floor
+        // approaches along its open front, outside the cabinet footprint.
+        if(d.ProductId==HomeStoreService.GameConsoleId)approach=new Vector3(-.72f,0,.77f);
+        if(d.ProductId==HomeStoreService.StereoId)approach=new Vector3(.85f,0,.77f);
+        if(d.ProductId==HomeStoreService.ModernTelevisionId)approach=new Vector3(0,0,.96f);
+        // The bed has its own approach at z=1.416; watch the picture from the
+        // open gallery aisle, not from the bed's sleep button zone.
+        if(d.ProductId==HomeStoreService.ModernPaintingId)approach=new Vector3(0,0,2.04f);
+        // Watch the lamp from the open aisle in front of the care-side chair.
+        // Its old near-base point is occupied by the angled armchair.
+        if(d.ProductId==HomeStoreService.FloorLampId)approach=new Vector3(0,0,-1.04f);
         Transform anchor = Point(root, "InteractionAnchor", approach);
         if (d.ProductId == HomeStoreService.ArmchairId)
         {
@@ -303,7 +356,6 @@ public static class RoomProductInteractionBuilder
         else if (d.ProductId == HomeStoreService.BookSetId) kind = CatActivityKind.BookSetSniff;
         else if (d.ProductId == HomeStoreService.TallPlantId) kind = CatActivityKind.PlantSniff;
         else if (d.ProductId == HomeStoreService.ModernPaintingId) kind = CatActivityKind.PaintingWatch;
-        else if (d.ProductId == HomeStoreService.TvUnitId) { kind = CatActivityKind.TvUnitPaw; action = "PAW"; reaction = SitLookReaction.PawSwat; }
         else if (d.ProductId == HomeStoreService.ModernTelevisionId) kind = CatActivityKind.TelevisionWatch;
         else if (d.ProductId == HomeStoreService.GameConsoleId) { kind = CatActivityKind.ConsolePaw; action = "PLAY"; reaction = SitLookReaction.PawSwat; }
         else if (d.ProductId == HomeStoreService.StereoId) kind = CatActivityKind.SpeakerListen;

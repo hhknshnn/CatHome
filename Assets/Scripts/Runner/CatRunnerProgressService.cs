@@ -280,13 +280,13 @@ public static class CatRunnerProgressService
     {
         EnsureCurrentDay(DateTime.UtcNow);
         string coins = state.dailyCoinsClaimed
-            ? GameContentCopy.Text("Jeton ✓", "Coins ✓")
+            ? GameContentCopy.Text("Jeton tamam", "Coins done")
             : GameContentCopy.Text($"Jeton {state.dailyCoins}/{DailyCoinTarget}",$"Coins {state.dailyCoins}/{DailyCoinTarget}");
         string jumps = state.dailyJumpsClaimed
-            ? GameContentCopy.Text("Zıplama ✓", "Jumps ✓")
+            ? GameContentCopy.Text("Zıplama tamam", "Jumps done")
             : GameContentCopy.Text($"Zıplama {state.dailyJumps}/{DailyJumpTarget}",$"Jumps {state.dailyJumps}/{DailyJumpTarget}");
         string distance = state.dailyDistanceClaimed
-            ? GameContentCopy.Text("Mesafe ✓", "Distance ✓")
+            ? GameContentCopy.Text("Mesafe tamam", "Distance done")
             : GameContentCopy.Text($"Mesafe {state.dailyDistance}/{DailyDistanceTarget} m",$"Distance {state.dailyDistance}/{DailyDistanceTarget} m");
         return GameContentCopy.Text("Günün hedefleri", "Daily goals") + $"\n{coins}   ·   {jumps}   ·   {distance}";
     }

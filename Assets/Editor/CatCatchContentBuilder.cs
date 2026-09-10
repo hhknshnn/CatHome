@@ -125,6 +125,7 @@ public static class CatCatchContentBuilder
             hud, score, comboLabel, timer, caught, results, title, details, collect, retry,
             tutorial, tutorialMessage, tutorialSkip, pause, pausePanel, resume, pauseExit);
 
+        MiniGameArtBuilder.Catch(root.transform);
         if (!EditorSceneManager.SaveScene(scene, ScenePath))
             throw new InvalidOperationException("Cat Catch scene could not be saved.");
         EnsureBuildSettings();
@@ -548,6 +549,7 @@ public static class CatCatchContentBuilder
         PremiumUiFactory.PolishHierarchy(canvasObject.transform, font);
         PremiumMiniGameUiBuilder.PolishHud(hud.transform);
         PremiumUiElements.Localize(hint,"catch.hint");
+        hint.gameObject.AddComponent<CatchHuntHint>();
         PremiumUiElements.Localize(score.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"games.score");
         PremiumUiElements.Localize(timer.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"games.time");
         PremiumUiElements.Localize(caught.transform.parent.Find("Caption").GetComponent<TMP_Text>(),"catch.mice");
@@ -608,6 +610,9 @@ public static class CatCatchContentBuilder
     private static void BakeWelcomeHero(
         Transform root, Camera sceneCamera, CatCatchPlayer player, CatCatchMouse[] mice)
     {
+        // A completed game's live capture is authoritative. This early builder
+        // still has the temporary arena, before the final art pass runs.
+        if (System.IO.File.Exists("Assets/Art/Games/CatchPreview.png")) return;
         GameObject cameraObject = null;
         RenderTexture target = null;
         RenderTexture previousActive = RenderTexture.active;

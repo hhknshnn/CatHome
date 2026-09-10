@@ -10,7 +10,8 @@ using UnityEngine.UI;
 public sealed class CatDialogueView : MonoBehaviour
 {
     private const float PanelBottomPadding = 32f;
-    private const float PanelHeight = 280f;
+    private const float PanelHeight = 172f;
+    private const float NamePanelHeight = 300f;
     private const float PanelSlideDistance = 28f;
     internal static readonly Rect CatFaceUv = new Rect(0f, 0f, 1f, 1f);
 
@@ -22,6 +23,9 @@ public sealed class CatDialogueView : MonoBehaviour
     private TMP_Text nameLabel;
     private TMP_Text messageLabel;
     private TMP_Text continueLabel;
+    private TMP_Text lessonLabel;
+    private RectTransform portraitRoot;
+    private RectTransform continueFace;
     private TMP_InputField input;
     private Button confirm;
     private Button panelButton;
@@ -102,7 +106,8 @@ public sealed class CatDialogueView : MonoBehaviour
         RectTransform inner=Rect("CreamInner",panel,Vector2.zero,Vector2.one,new Vector2(18f,18f),new Vector2(-18f,-18f));
 
         RectTransform portrait=Rect("CatPortrait",panel,new Vector2(0f,.5f),new Vector2(0f,.5f),new Vector2(26f,-106f),new Vector2(238f,106f));
-        Panel(portrait,"PortraitFrame",Vector2.zero,PremiumUiStyle.Mint,28f,2f);
+        portraitRoot=portrait;
+        Panel(portrait,"PortraitFrame",Vector2.zero,ModernUiArt.Inset,28f,2f);
         CreateCatPortrait(portrait,new Vector2(12f,12f),new Vector2(-12f,-12f));
         RectTransform speech=Rect("SpeechCard",panel,new Vector2(0f,0f),new Vector2(1f,1f),new Vector2(260f,60f),new Vector2(-34f,-46f));
 
@@ -114,26 +119,41 @@ public sealed class CatDialogueView : MonoBehaviour
         messageLabel.textWrappingMode=TextWrappingModes.Normal; messageLabel.richText=false; messageLabel.enableAutoSizing=true; messageLabel.fontSizeMin=24f; messageLabel.fontSizeMax=31f; messageLabel.overflowMode=TextOverflowModes.Truncate;
         continueLabel=Text("Continue",panel,font,18f,FontStyles.Bold,TextAlignmentOptions.BottomRight,PremiumUiStyle.Teal,new Vector2(1f,0f),new Vector2(1f,0f),new Vector2(-324f,31f),new Vector2(-76f,61f));
         continueLabel.enableAutoSizing=true; continueLabel.fontSizeMin=14f; continueLabel.fontSizeMax=18f; continueLabel.overflowMode=TextOverflowModes.Truncate;
-        continueLabel.text=GameContentCopy.Text("Devam etmek için dokun","Tap to continue");
-        RectTransform arrow=Rect("ContinueArrow",continueLabel.transform,new Vector2(1f,.5f),new Vector2(1f,.5f),new Vector2(5f,-10f),new Vector2(31f,10f));
-        arrow.gameObject.AddComponent<CanvasRenderer>();
-        var continueArrow=arrow.gameObject.AddComponent<LowPolyTutorialPointerGraphic>(); continueArrow.raycastTarget=false;
+        continueLabel.text=GameContentCopy.Text("Devam","Continue");
+        continueLabel.alignment=TextAlignmentOptions.Center;continueLabel.color=Color.white;
+        continueFace=Rect("ContinueFace",panel,new Vector2(1,.5f),new Vector2(1,.5f),new Vector2(-250,-32),new Vector2(-34,32));
+        continueFace.gameObject.AddComponent<CanvasRenderer>();
+        var continueSurface=continueFace.gameObject.AddComponent<LowPolyPanelGraphic>();
+        continueSurface.ConfigureModernStyle(ModernUiArt.AzureTop,ModernUiArt.Azure,16,true,true);continueSurface.raycastTarget=false;
+        continueFace.SetSiblingIndex(continueLabel.transform.GetSiblingIndex());
+        RectTransform arrow=Rect("ContinueArrow",continueLabel.transform,new Vector2(1f,.5f),new Vector2(1f,.5f),new Vector2(4f,-10f),new Vector2(22f,10f));
+        // Navigation uses a quiet white chevron. The tutorial pointer is an
+        // orange, down-facing three-layer marker and belongs to spotlights.
+        for(int segment=0;segment<2;segment++)
+        {
+            float y=segment==0?4.25f:-4.25f;
+            var stroke=Graphic<Image>("ChevronStroke"+segment,arrow,new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(-7,y-1.25f),new Vector2(7,y+1.25f));
+            stroke.color=Color.white;stroke.raycastTarget=false;stroke.rectTransform.localEulerAngles=new Vector3(0,0,segment==0?-45:45);
+        }
         BuildNameInput(font);
+        lessonLabel=Text("LessonProgress",panel,PremiumTypography.Body,18f,FontStyles.Normal,TextAlignmentOptions.Right,PremiumUiStyle.Muted,
+            new Vector2(1,1),new Vector2(1,1),new Vector2(-390,-52),new Vector2(-40,-22));
+        lessonLabel.text=string.Empty;
         RefreshLayout(true);
         SetVisibleImmediate(false);
     }
 
     public void ShowMessage(string catName,string message,bool showContinue=true)
     {
-        nameMode=false; confirming=false; string safeName=NormalizeName(catName); nameLabel.text=string.IsNullOrEmpty(safeName)?GameContentCopy.Text("Kedin","Your cat"):safeName; messageLabel.gameObject.SetActive(true); messageLabel.text=message;
+        nameMode=false; confirming=false; if(lessonLabel!=null)lessonLabel.text=string.Empty; string safeName=NormalizeName(catName); nameLabel.text=string.IsNullOrEmpty(safeName)?GameContentCopy.Text("Kedin","Your cat"):safeName; messageLabel.gameObject.SetActive(true); messageLabel.text=message;
         RectTransform mr=messageLabel.rectTransform; mr.anchorMin=Vector2.zero; mr.anchorMax=Vector2.one; mr.offsetMin=new Vector2(286f,82f); mr.offsetMax=new Vector2(-64f,-78f);
-        input.gameObject.SetActive(false); confirm.gameObject.SetActive(false); continueLabel.gameObject.SetActive(showContinue); Show();
+        input.gameObject.SetActive(false); confirm.gameObject.SetActive(false); continueLabel.gameObject.SetActive(showContinue); if(continueFace!=null)continueFace.gameObject.SetActive(showContinue); Show();
     }
     public void ShowNamePrompt(string message)
     {
-        nameMode=true; confirming=false; nameLabel.text=GameContentCopy.Text("Merhaba!","Hello!"); messageLabel.gameObject.SetActive(true); messageLabel.text=message;
+        nameMode=true; confirming=false; nameLabel.text=GameContentCopy.Text("Yeni bir dostluk","A new friendship"); if(lessonLabel!=null)lessonLabel.text=GameContentCopy.Text("Önce tanışalım","Let's meet first"); messageLabel.gameObject.SetActive(true); messageLabel.text=message;
         RectTransform mr=messageLabel.rectTransform; mr.anchorMin=Vector2.zero; mr.anchorMax=Vector2.one; mr.offsetMin=new Vector2(286f,126f); mr.offsetMax=new Vector2(-64f,-82f);
-        input.gameObject.SetActive(true); confirm.gameObject.SetActive(true); input.text=string.Empty; continueLabel.gameObject.SetActive(false); ValidateName(input.text); Show();
+        input.gameObject.SetActive(true); confirm.gameObject.SetActive(true); input.text=string.Empty; continueLabel.gameObject.SetActive(false); if(continueFace!=null)continueFace.gameObject.SetActive(false); ValidateName(input.text); Show();
     }
     public void Hide()
     {
@@ -141,6 +161,8 @@ public sealed class CatDialogueView : MonoBehaviour
         hiding=true;
         if (transition!=null) StopCoroutine(transition); transition=StartCoroutine(FadeTo(0f));
     }
+    public void SetLessonProgress(int current,int total)
+    { if(lessonLabel!=null)lessonLabel.text=GameContentCopy.Text("Yuvaya ilk adım","Welcome home")+"  ·  "+current+" / "+total; }
     public void SetSuppressed(bool suppressed)
     {
         EnsureCanvasGroup();
@@ -194,16 +216,19 @@ public sealed class CatDialogueView : MonoBehaviour
         TMP_Text placeholder=Text("Placeholder",field,font,21f,FontStyles.Normal,TextAlignmentOptions.MidlineLeft,PremiumUiStyle.Muted,Vector2.zero,Vector2.one,new Vector2(18f,4f),new Vector2(-18f,-4f)); placeholder.text=GameContentCopy.Text("Bana bir isim ver…","Give me a name…");
         input.textComponent=text; input.placeholder=placeholder; input.onValueChanged.AddListener(ValidateName); input.onSubmit.AddListener(_=>ConfirmName());
         RectTransform button=Rect("Confirm",panel,new Vector2(.74f,.16f),new Vector2(.91f,.48f),Vector2.zero,Vector2.zero);
-        var buttonFace=Panel(button,"ButtonFace",Vector2.zero,PremiumUiStyle.Coral,22f,2f); buttonFace.raycastTarget=true;
+        var buttonFace=Panel(button,"ButtonFace",Vector2.zero,ModernUiArt.Azure,16f,2f); buttonFace.raycastTarget=true;
         confirm=button.gameObject.AddComponent<Button>(); confirm.targetGraphic=buttonFace; confirm.onClick.AddListener(ConfirmName);
         PremiumButtonFx confirmFx=button.gameObject.AddComponent<PremiumButtonFx>();
         confirmFx.Configure(buttonFace.rectTransform, buttonFace, confirm, true, false);
-        TMP_Text label=Text("Label",buttonFace.rectTransform,font,20f,FontStyles.Bold,TextAlignmentOptions.Center,PremiumUiStyle.Ink,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero); label.text=GameContentCopy.Text("Tamam","Confirm");
+        TMP_Text label=Text("Label",buttonFace.rectTransform,font,24f,FontStyles.Bold,TextAlignmentOptions.Center,Color.white,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero); label.text=GameContentCopy.Text("Tanışalım","Let's meet");
+        ModernUiArt.Action(confirm);
     }
     private IEnumerator FadeTo(float target)
     {
         EnsureCanvasGroup();
         RefreshLayout(false);
+        if(CatRunnerProgressService.ReducedMotion)
+        {canvasGroup.alpha=target;panel.anchoredPosition=target>0?visiblePanelPosition:hiddenPanelPosition;canvasGroup.interactable=canvasGroup.blocksRaycasts=target>0;if(target<=0)gameObject.SetActive(false);hiding=false;transition=null;yield break;}
         float start=canvasGroup.alpha, elapsed=0f; const float duration=.22f;
         Vector2 slideStart=target>0f?hiddenPanelPosition:panel.anchoredPosition;
         Vector2 slideTarget=target>0f?visiblePanelPosition:hiddenPanelPosition;
@@ -252,7 +277,8 @@ public sealed class CatDialogueView : MonoBehaviour
             panel.anchorMax = new Vector2(.94f, 0f);
             panel.pivot = new Vector2(.5f, 0f);
             panel.offsetMin = new Vector2(0f, PanelBottomPadding);
-            panel.offsetMax = new Vector2(0f, PanelBottomPadding + PanelHeight);
+            panel.offsetMax = new Vector2(0f, PanelBottomPadding + (nameMode ? NamePanelHeight : PanelHeight));
+            ApplyContentLayout();
             if (forceCanvasUpdate) Canvas.ForceUpdateCanvases();
             visiblePanelPosition = panel.anchoredPosition;
             hiddenPanelPosition = visiblePanelPosition - Vector2.up * PanelSlideDistance;
@@ -263,6 +289,43 @@ public sealed class CatDialogueView : MonoBehaviour
             lastScreenHeight = Screen.height;
         }
         finally { refreshingLayout = false; }
+    }
+    private void ApplyContentLayout()
+    {
+        if(portraitRoot!=null)
+        {
+            portraitRoot.anchorMin=portraitRoot.anchorMax=new Vector2(0,.5f);
+            portraitRoot.offsetMin=new Vector2(22,nameMode?-105:-64);
+            portraitRoot.offsetMax=new Vector2(nameMode?232:150,nameMode?105:64);
+        }
+        if(nameLabel!=null)
+        {
+            nameLabel.rectTransform.offsetMin=new Vector2(nameMode?258:182,-52);
+            nameLabel.rectTransform.offsetMax=new Vector2(-300,-16);
+            nameLabel.color=ModernUiArt.Ink;
+        }
+        if(messageLabel!=null)
+        {
+            messageLabel.rectTransform.offsetMin=new Vector2(nameMode?258:182,nameMode?145:32);
+            messageLabel.rectTransform.offsetMax=new Vector2(nameMode?-36:-280,nameMode?-86:-55);
+            messageLabel.fontSizeMin=nameMode?24:23;messageLabel.fontSizeMax=nameMode?31:28;
+        }
+        if(continueLabel!=null)
+        {
+            var rect=continueLabel.rectTransform;rect.anchorMin=rect.anchorMax=new Vector2(1,.5f);
+            rect.offsetMin=new Vector2(-244,-28);rect.offsetMax=new Vector2(-60,28);
+            continueLabel.fontSize=24;continueLabel.fontSizeMin=20;continueLabel.fontSizeMax=24;
+        }
+        if(input!=null)
+        {
+            var rect=input.GetComponent<RectTransform>();rect.anchorMin=Vector2.zero;rect.anchorMax=new Vector2(1,0);
+            rect.offsetMin=new Vector2(258,32);rect.offsetMax=new Vector2(-258,114);
+        }
+        if(confirm!=null)
+        {
+            var rect=confirm.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(1,0);
+            rect.offsetMin=new Vector2(-236,32);rect.offsetMax=new Vector2(-32,114);
+        }
     }
     private static RectTransform Rect(string name,Transform parent,Vector2 amin,Vector2 amax,Vector2 omin,Vector2 omax){ var go=new GameObject(name,typeof(RectTransform)); var r=go.GetComponent<RectTransform>(); r.SetParent(parent,false); r.anchorMin=amin;r.anchorMax=amax;r.offsetMin=omin;r.offsetMax=omax;r.localScale=Vector3.one;return r; }
     private static LowPolyPanelGraphic Panel(RectTransform parent,string name,Vector2 offset,Color color,float cut,float bevel){ RectTransform r=Rect(name,parent,Vector2.zero,Vector2.one,offset,offset); r.gameObject.AddComponent<CanvasRenderer>(); var g=r.gameObject.AddComponent<LowPolyPanelGraphic>();PremiumUiStyle.ConfigureAccentSurface(g,color,color,cut,2f);g.raycastTarget=false;return g; }

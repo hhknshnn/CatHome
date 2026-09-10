@@ -13,7 +13,9 @@ public enum CatRunnerPowerUpKind
 {
     Magnet = 0,
     Shield = 1,
-    DoubleCoins = 2
+    DoubleCoins = 2,
+    ScoreStar = 3,
+    MysteryGift = 4
 }
 
 [DisallowMultipleComponent]
@@ -27,6 +29,32 @@ public sealed class CatRunnerTrackObject : MonoBehaviour
     [SerializeField, Min(0.25f)] private float platformHalfWidth = 0.62f;
     [SerializeField] private float collisionBottomOffset;
     [SerializeField] private float collisionTopOffset = 0.48f;
+    [SerializeField] private Bounds visualBounds = new Bounds(new Vector3(0,.3f,0),new Vector3(1,.6f,1));
+
+    private Bounds motionBounds;
+    private bool motionBoundsReady;
+    public Bounds VisualBoundsAt(Vector3 position)
+    {
+        if(!motionBoundsReady)CacheMotionBounds(transform.localScale,transform.localRotation);
+        return new Bounds(position+motionBounds.center,motionBounds.size);
+    }
+    private void CacheMotionBounds(Vector3 scale,Quaternion rotation)
+    {
+        bool coin=kind==CatRunnerTrackObjectKind.Coin;
+        float yaw=IsPickup?(coin?18f:22f):0,roll=IsPickup?(coin?4.5f:5f):0;
+        float pulse=IsPickup?(coin?1.065f:1.08f):1f;
+        bool first=true;motionBounds=default;
+        for(int y=-1;y<=1;y++)for(int z=-1;z<=1;z++)for(int corner=0;corner<8;corner++)
+        {
+            Vector3 sign=new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1);
+            Vector3 vertex=visualBounds.center+Vector3.Scale(visualBounds.extents,sign);
+            vertex=rotation*Quaternion.Euler(0,y*yaw,z*roll)*Vector3.Scale(vertex,scale)*pulse;
+            if(first){motionBounds=new Bounds(vertex,Vector3.zero);first=false;}else motionBounds.Encapsulate(vertex);
+        }
+        // Includes the continuous rotation extrema between samples and the full bob.
+        motionBounds.Expand(IsPickup?new Vector3(.05f,coin?.20f:.23f,.05f):Vector3.one*.04f);
+        motionBoundsReady=true;
+    }
 
     private float runtimeBaseHeight;
     private Vector3 runtimeBaseScale;
@@ -53,6 +81,7 @@ public sealed class CatRunnerTrackObject : MonoBehaviour
         runtimeBaseHeight = baseHeight;
         runtimeBaseScale = transform.localScale;
         runtimeBaseRotation = transform.localRotation;
+        CacheMotionBounds(runtimeBaseScale,runtimeBaseRotation);
         pulsePhase = (EntityId.ToULong(GetEntityId()) % 97UL) * 0.071f;
         coinHalo = transform.Find("CoinHalo");
         coinSparkleA = transform.Find("CoinSparkleA");
@@ -117,26 +146,9 @@ public sealed class CatRunnerTrackObject : MonoBehaviour
 
     public void AnimateObstacle(float time, bool reducedMotion = false)
     {
-        if (!IsHazard)
-            return;
-        if (reducedMotion)
-        {
-            transform.localScale = runtimeBaseScale;
-            transform.localRotation = runtimeBaseRotation;
-            return;
-        }
-        float wobble = Mathf.Sin(time * 2.8f + pulsePhase);
-        float wobbleStrength = kind == CatRunnerTrackObjectKind.OverheadObstacle ? .45f : 1f;
-        transform.localScale = Vector3.Scale(
-            runtimeBaseScale,
-            new Vector3(
-                1f + wobble * .025f * wobbleStrength,
-                1f - wobble * .018f * wobbleStrength,
-                1f + wobble * .025f * wobbleStrength));
-        transform.localRotation = runtimeBaseRotation * Quaternion.Euler(
-            0f,
-            wobble * 3.5f * wobbleStrength,
-            Mathf.Sin(time * 2.2f + pulsePhase * .7f) * 2.2f * wobbleStrength);
+        // Firm props keep the same silhouette as their collision envelope.
+        transform.localScale = runtimeBaseScale;
+        transform.localRotation = runtimeBaseRotation;
     }
 
     public void ResetForPool()
@@ -251,6 +263,7 @@ public sealed class CatRunnerTrackObject : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    public void EditorSetVisualBounds(Bounds bounds){visualBounds=bounds;motionBoundsReady=false;}
     public void EditorConfigure(
         CatRunnerTrackObjectKind value,
         float elevatedHeight = .82f,

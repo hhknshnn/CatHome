@@ -1,8 +1,50 @@
 # Cat Home Roadmap
 
-Son güncelleme: 6 Eylül 2026
+**Yeni sohbet için güncel checkpoint:** [7 Eylül 2026 devir belgesi](CatHome_Checkpoint_2026-09-07.md). Son tamamlanan iş görünmeyen bakım eylemlerinin düzeltilmesidir; sıradaki geliştirme kullanıcı tarafından yeni sohbette belirlenecek.
 
-### Son çalışma — otomatik salon düzeni, mobilya oyunu ve kompakt HUD (6 Eylül 2026)
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
+Son güncelleme: 7 Eylül 2026
+
+### Son çalışma — görünmeyen bakım eylemleri (7 Eylül 2026)
+
+Banyoda eşya yokken çıkan “Mama ye”, salon dışındaki odalarda bırakılmış boş bakım noktalarından kaynaklanıyordu. Mama/su/yatak artık aynı odadaki görünür geometriyi, yakın ve engelsiz girişi denetler; eski düğmeye basmak uzaktan etkileşim başlatmaz. Sekiz oda / 24 nokta, gerçek bakım rutinleri ve kayıtlı uyku doğrulandı. 459/459 EditMode, 5/5 native PlayMode, validator 0/0; [uygulama raporu ve HD kanıt](CARE_PROMPTS_2026-09-07.md).
+
+### Önceki çalışma — Runner Boulevard, coin ve top teması (7 Eylül 2026)
+
+Runner, 25 yeni/yeniden tasarlanan Blender modeliyle taş döşeli, tenteli dükkânlar ve kedi köşeleri olan bir sokağa dönüştürüldü. Sekiz yer engeli, iki tente ve ahşap parkur yenilendi. Ortak coin kabartmalı altın model ve 1536 px ikonla yeniden tasarlandı. Coin doğma/mıknatıs hareketi gerçek eşya hacmini gözetir; top alçak oyuncaklardan ve mobilyadan geçmez. On ırkın son animasyon klibinde yoğun ara poz temas düzeltmesi kullanılır. Güncel doğrulama ve HD kanıt [uygulama raporundadır](RUNNER_BOULEVARD_2026-09-07.md).
+
+### Önceki çalışma — Cat Runner ve Cat Catch yenilemesi (7 Eylül 2026)
+
+İki mini oyunun görselleri 15 headless Blender modeli ve 2048 px yüzey dokularıyla yenilendi. On ırka ayrı zemin düzeltmesi olan gerçek iskelet zıplama/eğilme/atılma klipleri, fizik evresine bağlı animasyon, daha sakin kameralar ve gerçek ön pati teması kullanılır. Runner engelleri zeminle aynı hızda ilerler; eğilme açıklığı görünen geometriyle eşleşir. Catch fareleri ayrı ayaklar, yakınlık ayrışması ve seçili hedef halkası kullanır. Oyun seçimi, karşılama, HUD, duraklatma ve sonuçlar evin ortak premium arayüzüne uyarlandı; menü fotoğrafları gerçek HD Play çekimleriyle yenilendi.
+
+Tam EditMode **457/457**, native PlayMode **6/6**, LevelContentValidator **0 hata / 0 uyarı**. İki oyunun normal hızda 18 saniyelik HD kayıtları ve geniş/dar ekran kanıtları [galeride](QA/MINIGAMES_2026-09-07/index.html); üretim ve davranış sözleşmesi [uygulama raporunda](MINIGAME_REDESIGN_2026-09-07.md). Gerçek mobil cihaz performansı ayrıca ölçülecek.
+
+### Önceki çalışma — diğer odalarda kalite ve etkileşim (7 Eylül 2026)
+
+Yedi odanın kapı, duvar çerçevesi, mimari tonları, bitkileri ve yumuşak ışığı salonla uyumlu hale getirildi. 70 ürünün ölçüleri korundu; yalnız üst kattaki pikap/kitap yığını kadraj için yeniden yerleşti. Kilitli rutin sırasında çalışmayan baş takibi, tek vuruş sonrası bekleyen pati tepkileri, pikabın yanlış dönme ekseni ve dolu ihtiyaçların bazı eşyaları kullanılamaz kılması düzeltildi; sıfır enerjiyle dinlenme ve poz sırasında enerji artışı doğrulandı. [Uygulama raporu](ROOM_POLISH_INTERACTIVITY_2026-09-07.md) ve [gerçek HD görüntü/hareket galerisi](QA/ROOM_POLISH_2026-09-07/index.html) bu geçişin kanıt kaynağıdır.
+
+### Önceki çalışma — yedi odada ortak eşya düzeni (7 Eylül 2026)
+
+Banyo, mutfak, yatak odası, bahçe, balkon, avlu ve üst katın 70 ROOM ürünü; satın alma sırasından bağımsız, tam koleksiyonun alanları önceden ayrılarak düzenlendi. CAT yalnız salondadır. Ölçek, collider, hareketli parçalar ve temaslar birlikte güncellendi. Kapı/pencere, açık orta geçiş, ayrı eylem girişleri ve kamera görünürlüğü çözümün parçasıdır. Yeni oda koleksiyonları `BuildRoomSceneProducts` üzerinden aynı planlayıcıya girer; sığmayan koleksiyon sessizce üst üste konulmaz.
+
+Uygulama ve sonuçların tek kaynağı: [ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Tam EditMode 450/450, PlayMode 14/14, ürün/ırk matrisi 800/800 geçti. Son duş düzeltmesi sonrası iki ilgili test yeniden geçti. Sekiz odanın 16 geniş/dar canlı karesi ve iki modal taraması temiz; LevelContentValidator 0 hata / 0 uyarı. [HD doğrulama galerisi](QA/ROOM_LAYOUT_2026-09-07/index.html) gerçek oda ve etkileşim karelerini içerir. Projeye ait bütün Markdown belgeleri güncel sözleşmeye bağlandı.
+
+### Son çalışma — bütün odalarda ortak salon kamerası (7 Eylül 2026)
+
+Sekiz oda salonun önden/ortalanmış bakışına geçti. Yeni odalar üreticide, marker açılışında ve normal oda geçişinde ortak `HomeRoomCameraProfile` ayarını alır. Alt gezinme oda görüntüsünden ayrıdır; dar ekran kadrajı aynı kuralla korunur. Balkon ön korkuluğu ve üst kat tavanı kesit görünümü kullanır. Sekiz oda/HOME mağaza fotoğrafı yenilendi. Tam EditMode 443/443, iki kamera PlayMode testi geçti; gerçek geniş/dar ekran kanıtları `Docs/QA/SHARED_ROOM_CAMERA_2026-09-07`, uygulama `Docs/SHARED_ROOM_CAMERA_2026-09-07.md`.
+
+Genel kontrolde bulunan Türkçe atlas temizlenmesi de düzeltildi: derleme mevcut atlasları boşaltmaz; font üreticisi var olan dosyaların karakterlerini de tamamlar.
+
+### Önceki çalışma — onaylı önden kamera, oranlar ve gerçek temas (7 Eylül 2026)
+
+Sol medya / sağ oturma düzeni, açık tablo ve modern bakım köşesi onaylı referansa göre uygulandı. Tünel kısaltıldı ve iki yönden çalışıyor. TV kendi kedilerimizin HD animasyonunu oynatıyor. Atlayış, iki pati tırmalama, gerçek mesafeyle yürüyüş temposu ve yatak temasları yenilendi. Alt gezinme oda görüntüsünün dışında 80 px şerit; ilerleme etiketi sağ eylem alanında. Dar ekran kadrajı ve modal önceliği ayrıca düzeltildi.
+
+800 ROOM/ırk,170 CAT/ırk ve20 koltuk/sehpa rutini;103 mağaza ve8 oda fotoğrafı. Tam doğrulama kaynakları, normal hızda HD hareket kayıtları ve gerçek ekranlar: `Docs/REFERENCE_LIVING_IMPLEMENTATION_2026-09-07.md`, `Docs/QA/REFERENCE_LIVING_2026-09-06/index.html`.
+
+### Önceki çalışma — otomatik salon düzeni, mobilya oyunu ve kompakt HUD (6 Eylül 2026)
 
 CAT eşyaları artık kullanıcı sürüklemesi olmadan otomatik yerleşir; eski konumlar yenilenir. Beş eşya / bir yatak ve koleksiyondan ekle/kaldır korunur. 4.147 beşli koleksiyonun tamamında gelecekteki mobilya alanı, bakım ve etkileşim yolları korunur. Berjer küçüldü; mama/su sağ bakım alanına taşındı. Top üç gerçek pati teması ve takip hareketi kullanır. İkili koltuğa ve sehpaya zıplama, koltukta dinlenme, sehpadaki parçayı itip düşürme eklendi.
 

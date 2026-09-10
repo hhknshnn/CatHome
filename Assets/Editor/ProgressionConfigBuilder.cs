@@ -180,7 +180,7 @@ public static class ProgressionConfigBuilder
                     QuestType.MouseHunt,
                     1,
                     "Mighty Hunter",
-                    "Catch the clockwork mouse three times",
+                    "Catch at least three mice in one Cat Catch round",
                     25,
                     15,
                     AutoClaim
@@ -237,8 +237,8 @@ public static class ProgressionConfigBuilder
                     "level5_window",
                     QuestType.WindowWatch,
                     1,
-                    "Window Watch",
-                    "Sit at the window after 80 Bond",
+                    "Curious Cat",
+                    "Watch a bookshelf, plant or lamp",
                     25,
                     15,
                     AutoClaim

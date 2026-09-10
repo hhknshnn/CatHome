@@ -1,3 +1,0 @@
-Screen 2400x1080; SafeArea (x:0.00, y:0.00, width:2400.00, height:1080.00)
-WelcomeExitButton (x:1271.55, y:221.36, width:621.63, height:78.26)
-WelcomeStartButton (x:1271.55, y:328.69, width:621.63, height:98.39)

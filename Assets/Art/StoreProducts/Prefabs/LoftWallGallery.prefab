@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 7562170480017641404}
   - component: {fileID: 646725367975792316}
   - component: {fileID: 8522559134494972207}
+  - component: {fileID: 1739164680872549422}
   m_Layer: 0
   m_Name: LoftWallGallery
   m_TagString: Untagged
@@ -222,6 +223,39 @@ MonoBehaviour:
   reactionKind: 0
   lookDuration: 2.6
   completeMessage: SO ARTY!
+  visibleLookTargets:
+  - {x: -0.117639326, y: 0.4204886, z: 0.06600001}
+  - {x: 0.74, y: 0.6002169, z: -0.037559558}
+  - {x: -0.74012, y: 0.28788, z: 0.053000063}
+  - {x: 0.35285097, y: 0.29702, z: 0.061630927}
+  - {x: -0.48792112, y: 0.6445019, z: -0.0425052}
+  - {x: 0.19009976, y: 0.6146023, z: -0.04900001}
+  - {x: 0.72012, y: 0.25599998, z: 0.04487994}
+  - {x: -0.42666668, y: 0.26799995, z: -0.034999963}
+  - {x: 0.48000002, y: 0.6002169, z: -0.037559535}
+  - {x: 0.154, y: 0.39948052, z: 0.07323878}
+  - {x: -0.19666667, y: 0.24799998, z: -0.05166665}
+  - {x: -0.53564423, y: 0.4196028, z: 0.06400005}
+  - {x: -0.29000002, y: 0.604, z: -0.034999974}
+  - {x: -0.0050065666, y: 0.604, z: -0.07366404}
+  - {x: -0.029880002, y: 0.22399999, z: 0.044880006}
+  - {x: 0.50191295, y: 0.41983628, z: 0.06709013}
+  - {x: 0.675, y: 0.42899996, z: -0.035000056}
+  - {x: 0.56666666, y: 0.27999997, z: -0.051666718}
+  - {x: 0.35552382, y: 0.5399599, z: 0.051476154}
+  - {x: -0.37987998, y: 0.504072, z: 0.053000033}
+  - {x: -0.15, y: 0.534, z: -0.03499999}
+  - {x: 0.08988002, y: 0.55811995, z: 0.052999992}
+  - {x: 0.23000002, y: 0.44466662, z: -0.03500002}
+  - {x: -0.7019557, y: 0.41960287, z: 0.06400006}
+  - {x: 0.28333336, y: 0.24466664, z: -0.035000026}
+  - {x: 0.70196, y: 0.50798666, z: 0.061999943}
+  - {x: 0.61, y: 0.539, z: -0.035000056}
+  - {x: -0.27012002, y: 0.22399999, z: 0.04712002}
+  - {x: -0.6084345, y: 0.61435294, z: -0.048999943}
+  - {x: -0.6188, y: 0.29952586, z: 0.06987791}
+  - {x: -0.028494071, y: 0.50403994, z: 0.05242593}
+  - {x: 0.49988002, y: 0.25599998, z: 0.047119953}
 --- !u!114 &8522559134494972207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +268,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &1739164680872549422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5447462841037333194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1001 &71229883392251076
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -285,31 +332,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 89c55e1c442d2914caa9ce0ba184f6b3, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ad1133ff17a2850498580535037d47eb, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6bc104770173f8444bdf23bce3464d86, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: d0fa8ae2f0be76345a8c7b7f20e93d31, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: c1ec8be6bef83084cab3efcca832c74f, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 3f1558d4cc313854a8fb5d7259bfc7d6, type: 2}
     - target: {fileID: -7511558181221131132, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 31b2ff709369bed41a7d3167b21e9105, type: 2}
     - target: {fileID: 919132149155446097, guid: b8740e6a00af8704a9591258e5436829, type: 3}
       propertyPath: m_Name
       value: LoftWallGallery_PremiumModel

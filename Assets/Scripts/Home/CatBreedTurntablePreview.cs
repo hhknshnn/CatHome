@@ -16,7 +16,6 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IScrollHandler
 {
     private const int PreviewLayer = 31;
-    private const int TextureSize = 1024;
     private static readonly HashSet<int> OccupiedStages=new HashSet<int>();
     private int stageSlot=-1;
 
@@ -24,10 +23,14 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     [SerializeField] private float verticalSensitivity = .13f;
     [SerializeField] private float idleSpinSpeed = 0f;
     [SerializeField] private float resumeSpinDelay = 1.8f;
+    [SerializeField, Range(256, 1024)] private int maximumTextureSize = 1024;
+    [SerializeField, Range(10, 30)] private int maximumFrameRate = 30;
 
     private bool reducedMotion;
     private Color tint = Color.white;
     private float nextFrame;
+    private float nextQualityCheck;
+    private readonly Vector3[] viewportCorners = new Vector3[4];
     private MaterialPropertyBlock tintProperties;
     private readonly List<Light> maskedLights = new List<Light>();
     private readonly List<int> lightMasks = new List<int>();
@@ -49,6 +52,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     private float lastInteraction;
     private bool dragging;
     private bool previewEnabled;
+    private bool frameDirty = true;
 
     private void Awake()
     {
@@ -114,6 +118,75 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         if (previewAnimator != null)
             previewAnimator.enabled = value;
         nextFrame = 0f;
+        frameDirty = true;
+    }
+
+    /// <summary>Optional per-screen budget; actual pixel coverage can reduce it further.</summary>
+    public void ConfigureQuality(int maxTextureSize, int maxFrameRate)
+    {
+        maximumTextureSize = Mathf.Clamp(Mathf.NextPowerOfTwo(maxTextureSize), 256, 1024);
+        maximumFrameRate = Mathf.Clamp(maxFrameRate, 10, 30);
+        nextQualityCheck = 0f;
+        nextFrame = 0f;
+        frameDirty = true;
+    }
+
+    private bool CompactPreview => renderTexture != null && renderTexture.width <= 512;
+    private int PreviewFrameRate => Mathf.Min(maximumFrameRate,
+        MobilePresentation.IsMobile || CompactPreview ? 15 : 30);
+
+    private int RequiredTextureSize()
+    {
+        var rect = target.rectTransform;
+        float pixels = Mathf.Max(rect.rect.width, rect.rect.height);
+        var canvas = target.canvas;
+        if (canvas != null)
+        {
+            rect.GetWorldCorners(viewportCorners);
+            var uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            Vector2 bottomLeft = RectTransformUtility.WorldToScreenPoint(uiCamera, viewportCorners[0]);
+            Vector2 topLeft = RectTransformUtility.WorldToScreenPoint(uiCamera, viewportCorners[1]);
+            Vector2 topRight = RectTransformUtility.WorldToScreenPoint(uiCamera, viewportCorners[2]);
+            pixels = Mathf.Max(Vector2.Distance(bottomLeft, topLeft), Vector2.Distance(topLeft, topRight));
+        }
+        // A little oversampling keeps a small portrait sharp without a permanent
+        // 1024-square, four-sample render target behind a 148-pixel card.
+        int limit = Mathf.Min(maximumTextureSize, MobilePresentation.IsMobile ? 512 : 1024);
+        return Mathf.Clamp(Mathf.NextPowerOfTwo(Mathf.CeilToInt(pixels * 1.25f)), 256, limit);
+    }
+
+    private void EnsureRenderTexture()
+    {
+        nextQualityCheck = Time.unscaledTime + .5f;
+        int size = RequiredTextureSize();
+        int samples = size <= 256 ? 1 : size <= 512 ? 2 : 4;
+        if (renderTexture != null && renderTexture.IsCreated() && renderTexture.width == size &&
+            renderTexture.antiAliasing == samples) return;
+        var previous = renderTexture;
+        renderTexture = new RenderTexture(size, size, 24, RenderTextureFormat.ARGB32)
+        {
+            name = "CatBreedTurntableRT", antiAliasing = samples, useMipMap = false,
+            filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp
+        };
+        renderTexture.Create();
+        target.texture = renderTexture;
+        request.destination = renderTexture;
+        if (previous != null) { previous.Release(); Destroy(previous); }
+        ApplyLightQuality();
+        nextFrame = 0f;
+        frameDirty = true;
+    }
+
+    private void ApplyLightQuality()
+    {
+        if (stageLights == null) return;
+        for (int i = 0; i < stageLights.Length; i++)
+        {
+            // The fill needs no second shadow map. Keep grounding from the key.
+            stageLights[i].shadows = i == 0 ? CompactPreview ? LightShadows.Hard : LightShadows.Soft : LightShadows.None;
+            // URP owns the main-light atlas resolution; Light.shadowResolution
+            // is a Built-in-only setting and would log a warning here.
+        }
     }
 
     private void EnsureStage()
@@ -122,15 +195,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
             return;
 
         target = target != null ? target : GetComponent<RawImage>();
-        renderTexture = new RenderTexture(TextureSize, TextureSize, 24, RenderTextureFormat.ARGB32)
-        {
-            name = "CatBreedTurntableRT",
-            antiAliasing = 4,
-            useMipMap = false,
-            filterMode = FilterMode.Bilinear
-        };
-        renderTexture.Create();
-        target.texture = renderTexture;
+        EnsureRenderTexture();
         target.color = Color.white;
 
         stage = new GameObject("CatBreedTurntableRuntime");
@@ -170,6 +235,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
             new Color(1f, .98f, .93f), new Vector3(32f, 145f, 0f));
         CreateDirectionalLight("CatTurntableFill", .4f,
             new Color(.55f, .91f, 1f), new Vector3(24f, -48f, 0f));
+        ApplyLightQuality();
     }
 
     private void CreatePlatform(string name, Vector3 localPosition, Vector3 localScale,
@@ -207,11 +273,14 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     {
         if (!previewEnabled || previewCamera == null)
             return;
+        if (Time.unscaledTime >= nextQualityCheck) EnsureRenderTexture();
         if (!reducedMotion && !dragging && Time.unscaledTime - lastInteraction > resumeSpinDelay)
             yaw += idleSpinSpeed * Time.unscaledDeltaTime;
         UpdateCamera();
+        // Reduced motion has a frozen pose, so redraw only after a user change.
+        if (reducedMotion && !dragging && !frameDirty) return;
         if (Time.unscaledTime >= nextFrame)
-        { nextFrame = Time.unscaledTime + 1f / 30f; RenderFrame(); }
+        { nextFrame = Time.unscaledTime + 1f / PreviewFrameRate; RenderFrame(); frameDirty = false; }
     }
 
     private void UpdateCamera()
@@ -227,6 +296,8 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     {
         dragging = true;
         lastInteraction = Time.unscaledTime;
+        nextFrame = 0f;
+        frameDirty = true;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -234,6 +305,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         yaw -= eventData.delta.x * horizontalSensitivity;
         pitch = Mathf.Clamp(pitch + eventData.delta.y * verticalSensitivity, -5f, 50f);
         lastInteraction = Time.unscaledTime;
+        frameDirty = true;
         UpdateCamera();
     }
 
@@ -241,6 +313,8 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     {
         dragging = false;
         lastInteraction = Time.unscaledTime;
+        nextFrame = 0f;
+        frameDirty = true;
     }
 
     public void OnScroll(PointerEventData eventData)
@@ -250,6 +324,8 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
             baseDistance * .72f,
             baseDistance * 1.45f);
         lastInteraction = Time.unscaledTime;
+        nextFrame = 0f;
+        frameDirty = true;
         UpdateCamera();
     }
 
@@ -281,6 +357,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
             renderer.SetPropertyBlock(tintProperties);
         }
         nextFrame = 0f;
+        frameDirty = true;
     }
 
     public void SetReducedMotion(bool value)
@@ -288,6 +365,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         reducedMotion = value;
         if (previewAnimator != null) previewAnimator.speed = value ? 0f : 1f;
         nextFrame = 0f;
+        frameDirty = true;
     }
 
     private void RenderFrame()
@@ -387,6 +465,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         renderTexture = null;
         platformMaterial = null;
         platformTopMaterial = null;
+        stageLights = null;
     }
 
     private void OnDisable() => SetPreviewActive(false);

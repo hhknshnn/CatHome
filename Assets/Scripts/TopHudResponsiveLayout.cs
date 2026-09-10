@@ -82,6 +82,13 @@ public sealed class TopHudResponsiveLayout : MonoBehaviour
         ApplyLayout(true);
     }
 
+#if UNITY_EDITOR
+    // The saved-home preview owns this temporary instance and restores its rects.
+    public void ConfigureEditorPreview(RectTransform food, RectTransform water, RectTransform rest)
+        => Configure(food, water, rest);
+    public void RefreshEditorPreview() => ApplyLayout(true);
+#endif
+
     private void Update()
     {
         ApplyLayout(false);

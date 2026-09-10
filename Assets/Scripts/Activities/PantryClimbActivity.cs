@@ -88,8 +88,10 @@ public sealed class PantryClimbActivity : CatActivity
         }
 
         // Sniff along the shelf: nose left, nose right, one lean in.
-        float elapsed = 0f;
         Quaternion perchFacing = LookTowards(floor - upper, inward);
+        perchFacing = CatActivityFacing.AlongAxis(Cat, upper, perchFacing);
+        yield return CatActivityFacing.Turn(Cat, perchFacing);
+        float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sit, upperShelfPoint);
         while (elapsed < SniffDuration)
         {
@@ -105,9 +107,8 @@ public sealed class PantryClimbActivity : CatActivity
         }
 
         Cat.transform.position = upper;
-        Cat.transform.rotation = inward;
         Quaternion outward = LookTowards(floor - upper, inward);
-        yield return Move(upper, upper, inward, outward, 0.24f);
+        yield return Move(upper, upper, Cat.transform.rotation, outward, 0.24f);
         if (directClimb)
             yield return Hop(upper, floor, outward, .65f);
         else
@@ -123,21 +124,7 @@ public sealed class PantryClimbActivity : CatActivity
     /// <summary>Arc between two points, peaking above the higher end.</summary>
     private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
     {
-        PlayCatPose(CatActivityPose.Hop);
-        float peak = Mathf.Max(from.y, to.y) + 0.20f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            Vector3 position = CatActivityMotion.JumpPosition(from, to, t, peak - Mathf.Max(from.y, to.y));
-            Cat.transform.position = position;
-            Cat.transform.rotation = facing;
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = facing;
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
     }
 
     private IEnumerator Move(
@@ -198,11 +185,13 @@ public sealed class PantryClimbActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

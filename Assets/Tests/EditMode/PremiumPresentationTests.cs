@@ -19,6 +19,8 @@ public sealed class PremiumPresentationTests
     {
         var font=Resources.Load<TMPro.TMP_FontAsset>("Typography/"+name);
         Assert.That(font,Is.Not.Null);
+        Assert.That(new SerializedObject(font).FindProperty("m_ClearDynamicDataOnBuild").boolValue,Is.False,
+            "Building must preserve the pre-baked Turkish atlas: "+name);
         foreach(char letter in "ĞğİıŞşÇçÖöÜü")
             Assert.That(font.HasCharacter(letter,false,false),Is.True,name+" missing "+letter);
     }

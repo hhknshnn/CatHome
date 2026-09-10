@@ -4,9 +4,10 @@ using UnityEngine.SceneManagement;
 public static class HomeUiFlow
 {
     public static bool IsMiniGameVisible =>
+        CatRunnerSessionContext.IsLaunching ||
         SceneManager.GetSceneByName(CatRunnerLauncher.RunnerSceneName).isLoaded ||
         SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).isLoaded;
-    public static bool IsHomeControlBlocked => IsMiniGameVisible || CatDialogueView.IsAnyVisible ||
+    public static bool IsHomeControlBlocked => IsMiniGameVisible || CatCompanionPanel.IsAnyOpen || CatDialogueView.IsAnyVisible ||
         WhileYouWereAwayPopup.IsAnyOpen || HomeLevelUpCelebrationView.IsAnyOpen ||
         CollectionCompleteCelebrationView.IsAnyOpen || OnboardingCelebrationView.IsAnyOpen;
 }

@@ -32,6 +32,7 @@ public sealed class HamperDiveActivity : CatActivity
     public float SinkDepth => Mathf.Max(0.2f, sinkDepth);
     public float HideDuration => Mathf.Max(0.5f, hideDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
+    public bool IsHiding { get; private set; }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -71,13 +72,15 @@ public sealed class HamperDiveActivity : CatActivity
             new Vector3(pile.x - floor.x, 0f, pile.z - floor.z), toFloor);
         yield return Move(floor, floor, toFloor, inward, 0.18f);
 
-        Vector3 crouched = originalScale;
-        crouched.y *= 0.74f;
-        crouched.x *= 1.10f;
-        crouched.z *= 1.10f;
-        yield return Squash(originalScale, crouched, 0.18f);
-        yield return Squash(crouched, originalScale, 0.09f);
+        // Jump already supplies the real skeletal crouch. The old root-scale
+        // squash was restored by CatActivityAnimation each frame and left a
+        // motionless, rear-facing knead between the turn and take-off.
         yield return Hop(floor, pile, inward, 0.42f);
+        var support = pilePoint.GetComponent<CatActivitySurface>();
+        inward = support != null && support.AlignAlongSurface ?
+            CatActivityFacing.AlongAxis(Cat, pile, pilePoint.rotation) :
+            CatActivityFacing.Resolve(Cat, pile, inward);
+        yield return CatActivityFacing.Turn(Cat, inward, .24f);
 
         // Sink: down into the pile and squashed wide, so the laundry looks like
         // it swallowed the cat.
@@ -99,6 +102,7 @@ public sealed class HamperDiveActivity : CatActivity
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sleep, pilePoint);
+        IsHiding = true;
         while (elapsed < HideDuration)
         {
             elapsed += Time.deltaTime;
@@ -114,6 +118,7 @@ public sealed class HamperDiveActivity : CatActivity
             yield return null;
         }
 
+        IsHiding = false;
         Cat.transform.rotation = inward;
         float rise = 0f;
         while (rise < 0.24f)
@@ -138,39 +143,43 @@ public sealed class HamperDiveActivity : CatActivity
     /// <summary>Arc between two points, peaking above the higher end.</summary>
     private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
     {
-        PlayCatPose(CatActivityPose.Hop);
-        float peak = Mathf.Max(from.y, to.y) + 0.26f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            Vector3 position = CatActivityMotion.JumpPosition(from, to, t, peak - Mathf.Max(from.y, to.y));
-            Cat.transform.position = position;
-            Cat.transform.rotation = facing;
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = facing;
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
     }
 
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
+        Vector3 direction = to - from; direction.y = 0f;
+        if (direction.sqrMagnitude < .000001f)
+        {
+            // An already reached entry is not an extra stationary work beat.
+            if (Quaternion.Angle(Cat.transform.rotation, toRotation) <= .1f) yield break;
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
+            yield break;
+        }
+
+        // Turn on the spot first. Interpolating a travel position while still
+        // facing the previous action made the return leg slide backwards.
+        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
+        PlayCatPose(CatActivityPose.GentleKnead);
+        yield return CatActivityFacing.Turn(Cat, travel, .16f);
         PlayCatPose(CatActivityPose.Walk);
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
+            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
             yield return null;
         }
 
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        Cat.transform.SetPositionAndRotation(to, travel);
+        if (Quaternion.Angle(travel, toRotation) > .1f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
+        }
     }
 
     private IEnumerator Squash(Vector3 from, Vector3 to, float duration)
@@ -189,6 +198,7 @@ public sealed class HamperDiveActivity : CatActivity
 
     private void RestoreCat()
     {
+        IsHiding = false;
         if (Cat == null)
             return;
 
@@ -213,11 +223,13 @@ public sealed class HamperDiveActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

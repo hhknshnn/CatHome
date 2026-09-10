@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6957584076112212637}
   - component: {fileID: 1967037269989941532}
   - component: {fileID: 5261699192869328129}
+  - component: {fileID: 1000192200684448359}
   m_Layer: 0
   m_Name: GardenYarnBall
   m_TagString: Untagged
@@ -157,6 +158,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &1000192200684448359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3272060139313677337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &4457860465380275396
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,19 +382,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 6409e1ebfcdac0f4084d8bb8fa1e1498, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 25b9a9e0d09367845a1d50dc18f529a1, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6409e1ebfcdac0f4084d8bb8fa1e1498, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: b0b3fa28ee72390419e68606f87ae82e, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6409e1ebfcdac0f4084d8bb8fa1e1498, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6409e1ebfcdac0f4084d8bb8fa1e1498, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 5fdfcc88b3260434d9fa8be7fce94d88, type: 2}
     - target: {fileID: 919132149155446097, guid: 6409e1ebfcdac0f4084d8bb8fa1e1498, type: 3}
       propertyPath: m_Name
       value: GardenYarnBall_PremiumModel
@@ -488,11 +502,11 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 708461be07a6513449de883286283d07, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 71488629bac628546ac411accb339777, type: 2}
     - target: {fileID: -7511558181221131132, guid: 708461be07a6513449de883286283d07, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 25b9a9e0d09367845a1d50dc18f529a1, type: 2}
     - target: {fileID: 919132149155446097, guid: 708461be07a6513449de883286283d07, type: 3}
       propertyPath: m_Name
       value: YarnBall

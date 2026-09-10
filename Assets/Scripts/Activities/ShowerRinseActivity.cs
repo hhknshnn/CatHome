@@ -17,12 +17,14 @@ public sealed class ShowerRinseActivity : CatActivity
     [Header("Shower rinse")]
     [SerializeField] private Transform doorPoint;
     [SerializeField] private Transform standPoint;
+    [SerializeField] private Transform waterOutlet;
     [SerializeField, Min(0.5f)] private float rinseDuration = 2.6f;
     [SerializeField, Min(0.2f)] private float shakeDuration = 0.65f;
     [SerializeField, Min(0f)] private float energyRestore = 6f;
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatShowerWaterFx waterFx;
 
     public override string ProgressLabel => IsRunning ? "RINSING..." : string.Empty;
 
@@ -46,6 +48,8 @@ public sealed class ShowerRinseActivity : CatActivity
     {
         characterController = Cat.GetComponent<CharacterController>();
         originalScale = Cat.transform.localScale;
+        waterFx = GetComponent<CatShowerWaterFx>() ?? gameObject.AddComponent<CatShowerWaterFx>();
+        waterFx.Stop();
         StartCoroutine(RinseRoutine());
         return true;
     }
@@ -71,10 +75,12 @@ public sealed class ShowerRinseActivity : CatActivity
 
         // Turn back towards the open front so the rinse plays to the camera.
         Quaternion outward = LookTowards(door - stand, inward);
-        yield return Move(stand, stand, inward, outward, 0.24f);
+        Quaternion rinsingFacing = CatActivityFacing.AlongAxis(Cat, stand, outward);
+        yield return Move(stand, stand, inward, rinsingFacing, 0.24f);
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sit, standPoint);
+        waterFx.BeginRinse(this, Cat, standPoint, waterOutlet);
         while (elapsed < RinseDuration)
         {
             elapsed += Time.deltaTime;
@@ -91,9 +97,11 @@ public sealed class ShowerRinseActivity : CatActivity
             yield return null;
         }
 
-        yield return Shake(stand, outward);
+        yield return Shake(stand, rinsingFacing);
 
+        waterFx.Stop();
         Cat.transform.localScale = originalScale;
+        yield return CatActivityFacing.Turn(Cat, outward);
         yield return Move(stand, door, outward, outward, 0.42f);
 
         RestoreCat();
@@ -106,6 +114,7 @@ public sealed class ShowerRinseActivity : CatActivity
     private IEnumerator Shake(Vector3 stand, Quaternion facing)
     {
         float elapsed = 0f;
+        waterFx?.Scatter(ShakeDuration);
         PlayCatPose(CatActivityPose.Scratch);
         while (elapsed < ShakeDuration)
         {
@@ -145,6 +154,7 @@ public sealed class ShowerRinseActivity : CatActivity
 
     private void RestoreCat()
     {
+        waterFx?.Stop();
         if (Cat == null)
             return;
 
@@ -169,14 +179,18 @@ public sealed class ShowerRinseActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR
+    public void EditorConfigureWaterOutlet(Transform outlet) => waterOutlet = outlet;
+
     public void EditorConfigureRinse(
         Transform door, Transform stand, float rinse, float shake, float restore)
     {

@@ -1,0 +1,119 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cat Home — PLAN</title><link rel="stylesheet" href="gallery.css"></head><body><header class="top"><a class="brand" href="index.html">CAT HOME</a><span class="tag">TASARIM ÖNERİSİ · 08.09.2026 · ONAY BEKLİYOR</span></header><main class="wrap"><div class="links"><a class="button" href="index.html">← Görsel galeri</a><a class="button" href="PLAN.md" download>Belgeyi indir</a></div><article class="document"><h1>Cat Home — bütün deneyim için modern tasarım önerisi</h1>
+<p>8 Eylül 2026 · <strong>Onay bekleyen tasarım çalışması. Oyuna uygulanmadı.</strong></p>
+<p><a href="index.html">Görsel galeri</a> · <a href="SCREEN_INVENTORY.html">Ekran kapsamı</a> · <a href="MOTION.html">Animasyon şartnamesi</a> · <a href="PROMPTS.html">Görsel üretim kayıtları</a></p>
+<h2>1. Tasarım kararı</h2>
+<p>Öneri; canlı renkleri, dokusu hissedilen üç boyutlu bir evle ve daha açık bir arayüz hiyerarşisiyle birleştirmek. Kedi, oda ve ürünler ekranın ana içeriği olacak. Mavi ana eylemi, mercan duygu ve kısa vurguları, sarı kazanımı anlatacak. Başlıklar, açıklamalar ve bilgi alanları kendi başına büyük düğmelere benzemeyecek.</p>
+<p>Bu çalışma yalnızca palet değişikliği değildir. Ekran kompozisyonu, yüzeyler, tipografi, ikon ailesi, kedi portreleri, odaların malzeme ve ışığı, iki mini oyunun çevresi, diyaloglar, bildirimler ve hareketlerin birlikte tasarlanmasını önerir.</p>
+<p><strong>Teslimdeki resimler yapay zekâyla oluşturulmuş tasarım mockuplarıdır.</strong> Yeni Unity ekranı, yeni kedi modeli veya çalışır oyun kanıtı değildir. Kedi yüzündeki daha yumuşak görünüm ve malzeme ayrıntısı mevcut düşük poligonlu modelden daha ileri bir hedef tarif eder; yalnız renk değiştirerek aynı sonuç alınacağı varsayılmaz. Gerçek oyundaki karşılığı, onay sonrasında model/rig uyumu ve mobil maliyetle birlikte çalışılmalıdır. Resimlerdeki ince tüyler için gerçek zamanlı tek tek tüy simülasyonu önerilmiyor.</p>
+<p>Mockuplardaki isim, seviye, bakiye, puan, fiyat, süre ve ödüller <strong>yerleşim örneğidir</strong>. Gerçek değerler mevcut servislerden gelecektir. Çizilmiş Google düğmesi, oda kilidi, kedi pozu veya perspektif; mevcut iş kurallarının ya da resmî sağlayıcı varlığının yerine geçmez. Kesin metin, ölçü ve davranış için bu belge ve kapsam tablosu esas alınır. Oda sanat panoları malzeme/ışık hedefidir; mobilyaların taşınması için yeni plan değildir.</p>
+<h2>2. İncelemeden çıkan sorunlar</h2>
+<p>En yeni <code>JOYFUL_ARCADE_2026-09-08</code> galerisinin son HUD, mağaza, Birlikte, diyalog, isim, menü, oda, koleksiyon ve mini oyun kareleri doğrudan incelendi. Yeni checkpoint ve uygulama raporu önce okundu. Önceki UI/UX incelemesi, referans eşleştirme raporu, üretim geçişi, oda etkileşim raporu ve mini oyun raporu tarihsel bağlam olarak okundu; eski kusurların bugün hâlâ var olduğu varsayılmadı. Ekran kapsamı ayrıca güncel panel sınıfları, rehber içeriği, oda kataloğu ve <code>UiQaVisualTour</code> yollarıyla karşılaştırıldı.</p>
+<div class="table-wrap"><table>
+<tr><th>En yeni karelerde görülen durum</th><th>Tasarımda yapılacak iş</th><th>Başarı ölçütü</th></tr>
+<tr><td>Bilgi, başlık, sekme ve eylem benzer kabarıklıkta</td><td>Üç yüzey düzeyi: dünya üstü bilgi, içerik yüzeyi, etkin düğme</td><td>Başlık düğme gibi görünmez; ana eylem ilk bakışta seçilir</td></tr>
+<tr><td>Aynı dış panel ve şerit çok sayıda ekranda tekrarlanıyor</td><td>Mağaza için ürün ızgarası, Kedim için karakter vitrini, ödül için kısa sahne, ayarlar için sakin satırlar</td><td>Her ekran amacıyla tanınır</td></tr>
+<tr><td>Altın kenar, parlak yüzey ve renkli kart aynı anda yarışıyor</td><td>Kenar süsünü azalt; doku ve ışıkla zenginlik oluştur</td><td>Küçük ekranda içerik çerçeveden daha güçlü görünür</td></tr>
+<tr><td>Ahşap, kumaş, seramik benzer hissediliyor</td><td>Malzeme ailelerini ayrı roughness, normal ve renk yoğunluğuyla kur</td><td>Malzeme siyah-beyaz küçük önizlemede bile ayırt edilir</td></tr>
+<tr><td>Diyalog büyük kutuda, kedi tepkisiyle bağı zayıf</td><td>Kısa alt konuşma paneli, gerçek portre, ayrı konuşma/düşünce/tepki balonları</td><td>Kedi ve konuşmacı bağlantısı açık; oyun alanı korunur</td></tr>
+<tr><td>Runner&#x27;da cepheler tekrar eden bloklar, zemin geniş tek yüzey</td><td>Vitrin derinliği, kontrollü malzeme çeşidi, ön/orta/arka plan ayrımı</td><td>Engel ve jeton dekorun önünde okunur</td></tr>
+<tr><td>Catch çevresi ile arena benzer renk ağırlığında</td><td>Arenayı sakinleştir, çevreyi kenarda zenginleştir, hedefe özgü ince vurgu</td><td>Fare, pati ve seçili hedef hareket sırasında net kalır</td></tr>
+</table></div>
+<h2>3. Ortak görsel sistem</h2>
+<div class="table-wrap"><table>
+<tr><th>Öğe</th><th>Önerilen standart</th></tr>
+<tr><td>Metin</td><td>Ana koyu lacivert <code>#172841</code>; ikincil metin <code>#53677D</code>; beyaz üstünde soluk gri uzun metin yok</td></tr>
+<tr><td>Ana eylem</td><td>Azure <code>#2779F5</code>; beyaz yazı, ölçülü üst ışık, küçük temas gölgesi</td></tr>
+<tr><td>Duygu / vurgu</td><td>Mercan <code>#FF695A</code>; bütün düğmeleri mercana boyamak yerine anlık duygu ve seçili özel vurgu</td></tr>
+<tr><td>Ödül</td><td>Güneş sarısı <code>#FFC857</code>; mevcut kanonik pati jetonu, elmas ve bakiye anlamları korunur</td></tr>
+<tr><td>Dinlenme / su</td><td>Lavanta ve su mavisi; ikon ve metin de durumu söyler, renk tek bilgi kaynağı olmaz</td></tr>
+<tr><td>Zemin</td><td>Soğuk beyaz <code>#F7FAFF</code>, açık mavi <code>#EAF3FF</code>; dünya arkada kendi zengin renklerini taşır</td></tr>
+<tr><td>Başlık</td><td>Mevcut Türkçe destekli Cat Home Fredoka 500/600; az ve belirgin başlık</td></tr>
+<tr><td>Gövde</td><td>Mevcut Nunito Sans; paragraf, durum, fiyat ve açıklamada tutarlı ağırlık</td></tr>
+<tr><td>Köşe / boşluk</td><td>8 birim temel aralık; 12–16 küçük kontrol, 20–24 kart, 28–32 büyük modal köşesi; her yüzeye aynı kapsül şekli verilmez</td></tr>
+<tr><td>Dokunma</td><td>1080 referans genişliğinde en az 48×48 birim; ana eylem 56–64 birim yüksek; tablet ve telefonda fiziksel okunaklılık ayrıca denenir</td></tr>
+<tr><td>Yazı ölçeği</td><td>1080 referansta gövde 16–18, eylem 18–20, bölüm 24–28, önemli başlık 32–40; dar oranda yazıyı küçültmek son çare</td></tr>
+<tr><td>Alt gezinme</td><td>Mevcut 80 referans px ve dört sabit alan: Mağaza / Oda / Birlikte / Oyunlar; SafeArea ayrıca uygulanır</td></tr>
+<tr><td>İkonlar</td><td>Ortak kamera, ışık ve malzeme ile hazırlanmış küçük üç boyutlu aile; menü/kapama gibi yardımcılar sade çizgi ikon</td></tr>
+</table></div>
+<p>İkon havuzu: dört alt gezinme, üç ihtiyaç, profil, görev, ayar, yardım, kilit, sahiplik, ekleme/kaldırma, ses, hareket, oyun kontrolü, can, fare, süre ve mevcut para birimleri. Jeton ve elmasın onaylı kanonik kimliği değiştirilmeyecek. Mockuptaki üretilmiş simgeler biçim/ölçek örneğidir.</p>
+<p>Yüzey durumları birlikte tasarlanır: normal, basılı, seçili, devre dışı, odak, yükleniyor, başarı, hata. Her düğmeye ayrı renk/ölçek yaması eklemek yerine tek sistemden üretilir. Dekoratif yüzeyler girdi almaz.</p>
+<h2>4. Ekran ailelerinde düzenleme</h2>
+<h3>Açılış, ilk giriş ve diyalog</h3>
+<p>Açılışta seçili kedi ve aynı oyunun diğer kedileri iyi ışıklandırılmış bir sahnede görünür. Ana eylem <code>Devam et</code>, yeni kayıt için <code>Oyna</code> olur. <code>Yeni oyun</code> ikincildir. Hesap seçimi kısa, misafir yolu görünürdür. Sağlayıcı düğmesi gerçek resmî varlıkla hazırlanır. Yükleme ekranında yalnız gerçek ilerleme bilinirse yüzde gösterilir.</p>
+<p>İsim verme, klavye açıkken de portreyi ve alanı koruyan kısa bir kart olur. Boş/geçersiz/uzun ad açıklaması alanın hemen altındadır. Dört tanışma adımı korunur; adım metinleri gerçek öğretici akışa bağlanır. Balon aileleri: konuşma için kısa kuyruk, düşünce için küçük noktalar, duygu için yazısız küçük simge. Uzun diyalog ayrı alt panelde sunulur. Ekran dışında kalan balon içeri alınır; kapı/ürün tıklamasını rastgele kapatmaz.</p>
+<h3>Ev ve bakım</h3>
+<p>Üst bölüm ihtiyaçları kısa ve açık gösterir; kimlik ve para ayrı gruplarda kalır. Sıfıra yaklaşan ihtiyaç yalnız renk değiştirmez, kısa etiket ve ikonla belirtilir. Ekran ortası kedi ve hareket alanına ayrılır. Bağlamsal eylem kartında ürün fotoğrafı, yerelleştirilmiş ürün adı ve eylem birlikte görünür.</p>
+<p>Mama/su/uyku/koltuk/tünel için başlama, sürme, bitirme, meşgul ve ulaşılamayan durumların yüzeyleri aynı aileden gelir. <code>Kalk</code> ve <code>Uyan</code> görünür kalır. Sevme mockupındaki el yalnız dokunma hareketini anlatan gösterimdir; oyuna insan eli modeli veya yeni kamera sistemi ekleme kararı değildir.</p>
+<h3>Mağaza, odalar ve koleksiyon</h3>
+<p>Katalog başlığı kısalır; ürün fotoğrafı kart alanının yaklaşık %60–65&#x27;ini alır. Kategori sekmeleri bilgi satırları gibi davranır. Sahiplik, odada olma ve satın alınabilirlik ayrı görünür. Dört geniş ekran sütunu tablette üçe, gerektiğinde ikiye düşer. Kaydırma tüm içerik/boşluk yüzeyinden başlar; sürükleme satın almaya dönüşmez.</p>
+<p>Ürün ayrıntısı; büyük fotoğraf, kısa işlev, mevcut fiyat ve açık satın alma seçeneklerinden oluşur. Ön koşulda istenen ürün ile gerekli ürün birlikte görünür. Elmas harcama onayı son bedeli tekrar söyler. Bakiye yetersizliği ve platform mağazası hatası aynı mesaj değildir. Gerçek fiyat gelmeden para tutarı uydurulmaz; sahte indirim eklenmez.</p>
+<p>Sekiz oda aynı kart ailesiyle gösterilir. <code>Buradasın</code>, <code>Git</code>, <code>Aç</code> ve kilit açıklaması gerçek sahiplik/seviye/ön koşuldan gelir. Görseldeki <code>Önceki koleksiyonu tamamla</code> örnek kopyadır; tüm odaların kilidini buna dönüştürme önerisi değildir. Patio&#x27;nun oyuncuya görünen adı mevcut yerelleştirmeden alınır; görsellerde kullanılan Veranda/Avlu ifadesi katalog adını değiştirmez.</p>
+<p>Eşya yönetimi yalnız mevcut CAT koleksiyonunu ekleme/kaldırma ve sabit yere yerleşme davranışını anlatır. Yeni sürükle-bırak, serbest dönme veya oda yerleşimi sistemi önerilmez. 103 kanonik ürünün her biri yeni ortak fotoğraf ışığıyla ve kendi gerçek modeliyle yeniden çekilir; sekiz oda fotoğrafı da güncellenir.</p>
+<h3>Kedim, Birlikte, rehber ve görevler</h3>
+<p>Kedim ekranında tek büyük karakter önizlemesi, on ırk için aynı kadrajlı seçim kartları, açık sahiplik ve seçili durum olur. İsim ve mevcut renk/görünüm seçenekleri korunur; hayalî aksesuar satışı eklenmez. Tasarım hedefindeki daha yumuşak kedi yüzü uygulanacaksa aynı seçili kedi; portre, ev, kart, kutlama ve iki mini oyunda birlikte güncellenir.</p>
+<p>Birlikte ekranı Miyavla / Otur / Loaf komutlarını gerçek pozlarıyla gösterir. Meşgul durumda aynı düğme hem etkin hem devre dışı görünmez. Rehberin altı bölümü aynı yerleşimde kısa görsel anlatım ve kaydırılabilir açıklamayla sunulur. Metin içerikleri güncel davranışla karşılaştırılır; örneğin Birlikte girişinin alt dock&#x27;ta olduğu doğru yazılır.</p>
+<p>Görev ekranı günlük ve bölüm hedeflerini ayırır. Devam eden, tamamlanmış, ödülü alınmış ve boş liste durumu hazırlanır. Geri dönüş özeti bakım ihtiyacını anlatır, ödül kazanılmış gibi davranmaz. Yeni günlük giriş ekonomisi veya yeni başarı sistemi yalnız mockupta göründüğü için eklenmez.</p>
+<h3>Kutlamalar ve bildirimler</h3>
+<p>Seviye için büyük seviye işareti ve gerçek açılan içerik; koleksiyon için tamamlanan odanın fotoğrafı; tanışma için kediyle kısa duygusal an. Bu üçü ayrı kompozisyon kullanır. Ödül tepsisi sadece servisin bildirdiği kazanımları içerir. Kısa bildirim oyunu kesmeden köşede görünür. Konfeti tek kısa patlamadır, sonsuz döngü olmaz. Azaltılmış hareket durumunda sonuç doğrudan okunur.</p>
+<h3>Runner ve Catch</h3>
+<p>Oyun seçimi gerçek oyunların iki büyük vitrini olur. Girişte rekor, can ve kontrol özeti tek yerde toplanır. Can yok, reklam hazır, reklam yok ve bağlantı hatası ayrı durumlardır. Runner&#x27;ın yol yönü ve engel yaklaşımı değişmez; cephe derinliği, vitrin, tente, bitki ve yol malzemesi geliştirilir. Yakın engeller daha net, uzak dekor daha sakin olur. Dokuz mevcut varyasyonun kimliği ve doğurma sistemi korunur.</p>
+<p>Catch&#x27;in açık 8×6 oyun alanı korunur. Çevre bitkileri/oturma detayları kenardadır. Hedef işareti, hazırlanma, atılma, temas, kaçırma ve toparlanma okunur. Süre ana bilgi, skor ve fare sayısı ikinci gruptur. Mockup efektleri fiziksel temasın yerine geçmez.</p>
+<p>İki oyunda ortak duraklatma ve sonuç ailesi kullanılır. Skor, kazanılan jeton ve rekor açıkça ayrılır. İsteğe bağlı x2 reklam yalnız mevcut servis uygun olduğunda görünür. Sonuç ekranını yeniden açmak veya iki kez tıklamak tekrar ödül vermez.</p>
+<h3>Ayarlar, hesap ve servis durumları</h3>
+<p>Ses, dil, azaltılmış hareket ve hesap ayrı gruplardır. Mevcut seçeneklerin işlevi korunur; görselde örneklenen ek bir kontrol varsa gerçek ayar listesiyle eşleştirilmeden bağlanmaz. Hesap bağlılığı ile eşitleme durumu ayrı yazılır. Çevrimdışı skor listesinde kayıtlı veri olduğu belirtilir. Yükleniyor, boş liste, bağlantı hatası, giriş gerekliliği ve işlemin iptali birbirinden ayrılır.</p>
+<p>Yeni oyun ve veri silme kendi açık onaylarını kullanır; tam olarak neyin etkilendiğini mevcut kayıt akışından alır. Yapımcılarda yalnız gerçek katkılar ve gereken atıflar yer alır. Parlaklık bileşeni yalnız etkin kullanıcı yoluna bağlıysa sunulur; sırf kaynak dosyası var diye yeni bir menü eklenmez.</p>
+<h2>5. Sekiz odanın sanat yönü</h2>
+<div class="table-wrap"><table>
+<tr><th>Oda</th><th>Renk / malzeme hedefi</th><th>Korunacak işlevsel sınır</th></tr>
+<tr><td>Salon</td><td>Derin teal vurgu, mercan döşeme, açık meşe, mint bakım ürünleri</td><td>Onaylı TV/koltuk/berjer/yatak/tepsi planı; CAT yalnız burada</td></tr>
+<tr><td>Banyo</td><td>Aqua seramik, açık terrazzo, pamuklu kumaş</td><td>Gerçek duşun açık yarı girişi; kapı ve ürün hacimleri</td></tr>
+<tr><td>Mutfak</td><td>Sıcak sarı, kobalt ayrıntı, ahşap ve sırlı karo</td><td>Sabit ürün yerleri ve temas noktaları</td></tr>
+<tr><td>Yatak odası</td><td>Periwinkle, gül tonu, açık ahşap, yumuşak kumaş</td><td>Mevcut ROOM rutinleri ve açık girişler</td></tr>
+<tr><td>Bahçe</td><td>Zengin yeşil, mercan çiçek vurgusu, doğal taş</td><td>Açık geçiş, çit fiziği, gerçek oyuncak temasları</td></tr>
+<tr><td>Balkon</td><td>Gökyüzü mavisi, terracotta, örgü yüzey</td><td>Ön korkuluk görsel kesiti ve fizik sınırları</td></tr>
+<tr><td>Avlu / Patio</td><td>Sıcak taş, gölgeli teal, kanvas</td><td>Katalog planı; tentenin/bitkinin oyun alanını kapatmaması</td></tr>
+<tr><td>Üst kat</td><td>Açık ahşap, mürekkep mavisi, sıcak okuma ışığı</td><td>Çatı kesiti, pikap ve mevcut ürün planı</td></tr>
+</table></div>
+<p>Malzeme yenilemesi, bütün odaların aynı parlak plastikte yeniden boyanması değildir. Pah, normal haritası ve temas gölgesi kontrollü kullanılacak. Büyük ışık farkları önce mevcut ışık/post-process ile denenir; ek canlı ışıklar varsayılan çözüm değildir.</p>
+<h2>6. Uygulama sırası — yalnız onaydan sonra</h2>
+<div class="table-wrap"><table>
+<tr><th>Aşama</th><th>Somut iş ve çıktı</th><th>Bağımlılık / kabul kapısı</th></tr>
+<tr><td>0. Tasarım kararını kilitle</td><td>Bu pano setine göre renk, kedi görünümü, UI yoğunluğu ve dünya hedefini netleştir; kabul edilen görselleri sürümlü kaynak yap</td><td>Kullanıcının açık uygulama onayı</td></tr>
+<tr><td>1. Tek referans kesit</td><td>Salon HUD + bir mağaza görünümü + bir diyalog + Runner&#x27;ın kısa parkuru gerçek oyunda aynı kaliteye getirilir</td><td>Tam yayılım öncesi yan yana gerçek kare/mockup karşılaştırması; mobil maliyetin ilk ölçümü</td></tr>
+<tr><td>2. Ortak arayüz sistemi</td><td>Renk/ölçü/font/ikon/durum kaynakları, modal, kart, sekme, buton, balon, bildirim</td><td>Eski builder&#x27;ların sonradan üstünü boyaması önlenir; tekrar üretimde tek görünüm</td></tr>
+<tr><td>3. Kedi ve görsel üretim</td><td>On ırk görünüm uyumu, ortak portre ışığı, üç komut pozu, ikon ailesi; malzeme/rig denemesi</td><td>Irk kimliği ve iskelet uyumu; on ırkta hareket/temas karşılaştırması</td></tr>
+<tr><td>4. Ev ve katalog</td><td>Sekiz oda malzemesi/ışığı, HUD/etkileşim, mağaza/oda/kedi/Birlikte/rehber/görev</td><td>Oda planları ve sahiplik korunur; 103 ürün ve sekiz oda fotoğrafı güncellenir</td></tr>
+<tr><td>5. Mini oyunlar</td><td>Runner çevre seti ve dokuz varyasyon; Catch çevre/arena; giriş/HUD/öğretici/can/pause/sonuç</td><td>Engel/jeton mesafesi, Catch temasları ve kontrol pencereleri korunur; canlı hazır Play&#x27;den fotoğraf</td></tr>
+<tr><td>6. Duygu ve hareket</td><td>Konuşma balonları, ilk tanışma, kutlama, ödül/başarı bildirimi, UI geçişleri</td><td>Hareket çizelgesi ve azaltılmış hareket; kullanıcı girişini bekleten gereksiz efekt yok</td></tr>
+<tr><td>7. Tam durum taraması</td><td>Uzun metin/klavye, sahiplik/kilit/bakiye, boş/hata/offline, reklam/IAP hazır değil, silme/iptal</td><td>Tüm görünür eylemler doğru hedefe gider; modal arkası kapalı; kaydırma gerçek girdiden çalışır</td></tr>
+<tr><td>8. Teslim kontrolü</td><td>Gerçek ekran/video galerisi, performans karşılaştırması, test/validator raporu, dosya ve kaynak dökümü</td><td>APK yalnız ayrıca açıkça istenirse; sonucun güzel resimden ibaret olmadığı gerçek karelerle gösterilir</td></tr>
+</table></div>
+<p>İlk referans kesiti tamamlamadan bütün projeyi topluca yeniden boyamak önerilmiyor. Her aşama, kendi tamamlanmış görseli ve davranış kanıtıyla kapatılır. Bu sıra yeniden çalışma riskini azaltır; burada gün/saat süresi verilmesi henüz yapılmamış model ve cihaz ölçümüne bağlı olduğundan güvenilir değildir.</p>
+<h2>7. Teknik uygulama haritası</h2>
+<p>Bu bölüm ileride hangi sistemlerin ele alınacağını gösterir; bu teslimde bu dosyalara dokunulmadı.</p>
+<div class="table-wrap"><table>
+<tr><th>Alan</th><th>Mevcut bağlanma noktaları</th><th>Uygulama yaklaşımı</th></tr>
+<tr><td>Ortak görünüm</td><td><code>JoyfulScreenBuilder</code>, <code>PremiumUiSystemRebuild</code>, <code>PremiumTypography</code>, <code>LowPolyPanelGraphic</code>, ortak ikon kaynakları</td><td>Birbiri üzerine renk basan ek geçişler yerine tek sahipli stil kaynağı; eski yollar kontrollü yönlendirilir</td></tr>
+<tr><td>HUD / giriş</td><td><code>PremiumHomeDockLayout</code>, <code>TopHudResponsiveLayout</code>, <code>HomeWorldViewport</code>, <code>PremiumScrollInput</code>, <code>ActivityPromptController</code></td><td>80 px alt bölge, SafeArea ve girdi sözleşmesi korunarak yerleşim yenilenir</td></tr>
+<tr><td>Diyalog / kutlama</td><td><code>CatDialogueView</code>, <code>CatSpeechBubble</code>, <code>TutorialSpotlight</code>, üç celebration view, <code>HomeRewardToast</code>, <code>PremiumModalBackdrop</code></td><td>Aynı portre ailesi; tek modal yaşam döngüsü; kapanış/iptalde kaynak temizliği</td></tr>
+<tr><td>Katalog / odalar</td><td><code>ShopPanelController</code>, <code>RoomSelectorPanel</code>, <code>CatBreedShopPanel</code>, <code>CatCompanionPanel</code>, ilgili builder&#x27;lar</td><td>Yeni kart/sekme yüzeyi mevcut satın alma ve sahiplik işlemlerine bağlanır</td></tr>
+<tr><td>Dünya / fotoğraf</td><td><code>HomeRoomPremiumFinishBuilder</code>, <code>ArcadeMiniGameArtBuilder</code>, Blender üreticileri, katalog/oda/komut/mini oyun preview builder&#x27;ları</td><td>Görsel kaynaklar tekrar üretilebilir; değişen içerik ve kart aynı teslimde güncellenir</td></tr>
+<tr><td>Hareket</td><td><code>CatMovement</code>, <code>CatActivity</code> ailesi, <code>MiniGameAnimationBuilder</code>, <code>MiniGameCatAnimation</code>, <code>RunnerGroundContact</code>, Catch player</td><td>Önce sunum/katmanlama; oyun fiziğini veya geçerli temas çözümünü estetik gerekçeyle bozma yok</td></tr>
+<tr><td>Ayarlar / online</td><td><code>SettingsPanel</code>, <code>PrivacyDataPanel</code>, <code>LeaderboardPanel</code>, <code>DiamondStorePanel</code></td><td>Görünüm ve durum metni yenilenir; gerçek sağlayıcı/ödül sonuçlarına dayanır</td></tr>
+</table></div>
+<h2>8. Koruma ve doğrulama ölçütleri</h2>
+<ul>
+<li>Üç sahne / tek etkin dünya kamerası düzeni ve mobil profil korunur. Menü fotoğrafı için sürekli yeni kameralar açılmaz. Portre üst sınırı 512² / 15 fps, küçük görünüm 256² / 1× kalır; azaltılmış harekette gereksiz tekrar çizim durur.</li>
+<li>Ortak oda kamerası <code>(0,3.6,-6.5)</code>, <code>(23,0,0)</code>, temel FOV 38 korunur. Konsept çizimlerdeki perspektif farkları kamerayı değiştirme talimatı değildir.</li>
+<li>CAT 5/1, sekiz sabit ROOM planı, gerçek bakım nesnesi kontrolü, açık giriş mesafeleri, kapı/yatak/tepsi eski kayıt düzeltmeleri korunur. Oda fotoğrafları sahip olunmayan ürünü oyuncuya kazandırmaz.</li>
+<li>Otur/Loaf yalnız gerçek dinlenmede +0,35 enerji/sn; mobilyada +0,75/sn. Giriş/çıkış/pause ve miyavda bonus yok; üst sınır 100. Bu mockup yeni jeton/bağ/görev ödülü tanımlamaz.</li>
+<li>Runner koşu/eğilme/toparlanma son poz teması, .033 m yol ve rampa profili korunur. Eğilme/kalkış pencereleri ve iskelet boyutları görsel efekt için değiştirilmez. Catch yön/havada sabitlik/ön pati teması/tek fare kuralları korunur.</li>
+<li>Türkçe atlaslar, <code>m_ClearDynamicDataOnBuild=false</code>, yerelleştirilmiş ürün ve eylem adları korunur. Türkçe ve İngilizce uzun metin, 16:9, 4:3 ve 20:9 görüntüleri alınır; mobil klavye/odak kaybı ayrıca kontrol edilir.</li>
+<li>Modal açılışında dünya bir kez yakalanır; HUD/alt şerit görüntüye karışmaz. Kapanışta render hedefi ve coroutine bırakılır. Dekor raycast almaz; açık modalın arkasındaki dünya/HUD girdi alamaz.</li>
+<li>Fiziksel cihazda aynı sahne ve aynı koşullarda CPU/GPU kare süresi, bellek ve uzun oturum sıcaklık karşılaştırması yapılır. RAM ≤4 GB&#x27;de 30 FPS mevcut hedeftir; ölçülmemiş cihaz için performans sözü verilmez. Tek tek tüy, sürekli tam ekran blur ve aşırı alfa katmanı varsayılan çözüm değildir.</li>
+<li>Uygulama sonrası ilgili native giriş/mini oyun/ırk testleri, tam EditMode ve validator çalışır. Ürün geometri/temas değişirse 800 ROOM / 170 CAT geçmiş matrisinin ilgili kapsamı yeniden doğrulanır; eski test sayıları yeni başarı gibi sunulmaz.</li>
+<li>QA ayrı kayıt kopyasında yürür. Asıl kayıt ve yedek başlangıç/bitiş hash&#x27;i karşılaştırılır. Commit/push manuel; APK üretimi ve bilgisayarı kapatma bu çalışmanın parçası değildir.</li>
+</ul>
+<h2>9. Onay kapsamı</h2>
+<p>İstenen onay; bu görsel yönün, tüm ekran ailelerinin ve aşamalı uygulama planının oyun üzerinde uygulanmaya başlanması içindir. Onaydan önce yapılan iş inceleme, mockup üretimi ve bu teklif dosyalarıdır. <strong>Unity sahneleri, Assets, oyun kodu, Blender modelleri ve oyuncu kaydı değiştirilmedi; Android derlemesi başlatılmadı.</strong></p>
+<p>İlk bakılacak görseller: <code>01</code> ana oyun; <code>05–06</code> mağaza; <code>08–09</code> dünya; <code>15–16</code> mini oyun; <code>04</code> diyalog; <code>20</code> ve <code>23</code> hareket. Bunlar onaylanacak kalite hedefini en açık gösteren parçalardır. Tam kapsam galeride ve ekran envanterinde yer alır.</p></article></main></body></html>

@@ -106,7 +106,8 @@ public enum CatActivityKind
     CatGrassPlay = 98,
     BoxHide = 99,
     SofaLounge = 100,
-    CoffeeTablePlay = 101
+    CoffeeTablePlay = 101,
+    CompanionCommand = 102
 }
 
 public abstract class CatActivity : MonoBehaviour
@@ -133,19 +134,35 @@ public abstract class CatActivity : MonoBehaviour
     [SerializeField] private GameObject unlockedContent;
 
     private CatActivityAnimation catAnimation;
+    private readonly CatActivityApproach nearbyApproach = new CatActivityApproach();
+    private bool hasNearbyApproach;
+    private Vector3 nearbyFloor;
+    protected virtual bool AllowsPerimeterApproach => true;
+    protected virtual bool UsesNearbyRoutineEntry => false;
+    protected bool HasNearbyApproach => hasNearbyApproach && UsesNearbyRoutineEntry;
+    public Vector3 RoutineFloorPosition => HasNearbyApproach ? nearbyFloor :
+        RoutineEntryPoint != null ? RoutineEntryPoint.position : transform.position;
     private Vector3 entryFloor;
     private Vector3 originalCatPosition;
+    private bool restStopRequested,restWaiting;
+    private float restStarted=-1f;
     protected CatMovement Cat { get; private set; }
+    protected bool HasBegunActivity { get; private set; }
+    private CharacterController ownedController;
+    private bool originalControllerEnabled;
     protected EnergySystem Energy { get; private set; }
     protected virtual bool UsesFloorApproach => HomeStoreService.IsFixedRoomProduct(storeProductId);
+    protected virtual bool RecordsQuestProgress => true;
 
     public static event System.Action<CatActivity> Completed;
     public static IReadOnlyList<CatActivity> Registered => registered;
     public static CatActivity Active { get; private set; }
 
     public string ActivityId => activityId;
-    public string DisplayName => displayName;
-    public CatActivityKind Kind => kind;
+    public virtual string DisplayName => HomeStoreService.TryGetProduct(storeProductId, out var product) ? product.Title :
+        Kind == CatActivityKind.SofaLounge ? GameContentCopy.Text("Koltuk", "Sofa") :
+        Kind == CatActivityKind.CoffeeTablePlay ? GameContentCopy.Text("Sehpa", "Coffee table") : displayName;
+    public virtual CatActivityKind Kind => kind;
     public QuestType QuestType => questType;
     public long RequiredBondXp => requiredBondXp < 0 ? 0 : requiredBondXp;
     public string ActionText => string.IsNullOrWhiteSpace(actionText) ? "PLAY" : actionText;
@@ -154,9 +171,30 @@ public abstract class CatActivity : MonoBehaviour
     protected Transform InteractionAnchor => interactionAnchor;
     public bool IsContentVisible => unlockedContent == null || unlockedContent.activeSelf;
     public bool IsRunning { get; private set; }
+    public virtual bool SupportsContinuousRest=>false;
+    public bool IsWaitingForRestStop=>IsRunning && restWaiting && !restStopRequested;
+    public float RestingSeconds=>restStarted<0?0:Mathf.Max(0,Time.time-restStarted);
+    protected bool KeepResting
+    {
+        get
+        {
+            restWaiting=true;
+            if(restStarted<0)restStarted=Time.time;
+            return !restStopRequested;
+        }
+    }
+    public bool RequestRestStop()
+    {
+        if(!IsRunning || !SupportsContinuousRest)return false;
+        restStopRequested=true;NotifyChanged();return true;
+    }
+    public bool IsRestingOnFurniture => IsRunning && catAnimation != null && catAnimation.ContactSurface != null &&
+        (catAnimation.CurrentPose == CatActivityPose.Sleep ||
+         (catAnimation.CurrentPose == CatActivityPose.Sit && SupportsContinuousRest));
     public string StoreProductId => storeProductId;
     public Transform RoutineEntryPoint => routineEntryPoint != null ? routineEntryPoint : interactionAnchor;
     public bool RequiresStoreOwnership => !string.IsNullOrWhiteSpace(storeProductId);
+    public bool IsRetired => Kind == CatActivityKind.MouseHunt || Kind == CatActivityKind.ConsolePaw || Kind == CatActivityKind.SpeakerListen || Kind == CatActivityKind.TvUnitPaw || Kind == CatActivityKind.WindowWatch;
     public bool IsUnlocked =>
         ProgressionService.BondXp >= RequiredBondXp &&
         (!RequiresStoreOwnership || (HomeStoreService.IsOwned(storeProductId)&&!HomeStoreService.IsStored(storeProductId)));
@@ -188,7 +226,28 @@ public abstract class CatActivity : MonoBehaviour
             CancelActivity();
     }
 
-    public float DistanceTo(CatMovement cat)
+    // Fixed openings retain their doorway check; open products use their visible perimeter.
+    public const float PromptRadius = .46f;
+    public virtual bool TryGetPromptDistance(CatMovement cat, out float distance)
+    {
+        if (IsRetired) { distance = float.PositiveInfinity; return false; }
+        if (AllowsPerimeterApproach && nearbyApproach.HasGeometry(this))
+            return nearbyApproach.TryResolve(this, cat, out _, out distance);
+        return TryPromptAt(cat, RoutineEntryPoint, out distance);
+    }
+
+    protected bool TryPromptAt(CatMovement cat, Transform entrance, out float distance)
+    {
+        distance = float.PositiveInfinity;
+        if (cat == null || entrance == null) return false;
+        Vector3 from = cat.transform.position, to = entrance.position;
+        from.y = to.y = 0f;
+        distance = Vector3.Distance(from, to);
+        return distance <= Mathf.Min(PromptRadius, InteractionRadius) &&
+            CatActivityMotion.ClearSegment(from, to);
+    }
+
+    public virtual float DistanceTo(CatMovement cat)
     {
         if (cat == null)
             return float.PositiveInfinity;
@@ -212,11 +271,14 @@ public abstract class CatActivity : MonoBehaviour
 
     public bool TryStart(CatMovement cat)
     {
-        ResolveReferences();
-        Cat = cat != null ? cat : Cat;
-
-        if (Cat == null || Active != null || IsRunning)
+        if (Active != null || IsRunning || IsRetired || !isActiveAndEnabled)
             return false;
+        ResolveReferences();
+        var actor = cat != null ? cat : Cat;
+        if (actor == null || !actor.isActiveAndEnabled || actor.gameObject.scene != gameObject.scene ||
+            CatActionState.IsBusy(actor) || actor.AreWorldActionsBlocked || HomeUiFlow.IsMiniGameVisible)
+            return false;
+        Cat = actor;
 
         if (!IsUnlocked)
         {
@@ -224,6 +286,8 @@ public abstract class CatActivity : MonoBehaviour
             return false;
         }
 
+        hasNearbyApproach = AllowsPerimeterApproach && UsesNearbyRoutineEntry &&
+            nearbyApproach.TryResolve(this, Cat, out nearbyFloor, out _);
         if (!CanBeginActivity(out string failureReason))
         {
             ShowSpeech(failureReason);
@@ -233,7 +297,7 @@ public abstract class CatActivity : MonoBehaviour
         List<Vector3> approach = null;
         Physics.SyncTransforms();
         originalCatPosition = Cat.transform.position;
-        entryFloor = RoutineEntryPoint != null ? RoutineEntryPoint.position : originalCatPosition;
+        entryFloor = RoutineFloorPosition;
         entryFloor.y = originalCatPosition.y;
         if (UsesFloorApproach &&
             !CatActivityMotion.TryFloorPath(originalCatPosition, entryFloor, out approach))
@@ -250,6 +314,10 @@ public abstract class CatActivity : MonoBehaviour
 
         Active = this;
         IsRunning = true;
+        HasBegunActivity = false;
+        ownedController = Cat.GetComponent<CharacterController>();
+        originalControllerEnabled = ownedController != null && ownedController.enabled;
+        restStopRequested=false;restWaiting=false;restStarted=-1f;
         catAnimation = Cat.GetComponent<CatActivityAnimation>() ?? Cat.gameObject.AddComponent<CatActivityAnimation>();
         catAnimation.Begin(this);
         if (approach != null)
@@ -258,11 +326,10 @@ public abstract class CatActivity : MonoBehaviour
             NotifyChanged();
             return true;
         }
-        if (!BeginActivity())
+        if (!BeginRoutineBody())
         {
-            catAnimation.End();
-            IsRunning = false;
-            Active = null;
+            Energy.RestoreEnergy(EnergyCost);
+            CancelActivity();
             return false;
         }
 
@@ -278,25 +345,35 @@ public abstract class CatActivity : MonoBehaviour
         foreach (var destination in path)
         {
             Vector3 target = destination; target.y = originalCatPosition.y;
+            Vector3 direction = target - Cat.transform.position; direction.y = 0f;
+            if (direction.sqrMagnitude <= .0001f) continue;
+            Quaternion travel = Quaternion.LookRotation(direction);
+            PlayCatPose(CatActivityPose.Sniff);
+            yield return CatActivityFacing.Turn(Cat, travel, .18f);
+            PlayCatPose(CatActivityPose.Walk);
             while ((Cat.transform.position - target).sqrMagnitude > .0001f)
             {
-                Vector3 direction = target - Cat.transform.position;
-                direction.y = 0f;
-                if (direction.sqrMagnitude > .001f)
-                    Cat.transform.rotation = Quaternion.RotateTowards(Cat.transform.rotation,
-                        Quaternion.LookRotation(direction), 540f * Time.deltaTime);
-                Cat.transform.position = Vector3.MoveTowards(Cat.transform.position, target, 2.2f * Time.deltaTime);
+                Cat.transform.rotation = travel;
+                Cat.transform.position = Vector3.MoveTowards(Cat.transform.position, target, 1.5f * Time.deltaTime);
                 yield return null;
             }
         }
-        if (!BeginActivity())
+        if (!BeginRoutineBody())
         {
-            if (controller != null) controller.enabled = true;
-            Cat.SetMovementLocked(this, false);
             Energy?.RestoreEnergy(EnergyCost);
             CancelActivity();
         }
     }
+
+    private bool BeginRoutineBody()
+    {
+        HasBegunActivity = true;
+        try { return BeginActivity(); }
+        catch (Exception error) { Debug.LogException(error, this); return false; }
+    }
+
+    public bool BelongsTo(CatMovement cat) => Cat == cat;
+    public void CancelForTransition() { if (IsRunning) CancelActivity(); }
 
     protected virtual bool CanBeginActivity(out string failureReason)
     {
@@ -318,11 +395,15 @@ public abstract class CatActivity : MonoBehaviour
 
         catAnimation?.End();
         RestoreSafeFloor();
+        ReleaseActionControl();
         IsRunning = false;
+        HasBegunActivity = false;
+        restWaiting=false;
+        hasNearbyApproach=false;
         if (Active == this)
             Active = null;
 
-        ProgressionService.RecordProgress(questType);
+        if(RecordsQuestProgress) ProgressionService.RecordProgress(questType);
         CatHomeSaveSystem.SaveNow();
         ShowSpeech(string.IsNullOrWhiteSpace(message) ? "GREAT PLAY!" : message);
         RefreshUnlockPresentation();
@@ -332,12 +413,24 @@ public abstract class CatActivity : MonoBehaviour
 
     protected virtual void CancelActivity()
     {
+        StopAllCoroutines();
         catAnimation?.End();
         RestoreSafeFloor(true);
+        ReleaseActionControl();
         IsRunning = false;
+        HasBegunActivity = false;
+        restWaiting=false;
+        hasNearbyApproach=false;
         if (Active == this)
             Active = null;
         NotifyChanged();
+    }
+
+    private void ReleaseActionControl()
+    {
+        if (ownedController != null) ownedController.enabled = originalControllerEnabled;
+        ownedController = null;
+        if (Cat != null) Cat.SetMovementLocked(this, false);
     }
 
     private void RestoreSafeFloor(bool cancelled = false)

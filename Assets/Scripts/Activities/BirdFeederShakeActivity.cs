@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -31,6 +32,9 @@ public sealed class BirdFeederShakeActivity : CatActivity
     [SerializeField, Min(0.1f)] private float settleDuration = 1.1f;
 
     private CharacterController characterController;
+    private List<Vector3> contactPath;
+    public Vector3 ContactStand { get; private set; }
+    public bool ContactStandBlocked { get; private set; }
     private Vector3 feederHome;
     private Quaternion feederHomeRotation;
     private Vector3 seedHome;
@@ -51,12 +55,22 @@ public sealed class BirdFeederShakeActivity : CatActivity
             return false;
         }
 
-        failureReason = string.Empty;
-        return true;
+        Vector3 authored = reachPoint.position; authored.y = Cat.transform.position.y;
+        Vector3 origin = RoutineFloorPosition; origin.y = authored.y;
+        ContactStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, feederPivot.position,
+            authored, origin, out Vector3 stand, out contactPath);
+        ContactStand = stand;
+        failureReason = ContactStandBlocked ? "LET'S MAKE SOME ROOM." : string.Empty;
+        return !ContactStandBlocked;
     }
 
     protected override bool BeginActivity()
     {
+        Vector3 authored = reachPoint.position; authored.y = Cat.transform.position.y;
+        ContactStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, feederPivot.position,
+            authored, Cat.transform.position, out Vector3 stand, out contactPath);
+        ContactStand = stand;
+        if (ContactStandBlocked) return false;
         characterController = Cat.GetComponent<CharacterController>();
         if (!homeCaptured)
         {
@@ -78,16 +92,24 @@ public sealed class BirdFeederShakeActivity : CatActivity
 
         Vector3 start = Cat.transform.position;
         Quaternion startRotation = Cat.transform.rotation;
-        Vector3 reach = Flatten(reachPoint.position, start.y);
+        Vector3 reach = Flatten(ContactStand, start.y);
 
-        Quaternion toReach = LookTowards(reach - start, startRotation);
-        yield return Move(start, reach, startRotation, toReach, 0.34f);
+        Quaternion toReach = startRotation;
+        foreach (Vector3 waypoint in contactPath)
+        {
+            Vector3 destination = Flatten(waypoint, start.y);
+            Vector3 from = Cat.transform.position;
+            toReach = LookTowards(destination - from, Cat.transform.rotation);
+            yield return Move(from, destination, Cat.transform.rotation, toReach,
+                Mathf.Max(.18f, Vector3.Distance(from, destination) / 1.1f));
+        }
 
         Vector3 up = (feederPivot.position - reach);
         up.y = 0f;
         Vector3 push = up.sqrMagnitude > 0.0001f ? up.normalized : Cat.transform.forward;
         Quaternion facing = LookTowards(push, toReach);
-        Cat.transform.rotation = facing;
+        PlayCatPose(CatActivityPose.GentleKnead);
+        yield return CatActivityFacing.Turn(Cat, facing, .2f);
 
         // Each bat: the cat rears, the feeder swings away and comes back a
         // little short of where it started, so the swing reads as building up.
@@ -143,7 +165,7 @@ public sealed class BirdFeederShakeActivity : CatActivity
             yield return null;
         }
 
-        Quaternion away = LookTowards(start - reach, facing);
+        Quaternion away = CatActivityFacing.Resolve(Cat, reach, LookTowards(start - reach, facing));
         yield return Move(reach, reach, facing, away, 0.22f);
 
         RestoreRig();
@@ -164,19 +186,35 @@ public sealed class BirdFeederShakeActivity : CatActivity
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation,
         float duration)
     {
+        Vector3 direction = to - from; direction.y = 0f;
+        if (direction.sqrMagnitude < .000001f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
+            yield break;
+        }
+
+        // Turn on the spot first. Interpolating a travel position while still
+        // facing the previous action made the return leg slide backwards.
+        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
+        PlayCatPose(CatActivityPose.GentleKnead);
+        yield return CatActivityFacing.Turn(Cat, travel, .16f);
         PlayCatPose(CatActivityPose.Walk);
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
+            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
             yield return null;
         }
 
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        Cat.transform.SetPositionAndRotation(to, travel);
+        if (Quaternion.Angle(travel, toRotation) > .1f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
+        }
     }
 
     private void RestoreRig()
@@ -201,6 +239,15 @@ public sealed class BirdFeederShakeActivity : CatActivity
         if (characterController != null)
             characterController.enabled = true;
         Cat.SetMovementLocked(this, false);
+    }
+
+    protected override void CancelActivity()
+    {
+        if (!IsRunning) return;
+        StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
+        RestoreRig();
+        base.CancelActivity();
     }
 
     private static Vector3 Flatten(Vector3 point, float y)

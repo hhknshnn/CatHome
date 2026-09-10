@@ -31,6 +31,15 @@ public static class CatProductContentBuilder
                     filter.gameObject.AddComponent<MeshCollider>().sharedMesh=filter.sharedMesh;
             var trigger=visual.AddComponent<BoxCollider>();trigger.isTrigger=true;trigger.center=Vector3.up*definition.Height*.5f;
             trigger.size=new Vector3(definition.Footprint.x,definition.Height,definition.Footprint.y);
+            if(definition.PrefabName=="PlayTunnel")
+            {
+                // The crawl is an explicit activity from either mouth. Keep
+                // manual movement outside, including the otherwise open ends.
+                // The routine already owns/disables the cat controller; this
+                // fitted obstacle therefore remains solid even after cancel.
+                var blocker=visual.AddComponent<BoxCollider>();
+                blocker.center=bodyBounds.center;blocker.size=bodyBounds.size;
+            }
             Transform moving=null;
             var movingAsset=AssetDatabase.LoadAssetAtPath<GameObject>(Models+definition.PrefabName+"Moving_Premium.fbx");
             CatEnrichmentMode mode=ModeFor(definition.PrefabName);
@@ -75,6 +84,7 @@ public static class CatProductContentBuilder
                 activity.EditorConfigureStoreProduct(definition.ProductId);activity.EditorConfigureEntry(entry);
                 activity.EditorConfigureEnrichment(mode,contact,exit,moving,definition.Footprint);
             }
+            ModernWorldArtBuilder.ApplyRoot(root.transform,HomeRoomService.LivingRoomId);
             PrefabUtility.SaveAsPrefabAsset(root,Prefabs+definition.PrefabName+".prefab");
         }
         finally{UnityEngine.Object.DestroyImmediate(root);}
@@ -163,6 +173,19 @@ public static class CatProductContentBuilder
                 scratch.EditorConfigureToy(copy.transform.Find("MovingPivot"));
                 var point=data.FindProperty("scratchPoint").objectReferenceValue as Transform;
                 if(point!=null){point.localPosition=new Vector3(0,0,-.33f);scratch.EditorConfigureScratch(point,2.4f);}
+                // Measure only the rope shaft, excluding its plinth, cap and hanging toy.
+                Bounds rope=new Bounds();bool measured=false;
+                foreach(var f in copy.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if(f.transform.IsChildOf(copy.transform.Find("MovingPivot")))continue;
+                    foreach(var v in f.sharedMesh.vertices)
+                    {
+                        var local=activity.transform.InverseTransformPoint(f.transform.TransformPoint(v));
+                        if(local.y<.20f || local.y>.65f)continue;
+                        if(!measured){rope=new Bounds(local,Vector3.zero);measured=true;}else rope.Encapsulate(local);
+                    }
+                }
+                if(measured)scratch.EditorConfigureRope(rope.center,Mathf.Max(rope.extents.x,rope.extents.z));
             }
         }
     }

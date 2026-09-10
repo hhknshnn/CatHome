@@ -41,6 +41,33 @@ public sealed class CatCatchHuntTests
     }
 
     [UnityTest]
+    public IEnumerator Turnaround_PivotsBeforeRunningAndNeverSteersInFlight()
+    {
+        player.transform.rotation=Quaternion.identity;
+        var start=player.Position;
+        player.MoveTo(start+Vector3.back*1.5f);
+        yield return null;
+        Assert.That(Vector3.Distance(start,player.Position),Is.LessThan(.03f),"No backwards glide before turning");
+        float until=Time.time+4f;
+        bool sawFlight=false;
+        Quaternion launch=Quaternion.identity;
+        float launchedAt=0;
+        while(Time.time<until)
+        {
+            if(!player.IsBusy)player.ChasePrey(NearestCatchableMouse());
+            if(player.IsPouncing)
+            {
+                if(!sawFlight){sawFlight=true;launchedAt=Time.time;}
+                if(Time.time-launchedAt<.13f)launch=player.transform.rotation;
+                else Assert.That(Quaternion.Angle(launch,player.transform.rotation),Is.LessThan(.1f),"Airborne heading stays committed");
+            }
+            else if(sawFlight)break;
+            yield return null;
+        }
+        Assert.That(sawFlight,Is.True);
+    }
+
+    [UnityTest]
     public IEnumerator IdleCat_NeverVacuumsMice()
     {
         float until = Time.time + 3f;

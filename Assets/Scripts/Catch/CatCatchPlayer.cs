@@ -1,9 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// The Cat Catch hunter. The cat runs on a CharacterController with the same
-/// Idle/Run blend the home scene uses, so it is never sliding or frozen, and a
-/// pounce is a short committed lunge that ends in a single strike.
+    /// The Cat Catch hunter turns on the floor before committing to a forward
+    /// lunge. Only the landing paws may resolve a catch.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class CatCatchPlayer : MonoBehaviour
@@ -11,8 +10,20 @@ public sealed class CatCatchPlayer : MonoBehaviour
     private const float PounceClipLength = 0.72f;
     private const float PounceClipLaunch = 0.23f;
     private const string IdleState = "Idle";
-    private const string PounceState = "ActivityPounce";
+    private const string PounceState = "MiniGamePounce";
     private const string PawSwatState = "ActivityPawSwat";
+    private MiniGameCatAnimation motion;
+    private Transform leftPaw,rightPaw;
+    private float pawReach=.34f;
+
+    private void BindMotion()
+    {
+        if(animator==null)return;
+        motion=animator.GetComponent<MiniGameCatAnimation>();
+        if(motion==null)motion=animator.gameObject.AddComponent<MiniGameCatAnimation>();
+        foreach(var bone in animator.GetComponentsInChildren<Transform>(true))
+        {if(bone.name=="DEF-hand.L")leftPaw=bone;if(bone.name=="DEF-hand.R")rightPaw=bone;}
+    }
 
     private enum Phase
     {
@@ -32,6 +43,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     private Phase phase = Phase.Idle;
     private bool inputEnabled;
+    private bool paused;
     private int speedParameterHash;
     private CatCatchMouse prey;
     private float chaseSeconds;
@@ -66,6 +78,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
         if (replacement == null)
             return;
         animator = replacement;
+        BindMotion();
         animator.applyRootMotion = false;
         speedParameterHash = Animator.StringToHash(speedParameterName);
     }
@@ -78,6 +91,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     public void SetInputEnabled(bool enabled)
     {
+        paused = false;
         inputEnabled = enabled;
         pounceStarted = false;
         if (enabled)
@@ -85,9 +99,24 @@ public sealed class CatCatchPlayer : MonoBehaviour
         prey = null;
         hasMovePoint = false;
         strikePending = false;
+        strikePrey = null;
         phase = Phase.Idle;
+        phaseTimer = 0f;
+        // Ending a hunt cancels its airborne motion. Preserve its horizontal
+        // position but settle on the same measured arena floor used by SnapTo.
+        // Pause uses SetPaused instead and must keep the committed pounce.
+        if (floorReady)
+        {
+            Vector3 position = transform.position;
+            position.y = floorY;
+            transform.position = position;
+        }
         SetAnimatorSpeed(1f);
+        ReportAnimatedSpeed(0f, 0f);
     }
+
+    // A pause freezes the committed hunt motion; disabling input ends it.
+    public void SetPaused(bool value) => paused = value;
 
     public bool ConsumePounceStarted()
     {
@@ -102,6 +131,13 @@ public sealed class CatCatchPlayer : MonoBehaviour
     /// </summary>
     public bool TryConsumeStrike(out Vector3 point, out CatCatchMouse target)
     {
+        if(strikePending&&leftPaw!=null&&rightPaw!=null)
+        {
+            // Evaluate the explicitly scheduled contact pose before testing its actual paws.
+            animator.Update(0);
+            strikePoint=(leftPaw.position+rightPaw.position)*.5f;
+            strikePoint.y=floorY;
+        }
         point = strikePoint;
         target = strikePrey;
         if (!strikePending)
@@ -113,7 +149,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     public void ChasePrey(CatCatchMouse target)
     {
-        if (!inputEnabled || IsBusy || target == null || !target.IsActive)
+        if (!inputEnabled || paused || IsBusy || target == null || !target.IsActive)
             return;
         prey = target;
         chaseSeconds = 0f;
@@ -123,7 +159,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     public void MoveTo(Vector3 worldPoint)
     {
-        if (!inputEnabled || IsBusy)
+        if (!inputEnabled || paused || IsBusy)
             return;
         prey = null;
         movePoint = ClampToArena(worldPoint);
@@ -134,7 +170,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     public void PlayCatchReaction()
     {
-        CrossFade(PawSwatState, 0.06f);
+        if(motion!=null)motion.Hunt(.82f);
     }
 
     public bool TryResolveScreenPoint(Vector2 screenPosition, out Vector3 world)
@@ -176,6 +212,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
         if (animator != null)
             animator.applyRootMotion = false;
         speedParameterHash = Animator.StringToHash(speedParameterName);
+        BindMotion();
         CacheArena();
         ResolveCamera();
         if (!floorReady)
@@ -185,7 +222,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
     private void Update()
     {
         float delta = Time.deltaTime;
-        if (delta <= 0f)
+        if (paused || delta <= 0f)
             return;
 
         switch (phase)
@@ -200,11 +237,12 @@ public sealed class CatCatchPlayer : MonoBehaviour
                 ApplyGroundMotion(Vector3.zero, delta);
                 ReportAnimatedSpeed(0f, delta);
                 phaseTimer += delta;
+                if(motion!=null)motion.Hunt(Mathf.Lerp(.82f,1,phaseTimer/CatchHuntRules.PounceRecoverSeconds));
                 if (phaseTimer >= CatchHuntRules.PounceRecoverSeconds)
                 {
                     phase = Phase.Idle;
                     SetAnimatorSpeed(1f);
-                    CrossFade(IdleState, 0.12f);
+                    if(motion!=null)motion.Run(0);else CrossFade(IdleState, 0.12f);
                 }
                 break;
             default:
@@ -252,20 +290,28 @@ public sealed class CatCatchPlayer : MonoBehaviour
             float facingAngle = Vector3.Angle(FlatForward(), preyDirection);
             chaseSeconds += delta;
             if (CatchHuntRules.ShouldPounce(preyDistance, facingAngle) ||
-                CatchHuntRules.ShouldForcePounce(preyDistance, chaseSeconds))
+                CatchHuntRules.ShouldForcePounce(preyDistance, chaseSeconds, facingAngle))
             {
                 Vector3 predicted = CatchHuntRules.PredictPreyPoint(
                     prey.transform.position, prey.Velocity);
+                predicted += prey.Velocity * CatchHuntRules.PouncePrepareSeconds;
                 predicted.y = floorY;
                 Vector3 lunge = predicted - transform.position;
                 lunge.y = 0f;
-                BeginPounce(predicted, lunge.magnitude);
-                return;
+                // A sideways lead must also be aligned. Proximity to the mouse
+                // alone is not permission to turn through the airborne pose.
+                if (Vector3.Angle(FlatForward(), lunge) <= CatchHuntRules.PounceAlignmentDegrees)
+                {
+                    BeginPounce(predicted, lunge.magnitude);
+                    return;
+                }
             }
         }
 
-        float step = Mathf.Min(moveSpeed, distance / Mathf.Max(delta, 0.0001f));
-        ApplyGroundMotion(direction * step, delta);
+        float angle = Vector3.Angle(FlatForward(), direction);
+        float turnSpeed = angle >= 60f ? 0f : Mathf.Lerp(1f, .55f, angle / 60f);
+        float step = Mathf.Min(moveSpeed * turnSpeed, distance / Mathf.Max(delta, 0.0001f));
+        ApplyGroundMotion(FlatForward() * step, delta);
         ReportAnimatedSpeed(step / moveSpeed, delta);
     }
 
@@ -273,7 +319,9 @@ public sealed class CatCatchPlayer : MonoBehaviour
     {
         Vector3 from = transform.position;
         from.y = floorY;
-        float reach = CatchHuntRules.PounceDistanceFor(distance);
+        if(leftPaw!=null&&rightPaw!=null)
+            pawReach=Mathf.Clamp(Vector3.Dot((leftPaw.position+rightPaw.position)*.5f-transform.position,FlatForward()),.22f,.48f);
+        float reach = Mathf.Max(0,CatchHuntRules.PounceDistanceFor(distance)-pawReach);
         Vector3 direction = destination - from;
         direction.y = 0f;
         if (direction.sqrMagnitude > 0.0001f)
@@ -285,6 +333,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
         pounceTo = ClampToArena(from + direction * reach);
         pounceTo.y = floorY;
         pounceTravel = CatchHuntRules.PounceTravelSeconds;
+        pounceHeight=Mathf.Lerp(.13f,.32f,Mathf.Clamp01(reach/1.5f));
         phase = Phase.Pounce;
         phaseTimer = 0f;
         pounceStarted = true;
@@ -295,16 +344,18 @@ public sealed class CatCatchPlayer : MonoBehaviour
     private void TickPounce(float delta)
     {
         phaseTimer += delta;
-        float t = Mathf.Clamp01(phaseTimer / pounceTravel);
-        float eased = t * t * (3f - 2f * t);
+        float t = Mathf.Clamp01((phaseTimer-CatchHuntRules.PouncePrepareSeconds) / pounceTravel);
+        float eased = t; // A committed ballistic lunge does not stop in mid-air to ease in/out.
         Vector3 next = Vector3.Lerp(pounceFrom, pounceTo, eased);
         next.y = floorY + (4f * pounceHeight * t * (1f - t));
         MoveBody(next - transform.position);
 
         Vector3 heading = pounceTo - pounceFrom;
         heading.y = 0f;
-        RotateTowards(heading.sqrMagnitude > 0.0001f ? heading.normalized : FlatForward(), delta);
+        if (phaseTimer <= CatchHuntRules.PouncePrepareSeconds)
+            RotateTowards(heading.sqrMagnitude > 0.0001f ? heading.normalized : FlatForward(), delta);
         ReportAnimatedSpeed(0f, delta);
+        if(motion!=null)motion.Hunt(phaseTimer<CatchHuntRules.PouncePrepareSeconds? .16f*phaseTimer/CatchHuntRules.PouncePrepareSeconds:Mathf.Lerp(.16f,.82f,t));
 
         if (t < 1f)
             return;
@@ -323,6 +374,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     private void PlayPounceClip()
     {
+        if(motion!=null){motion.Hunt(0);return;}
         // Skip the crouch keys: the cat is already running, so the lunge should
         // start on the launch pose and land on the clip's landing pose.
         float remainingClip = PounceClipLength - PounceClipLaunch;
@@ -359,7 +411,8 @@ public sealed class CatCatchPlayer : MonoBehaviour
         if (direction.sqrMagnitude < 0.0001f)
             return;
         Quaternion target = Quaternion.LookRotation(direction, Vector3.up);
-        transform.rotation = Quaternion.Slerp(transform.rotation, target, rotationSpeed * delta);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, target,
+            CatchHuntRules.TurnDegreesPerSecond * delta);
     }
 
     private Vector3 FlatForward()
@@ -371,6 +424,8 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     private void ReportAnimatedSpeed(float normalized, float delta)
     {
+        if(motion==null)BindMotion();
+        if(motion!=null&&(phase==Phase.Chase||phase==Phase.Idle))motion.Run(normalized*moveSpeed);
         if (animator == null)
             return;
         if (delta <= 0f)

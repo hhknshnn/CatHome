@@ -2,12 +2,12 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Knead the bath mat's raised pad, then flop over on it.
+/// Knead the pad, then settle into continuous rest.
 ///
 /// The mat is 0.08 tall, so there is nothing to climb and nothing to enter: the
-/// whole beat is the cat. It walks onto the pad, alternates front paws with a
-/// small weight shift on each press, then rolls onto its side and settles for a
-/// moment before getting back up.
+/// whole beat is the cat. The bathroom mat and garden flowers use shallow,
+/// alternating paws and a seated transition. Other authored mat kinds retain
+/// their existing side-flop motion. Rest ends when the player asks to get up.
 ///
 /// The CharacterController is switched off for the routine because the roll
 /// tips the cat past what the capsule allows, and it is handed back with the
@@ -16,6 +16,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class MatKneadActivity : CatActivity
 {
+    public override bool SupportsContinuousRest=>true;
     [Header("Mat knead")]
     [SerializeField] private Transform padPoint;
     [SerializeField] private Transform exitPoint;
@@ -26,6 +27,10 @@ public sealed class MatKneadActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatGentleKneadMotion gentleKnead;
+
+    public bool UsesGentleKneading => Kind == CatActivityKind.DaisyRoll ||
+        (Kind == CatActivityKind.MatKnead && StoreProductId == HomeStoreService.BathroomBathMatId);
 
     public override string ProgressLabel => IsRunning ? "KNEADING..." : string.Empty;
 
@@ -69,24 +74,52 @@ public sealed class MatKneadActivity : CatActivity
             new Vector3(pad.x - start.x, 0f, pad.z - start.z), startRotation);
         yield return Move(start, pad, startRotation, toPad, 0.36f);
 
-        // Knead: alternate sides, so it reads as two paws and not as a bounce.
-        for (int i = 0; i < KneadCount; i++)
+        // Keep the same mat axis and footprint while showing the working paws.
+        toPad = CatActivityFacing.AlongAxis(Cat, pad, toPad);
+        yield return CatActivityFacing.Turn(Cat, toPad);
+
+        if (UsesGentleKneading)
         {
-            float side = i % 2 == 0 ? 1f : -1f;
+            // Flowers and the bathroom mat receive slow, shallow paw presses
+            // from a neutral stance. The generic Paw pose is a hard swat.
+            PlayCatPose(CatActivityPose.GentleKnead, padPoint);
+            yield return new WaitForSeconds(.24f);
+            gentleKnead = Cat.GetComponent<CatGentleKneadMotion>() ??
+                Cat.gameObject.AddComponent<CatGentleKneadMotion>();
             float elapsed = 0f;
-            PlayCatPose(CatActivityPose.Paw, padPoint);
-            while (elapsed < KneadInterval)
+            float duration = KneadCount * CatGentleKneadMotion.PressSeconds;
+            while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
-                float press = Mathf.Sin(Mathf.Clamp01(elapsed / KneadInterval) * Mathf.PI);
-                Cat.transform.position = pad + new Vector3(0f, press * 0.022f, 0f);
-                Cat.transform.rotation =
-                    toPad * Quaternion.Euler(press * 7f, 0f, press * 6f * side);
-                Vector3 scale = originalScale;
-                scale.y *= 1f + press * 0.045f;
-                scale.x *= 1f - press * 0.030f;
-                Cat.transform.localScale = scale;
+                gentleKnead.Sample(this, elapsed, duration);
+                Cat.transform.position = pad;
+                Cat.transform.rotation = toPad;
+                Cat.transform.localScale = originalScale;
                 yield return null;
+                elapsed += Time.deltaTime;
+            }
+            gentleKnead.Clear();
+        }
+        else
+        {
+            // Existing textile routines retain their established motion.
+            for (int i = 0; i < KneadCount; i++)
+            {
+                float side = i % 2 == 0 ? 1f : -1f;
+                float elapsed = 0f;
+                PlayCatPose(CatActivityPose.Paw, padPoint);
+                while (elapsed < KneadInterval)
+                {
+                    elapsed += Time.deltaTime;
+                    float press = Mathf.Sin(Mathf.Clamp01(elapsed / KneadInterval) * Mathf.PI);
+                    Cat.transform.position = pad + new Vector3(0f, press * 0.022f, 0f);
+                    Cat.transform.rotation =
+                        toPad * Quaternion.Euler(press * 7f, 0f, press * 6f * side);
+                    Vector3 scale = originalScale;
+                    scale.y *= 1f + press * 0.045f;
+                    scale.x *= 1f - press * 0.030f;
+                    Cat.transform.localScale = scale;
+                    yield return null;
+                }
             }
         }
 
@@ -95,7 +128,12 @@ public sealed class MatKneadActivity : CatActivity
 
         // Flop onto one side and settle, breathing.
         Quaternion upright = toPad;
-        Quaternion onSide = toPad * Quaternion.Euler(0f, 0f, 74f);
+        Quaternion onSide = UsesGentleKneading ? toPad : toPad * Quaternion.Euler(0f, 0f, 74f);
+        if (UsesGentleKneading)
+        {
+            PlayCatPose(CatActivityPose.SitDown, padPoint);
+            yield return new WaitForSeconds(.7f);
+        }
         float roll = 0f;
         while (roll < 0.30f)
         {
@@ -107,7 +145,7 @@ public sealed class MatKneadActivity : CatActivity
 
         float settled = 0f;
         PlayCatPose(CatActivityPose.Sleep, padPoint);
-        while (settled < FlopDuration)
+        while (KeepResting)
         {
             settled += Time.deltaTime;
             float breath = Mathf.Sin(settled * 3.4f) * 0.030f;
@@ -135,8 +173,6 @@ public sealed class MatKneadActivity : CatActivity
         yield return Move(pad, exit, upright, away, 0.34f);
 
         RestoreCat();
-        if (Energy != null)
-            Energy.RestoreEnergy(EnergyRestore);
         CompleteActivity("MAKING BISCUITS!");
     }
 
@@ -160,6 +196,7 @@ public sealed class MatKneadActivity : CatActivity
 
     private void RestoreCat()
     {
+        if (gentleKnead != null) gentleKnead.Clear();
         if (Cat == null)
             return;
 
@@ -189,11 +226,13 @@ public sealed class MatKneadActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

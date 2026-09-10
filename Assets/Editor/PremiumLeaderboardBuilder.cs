@@ -12,7 +12,7 @@ public static class PremiumLeaderboardBuilder
         var root=U.Rect("LeaderboardPanel",parent);U.Fill(root);
         var group=root.gameObject.AddComponent<CanvasGroup>();
         var scrim=root.gameObject.AddComponent<Image>();scrim.color=new Color32(41,58,59,185);
-        var click=root.gameObject.AddComponent<Button>();click.targetGraphic=scrim;click.transition=Selectable.Transition.None;
+        scrim.raycastTarget=true;
         var safe=U.Rect("SafeArea",root);U.Fill(safe);safe.gameObject.AddComponent<SafeAreaRect>();
         var card=U.Panel("LeaderboardCard",safe,PremiumUiStyle.Ivory,0,0,1460,900,32,true);
         root.gameObject.AddComponent<CatRunnerResponsiveLayout>().EditorConfigure(safe,null,card.rectTransform,null,null,null);

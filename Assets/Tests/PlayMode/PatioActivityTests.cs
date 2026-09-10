@@ -92,7 +92,7 @@ public sealed class PatioActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 45f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         // The tour runs ten routines in a row, so every message names the one

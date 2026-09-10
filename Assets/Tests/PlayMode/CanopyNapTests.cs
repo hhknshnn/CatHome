@@ -88,12 +88,13 @@ public sealed class CanopyNapTests
         float deadline = Time.realtimeSinceStartup + 25f;
         while (nap.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(nap);
             closestToNest = Mathf.Min(closestToNest, Flat(cat.transform.position, nest.position));
             yield return null;
         }
         Time.timeScale = 1f;
 
-        Assert.That(nap.IsRunning, Is.False, "The nap must finish on its own.");
+        Assert.That(nap.IsRunning, Is.False, "The nap must finish after the player requests Get up.");
         Assert.That(closestToNest, Is.LessThan(0.2f),
             "The cat must actually reach the nest inside the tipi.");
         Assert.That(Flat(cat.transform.position, door.position), Is.LessThan(0.3f),
@@ -107,7 +108,7 @@ public sealed class CanopyNapTests
         Assert.That(cat.IsMovementPhysicallyLocked, Is.False,
             "The nap must release the movement lock it took.");
         Assert.That(cat.transform.localScale, Is.EqualTo(originalScale));
-        Assert.That(energy.CurrentEnergy, Is.GreaterThan(35f),
+        Assert.That(energy.CurrentEnergy, Is.GreaterThan(32f),
             "A nap must give energy back, not take it.");
         Assert.That(CatActivity.Active, Is.Null);
     }

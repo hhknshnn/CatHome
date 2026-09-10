@@ -38,10 +38,6 @@ public static class SecondFloorLevelBuilder
     private static readonly Color WoodLight = new Color32(240, 198, 151, 255);
     private static readonly Color Roof = new Color32(211, 190, 226, 255);
 
-    private const float LivingCameraFieldOfView = 47f;
-    private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
-    private static readonly Quaternion LivingCameraRotation =
-        Quaternion.Euler(25f, 12.995f, 0f);
     private static readonly Vector3 LivingSpawnPointPosition = new Vector3(0f, 0f, -2f);
     private static readonly Color LivingAmbientSkyColor = new Color32(58, 56, 62, 255);
     private static readonly Color LivingAmbientEquatorColor = new Color32(34, 30, 34, 255);
@@ -352,6 +348,9 @@ public static class SecondFloorLevelBuilder
         CreateBlock("SkylightBar", ceiling,
             new Vector3(.6f, y - .09f, -.6f), new Vector3(.05f, .03f, .9f), materials["Cream"], false);
 
+        // Open the camera-facing roof like the living room's open front wall.
+        HomeRoomCameraBuilder.HideForeground(ceiling);
+
         // A pendant light hanging over the room center.
         CreateBlock("PendantCord", ceiling,
             new Vector3(-1.0f, y - .35f, -.3f), new Vector3(.03f, .6f, .03f), materials["Ink"], false);
@@ -409,10 +408,8 @@ public static class SecondFloorLevelBuilder
             typeof(AudioListener), typeof(UniversalAdditionalCameraData));
         cameraObject.tag = "MainCamera";
         cameraObject.transform.SetParent(parent, false);
-        cameraObject.transform.localPosition = LivingCameraPosition;
-        cameraObject.transform.localRotation = LivingCameraRotation;
         Camera camera = cameraObject.GetComponent<Camera>();
-        camera.fieldOfView = LivingCameraFieldOfView;
+        HomeRoomCameraProfile.Apply(camera);
         camera.nearClipPlane = .3f;
         camera.farClipPlane = 1000f;
         camera.clearFlags = CameraClearFlags.SolidColor;

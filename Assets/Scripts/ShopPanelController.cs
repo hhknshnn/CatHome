@@ -121,9 +121,9 @@ public sealed class ShopPanelController : MonoBehaviour
     [SerializeField, Range(0.7f, 1f)] private float revealScaleFrom = 0.94f;
     [SerializeField, Range(0f, 1f)] private float scrimTargetAlpha = 0.68f;
 
-    private static readonly Color BuyColor = PremiumUiStyle.Mint;
-    private static readonly Color OwnedColor = PremiumUiStyle.Mint;
-    private static readonly Color NeedColor = PremiumUiStyle.WarmIvory;
+    private static readonly Color BuyColor = JoyfulUiArt.Ocean;
+    private static readonly Color OwnedColor = JoyfulUiArt.SkyPaper;
+    private static readonly Color NeedColor = JoyfulUiArt.Paper;
     private static readonly Color TabActiveColor = PremiumUiStyle.Teal;
     private static readonly Color TabIdleColor = PremiumUiStyle.Mint;
     private static readonly Color TabActiveTextColor = Color.white;
@@ -154,6 +154,7 @@ public sealed class ShopPanelController : MonoBehaviour
 
     private void Awake()
     {
+        PremiumScrollInput.Ensure(productScrollRect);
         if (catMovement == null)
             catMovement = FindAnyObjectByType<CatMovement>();
 
@@ -1057,8 +1058,13 @@ public sealed class ShopPanelController : MonoBehaviour
     private static void SetCardAction(ProductCard card, string text, Color color)
     {
         if (card.actionText != null)
+        {
             card.actionText.text = GameStatusCopy.Text(text);
-        if (card.actionBackground != null)
+            card.actionText.color = color == BuyColor ? Color.white : JoyfulUiArt.Ink;
+        }
+        if (card.actionBackground is LowPolyPanelGraphic && card.button != null)
+            ModernUiArt.Action(card.button, color != BuyColor);
+        else if (card.actionBackground != null)
             SetGraphicColor(card.actionBackground, color);
     }
 

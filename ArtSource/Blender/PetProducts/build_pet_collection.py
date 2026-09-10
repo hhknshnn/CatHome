@@ -13,7 +13,7 @@ k.PREVIEW_FOLDER=str(Path(__file__).with_name('Previews'))
 import premium_preview as preview
 
 SIZES={'BallBasket':(.78,.52,.62),'ScratchPost':(.72,.90,.72),
-'CozyPodBed':(1.2,.6,.95),'ToyMouse':(.44,.34,.78),'PlayTunnel':(.58,.60,.9),
+'CozyPodBed':(1.2,.6,.95),'ToyMouse':(.44,.34,.78),'PlayTunnel':(.58,.60,.76),
 'CeramicBowl':(.50,.16,.42),'CloudBed':(1.15,.48,.85),'CanopyBed':(1.2,.75,1),
 'TreatJar':(.38,.48,.38),'FeatherToy':(.42,.65,.42),'ClassicCollar':(.48,.16,.44),
 'WalkingLeash':(.8,.15,.62),'BellCollar':(.48,.16,.44),'KibbleBag':(.50,.44,.44),
@@ -116,10 +116,10 @@ def build(name):
         badge(0,.21,.38,.45)
     elif name=='PlayTunnel':
         # A genuinely open arch; no closed cube across the passage.
-        for z in [-.405,-.21,0,.21,.405]:pipe('TunnelRib',[(math.cos(a)*.27,.015+math.sin(a)*.555,z) for a in [i*math.pi/28 for i in range(29)]],.015,'CH_Gold')
-        P.append(k.sheet('StripedTunnelCloth',30,18,lambda u,v:(math.cos(u*math.pi)*.265,.018+math.sin(u*math.pi)*.55,(v-.5)*.79),[C['CH_White'],C['CH_MintBright']],lambda c:(c//5)%2,thickness=.012))
-        pipe('HangingToyCord',[(0,.35,-.41),(0,.23,-.41)],.005,'CH_Gold',True)
-        ball(0,.20,-.41,.028,'CH_CoralBright',True)
+        for z in [-.34,-.17,0,.17,.34]:pipe('TunnelRib',[(math.cos(a)*.27,.015+math.sin(a)*.555,z) for a in [i*math.pi/28 for i in range(29)]],.015,'CH_Gold')
+        P.append(k.sheet('StripedTunnelCloth',30,18,lambda u,v:(math.cos(u*math.pi)*.265,.018+math.sin(u*math.pi)*.55,(v-.5)*.66),[C['CH_White'],C['CH_MintBright']],lambda c:(c//5)%2,thickness=.012))
+        pipe('HangingToyCord',[(0,.35,-.345),(0,.23,-.345)],.005,'CH_Gold',True)
+        ball(0,.20,-.345,.028,'CH_CoralBright',True)
     elif name=='CardboardHideout':
         cube('CorrugatedFloor',(0,.025,0),(.74,.05,.73),'CH_Cream',.018)
         for x in [-.34,.34]:cube('BoxSide',(x,.235,0),(.055,.43,.72),'CH_Cream',.014)

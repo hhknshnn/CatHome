@@ -1,4 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-DialogClose (x:1482.00, y:815.00, width:58.00, height:58.00)
-DiamondPurchaseButton (x:910.00, y:296.00, width:570.00, height:84.00)
-NotNow (x:1075.00, y:214.00, width:240.00, height:60.00)

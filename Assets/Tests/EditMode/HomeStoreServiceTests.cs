@@ -356,7 +356,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -457,7 +457,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -553,7 +553,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -630,7 +630,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -718,7 +718,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -810,7 +810,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }
@@ -905,7 +905,7 @@ public sealed class HomeStoreServiceTests
                     StoreCatalogAssets.PlaceableProducts[assetIndex];
                 if (candidate.ProductId != id)
                     continue;
-                authoredAsset = candidate;
+                authoredAsset = candidate.WithoutRoomLayout();
                 foundAsset = true;
                 break;
             }

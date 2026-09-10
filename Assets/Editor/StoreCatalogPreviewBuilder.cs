@@ -98,10 +98,16 @@ public static class StoreCatalogPreviewBuilder
                 definition.ProductId == HomeStoreService.LoftWallGalleryId ||
                 definition.ProductId == HomeStoreService.BedroomDreamArtId ||
                 definition.ProductId == HomeStoreService.BedroomWardrobeId ||
+                definition.ProductId == HomeStoreService.BedroomWindowDaybedId ||
+                definition.ProductId == HomeStoreService.BedroomNightstandId ||
+                definition.ProductId == HomeStoreService.BathroomVanityId ||
+                definition.ProductId == HomeStoreService.BathroomShowerId ||
                 definition.ProductId == HomeStoreService.BookshelfId ||
                 definition.ProductId == HomeStoreService.ModernPaintingId ||
                 definition.ProductId == HomeStoreService.ModernTelevisionId ||
                 definition.ProductId == HomeStoreService.TvUnitId ||
+                definition.ProductId == HomeStoreService.GameConsoleId ||
+                definition.ProductId == HomeStoreService.StereoId ||
                 definition.ProductId == HomeStoreService.MirrorId ||
                 definition.ProductId == HomeStoreService.RetroTvId ||
                 definition.ProductId == HomeStoreService.WallClockId;

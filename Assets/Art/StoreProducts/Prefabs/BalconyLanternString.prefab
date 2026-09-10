@@ -67,6 +67,7 @@ GameObject:
   - component: {fileID: 9202637269813090204}
   - component: {fileID: 2296337983999329652}
   - component: {fileID: 5649255332204840940}
+  - component: {fileID: 8578902502533871268}
   m_Layer: 0
   m_Name: BalconyLanternString
   m_TagString: Untagged
@@ -160,6 +161,39 @@ MonoBehaviour:
   reactionKind: 0
   lookDuration: 2.6
   completeMessage: PRETTY!
+  visibleLookTargets:
+  - {x: -0.16347872, y: 0.16567779, z: 0.000000012183778}
+  - {x: 0.77952623, y: 0.20333035, z: -0.008789646}
+  - {x: -0.77, y: 0.19796824, z: -0.010013376}
+  - {x: 0.3335068, y: 0.1657886, z: 0.0056543597}
+  - {x: -0.50107217, y: 0.2003686, z: 0.0075000473}
+  - {x: 0.08902275, y: 0.16209769, z: -0.000000012805685}
+  - {x: 0.6384, y: 0.09921694, z: 0.030999944}
+  - {x: 0.5010721, y: 0.2003686, z: 0.0074999537}
+  - {x: -0.33350682, y: 0.16578858, z: 0.005654412}
+  - {x: -0.6384, y: 0.09921694, z: 0.031000055}
+  - {x: 0.1859532, y: 0.09413557, z: 0.05369356}
+  - {x: -0.64013207, y: 0.21745789, z: 0.005000056}
+  - {x: 0.25076708, y: 0.099143416, z: -0.043840643}
+  - {x: -0.0058960477, y: 0.09903513, z: 0.014966849}
+  - {x: 0.4118361, y: 0.09824486, z: 0.052159958}
+  - {x: -0.4118361, y: 0.09824486, z: 0.052160032}
+  - {x: 0.67208326, y: 0.21725324, z: 0.0029013755}
+  - {x: -0.2128, y: 0.09456205, z: 0.059887417}
+  - {x: -0.39644, y: 0.09635185, z: -0.05050657}
+  - {x: 0.41833338, y: 0.17520352, z: 0.002901402}
+  - {x: -0.4181263, y: 0.17677939, z: 0.0056544263}
+  - {x: 0.17323138, y: 0.16583815, z: 0.0029014186}
+  - {x: -0.07930489, y: 0.16178547, z: -0.0000000015531199}
+  - {x: -0.17483291, y: 0.099143416, z: -0.043840606}
+  - {x: 0.25249818, y: 0.16600102, z: 0.005719638}
+  - {x: -0.586536, y: 0.16445401, z: -0.016046729}
+  - {x: 0.70226, y: 0.14646727, z: -0.00000006098814}
+  - {x: -0.25813675, y: 0.16600798, z: 0.008555848}
+  - {x: -0.6384, y: 0.16527791, z: 0.05369363}
+  - {x: 0.6384, y: 0.16527791, z: 0.053693518}
+  - {x: 0.25076708, y: 0.099143416, z: 0.0438406}
+  - {x: -0.36728, y: 0.09635185, z: 0.000000032108638}
 --- !u!114 &5649255332204840940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,6 +206,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &8578902502533871268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4440061743549458941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &5429421239539694844
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,27 +332,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 7ee4255c3fcf61a4a8cbf9e85e671eac, type: 2}
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 45326f33f189bd144848eb88906ed500, type: 2}
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: b650fbf9e5bcb8f459a403b337a6398c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 3ea64df1e3c35ef4f9a9727af4d521c3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: 6a24281c90a7fde4aace191a12726169, type: 2}
     - target: {fileID: -7511558181221131132, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 714f5e8be1571264fa0382b2d020e7b4, type: 2}
     - target: {fileID: 919132149155446097, guid: 54c80a9a045d4994888361697be02a76, type: 3}
       propertyPath: m_Name
       value: BalconyLanternString_PremiumModel

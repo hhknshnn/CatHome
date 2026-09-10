@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,7 +7,7 @@ using UnityEngine;
 /// the player never steers the cat with the joystick (the Garden clone has no joystick),
 /// so the cat chases the hopping yarn ball on its own: the ball bounces to a new spot,
 /// the cat pounces or paw-swats it, and the loop repeats a few times before finishing.
-/// Reuses the shared <see cref="CatActivityReaction"/> pounce / paw-swat animations.
+/// The routine owns every pose; a catch requires measured paw contact.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class GardenYarnChaseActivity : CatActivity
@@ -20,7 +21,11 @@ public sealed class GardenYarnChaseActivity : CatActivity
     [SerializeField, Min(0.1f)] private float pounceDuration = 0.62f;
     [SerializeField, Min(0f)] private float catchOffset = 0.34f;
 
-    private CatActivityReaction reaction;
+    private CatToyContactMotion contact;
+    private CatActivityAnimation poses;
+    private CatToyBallCollision ballCollision;
+    public float LastHitDistance { get; private set; }
+    public string InterruptedReason { get; private set; }
     private CharacterController characterController;
     private Coroutine routine;
     private int catches;
@@ -55,14 +60,26 @@ public sealed class GardenYarnChaseActivity : CatActivity
 
     protected override bool BeginActivity()
     {
-        reaction = Cat.GetComponent<CatActivityReaction>() ??
-                   Cat.gameObject.AddComponent<CatActivityReaction>();
+        contact = Cat.GetComponent<CatToyContactMotion>() ?? Cat.gameObject.AddComponent<CatToyContactMotion>();
+        poses = Cat.GetComponent<CatActivityAnimation>();
+        ballCollision = new CatToyBallCollision(gameObject.scene, yarnBall);
+        LastHitDistance = float.PositiveInfinity; InterruptedReason = null;
         characterController = Cat.GetComponent<CharacterController>();
         catches = 0;
         hopIndex = -1;
+        // Start the loose ball on an authored, actually reachable patch. Its
+        // previous/random hidden position may be inside a newly placed prop.
+        bool placed = false;
+        for (int i = 0; i < hopPoints.Length; i++)
+        {
+            if (hopPoints[i] == null) continue;
+            Vector3 first = ballCollision.OnFloor(hopPoints[i].position);
+            if (!TryContactStand(first, out _, out _)) continue;
+            yarnBall.position = first; hopIndex = i; placed = true; break;
+        }
+        if (!placed) { ballCollision.Dispose(); ballCollision = null; return false; }
         Cat.SetInputBlock(this, CatInputCategory.Petting | CatInputCategory.WorldActions);
         yarnBall.gameObject.SetActive(true);
-        yarnBall.position = PickNextHopPoint();
         routine = StartCoroutine(PlayRoutine());
         return true;
     }
@@ -70,40 +87,100 @@ public sealed class GardenYarnChaseActivity : CatActivity
     private IEnumerator PlayRoutine()
     {
         Cat.SetMovementLocked(this, true);
-        if (characterController != null)
-            characterController.enabled = false;
-
-        yield return new WaitForSeconds(0.2f);
-
+        if (characterController != null) characterController.enabled = false;
+        PlayCatPose(CatActivityPose.Sniff);
+        yield return CatActivityFacing.Turn(Cat, CatActivityFacing.Resolve(Cat, Cat.transform.position, Cat.transform.rotation));
+        yield return new WaitForSeconds(.2f);
         while (IsRunning && catches < CatchGoal)
         {
-            Vector3 start = yarnBall.position;
-            Vector3 destination = PickNextHopPoint();
-            yield return HopBall(start, destination);
-            if (!IsRunning)
-                break;
-
-            FaceCatTo(destination);
-            bool leap = (catches & 1) == 0;
-            if (leap)
+            bool found = false; Vector3 destination = yarnBall.position, stand = default;
+            List<Vector3> approach = null;
+            int first = Random.Range(0, hopPoints.Length);
+            for (int offset = 0; offset < hopPoints.Length; offset++)
             {
-                reaction.PlayPounceReaction();
-                yield return LungeCatTo(destination);
+                int index = (first + offset) % hopPoints.Length;
+                if (index == hopIndex || hopPoints[index] == null) continue;
+                destination = hopPoints[index].position; destination.y = 0f;
+                destination = ballCollision.OnFloor(destination);
+                // Reserve a complete clear hop, including its arc. A valid
+                // endpoint alone can still strand the ball against a prop.
+                if (!HasClearHop(yarnBall.position, destination)) continue;
+                if (!TryContactStand(destination, out stand, out approach)) continue;
+                hopIndex = index; found = true; break;
             }
-            else
+            if (!found)
             {
-                reaction.PlayPawSwatReaction();
-                yield return NudgeBall(destination);
+                // In a furnished corner a small vertical bounce is still a
+                // real, reachable play beat; never teleport through furniture.
+                destination = yarnBall.position;
+                if (!HasClearHop(destination, destination) || !TryContactStand(destination, out stand, out approach))
+                { InterruptedReason = "No clear visible yarn contact"; CancelActivity(); yield break; }
             }
-
-            catches++;
-            NotifyChanged();
-            yield return new WaitForSeconds(0.22f);
+            yield return HopBall(yarnBall.position, destination);
+            // A swept obstacle can stop the hop early. Reach the real stop point.
+            if (!TryContactStand(yarnBall.position, out stand, out approach))
+            { InterruptedReason = "Yarn stop is unreachable"; CancelActivity(); yield break; }
+            yield return FollowPath(approach);
+            Vector3 toward = yarnBall.position - Cat.transform.position; toward.y = 0f;
+            Quaternion facing = Quaternion.LookRotation(toward.normalized, Vector3.up);
+            PlayCatPose(CatActivityPose.Sniff);
+            yield return CatActivityFacing.Turn(Cat, facing);
+            // A small ready pounce stays on the clear contact side. Its pose and
+            // timing belong to this routine, not a separate reaction timer.
+            if ((catches & 1) == 0)
+            {
+                Vector3 point = Cat.transform.position;
+                yield return CatActivityMotion.Jump(Cat, point, point, facing, facing, .08f);
+            }
+            bool hit = false; float elapsed = 0f;
+            contact.Clear();
+            while (elapsed < .92f && IsRunning)
+            {
+                float phase = Mathf.Clamp01(elapsed / .92f);
+                poses.SetTimedPose((catches & 1) == 0 ? CatActivityPose.BatLeft : CatActivityPose.BatRight, phase);
+                contact.Reach(yarnBall.position, (catches & 1) == 0, phase);
+                if (Time.deltaTime > 0f && phase >= .34f && phase < .75f && contact.Distance < .095f)
+                {
+                    LastHitDistance = contact.Distance; hit = true; catches++; NotifyChanged();
+                    contact.Clear(); yield return NudgeBall(toward.normalized); break;
+                }
+                elapsed += Time.deltaTime; yield return null;
+            }
+            contact.Clear();
+            if (!hit) { InterruptedReason = "No real paw contact at " + yarnBall.position; CancelActivity(); yield break; }
+            PlayCatPose(CatActivityPose.Sniff);
+            yield return CatActivityFacing.Turn(Cat, CatActivityFacing.Resolve(Cat, Cat.transform.position, facing));
+            PlayCatPose(CatActivityPose.Sit);
+            yield return new WaitForSeconds(.22f);
         }
-
-        if (yarnBall != null)
-            yarnBall.gameObject.SetActive(false);
+        yarnBall.gameObject.SetActive(false);
         FinishPlay();
+    }
+
+    private bool TryContactStand(Vector3 ballPoint, out Vector3 stand, out List<Vector3> path)
+    {
+        Vector3 authored = ballPoint - DirectionFromCat(ballPoint) * Mathf.Max(.28f, catchOffset);
+        authored.y = Cat.transform.position.y;
+        return CatActivityFacing.TryFindContactStand(Cat, ballPoint, authored, Cat.transform.position, out stand, out path);
+    }
+
+    private IEnumerator FollowPath(List<Vector3> path)
+    {
+        foreach (Vector3 point in path)
+        {
+            Vector3 target = point; target.y = Cat.transform.position.y;
+            Vector3 direction = target - Cat.transform.position; direction.y = 0f;
+            if (direction.sqrMagnitude < .0001f) continue;
+            Quaternion travel = Quaternion.LookRotation(direction);
+            PlayCatPose(CatActivityPose.Sniff);
+            yield return CatActivityFacing.Turn(Cat, travel, .22f);
+            PlayCatPose(CatActivityPose.Walk);
+            while ((Cat.transform.position - target).sqrMagnitude > .0001f)
+            {
+                Cat.transform.position = Vector3.MoveTowards(Cat.transform.position, target, 1.5f * Time.deltaTime);
+                yield return null;
+            }
+        }
     }
 
     private IEnumerator HopBall(Vector3 start, Vector3 destination)
@@ -111,83 +188,49 @@ public sealed class GardenYarnChaseActivity : CatActivity
         float elapsed = 0f;
         while (elapsed < hopDuration && IsRunning)
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / hopDuration);
-            Vector3 position = Vector3.Lerp(start, destination, t);
-            position.y += Mathf.Sin(t * Mathf.PI) * hopHeight;
-            yarnBall.position = position;
-            yarnBall.Rotate(new Vector3(1f, 0.3f, 0.2f), 540f * Time.deltaTime, Space.Self);
+            elapsed += Time.deltaTime; float t = Mathf.Clamp01(elapsed / hopDuration);
+            Vector3 next = Vector3.Lerp(start, destination, t);
+            next.y += Mathf.Sin(t * Mathf.PI) * (CatRunnerProgressService.ReducedMotion ? .08f : hopHeight);
+            yarnBall.position = ballCollision.Sweep(yarnBall.position, next - yarnBall.position, out bool blocked);
+            if (!CatRunnerProgressService.ReducedMotion) yarnBall.Rotate(new Vector3(1f, .3f, .2f), 540f * Time.deltaTime, Space.Self);
+            if (blocked) break;
             yield return null;
         }
-
-        if (IsRunning)
-            yarnBall.position = destination;
+        Vector3 floor = yarnBall.position; floor.y = 0f;
+        yarnBall.position = ballCollision.OnFloor(floor);
     }
 
-    private IEnumerator LungeCatTo(Vector3 ballPoint)
+    private bool HasClearHop(Vector3 start, Vector3 destination)
     {
-        Vector3 start = Cat.transform.position;
-        Vector3 target = ballPoint - DirectionFromCat(ballPoint) * catchOffset;
-        target.y = start.y;
-        if (!CatActivityMotion.IsFloorClear(target))
+        Vector3 previous = start;
+        const int samples = 64;
+        for (int i = 1; i <= samples; i++)
         {
-            float nearest = float.PositiveInfinity;
-            Vector3 requested = target;
-            foreach (var point in CatActivityMotion.ReachableFloor(start))
-            {
-                float distance = (point - requested).sqrMagnitude;
-                if (distance < nearest) { nearest = distance; target = point; }
-            }
+            float t = (float)i / samples;
+            Vector3 next = Vector3.Lerp(start, destination, t);
+            next.y += Mathf.Sin(t * Mathf.PI) * (CatRunnerProgressService.ReducedMotion ? .08f : hopHeight);
+            previous = ballCollision.Sweep(previous, next - previous, out bool blocked);
+            // A normal landing can hit the floor exactly at the sweep's skin
+            // margin. Reject an early stop, not an endpoint already reached.
+            if (blocked && (previous - next).sqrMagnitude > .0001f * .0001f) return false;
         }
-        if (!CatActivityMotion.TryFloorPath(start, target, out var path)) yield break;
-        for (int i = 0; i < path.Count - 1; i++)
-        {
-            PlayCatPose(CatActivityPose.Walk);
-            while ((Cat.transform.position - path[i]).sqrMagnitude > .0001f)
-            {
-                FaceCatTo(path[i]);
-                Cat.transform.position = Vector3.MoveTowards(Cat.transform.position, path[i], 2.2f * Time.deltaTime);
-                yield return null;
-            }
-        }
-        start = Cat.transform.position;
-        FaceCatTo(target);
-        PlayCatPose(CatActivityPose.Hop);
-        float elapsed = 0f;
-        while (elapsed < pounceDuration && IsRunning)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / pounceDuration));
-            Vector3 position = Vector3.Lerp(start, target, t);
-            // A shallow arc so the pounce reads as a leap rather than a slide.
-            position.y = start.y + Mathf.Sin(t * Mathf.PI) * 0.12f;
-            Cat.transform.position = position;
-            yield return null;
-        }
-
-        if (IsRunning)
-        {
-            Vector3 grounded = target;
-            grounded.y = start.y;
-            Cat.transform.position = grounded;
-        }
+        return true;
     }
 
-    private IEnumerator NudgeBall(Vector3 destination)
+    private IEnumerator NudgeBall(Vector3 direction)
     {
-        // The paw swat bats the yarn a short skip sideways for a lively bounce.
-        Vector3 start = destination;
-        Vector3 nudged = destination + DirectionFromCat(destination) * -0.28f;
-        float elapsed = 0f;
-        const float nudgeTime = 0.3f;
-        while (elapsed < nudgeTime && IsRunning)
+        float elapsed = 0f, previous = 0f;
+        PlayCatPose(CatActivityPose.Sniff);
+        while (elapsed < .30f && IsRunning)
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / nudgeTime);
-            Vector3 position = Vector3.Lerp(start, nudged, t);
-            position.y += Mathf.Sin(t * Mathf.PI) * 0.14f;
-            yarnBall.position = position;
-            yarnBall.Rotate(Vector3.right, 420f * Time.deltaTime, Space.Self);
+            elapsed += Time.deltaTime; float t = Mathf.Clamp01(elapsed / .30f);
+            float distance = .28f * (1f - (1f - t) * (1f - t));
+            Vector3 before = yarnBall.position;
+            yarnBall.position = ballCollision.Sweep(before, direction * (distance - previous), out bool blocked);
+            previous = distance;
+            if (!CatRunnerProgressService.ReducedMotion)
+                yarnBall.Rotate(Vector3.Cross(Vector3.up, direction), Vector3.Distance(before, yarnBall.position) / .09f * Mathf.Rad2Deg, Space.World);
+            if (blocked) break;
             yield return null;
         }
     }
@@ -228,6 +271,8 @@ public sealed class GardenYarnChaseActivity : CatActivity
 
     private void ReleaseControl()
     {
+        ballCollision?.Dispose(); ballCollision = null;
+        if (contact != null) contact.Clear();
         if (characterController != null)
             characterController.enabled = true;
         if (Cat != null)
@@ -239,19 +284,14 @@ public sealed class GardenYarnChaseActivity : CatActivity
 
     protected override void CancelActivity()
     {
-        ReleaseControl();
-        base.CancelActivity();
-    }
-
-    protected override void OnDisable()
-    {
-        if (routine != null)
-            StopCoroutine(routine);
+        if (!IsRunning) return;
+        StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         routine = null;
         if (yarnBall != null)
             yarnBall.gameObject.SetActive(false);
         ReleaseControl();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

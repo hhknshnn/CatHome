@@ -73,6 +73,7 @@ public sealed class CatBreedShopPanel : MonoBehaviour
         }
 
         activeInstance = this;
+        PremiumScrollInput.Ensure(GetComponentInChildren<ScrollRect>(true));
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();
         BindListeners();
@@ -191,6 +192,8 @@ public sealed class CatBreedShopPanel : MonoBehaviour
     private void SelectCoat(int index) { draftCoat = index; RefreshCoat(); }
     private void RefreshCoat()
     {
+        for (int i = 0; i < coatButtons.Length; i++)
+            ModernUiArt.Action(coatButtons[i]);
         for (int i = 0; i < coatSelection.Length; i++)
             if (coatSelection[i] != null) coatSelection[i].SetActive(i == draftCoat);
         if (turntable != null && draftCoat >= 0 && draftCoat < CatIdentityService.CoatCount)

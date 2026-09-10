@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5461883028637997356}
@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 3609298089502898882}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.62}
+  m_LocalPosition: {x: 0, y: 0, z: 0.55799997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 7473909694129031579}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.78}
+  m_LocalPosition: {x: 0, y: 0, z: 0.70199996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 1642067045906376056}
   - component: {fileID: 5862045841889005472}
   - component: {fileID: 3568810861731381489}
+  - component: {fileID: 3788497504203861732}
   m_Layer: 0
   m_Name: BedroomWardrobe
   m_TagString: Untagged
@@ -183,7 +184,7 @@ MonoBehaviour:
   productId: bedroom.wardrobe
   movableRoot: {fileID: 1157538630426285090}
   legacySlots: []
-  footprintSize: {x: 1.15, y: 0.58}
+  footprintSize: {x: 1.035, y: 0.52199996}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -220,6 +221,9 @@ MonoBehaviour:
   unlockedContent: {fileID: 382998778066997070}
   scratchPoint: {fileID: 5861378229562109300}
   scratchDuration: 2.8
+  hangingToy: {fileID: 0}
+  ropeCenter: {x: 0, y: 0.43, z: 0.084}
+  ropeRadius: 0.115
 --- !u!114 &3568810861731381489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +236,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &3788497504203861732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9109237211198087494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.9
 --- !u!1001 &5496142862868201159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -295,27 +312,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6a9a38645dd6ab44c96ab40ab4d4c5f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: c5d67fcfdf183be4da87497c6442f18f, type: 2}
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: f8c1eb866786aff4bb18126505661642, type: 2}
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 46b570f81bdf38d42a23254f84a8f906, type: 2}
     - target: {fileID: -7511558181221131132, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 66930c74da216ac43a8fc2724daf08ab, type: 2}
     - target: {fileID: 919132149155446097, guid: e54b6db94a36352419deec9d21fde90e, type: 3}
       propertyPath: m_Name
       value: BedroomWardrobe_PremiumModel

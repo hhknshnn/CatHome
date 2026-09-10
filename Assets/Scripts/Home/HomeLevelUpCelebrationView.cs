@@ -7,10 +7,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Full-screen "HOME LEVEL UP!" celebration and its coin reward: a gold-framed
-/// navy card with a spinning sunburst, a big level medallion and a confetti
-/// spray, over an opaque backdrop that hides the in-game HUD so the moment reads
-/// as a clean takeover. It self-bootstraps onto its own overlay canvas the first
+/// Full-screen level milestone with a photographic stage, level medallion and
+/// one short confetti reveal over a world-only backdrop. It self-bootstraps
+/// onto its own overlay canvas the first
 /// time a scene loads and listens to <see cref="HomeProgressionService.LeveledUp"/>,
 /// so it needs no scene wiring and never touches the authored scenes.
 ///
@@ -29,8 +28,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
     private static HomeLevelUpCelebrationView instance;
 
     private CanvasGroup rootGroup;
-    private RawImage blurImage;
-    private RenderTexture blurRt;
+    private PremiumModalBackdrop backdrop;
     private RectTransform panel;
     private RectTransform burst;
     private RectTransform medallion;
@@ -87,7 +85,19 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         if (instance == this)
             instance = null;
         IsAnyOpen = false;
-        ReleaseBlur();
+    }
+
+    private void OnDisable()
+    {
+        if (routine != null)
+        {
+            StopCoroutine(routine);
+            routine = null;
+        }
+        isOpen = false;
+        closing = false;
+        IsAnyOpen = false;
+        SetHiddenImmediate();
     }
 
     private void HandleLeveledUp(int newLevel)
@@ -107,18 +117,17 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
 
         rootGroup = gameObject.AddComponent<CanvasGroup>();
 
-        // Backdrop: a frozen, heavily blurred snapshot of the game screen captured
-        // the moment the celebration opens, so the world stays visible but soft and
-        // the HUD reads as pushed behind. Filled with a solid navy until the first
-        // capture. A translucent tint over it lifts contrast for the card.
+        // The shared world-only capture temporarily fills the camera viewport,
+        // so the reserved home dock and HUD never enter the modal backdrop.
         RectTransform blurRoot = NewRect(root, "BlurBackground", Vector2.zero, Vector2.zero);
         blurRoot.anchorMin = Vector2.zero;
         blurRoot.anchorMax = Vector2.one;
         blurRoot.offsetMin = blurRoot.offsetMax = Vector2.zero;
         blurRoot.gameObject.AddComponent<CanvasRenderer>();
-        blurImage = blurRoot.gameObject.AddComponent<RawImage>();
+        Image blurImage = blurRoot.gameObject.AddComponent<Image>();
         blurImage.color = new Color(0.05f, 0.06f, 0.13f, 1f);
         blurImage.raycastTarget = true;
+        backdrop = blurRoot.gameObject.AddComponent<PremiumModalBackdrop>();
 
         Image tint = NewRect(root, "Tint", Vector2.zero, Vector2.zero).gameObject.AddComponent<Image>();
         tint.rectTransform.anchorMin = Vector2.zero;
@@ -127,16 +136,21 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         tint.color = new Color(0.05f, 0.06f, 0.14f, 0.42f);
         tint.raycastTarget = true;
 
-        panel = NewRect(root, "CelebrationPanel", new Vector2(880f, 580f), Vector2.zero);
+        panel = NewRect(root, "CelebrationPanel", new Vector2(1060f, 620f), Vector2.zero);
+        PremiumMomentArt.FitParent(panel,1060,620);
 
-        NewPanel(panel,"IvoryFace",new Vector2(880,580),Vector2.zero,PremiumUiStyle.Ivory,32,2);
-        burst = NewRect(panel, "SunBurst", new Vector2(236f, 236f), new Vector2(0f, 150f));
+        NewPanel(panel,"IvoryFace",new Vector2(1060,620),Vector2.zero,PremiumUiStyle.Ivory,32,2);
+        PremiumMomentArt.Stage(panel,-326,0,338,552);
+        PremiumMomentArt.Caption(panel,"Her gün biraz\ndaha evimiz.","More like home,\nevery day.",-326,-174,286,94,27);
+        PremiumMomentArt.Caption(panel,"YENİ BİR DÖNÜM NOKTASI","A NEW MILESTONE",176,240,574,40,19);
+        PremiumMomentArt.RewardTray(panel,176,-76,574,100);
+        burst = NewRect(panel, "SunBurst", new Vector2(236f, 236f), new Vector2(-326f, 62f));
         burst.gameObject.AddComponent<CanvasRenderer>();
         burst.gameObject.AddComponent<OnboardingCelebrationGraphic>()
             .Configure(OnboardingCelebrationGraphic.ShapeKind.Burst, new Color32(255, 216, 147, 70));
 
         // Gold medallion with the new level number.
-        medallion = NewRect(panel, "LevelMedallion", new Vector2(180f, 180f), new Vector2(0f, 152f));
+        medallion = NewRect(panel, "LevelMedallion", new Vector2(180f, 180f), new Vector2(-326f, 62f));
         NewPanel(medallion, "MedallionRim", new Vector2(180f, 180f), Vector2.zero, PremiumUiStyle.Champagne, 88f, 6f);
         NewPanel(medallion, "MedallionFace", new Vector2(142f, 142f), Vector2.zero, PremiumUiStyle.Ivory, 68f, 4f);
         NewText(medallion, "LvLabel", font, "LV.", 28f, FontStyles.Bold,
@@ -145,18 +159,18 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
             new Vector2(160f, 104f), new Vector2(0f, -16f), PremiumUiStyle.Navy);
 
         titleText = NewText(panel, "Title", font, GameLanguageService.Text("celebration.level"), 44f, FontStyles.Bold,
-            new Vector2(760f, 72f), new Vector2(0f, 8f), PremiumUiStyle.Ink);
+            new Vector2(574f, 116f), new Vector2(176f, 152f), PremiumUiStyle.Ink);
         subtitleText = NewText(panel, "Subtitle", font, "YOUR HOME REACHED LEVEL 6", 28f, FontStyles.Bold,
-            new Vector2(780f, 44f), new Vector2(0f, -44f), PremiumUiStyle.Muted);
+            new Vector2(574f, 64f), new Vector2(176f, 46f), PremiumUiStyle.Muted);
         rewardText = NewText(panel, "Reward", font, "REWARD  +500 COINS", 34f, FontStyles.Bold,
-            new Vector2(780f, 52f), new Vector2(0f, -108f), PremiumUiStyle.Teal);
+            new Vector2(466f, 78f), new Vector2(218f, -76f), PremiumUiStyle.Teal);
 
-        collectButton = BuildButton(font, "CollectButton", "COLLECT", new Vector2(320f, 96f),
-            new Vector2(-172f, -196f), PremiumUiStyle.Teal, Color.white, out collectRoot, out collectFace);
+        collectButton = BuildButton(font, "CollectButton", "COLLECT", new Vector2(274f, 80f),
+            new Vector2(26f, -218f), PremiumUiStyle.Coral, PremiumUiStyle.Ink, out collectRoot, out collectFace);
         collectButton.onClick.AddListener(HandleCollect);
 
-        adButton = BuildButton(font, "WatchAdButton", "WATCH AD  x2", new Vector2(320f, 96f),
-            new Vector2(172f, -196f), PremiumUiStyle.Champagne, PremiumUiStyle.Navy, out adRoot, out adFace);
+        adButton = BuildButton(font, "WatchAdButton", "WATCH AD  x2", new Vector2(274f, 80f),
+            new Vector2(326f, -218f), PremiumUiStyle.Mint, PremiumUiStyle.Ink, out adRoot, out adFace);
         adButton.onClick.AddListener(HandleWatchAd);
 
         BuildConfetti();
@@ -191,7 +205,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
             rotations[i] = (i % 2 == 0 ? 1f : -1f) * (150f + (i % 7) * 35f);
 
             RectTransform piece = NewRect(panel, "Confetti_" + i,
-                new Vector2(22f + (i % 3) * 6f, 22f + (i % 2) * 8f), new Vector2(0f, 150f));
+                new Vector2(22f + (i % 3) * 6f, 22f + (i % 2) * 8f), new Vector2(-326f, 62f));
             piece.gameObject.AddComponent<CanvasRenderer>();
             var graphic = piece.gameObject.AddComponent<OnboardingCelebrationGraphic>();
             var kind = i % 5 == 0 ? OnboardingCelebrationGraphic.ShapeKind.Heart
@@ -232,18 +246,19 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         // otherwise Collect takes the whole row so there is no dead button.
         bool adReady = CatRunnerRewardedAdBridge.HasReadyProvider;
         adRoot.gameObject.SetActive(adReady);
-        collectRoot.anchoredPosition = new Vector2(adReady ? -172f : 0f, -196f);
+        collectRoot.anchoredPosition = new Vector2(adReady ? 26f : 176f, -218f);
+        collectRoot.sizeDelta = new Vector2(adReady ? 274f : 574f,80f);
         if (collectButton != null) collectButton.interactable = true;
         if (adButton != null) adButton.interactable = true;
 
         isOpen = true;
         IsAnyOpen = true;
         transform.SetAsLastSibling();
-        // Stay hidden for one frame so the backdrop snapshot (taken at end of frame
-        // inside OpenRoutine) captures the game without the celebration itself.
-        rootGroup.alpha = 0f;
+        rootGroup.alpha = 1f;
         rootGroup.interactable = true;
         rootGroup.blocksRaycasts = true;
+        if (backdrop != null)
+            backdrop.enabled = true;
         StartRoutine(OpenRoutine());
     }
 
@@ -302,22 +317,14 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
     {
         ResetPieces();
 
-        // Capture the blurred backdrop at end of frame (a mid-script capture reads
-        // a black buffer), while this canvas is still transparent, then reveal.
-        yield return new WaitForEndOfFrame();
-        CaptureBlur();
-        rootGroup.alpha = 1f;
-
         float elapsed = 0f;
         const float duration = 1.05f;
-        while (elapsed < duration)
+        while (elapsed < duration && !CatRunnerProgressService.ReducedMotion)
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
 
-            float pop = t < 0.55f
-                ? Mathf.Lerp(0.75f, 1.08f, EaseOut(t / 0.55f))
-                : Mathf.Lerp(1.08f, 1f, Smooth((t - 0.55f) / 0.45f));
+            float pop = Mathf.Lerp(.96f,1f,EaseOut(Mathf.Clamp01(elapsed/.28f)));
             panel.localScale = Vector3.one * pop;
 
             float burstPop = Mathf.Clamp01(t / 0.18f);
@@ -325,15 +332,15 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
             burst.localRotation = Quaternion.Euler(0f, 0f, t * 12f);
 
             float medPop = Mathf.Clamp01((t - 0.12f) / 0.4f);
-            medallion.localScale = Vector3.one * (0.2f + EaseOut(medPop) * 0.8f) *
-                (1f + 0.08f * Mathf.Sin(medPop * Mathf.PI));
+            medallion.localScale = Vector3.one * Mathf.Lerp(.9f,1f,EaseOut(medPop));
 
             for (int i = 0; i < confetti.Length; i++)
             {
                 float p = Mathf.Clamp01((t - 0.08f) / ((i % 4) * 0.025f + 0.62f));
-                confetti[i].anchoredPosition = new Vector2(0f, 150f) + directions[i] * EaseOut(p);
+                confetti[i].anchoredPosition = new Vector2(-326f, 62f) + directions[i] * EaseOut(p);
                 confetti[i].localRotation = Quaternion.Euler(0f, 0f, rotations[i] * p);
                 confetti[i].localScale = Vector3.one * Mathf.Sin(p * Mathf.PI) * 1.2f;
+                SetAlpha(confetti[i],1f-Mathf.Clamp01((p-.68f)/.32f));
             }
             yield return null;
         }
@@ -341,31 +348,16 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         panel.localScale = Vector3.one;
         medallion.localScale = Vector3.one;
 
-        float loop = 0f;
-        while (isOpen && !closing)
-        {
-            loop += Time.unscaledDeltaTime;
-            burst.localRotation = Quaternion.Euler(0f, 0f, 12f + loop * 10f);
-            burst.localScale = Vector3.one * (1f + 0.04f * Mathf.Sin(loop * 3.2f));
-            float breathe = 1f + 0.04f * Mathf.Sin(loop * 2.4f);
-            medallion.localScale = new Vector3(breathe, breathe, 1f);
-            for (int i = 0; i < confetti.Length; i++)
-            {
-                float p = Mathf.Repeat(loop * 0.34f + i / (float)confetti.Length, 1f);
-                float visible = Mathf.Sin(p * Mathf.PI);
-                confetti[i].anchoredPosition = new Vector2(0f, 150f) + directions[i] * EaseOut(p);
-                confetti[i].localRotation = Quaternion.Euler(0f, 0f, rotations[i] * p + loop * 35f);
-                confetti[i].localScale = Vector3.one * (0.55f + visible * 0.65f);
-                SetAlpha(confetti[i], visible);
-            }
-            yield return null;
-        }
+        // Keep the reward choice visible after a bounded reveal. The service
+        // still owns collection; settling this animation never claims it.
+        ResetPieces();
+        routine = null;
     }
 
     private IEnumerator CloseRoutine()
     {
         float elapsed = 0f;
-        while (elapsed < 0.24f)
+        while (elapsed < 0.24f && !CatRunnerProgressService.ReducedMotion)
         {
             elapsed += Time.unscaledDeltaTime;
             float t = Smooth(elapsed / 0.24f);
@@ -397,7 +389,8 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         }
         if (panel != null)
             panel.localScale = Vector3.one;
-        ReleaseBlur();
+        if (backdrop != null)
+            backdrop.enabled = false;
         ResetPieces();
     }
 
@@ -416,80 +409,10 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         {
             if (confetti[i] == null)
                 continue;
-            confetti[i].anchoredPosition = new Vector2(0f, 150f);
+            confetti[i].anchoredPosition = new Vector2(-326f, 62f);
             confetti[i].localScale = Vector3.zero;
             confetti[i].localRotation = Quaternion.identity;
-            SetAlpha(confetti[i], 1f);
-        }
-    }
-
-    // ----- Blurred backdrop -----
-
-    private void CaptureBlur()
-    {
-        Texture2D snap = ScreenCapture.CaptureScreenshotAsTexture();
-        if (snap == null)
-            return;
-
-        // The captured frame has a zero alpha channel (an opaque scene never writes
-        // framebuffer alpha), which would make the RawImage transparent. Force it
-        // opaque so the blurred snapshot actually shows.
-        Color32[] pixels = snap.GetPixels32();
-        for (int i = 0; i < pixels.Length; i++)
-            pixels[i].a = 255;
-        snap.SetPixels32(pixels);
-        snap.Apply(false);
-
-        // Progressive down- then up-sampling: each bilinear step averages a 2x2
-        // neighbourhood, so the blur accumulates smoothly and the final texture is
-        // large enough (~1/3 screen) that stretching it to full screen stays creamy
-        // instead of showing bilinear blocks.
-        int w = snap.width;
-        int h = snap.height;
-        RenderTexture d1 = Downsample(snap, w / 4, h / 4);
-        RenderTexture d2 = Downsample(d1, w / 12, h / 12);
-        RenderTexture d3 = Downsample(d2, w / 28, h / 28);
-        RenderTexture u1 = Downsample(d3, w / 8, h / 8);
-        RenderTexture u2 = Downsample(u1, w / 3, h / 3);
-
-        ReleaseBlur();
-        blurRt = new RenderTexture(u2.width, u2.height, 0) { filterMode = FilterMode.Bilinear };
-        Graphics.Blit(u2, blurRt);
-
-        RenderTexture.ReleaseTemporary(d1);
-        RenderTexture.ReleaseTemporary(d2);
-        RenderTexture.ReleaseTemporary(d3);
-        RenderTexture.ReleaseTemporary(u1);
-        RenderTexture.ReleaseTemporary(u2);
-        Destroy(snap);
-
-        if (blurImage != null)
-        {
-            blurImage.texture = blurRt;
-            blurImage.color = Color.white;
-        }
-    }
-
-    private static RenderTexture Downsample(Texture source, int width, int height)
-    {
-        RenderTexture rt = RenderTexture.GetTemporary(Mathf.Max(8, width), Mathf.Max(8, height), 0);
-        rt.filterMode = FilterMode.Bilinear;
-        Graphics.Blit(source, rt);
-        return rt;
-    }
-
-    private void ReleaseBlur()
-    {
-        if (blurImage != null)
-        {
-            blurImage.texture = null;
-            blurImage.color = new Color(0.05f, 0.06f, 0.13f, 1f);
-        }
-        if (blurRt != null)
-        {
-            blurRt.Release();
-            Destroy(blurRt);
-            blurRt = null;
+            SetAlpha(confetti[i], 0f);
         }
     }
 
@@ -543,6 +466,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         t.color = color;
         t.raycastTarget = false;
         t.richText = false;
+        PremiumTypography.Apply(t);
         return t;
     }
 

@@ -91,7 +91,7 @@ public sealed class SecondFloorActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 45f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         // The tour runs ten routines in a row, so every message names the one
@@ -173,6 +173,7 @@ public sealed class SecondFloorActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (knock.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(knock);
             lowestY = Mathf.Min(lowestY, book.localPosition.y);
             maxTilt = Mathf.Max(maxTilt, Quaternion.Angle(homeRotation, book.localRotation));
             yield return null;
@@ -220,6 +221,7 @@ public sealed class SecondFloorActivityTests
         float deadline = Time.realtimeSinceStartup + 45f;
         while (spin.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(spin);
             maxTurn = Mathf.Max(maxTurn, Quaternion.Angle(rest, pivot.localRotation));
             yield return null;
         }

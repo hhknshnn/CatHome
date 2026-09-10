@@ -371,7 +371,7 @@ public static class RoomLightingControllerBuilder
     private static Light FindDirectionalLight()
     {
         Light sun = RenderSettings.sun;
-        if (sun != null && sun.type == LightType.Directional)
+        if (sun != null && sun.type == LightType.Directional && sun.name != "ReferenceSoftFill")
             return sun;
 
         Light[] lights = Object.FindObjectsByType<Light>(FindObjectsInactive.Include);
@@ -379,7 +379,7 @@ public static class RoomLightingControllerBuilder
         Light fallback = null;
         foreach (Light light in lights)
         {
-            if (light.type != LightType.Directional)
+            if (light.type != LightType.Directional || light.name == "ReferenceSoftFill")
                 continue;
 
             if ((light.cullingMask & DefaultLayerMask) != 0)

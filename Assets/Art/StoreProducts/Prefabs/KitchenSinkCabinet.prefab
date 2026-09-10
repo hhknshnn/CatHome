@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2376668472969813703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5873444288595586699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2185438783726543767}
+  m_Layer: 0
+  m_Name: SipWaterTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2185438783726543767
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873444288595586699}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25464803, y: 0.75451267, z: -0.097423315}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2376668472969813703}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7342471998659768089
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,7 +88,7 @@ Transform:
   m_GameObject: {fileID: 7342471998659768089}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47, y: 0.8111011, z: -0.1}
+  m_LocalPosition: {x: -0.48100173, y: 0.8111011, z: -0.097423315}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -141,6 +172,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 539789793975581160}
+  - {fileID: 8874097663188185062}
   m_Father: {fileID: 2376668472969813703}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &8310985473565958613
@@ -177,6 +209,7 @@ GameObject:
   - component: {fileID: 9002671593877883169}
   - component: {fileID: 3053118625643414706}
   - component: {fileID: 7093813809954088206}
+  - component: {fileID: 8099964432955848444}
   m_Layer: 0
   m_Name: KitchenSinkCabinet
   m_TagString: Untagged
@@ -201,6 +234,7 @@ Transform:
   - {fileID: 7669411865088544735}
   - {fileID: 7379460659811683706}
   - {fileID: 6681918736426387200}
+  - {fileID: 2185438783726543767}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &713788330832262642
@@ -269,6 +303,7 @@ MonoBehaviour:
   unlockedContent: {fileID: 8706548818385352200}
   floorPoint: {fileID: 7669411865088544735}
   perchPoint: {fileID: 7379460659811683706}
+  sipTarget: {fileID: 2185438783726543767}
   sipDuration: 2.4
   thirstRestore: 42
   notThirstyAbove: 96
@@ -284,6 +319,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &8099964432955848444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8981502294187406081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1001 &69540297968115203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -347,35 +395,35 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: d5fa6e696a29fca49a9733a12a85eaba, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 1e2aa14e222e0614a895c14f09d2a587, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6c588fb3ef05cf041a9ee50c33b98817, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: ee637fd34269cc941a4e99647b7fdc29, type: 2}
+      objectReference: {fileID: 2100000, guid: 0b12228e061029a44a4de596f50ebc80, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 19184ad480c1bf74d83993d9884d5d56, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: c9c8036b9ddba6448a246facec9e90f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: c389359af3b2c5f46ad92767feff9bce, type: 2}
+      objectReference: {fileID: 2100000, guid: c1d1406d5daabf34cad4cc9da7910ff5, type: 2}
     - target: {fileID: -7511558181221131132, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: 'm_Materials.Array.data[7]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 046b79f562e406443a524a3c2f0d70b2, type: 2}
     - target: {fileID: 919132149155446097, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
       propertyPath: m_Name
       value: KitchenSinkCabinet_PremiumModel
@@ -420,3 +468,81 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6111018287565184894, guid: 36c46cc3820a1cf4d8a377ed7f5ed6e3, type: 3}
+--- !u!1001 &8984005828885989389
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6973832239597655040}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.9431408
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.9431408
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.9431408
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.015753586
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+    - target: {fileID: 919132149155446097, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+      propertyPath: m_Name
+      value: KitchenSipWater
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+--- !u!4 &8874097663188185062 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f38305d7f09f7e64ea9c9ae9fbeb089d, type: 3}
+  m_PrefabInstance: {fileID: 8984005828885989389}
+  m_PrefabAsset: {fileID: 0}

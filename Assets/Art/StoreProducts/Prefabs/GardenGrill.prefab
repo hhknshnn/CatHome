@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1169765480051983718}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.07105263, y: 0.6063158, z: 0.26526317}
+  m_LocalPosition: {x: -0.05826316, y: 0.49717894, z: 0.2175158}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 8019634277046770554}
   - component: {fileID: 6635964354534044885}
   - component: {fileID: 2381872033557767258}
+  - component: {fileID: 4131279976131910327}
   m_Layer: 0
   m_Name: GardenGrill
   m_TagString: Untagged
@@ -98,7 +99,7 @@ MonoBehaviour:
   productId: garden.grill
   movableRoot: {fileID: 1274407649136881673}
   legacySlots: []
-  footprintSize: {x: 0.85, y: 0.7}
+  footprintSize: {x: 0.697, y: 0.574}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -134,9 +135,42 @@ MonoBehaviour:
   lockedVisual: {fileID: 0}
   unlockedContent: {fileID: 9014242899970694003}
   lookPoint: {fileID: 4937848839581603394}
-  reactionKind: 1
+  reactionKind: 0
   lookDuration: 2.8
   completeMessage: SMELLS GOOD!
+  visibleLookTargets:
+  - {x: -0.09491872, y: 0.4796969, z: 0.2076714}
+  - {x: 0.30413368, y: 0.5003829, z: -0.13420191}
+  - {x: -0.12373301, y: 0.70937514, z: -0.104493484}
+  - {x: -0.30502093, y: 0.49706852, z: 0.0000000055884093}
+  - {x: 0.23188737, y: 0.47892675, z: 0.13910508}
+  - {x: -0.01613491, y: 0.70937514, z: 0.10012323}
+  - {x: -0.102275215, y: 0.27781168, z: 0.14110175}
+  - {x: -0.2043263, y: 0.63750577, z: 0.12696998}
+  - {x: 0.04068055, y: 0.66700673, z: -0.09098545}
+  - {x: 0.0709944, y: 0.49706852, z: 0.18107957}
+  - {x: -0.20483097, y: 0.39978224, z: 0.13481994}
+  - {x: -0.2543047, y: 0.63750577, z: -0.023188766}
+  - {x: -0.040777665, y: 0.60087126, z: 0.19032632}
+  - {x: -0.008963762, y: 0.39978224, z: 0.17690095}
+  - {x: 0.3041337, y: 0.5003829, z: 0.044733927}
+  - {x: 0.07950625, y: 0.63750577, z: 0.09937896}
+  - {x: 0.2285915, y: 0.38609058, z: 0.08253373}
+  - {x: -0.28208444, y: 0.49706852, z: 0.10049148}
+  - {x: -0.13876806, y: 0.70937514, z: 0.09504634}
+  - {x: 0.042567447, y: 0.70937514, z: -0.0000000037252903}
+  - {x: -0.21688226, y: 0.63750577, z: -0.114414014}
+  - {x: 0.2932579, y: 0.5003829, z: -0.04473397}
+  - {x: -0.11556835, y: 0.39978224, z: 0.18470094}
+  - {x: 0.3041337, y: 0.5003829, z: 0.13420185}
+  - {x: 0.15857169, y: 0.47983187, z: 0.12895578}
+  - {x: -0.16492921, y: 0.44352478, z: 0.19003837}
+  - {x: -0.2441009, y: 0.39978224, z: 0.08219966}
+  - {x: -0.10604547, y: 0.60087126, z: 0.19032632}
+  - {x: -0.3036506, y: 0.50805473, z: -0.05255052}
+  - {x: -0.29921404, y: 0.49706852, z: 0.05153785}
+  - {x: 0.02708003, y: 0.49706852, z: 0.20867279}
+  - {x: -0.1974044, y: 0.6784838, z: 0.098881006}
 --- !u!114 &2381872033557767258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +183,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &4131279976131910327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5807357609124787499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.82
 --- !u!1 &6602097450608495302
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,7 +221,7 @@ Transform:
   m_GameObject: {fileID: 6602097450608495302}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.62}
+  m_LocalPosition: {x: 0, y: 0, z: 0.5084}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -207,7 +254,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.82, y: 0.82, z: 0.82}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1699930435407984038}
@@ -297,27 +344,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: be65fe7ceda89634b978b0db953f2c1f, type: 2}
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 2f4b74d3cd0383f488377db5ebbe62f7, type: 2}
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: b0b3fa28ee72390419e68606f87ae82e, type: 2}
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 14adce2dfcb6eb943be1e84a0d2ee219, type: 2}
     - target: {fileID: -7511558181221131132, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 88be173cb98422840bdd43f7287ce36b, type: 2}
     - target: {fileID: 919132149155446097, guid: fcf9c0aeb3e2b6a4daf5a3c16e35e01c, type: 3}
       propertyPath: m_Name
       value: GardenGrill_PremiumModel

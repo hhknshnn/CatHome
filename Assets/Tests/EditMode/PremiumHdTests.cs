@@ -37,13 +37,13 @@ public sealed class PremiumHdTests
         }
     }
 
-    [TestCase("Mobile", 2048, 2)] [TestCase("PC", 4096, 4)]
+    [TestCase("Mobile", 1024, 1)] [TestCase("PC", 4096, 4)]
     public void QualityKeepsNativeResolutionAndSoftDetailedShadows(string name, int shadowSize, int cascades)
     {
         var asset = AssetDatabase.LoadMainAssetAtPath("Assets/Settings/" + name + "_RPAsset.asset");
         var data = new SerializedObject(asset);
-        Assert.That(data.FindProperty("m_RenderScale").floatValue, Is.EqualTo(1f));
-        Assert.That(data.FindProperty("m_MSAA").intValue, Is.EqualTo(4));
+        Assert.That(data.FindProperty("m_RenderScale").floatValue, Is.EqualTo(name=="Mobile" ? .85f : 1f));
+        Assert.That(data.FindProperty("m_MSAA").intValue, Is.EqualTo(name=="Mobile" ? 2 : 4));
         Assert.That(data.FindProperty("m_SoftShadowsSupported").boolValue, Is.True);
         Assert.That(data.FindProperty("m_MainLightShadowmapResolution").intValue, Is.EqualTo(shadowSize));
         Assert.That(data.FindProperty("m_ShadowCascadeCount").intValue, Is.EqualTo(cascades));

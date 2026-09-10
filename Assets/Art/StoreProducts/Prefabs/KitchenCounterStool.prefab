@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7698183802942663981}
   - component: {fileID: 174443059924774859}
   - component: {fileID: 5473153062704880695}
+  - component: {fileID: 7233448986112950908}
   m_Layer: 0
   m_Name: KitchenCounterStool
   m_TagString: Untagged
@@ -68,7 +69,7 @@ MonoBehaviour:
   productId: kitchen.counter-stool
   movableRoot: {fileID: 7560849242246348838}
   legacySlots: []
-  footprintSize: {x: 0.72, y: 0.66}
+  footprintSize: {x: 0.61200005, y: 0.56100005}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -121,6 +122,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7233448986112950908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5102878085619236483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.85
 --- !u!1 &6231856485068628338
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 6231856485068628338}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.8}
+  m_LocalPosition: {x: 0, y: 0, z: -0.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -178,7 +192,7 @@ Transform:
   m_GameObject: {fileID: 6682756459383676961}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5305116, z: -0.02845272}
+  m_LocalPosition: {x: 0, y: 0.45093492, z: -0.024184814}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -196,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
-  size: {x: 0.42000002, y: 0.42000002}
+  size: {x: 0.35, y: 0.35}
   overridePose: 1
   preferredPose: 1
   alignAlongSurface: 0
@@ -225,7 +239,7 @@ Transform:
   m_GameObject: {fileID: 7782560864103149840}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.66}
+  m_LocalPosition: {x: 0, y: 0, z: -0.56100005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -258,7 +272,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1167478772858402994}
@@ -348,23 +362,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 1e2aa14e222e0614a895c14f09d2a587, type: 2}
     - target: {fileID: -7511558181221131132, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 046b79f562e406443a524a3c2f0d70b2, type: 2}
     - target: {fileID: -7511558181221131132, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: d5fa6e696a29fca49a9733a12a85eaba, type: 2}
     - target: {fileID: -7511558181221131132, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: c9c8036b9ddba6448a246facec9e90f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6c588fb3ef05cf041a9ee50c33b98817, type: 2}
     - target: {fileID: 919132149155446097, guid: f3760542487e1b04696867c874f0412c, type: 3}
       propertyPath: m_Name
       value: KitchenCounterStool_PremiumModel

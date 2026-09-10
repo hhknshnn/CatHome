@@ -35,6 +35,7 @@ public sealed class CatRunnerPlayer : MonoBehaviour
     private Vector3 baseVisualPosition;
     private Vector3 baseVisualScale;
     private Quaternion baseVisualRotation;
+    private Quaternion movementVisualRotation;
     private int speedHash;
     private float targetLane;
     private float jumpHeight;
@@ -52,8 +53,12 @@ public sealed class CatRunnerPlayer : MonoBehaviour
     private float hitReaction;
     private float landingReaction;
     private float celebrationRemaining;
+    private MiniGameCatAnimation motion;
+    private CatRunnerGameController game;
 
     public float LanePosition => transform.localPosition.x;
+    public bool IsRunning => running;
+    public Transform VisualRoot => visualRoot;
     public float Height => surfaceHeight + jumpHeight;
     public float JumpHeight => jumpHeight;
     public float SurfaceHeight => surfaceHeight;
@@ -72,14 +77,28 @@ public sealed class CatRunnerPlayer : MonoBehaviour
         if (animator == null)
             animator = GetComponentInChildren<Animator>(true);
         if (visualRoot == null && animator != null)
-            visualRoot = animator.transform;
+        {
+            // The Animator sits inside the breed's scaled visual. Cache the
+            // owned outer root, not AnimatedVisual's source-model scale (3x).
+            // Rebinding that inner transform to the outer .5x Runner root used
+            // to multiply the complete cat sixfold in programmatic setups.
+            var tag=animator.GetComponentInParent<CatBreedVisualTag>();
+            visualRoot=tag!=null?tag.transform:animator.transform;
+            while(visualRoot!=transform&&visualRoot.parent!=null&&visualRoot.parent!=transform)
+                visualRoot=visualRoot.parent;
+        }
         if (visualRoot != null)
         {
             baseVisualPosition = visualRoot.localPosition;
             baseVisualRotation = visualRoot.localRotation;
+            movementVisualRotation = baseVisualRotation;
             baseVisualScale = visualRoot.localScale;
         }
         speedHash = Animator.StringToHash("Speed");
+        BindMotion();
+        game=GetComponentInParent<CatRunnerGameController>();
+        if (GetComponent<RunnerGroundContact>() == null)
+            gameObject.AddComponent<RunnerGroundContact>();
     }
 
     private void Update()
@@ -92,6 +111,8 @@ public sealed class CatRunnerPlayer : MonoBehaviour
 
         if (!running)
         {
+            if(Time.timeScale<=0)return;
+            if(motion!=null)motion.Run(0);
             SetAnimationSpeed(0f);
             UpdateCelebrationPose();
             return;
@@ -102,7 +123,13 @@ public sealed class CatRunnerPlayer : MonoBehaviour
         UpdateSurface();
         UpdateJump();
         UpdateLane();
-        SetAnimationSpeed(1f);
+        float speed=game!=null?game.CurrentSpeed:7;
+        if(motion!=null)
+        {
+            if(IsAirborne)motion.Flight(Mathf.InverseLerp(jumpVelocity,-jumpVelocity,verticalVelocity));
+            else if(IsSliding)motion.Crouch(speed);
+            else motion.Run(speed);
+        }
     }
 
     public void SetRunning(bool value)
@@ -115,6 +142,22 @@ public sealed class CatRunnerPlayer : MonoBehaviour
             pointerGestureConsumed = false;
             pointerHorizontalDrag = false;
         }
+    }
+
+    public void CompleteRunOnSurface(float supportHeight)
+    {
+        // Stopping a completed attempt is different from pausing mid-jump.
+        // Keep the lane/forward position and the real support under the cat.
+        SetRunning(false);
+        jumpHeight = 0f;
+        verticalVelocity = 0f;
+        slideRemaining = 0f;
+        surfaceHeight = targetSurfaceHeight = Mathf.Max(0f, supportHeight);
+        Vector3 position = transform.localPosition;
+        position.y = surfaceHeight;
+        transform.localPosition = position;
+        if (motion != null)
+            motion.Run(0f);
     }
 
     public void ResetRun()
@@ -137,6 +180,7 @@ public sealed class CatRunnerPlayer : MonoBehaviour
         {
             visualRoot.localPosition = baseVisualPosition;
             visualRoot.localRotation = baseVisualRotation;
+            movementVisualRotation = baseVisualRotation;
             visualRoot.localScale = baseVisualScale;
         }
     }
@@ -403,7 +447,9 @@ public sealed class CatRunnerPlayer : MonoBehaviour
 
     private void UpdateJump()
     {
-        bool wasAirborne = jumpHeight > 0.001f || verticalVelocity > 0f;
+        // Use the same predicate as integration. A last fraction of a millimetre
+        // still has to emit landing; the display epsilon could skip that event.
+        bool wasAirborne = jumpHeight > 0f || verticalVelocity > 0f;
         if (jumpHeight > 0f || verticalVelocity > 0f)
         {
             verticalVelocity += gravity * Time.deltaTime;
@@ -437,38 +483,33 @@ public sealed class CatRunnerPlayer : MonoBehaviour
         if (visualRoot != null)
         {
             float lateral = position.x - previousX;
-            float lean = Mathf.Clamp(-lateral * 70f, -12f, 12f);
+            float lateralSpeed = lateral / Mathf.Max(.001f, Time.deltaTime);
+            float lean = Mathf.Clamp(-lateralSpeed * 1.16f, -12f, 12f);
             if (hitCooldown > 0f)
                 lean += Mathf.Sin(Time.time * 34f) * 7f;
-            float slide01 = IsSliding ? (reducedMotion ? .35f : 1f) : 0f;
+            if (IsSliding) lean = Mathf.Clamp(lean, -2f, 2f);
+            float slide01 = 0f; // The authored joints carry the crouch; never squash a breed's proportions.
             float jump01 = reducedMotion ? 0f : Mathf.Clamp01(jumpHeight / 1.1f);
             float landing01 = reducedMotion ? 0f : landingReaction;
             float hit01 = reducedMotion ? 0f : hitReaction;
-            Vector3 desiredScale = Vector3.Scale(
-                baseVisualScale,
-                new Vector3(
-                    1f + slide01 * .08f + landing01 * .1f,
-                    Mathf.Lerp(1f + jump01 * .08f - landing01 * .13f,
-                        slideVisualHeight,
-                        slide01),
-                    1f + slide01 * .12f));
+            Vector3 desiredScale = baseVisualScale;
             visualRoot.localScale = Vector3.Lerp(
                 visualRoot.localScale,
                 desiredScale,
                 1f - Mathf.Exp(-16f * Time.deltaTime));
             Vector3 desiredVisualPosition = baseVisualPosition +
                                             new Vector3(0f, -slide01 * .1f, slide01 * .15f);
-            visualRoot.localPosition = Vector3.Lerp(
-                visualRoot.localPosition,
-                desiredVisualPosition,
-                1f - Mathf.Exp(-16f * Time.deltaTime));
-            visualRoot.localRotation = Quaternion.Slerp(
-                visualRoot.localRotation,
+            // Contact correction is recomputed after the Animator; never carry
+            // last frame's offset into the next pose.
+            visualRoot.localPosition = desiredVisualPosition;
+            movementVisualRotation = Quaternion.Slerp(
+                movementVisualRotation,
                 baseVisualRotation * Quaternion.Euler(
                     slide01 * 9f - jump01 * 6f,
                     hit01 * Mathf.Sin(Time.time * 30f) * 5f,
                     reducedMotion ? 0f : lean + hit01 * Mathf.Sin(Time.time * 34f) * 5f),
                 1f - Mathf.Exp(-12f * Time.deltaTime));
+            visualRoot.localRotation = movementVisualRotation;
         }
     }
 
@@ -518,12 +559,29 @@ public sealed class CatRunnerPlayer : MonoBehaviour
     {
         if (replacementAnimator == null || replacementRoot == null)
             return;
+        bool sameHierarchy=visualRoot!=null&&
+            (replacementRoot.IsChildOf(visualRoot)||visualRoot.IsChildOf(replacementRoot));
+        if (visualRoot != null && visualRoot != replacementRoot && !sameHierarchy)
+        {
+            replacementRoot.localPosition = baseVisualPosition;
+            replacementRoot.localRotation = baseVisualRotation;
+            replacementRoot.localScale = baseVisualScale;
+        }
         animator = replacementAnimator;
         visualRoot = replacementRoot;
         baseVisualPosition = visualRoot.localPosition;
         baseVisualRotation = visualRoot.localRotation;
+        movementVisualRotation = baseVisualRotation;
         baseVisualScale = visualRoot.localScale;
         speedHash = Animator.StringToHash("Speed");
+        BindMotion();
+    }
+
+    private void BindMotion()
+    {
+        if(animator==null)return;
+        motion=animator.GetComponent<MiniGameCatAnimation>();
+        if(motion==null)motion=animator.gameObject.AddComponent<MiniGameCatAnimation>();
     }
 
 #if UNITY_EDITOR

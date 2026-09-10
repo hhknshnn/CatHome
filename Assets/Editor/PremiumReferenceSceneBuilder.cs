@@ -30,12 +30,14 @@ public static class PremiumReferenceSceneBuilder
             }
         }
         Scene originalActive=SceneManager.GetActiveScene();
-        foreach(string path in new[]{HomeRoomService.LivingRoomScenePath,HomeRoomService.BathroomScenePath,HomeRoomService.KitchenScenePath,HomeRoomService.BedroomScenePath,HomeRoomService.GardenScenePath,HomeRoomService.BalconyScenePath,HomeRoomService.PatioScenePath,HomeRoomService.SecondFloorScenePath})
+        foreach(var definition in HomeRoomService.Rooms)
         {
+            string path=definition.ScenePath;
             var room=SceneManager.GetSceneByPath(path);bool opened=!room.IsValid()||!room.isLoaded;
             if(opened)room=EditorSceneManager.OpenScene(path,OpenSceneMode.Additive);
             foreach(var root in room.GetRootGameObjects())foreach(var view in root.GetComponentsInChildren<Camera>(true))
-            {view.fieldOfView=44.5f;view.transform.rotation=Quaternion.Euler(25,10,0);EditorUtility.SetDirty(view);}
+            {HomeRoomCameraProfile.Apply(view);EditorUtility.SetDirty(view);EditorUtility.SetDirty(view.transform);}
+            ModernWorldArtBuilder.Apply(room,definition.Id);
             EditorSceneManager.MarkSceneDirty(room);EditorSceneManager.SaveScene(room);
             if(opened)EditorSceneManager.CloseScene(room,true);
         }
@@ -55,7 +57,7 @@ public static class PremiumReferenceSceneBuilder
         light.type=LightType.Directional;light.color=new Color(1,.96f,.88f);light.intensity=.38f;
         light.shadows=LightShadows.None;light.cullingMask=~(1<<TitleCatShowcase.StageLayer);
         child.rotation=Quaternion.Euler(22,12,0);
-        if(camera!=null){camera.fieldOfView=44.5f;camera.transform.rotation=Quaternion.Euler(25,10,0);EditorUtility.SetDirty(camera);}
+        if(camera!=null)LivingRoomReferenceLayout.ApplyCamera(camera);
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
     }
 }

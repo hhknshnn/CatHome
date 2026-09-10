@@ -81,6 +81,22 @@ public sealed class PetTutorialHint : MonoBehaviour
         "You can pet me, help me eat and drink, and tuck me into bed when I’m tired.",
         "Let’s make this little home ours!"
     };
+    private static string IntroductionLine(int index, string name)
+    {
+        string[] tr = {
+            "Merhaba! Ben {0}. Önce birbirimizi tanıyalım; sonra yuvamızı birlikte keşfedelim.",
+            "Beni okşamak için üzerimde parmağını gezdir. Sol alttaki analogla yürüt; daha çok çektiğinde koşarım.",
+            "Mama, su ve yatağa yaklaşınca ilgili düğme açılır. Dinlenirken sen Kalk diyene kadar yerimde kalırım.",
+            "Birlikte düğmesinden miyavlama, oturma ve loaf seçebilirsin. Ayrıntılı oyun rehberi de orada. Şimdi birlikte deneyelim!"
+        };
+        string[] en = {
+            "Hi! I'm {0}. Let's get to know each other, then explore our home together.",
+            "Stroke me with your finger to pet me. Use the lower-left stick to walk; pull farther to run.",
+            "Approach food, water or a bed to see its action. When resting, I stay until you choose Get up.",
+            "The Together button offers meowing, sitting and loafing, plus a detailed play guide. Let's try things together!"
+        };
+        return string.Format(GameContentCopy.Text(tr[index], en[index]), name);
+    }
     private Coroutine transitionRoutine;
     private Vector2 pawRestPosition, cardRestPosition, screenVelocity;
     private Vector3 movementStart;
@@ -337,11 +353,11 @@ public sealed class PetTutorialHint : MonoBehaviour
         string name=CatName;
         if(string.IsNullOrEmpty(name))
         {
-            if(!dialogue.IsVisible) dialogue.ShowNamePrompt("Hi! Before we begin… what should my name be?");
+            if(!dialogue.IsVisible) dialogue.ShowNamePrompt(GameContentCopy.Text("Merhaba! Başlamadan önce… adım ne olsun?", "Hi! Before we begin… what should my name be?"));
             return;
         }
         if(introStep>=introduction.Length){ CompleteIntroduction(); return; }
-        if(!dialogue.IsVisible) dialogue.ShowMessage(name,string.Format(introduction[introStep],name));
+        if(!dialogue.IsVisible) { dialogue.ShowMessage(name,IntroductionLine(introStep,name)); dialogue.SetLessonProgress(introStep+1,4); }
     }
 
     private void HandleNameConfirmed(string value)
@@ -349,7 +365,8 @@ public sealed class PetTutorialHint : MonoBehaviour
         if(!string.IsNullOrEmpty(CatName)) return;
         string safe=CatDialogueView.NormalizeName(value); if(string.IsNullOrEmpty(safe)) return;
         PlayerPrefs.SetString(CatNameKey,safe); introStep=0; PlayerPrefs.SetInt(IntroductionStepKey,0); PlayerPrefs.Save();
-        dialogue.ShowMessage(safe,string.Format(introduction[0],safe));
+        dialogue.ShowMessage(safe,IntroductionLine(0,safe));
+        dialogue.SetLessonProgress(1,4);
     }
 
     private void HandleContinue()
@@ -360,7 +377,7 @@ public sealed class PetTutorialHint : MonoBehaviour
             if(string.IsNullOrEmpty(CatName)) return;
             introStep++; PlayerPrefs.SetInt(IntroductionStepKey,introStep); PlayerPrefs.Save();
             if(introStep>=introduction.Length){ CompleteIntroduction(); return; }
-            dialogue.ShowMessage(CatName,string.Format(introduction[introStep],CatName)); return;
+            dialogue.ShowMessage(CatName,IntroductionLine(introStep,CatName)); dialogue.SetLessonProgress(introStep+1,4); return;
         }
         if(currentStep<steps.Length&&steps[currentStep].completion==CompletionKind.TapDialogue) CompleteCurrentStep();
     }
@@ -392,15 +409,15 @@ public sealed class PetTutorialHint : MonoBehaviour
             if(step.kind==StepKind.WatchNeeds)
             {
                 spotlightCopy.gameObject.SetActive(true); PositionSpotlightCopyBelowTargets(step);
-                spotlightTitle.text="KEEP THEM HAPPY"; spotlightSubtitle.text="Keep hunger, thirst, and energy balanced.";
-                if(!dialogue.IsVisible) dialogue.ShowMessage(CatName,"These bars show my hunger, thirst, and energy.");
+                spotlightTitle.text=GameContentCopy.Text("İhtiyaçlarıma göz kulak ol", "KEEP THEM HAPPY"); spotlightSubtitle.text=GameContentCopy.Text("Tokluğumu, suyumu ve enerjimi dengede tut.", "Keep hunger, thirst, and energy balanced.");
+                if(!dialogue.IsVisible) dialogue.ShowMessage(CatName,GameContentCopy.Text("Bu göstergeler tokluğumu, suyumu ve enerjimi gösterir.", "These bars show my hunger, thirst, and energy."));
             }
             else
             {
                 spotlightCopy.gameObject.SetActive(false);
                 string message=step.kind==StepKind.FoodAndWater
-                    ? "Keep me fed and hydrated with my food and water bowls."
-                    : "When I’m tired, the bed helps me recover my energy.";
+                    ? GameContentCopy.Text("Mama ve su kaplarımdan yiyip içmeme yardım et.", "Keep me fed and hydrated with my food and water bowls.")
+                    : GameContentCopy.Text("Yorulduğumda yatağımda dinlenerek enerjimi toplarım.", "When I’m tired, the bed helps me recover my energy.");
                 if(!dialogue.IsVisible) dialogue.ShowMessage(CatName,message);
             }
         }
@@ -408,7 +425,7 @@ public sealed class PetTutorialHint : MonoBehaviour
 
     private void ConfigureCard(StepDefinition step)
     {
-        instructionLabel.text=step.message;
+        instructionLabel.text=step.kind==StepKind.PetTheCat ? GameContentCopy.Text("Sevmek için okşa", "SWIPE TO PET") : step.kind==StepKind.MoveYourCat ? GameContentCopy.Text("Devam etmek için hareket et", "MOVE TO CONTINUE") : step.message;
         bool move=step.kind==StepKind.MoveYourCat;
         movePortrait.gameObject.SetActive(move);
         Transform joystick=cardRoot.Find("JoystickCue"); if(joystick!=null) joystick.gameObject.SetActive(move);

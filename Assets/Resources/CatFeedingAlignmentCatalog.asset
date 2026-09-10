@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9005e3cc3ffd3714d835a58180a68ed5, type: 3}
+  m_Name: CatFeedingAlignmentCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::CatFeedingAlignmentCatalog
+  sourceClip: {fileID: 8952495584820336972, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+  entries:
+  - breedId: domestic-shorthair
+    mouthOffset: {x: 0.02423316, y: 0.07548216, z: 0.29417834}
+    rootHeight: 0.0042217136
+  - breedId: domestic-shorthair-orange
+    mouthOffset: {x: 0.02423316, y: 0.07548216, z: 0.29417834}
+    rootHeight: 0.0042217136
+  - breedId: khao-manee
+    mouthOffset: {x: 0.02423316, y: 0.07548216, z: 0.29417834}
+    rootHeight: 0.0042217136
+  - breedId: british-shorthair
+    mouthOffset: {x: 0.019073498, y: 0.06855394, z: 0.2910534}
+    rootHeight: 0.004323615
+  - breedId: domestic-longhair
+    mouthOffset: {x: 0.01866185, y: 0.07310625, z: 0.2885763}
+    rootHeight: 0.014184703
+  - breedId: maine-coon
+    mouthOffset: {x: 0.010413033, y: 0.040325694, z: 0.30473366}
+    rootHeight: 0.038969412
+  - breedId: oriental-shorthair
+    mouthOffset: {x: 0.018492889, y: 0.07291898, z: 0.28916588}
+    rootHeight: -0.00093696173
+  - breedId: persian
+    mouthOffset: {x: 0.019409435, y: 0.08473504, z: 0.29673946}
+    rootHeight: 0.014090357
+  - breedId: russian-blue
+    mouthOffset: {x: 0.02423316, y: 0.07548216, z: 0.29417834}
+    rootHeight: 0.0042217136
+  - breedId: sphynx
+    mouthOffset: {x: 0.017507581, y: 0.07530377, z: 0.2859448}
+    rootHeight: -0.001250674

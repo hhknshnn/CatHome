@@ -1,5 +1,9 @@
 # Sabit oda düzeni ve kedi etkileşimleri — 5 Eylül 2026
 
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
+
 Tamamlandı. Unity 6000.4.4f1 içinde **391/391 EditMode**, **53/53 PlayMode** ve sekiz odada **800/800 eşya–ırk kombinasyonu** geçti. Son canlı tur görünür gövde/yüzey temasını da ölçer. Validator 0 hata / 0 uyarı. Bu kayıt Unity Editor doğrulamasıdır; Android cihaz performans testi değildir.
 
 ## Kullanıcı kararı

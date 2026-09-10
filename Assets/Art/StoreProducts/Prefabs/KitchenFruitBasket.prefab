@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5328403772703546203}
   - component: {fileID: 3163222715454560680}
   - component: {fileID: 491116040389913508}
+  - component: {fileID: 5067345363100809327}
   m_Layer: 0
   m_Name: KitchenFruitBasket
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MonoBehaviour:
   productId: kitchen.fruit-basket
   movableRoot: {fileID: 1347809345557369300}
   legacySlots: []
-  footprintSize: {x: 0.82, y: 0.82}
+  footprintSize: {x: 0.5576, y: 0.5576}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -106,6 +107,11 @@ MonoBehaviour:
   reactionKind: 1
   lookDuration: 2.4
   completeMessage: GOT IT!
+  visibleLookTargets:
+  - {x: -0.048004974, y: 0.4681451, z: 0.000000009688757}
+  - {x: 0.001523517, y: 0.470016, z: -0.0021545675}
+  - {x: -0.04326343, y: 0.4681451, z: -0.007860608}
+  - {x: 0.001523517, y: 0.470016, z: 0.0021545882}
 --- !u!114 &491116040389913508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,6 +124,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &5067345363100809327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245459439889751994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.68
 --- !u!1 &1895161252431209744
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,7 +162,7 @@ Transform:
   m_GameObject: {fileID: 1895161252431209744}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.68844867, z: 0}
+  m_LocalPosition: {x: 0, y: 0.4681451, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176,7 +195,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.68, y: 0.68, z: 0.68}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 177687471593083503}
@@ -228,7 +247,7 @@ Transform:
   m_GameObject: {fileID: 7897462347861381935}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.72}
+  m_LocalPosition: {x: 0, y: 0, z: -0.48960003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -297,31 +316,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 9dff7d7d1a90b034f99a27769553c5c3, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 046b79f562e406443a524a3c2f0d70b2, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6c588fb3ef05cf041a9ee50c33b98817, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 9521966c5d5a1944ba4d79633d5e1602, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: c9c8036b9ddba6448a246facec9e90f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: 2e30283e80cc43b40881fe402757990f, type: 2}
     - target: {fileID: -7511558181221131132, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 8a292f9f396d6774f9d927bb1a39cdc3, type: 2}
     - target: {fileID: 919132149155446097, guid: a00ab105db1b4b34dbf75119bbd9aabc, type: 3}
       propertyPath: m_Name
       value: KitchenFruitBasket_PremiumModel

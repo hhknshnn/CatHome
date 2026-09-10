@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1535865924361837220}
@@ -79,7 +79,7 @@ Transform:
   m_GameObject: {fileID: 2816516010830988985}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.46}
+  m_LocalPosition: {x: 0, y: 0, z: -0.39100003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -110,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 4870381666134341975}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.62}
+  m_LocalPosition: {x: 0, y: 0, z: -0.527}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 1375163614306284400}
   - component: {fileID: 1920008997229634831}
   - component: {fileID: 1281349736151114083}
+  - component: {fileID: 3262198686472621148}
   m_Layer: 0
   m_Name: GardenSapling
   m_TagString: Untagged
@@ -183,7 +184,7 @@ MonoBehaviour:
   productId: garden.sapling
   movableRoot: {fileID: 8889014365395136790}
   legacySlots: []
-  footprintSize: {x: 0.85, y: 0.85}
+  footprintSize: {x: 0.7225, y: 0.7225}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -220,6 +221,9 @@ MonoBehaviour:
   unlockedContent: {fileID: 1012590282730816968}
   scratchPoint: {fileID: 1922589180322866091}
   scratchDuration: 2.8
+  hangingToy: {fileID: 0}
+  ropeCenter: {x: 0, y: 0.43, z: 0.084}
+  ropeRadius: 0.115
 --- !u!114 &1281349736151114083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +236,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &3262198686472621148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7006256245272515236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.85
 --- !u!1001 &1358614389393702223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -295,31 +312,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: be65fe7ceda89634b978b0db953f2c1f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: b0b3fa28ee72390419e68606f87ae82e, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 14adce2dfcb6eb943be1e84a0d2ee219, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: e1954e100f3a3e74d955cb0fceb103c5, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 2f4b74d3cd0383f488377db5ebbe62f7, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 88be173cb98422840bdd43f7287ce36b, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 943f8cc5f72233f4bb698dc4e16cc1bb, type: 2}
     - target: {fileID: 919132149155446097, guid: 5d6c87eb80574ba42bfa8eebbfef4bce, type: 3}
       propertyPath: m_Name
       value: GardenSapling_PremiumModel

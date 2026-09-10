@@ -86,9 +86,8 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     private void FinishReaction()
     {
-        var activityAnimation = GetComponent<CatActivityAnimation>();
-        if (activityAnimation != null && activityAnimation.IsActive)
-            activityAnimation.SetPose(CatActivityPose.Sit);
+        // The activity owns its current pose. A reaction timer can finish after
+        // an approach, a new jump, or even a different activity has begun.
         CrossFade(idleState, 0.12f);
         if (movement != null)
             movement.SetMovementLocked(this, false);
@@ -102,6 +101,12 @@ public sealed class CatActivityReaction : MonoBehaviour
         routine = null;
         if (movement != null)
             movement.SetMovementLocked(this, false);
+    }
+
+    public void CancelReaction()
+    {
+        StopCurrentReaction();
+        CrossFade(idleState, 0.12f);
     }
 
     private void CrossFade(string state, float duration)

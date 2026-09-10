@@ -1,0 +1,34 @@
+{
+  "CatMeow": {
+    "seconds": 4.0,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peak": 0.5527629852294922,
+    "loopBoundaryDelta": null,
+    "bytes": 192044
+  },
+  "CatPurr": {
+    "seconds": 7.76,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peak": 0.6687273025512688,
+    "loopBoundaryDelta": 0.000872159236007617,
+    "bytes": 372524
+  },
+  "CatEat": {
+    "seconds": 7.82,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peak": 0.9,
+    "loopBoundaryDelta": 0.00014295191713484257,
+    "bytes": 375404
+  },
+  "CatDrink": {
+    "seconds": 7.82,
+    "sampleRate": 24000,
+    "channels": 1,
+    "peak": 0.3326148986816406,
+    "loopBoundaryDelta": 0.0009508201811045539,
+    "bytes": 375404
+  }
+}

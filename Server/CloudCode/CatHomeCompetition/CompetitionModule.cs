@@ -45,7 +45,9 @@ public sealed class CompetitionModule
             distance < 0 || distance > durationSeconds * 80 ||
             coinsCollected < 0 || coinsCollected > durationSeconds * 8 + 10 ||
             collisions < 0 || collisions > 3 ||
-            comboBonus < 0 || comboBonus > coinsCollected * 20)
+            // A five-step combo adds at most 40 per coin. A score star can
+            // duplicate the 10 base points plus those 40, and active distance.
+            comboBonus < 0 || comboBonus > Math.Ceiling(distance) + (long)coinsCollected * 90)
             throw new ArgumentException("Runner result is outside the accepted gameplay envelope.");
 
         int canonical = Math.Max(0, (int)Math.Round(distance, MidpointRounding.AwayFromZero)) +

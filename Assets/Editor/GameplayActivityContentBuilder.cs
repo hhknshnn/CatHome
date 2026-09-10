@@ -117,10 +117,10 @@ public static class GameplayActivityContentBuilder
         GameObject progressObject = UnityEngine.Object.Instantiate(actionTemplate.gameObject, uiRect);
         progressObject.name = "ActivityProgressBadge";
         RectTransform progressRect = progressObject.GetComponent<RectTransform>();
-        progressRect.anchorMin = progressRect.anchorMax = new Vector2(0.5f, 0f);
+        progressRect.anchorMin = progressRect.anchorMax = new Vector2(1f, 0f);
         progressRect.pivot = new Vector2(0.5f, 0.5f);
-        progressRect.anchoredPosition = new Vector2(0f, 78f);
-        progressRect.sizeDelta = new Vector2(420f, 66f);
+        progressRect.anchoredPosition = new Vector2(-190f, 204f);
+        progressRect.sizeDelta = new Vector2(280f, 66f);
         Button progressButton = progressObject.GetComponent<Button>();
         if (progressButton != null)
             UnityEngine.Object.DestroyImmediate(progressButton);
@@ -187,8 +187,8 @@ public static class GameplayActivityContentBuilder
 
         BuildBallActivity(root.transform);
         BuildScratchActivity(root.transform);
-        BuildMouseActivity(root.transform);
-        BuildWindowWatchActivity(root.transform);
+        // Mouse Hunt was retired; Cat Catch owns the mouse mini-game.
+        // Window Watch was retired; the window remains scenery.
         CatProductContentBuilder.UpgradeLegacyStations(scene);
 
         CatMovement cat = FindInScene<CatMovement>(scene);
@@ -348,76 +348,21 @@ public static class GameplayActivityContentBuilder
         activity.EditorConfigureMouse(mouseObject.transform, home, points, 3);
     }
 
+    // Retained entry point for older authoring menus: it can only remove the retired action.
     public static string EnsureWindowWatchActivity()
     {
         Scene scene = SceneManager.GetSceneByPath(SceneArchitectureBuilder.LevelScenePath);
         bool opened = !scene.IsValid() || !scene.isLoaded;
-        if (opened)
-            scene = EditorSceneManager.OpenScene(
-                SceneArchitectureBuilder.LevelScenePath,
-                OpenSceneMode.Additive);
-
+        if (opened) scene = EditorSceneManager.OpenScene(SceneArchitectureBuilder.LevelScenePath, OpenSceneMode.Additive);
         GameObject existing = FindNamedInScene(scene, "WindowWatchActivity");
-        if (existing == null)
+        if (existing != null)
         {
-            GameObject root = FindNamedInScene(scene, "GameplayActivities");
-            if (root == null)
-            {
-                root = new GameObject("GameplayActivities");
-                SceneManager.MoveGameObjectToScene(root, scene);
-            }
-
-            BuildWindowWatchActivity(root.transform);
+            UnityEngine.Object.DestroyImmediate(existing);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
-
-        if (opened && scene.IsValid())
-            EditorSceneManager.CloseScene(scene, true);
-        return existing == null ? "window-watch-added" : "window-watch-present";
-    }
-
-    private static void BuildWindowWatchActivity(Transform parent)
-    {
-        if (parent.Find("WindowWatchActivity") != null)
-            return;
-
-        GameObject station = CreateStation(
-            "WindowWatchActivity",
-            parent,
-            new Vector3(2.85f, 0f, 0.15f));
-        GameObject content = CreateContentRoot(station.transform, false);
-        Transform look = CreatePoint(
-            station.transform,
-            "WindowLookPoint",
-            new Vector3(1.35f, 1.15f, 0f));
-        Transform anchor = CreatePoint(
-            station.transform,
-            "InteractionAnchor",
-            new Vector3(-0.45f, 0f, 0f));
-        GameObject lockVisual = CreateLockVisual(
-            station.transform,
-            new Vector3(0f, 1.05f, 0f),
-            "BOND  " + BondMilestoneService.WindowWatchBond);
-
-        SitLookActivity activity = station.AddComponent<SitLookActivity>();
-        activity.EditorConfigure(
-            "window-watch",
-            "WINDOW WATCH",
-            CatActivityKind.WindowWatch,
-            QuestType.WindowWatch,
-            BondMilestoneService.WindowWatchBond,
-            "WATCH",
-            1.2f,
-            6f,
-            anchor,
-            lockVisual,
-            content);
-        activity.EditorConfigureLook(
-            look,
-            SitLookReaction.Sit,
-            2.6f,
-            "WHAT A VIEW!");
+        if (opened) EditorSceneManager.CloseScene(scene, true);
+        return "window-watch-retired";
     }
 
     private static GameObject CreateStation(string name, Transform parent, Vector3 position)

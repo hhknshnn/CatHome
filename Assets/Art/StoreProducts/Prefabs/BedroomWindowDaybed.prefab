@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 263220779644468381}
   - component: {fileID: 1107748939220042045}
   - component: {fileID: 1159343741156129147}
+  - component: {fileID: 7335238259165556032}
   m_Layer: 0
   m_Name: BedroomWindowDaybed
   m_TagString: Untagged
@@ -168,6 +169,39 @@ MonoBehaviour:
   reactionKind: 0
   lookDuration: 3.2
   completeMessage: SO PEACEFUL.
+  visibleLookTargets:
+  - {x: -0.92617005, y: 0.4009714, z: 0.38795975}
+  - {x: 0.88909143, y: 0.60261697, z: -0.28405488}
+  - {x: 0.14623746, y: 0.4009714, z: 0.38795966}
+  - {x: -0.9452752, y: 0.39972192, z: -0.37544253}
+  - {x: 0.8436427, y: 0.19954848, z: 0.33802512}
+  - {x: -0.32666302, y: 0.6077287, z: -0.055726502}
+  - {x: 0.32606697, y: 0.5094049, z: -0.120251894}
+  - {x: -0.43871206, y: 0.4009714, z: 0.3879597}
+  - {x: -0.7779945, y: 0.6059296, z: -0.03888585}
+  - {x: 0.6055529, y: 0.5094049, z: 0.22332484}
+  - {x: -0.904241, y: 0.19954848, z: 0.08450636}
+  - {x: -0.139743, y: 0.5094049, z: 0.2233249}
+  - {x: 0.8978225, y: 0.5068621, z: 0.046628237}
+  - {x: 0.88503903, y: 0.5000232, z: 0.34941652}
+  - {x: 0.13974297, y: 0.5094049, z: 0.12025185}
+  - {x: 0.57010984, y: 0.6002423, z: -0.24411781}
+  - {x: -0.698715, y: 0.5094049, z: 0.2576826}
+  - {x: -0.058373634, y: 0.6014871, z: -0.13099623}
+  - {x: -0.94665253, y: 0.40071112, z: -0.09188217}
+  - {x: 0.43871224, y: 0.4009714, z: 0.38795963}
+  - {x: -0.512391, y: 0.5094049, z: 0.08589423}
+  - {x: -0.79030347, y: 0.60261697, z: -0.28405473}
+  - {x: -0.9071116, y: 0.50065535, z: 0.13988492}
+  - {x: -0.9042411, y: 0.19954848, z: -0.25351885}
+  - {x: 0.512391, y: 0.5094049, z: 0.017178774}
+  - {x: -0.024618054, y: 0.28838325, z: 0.3209819}
+  - {x: 0.326067, y: 0.5094049, z: 0.22332484}
+  - {x: -0.904241, y: 0.19954848, z: 0.33802527}
+  - {x: 0.6336954, y: 0.4009714, z: 0.3879596}
+  - {x: -0.24372894, y: 0.4009714, z: 0.3879597}
+  - {x: -0.07771739, y: 0.50680476, z: 0.042367842}
+  - {x: -0.32606703, y: 0.5094049, z: 0.12025188}
 --- !u!114 &1159343741156129147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,6 +214,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7335238259165556032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7003333580991478862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &7830289039338444202
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,27 +344,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4063e0e89760d1945a7e18aea92d5f3f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: c5d67fcfdf183be4da87497c6442f18f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 63876a9ca83454543811ddb5f4af0515, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 2265460983ad51345a3446ab10229283, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 62a13641c06873d4196c4d819e65a916, type: 2}
     - target: {fileID: 919132149155446097, guid: 1372d0fb9d1a85145bedabf0054332be, type: 3}
       propertyPath: m_Name
       value: BedroomWindowDaybed_PremiumModel

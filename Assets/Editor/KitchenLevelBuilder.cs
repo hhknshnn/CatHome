@@ -31,10 +31,6 @@ public static class KitchenLevelBuilder
     private static readonly Color Lemon = new Color32(255, 232, 139, 255);
     private static readonly Color Ink = new Color32(63, 47, 80, 255);
     private static readonly Color Sky = new Color32(155, 232, 255, 255);
-    private const float LivingCameraFieldOfView = 47f;
-    private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
-    private static readonly Quaternion LivingCameraRotation =
-        Quaternion.Euler(25f, 12.995f, 0f);
     private static readonly Vector3 LivingSpawnPointPosition = new Vector3(0f, 0f, -2f);
     private static readonly Color LivingAmbientSkyColor = new Color32(54, 58, 66, 255);
     private static readonly Color LivingAmbientEquatorColor = new Color32(29, 32, 34, 255);
@@ -436,10 +432,8 @@ public static class KitchenLevelBuilder
             typeof(AudioListener), typeof(UniversalAdditionalCameraData));
         cameraObject.tag = "MainCamera";
         cameraObject.transform.SetParent(parent, false);
-        cameraObject.transform.localPosition = LivingCameraPosition;
-        cameraObject.transform.localRotation = LivingCameraRotation;
         Camera camera = cameraObject.GetComponent<Camera>();
-        camera.fieldOfView = LivingCameraFieldOfView;
+        HomeRoomCameraProfile.Apply(camera);
         camera.nearClipPlane = .3f;
         camera.farClipPlane = 1000f;
         camera.clearFlags = CameraClearFlags.SolidColor;

@@ -62,6 +62,17 @@ public static class GameInteractionCopy
         {"SPINNING...","Çeviriyor"},
         {"SETTLING...","Yerleşiyor"},
     };
+    public static string ProductAction(string productId, string title, string action, bool needsEnergy)
+    {
+        if (needsEnergy) return title + "\n" + action;
+        if (productId == HomeStoreService.BathroomLitterBoxId)
+            return GameContentCopy.Text("Kum kabını kullan", "Use litter tray");
+        if (GameLanguageService.Current != GameLanguage.Turkish) return action + " · " + title;
+        // RINSE already translates to the complete Turkish phrase "Duş al".
+        if (productId == HomeStoreService.BathroomShowerId) return action;
+        return title + " " + action.ToLower(CultureInfo.GetCultureInfo("tr-TR"));
+    }
+
     public static string Text(string value)
     {
         if(string.IsNullOrEmpty(value))return string.Empty;

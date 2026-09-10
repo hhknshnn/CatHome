@@ -1,2 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-CreditsCloseButton (x:805.00, y:268.00, width:310.00, height:72.00)

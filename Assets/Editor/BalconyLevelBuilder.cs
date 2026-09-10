@@ -41,10 +41,6 @@ public static class BalconyLevelBuilder
     private static readonly Color CityCool = new Color32(160, 176, 224, 255);
     private static readonly Color CityFar = new Color32(196, 200, 235, 255);
 
-    private const float LivingCameraFieldOfView = 47f;
-    private static readonly Vector3 LivingCameraPosition = new Vector3(-1f, 3f, -5.5f);
-    private static readonly Quaternion LivingCameraRotation =
-        Quaternion.Euler(25f, 12.995f, 0f);
     private static readonly Vector3 LivingSpawnPointPosition = new Vector3(0f, 0f, -2f);
     private static readonly Color LivingAmbientSkyColor = new Color32(54, 58, 66, 255);
     private static readonly Color LivingAmbientEquatorColor = new Color32(29, 32, 34, 255);
@@ -419,6 +415,7 @@ public static class BalconyLevelBuilder
             new Vector3(0f, 0f, frontZ),
             HomeRoomShellMetrics.FloorWidth - .35f, 0f,
             materials, topRailY, postHeight, 8);
+        HomeRoomCameraBuilder.HideForeground(railing.Find("FrontRail"));
         BuildRailRun(railing, "LeftRail",
             new Vector3(-innerX, 0f, .35f),
             HomeRoomShellMetrics.FloorDepth - 1.1f, 90f,
@@ -499,10 +496,8 @@ public static class BalconyLevelBuilder
             typeof(AudioListener), typeof(UniversalAdditionalCameraData));
         cameraObject.tag = "MainCamera";
         cameraObject.transform.SetParent(parent, false);
-        cameraObject.transform.localPosition = LivingCameraPosition;
-        cameraObject.transform.localRotation = LivingCameraRotation;
         Camera camera = cameraObject.GetComponent<Camera>();
-        camera.fieldOfView = LivingCameraFieldOfView;
+        HomeRoomCameraProfile.Apply(camera);
         camera.nearClipPlane = .3f;
         camera.farClipPlane = 1000f;
         camera.clearFlags = CameraClearFlags.SolidColor;

@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.82, y: 0.82, z: 0.82}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3276582027358616893}
@@ -67,6 +67,7 @@ GameObject:
   - component: {fileID: 4620534950943065184}
   - component: {fileID: 7321104475859519017}
   - component: {fileID: 5088264288567153399}
+  - component: {fileID: 4995683392704771614}
   m_Layer: 0
   m_Name: LoftArcLamp
   m_TagString: Untagged
@@ -122,7 +123,7 @@ MonoBehaviour:
   productId: loft.arc-lamp
   movableRoot: {fileID: 4123556060659915220}
   legacySlots: []
-  footprintSize: {x: 0.7, y: 0.7}
+  footprintSize: {x: 0.574, y: 0.574}
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -174,6 +175,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &4995683392704771614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6108938339256016413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 0.82
 --- !u!1 &6639811315095911434
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +213,7 @@ Transform:
   m_GameObject: {fileID: 6639811315095911434}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.78, y: 0, z: 0}
+  m_LocalPosition: {x: 0.6396, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -230,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 7318273588461851418}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.62, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5084, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -261,7 +275,7 @@ Transform:
   m_GameObject: {fileID: 7859731150754037229}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.196, y: 1.4799999, z: 0}
+  m_LocalPosition: {x: 0.16071999, y: 1.2135999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -318,23 +332,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: 167c7fc33e74c524d9b66936de757fa4, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: ed75dc93680d5a941ac92ab955e9406c, type: 2}
     - target: {fileID: 919132149155446097, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: m_Name
       value: LoftArcLamp_PremiumModel

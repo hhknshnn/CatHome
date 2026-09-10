@@ -9,6 +9,11 @@ public sealed class LivingFurnitureActivity : CatActivity
     [SerializeField] Transform toy;
     [SerializeField] Vector3 toyEdge, toyLanding;
     [SerializeField] bool table;
+    [SerializeField] Transform selectionVisual;
+    public Transform SelectionVisual=>selectionVisual;
+#if UNITY_EDITOR
+    public void EditorConfigureSelection(Transform visual){selectionVisual=visual;}
+#endif
     CatActivityAnimation pose;
     CatToyContactMotion contact;
     CharacterController controller;
@@ -20,6 +25,8 @@ public sealed class LivingFurnitureActivity : CatActivity
     public Transform Toy=>toy;
     public float ContactDistance {get;private set;}
     protected override bool UsesFloorApproach=>true;
+    public override bool SupportsContinuousRest=>!table;
+    public override float EnergyCost=>table?base.EnergyCost:0f;
     public override string ProgressLabel=>!IsRunning?string.Empty:GameLanguageService.Current==GameLanguage.Turkish?
         (table?"Acaba düşer mi?":"Koltuk keyfi"):(table?"Will it fall?":"Sofa time");
     protected override bool CanBeginActivity(out string reason)
@@ -27,7 +34,7 @@ public sealed class LivingFurnitureActivity : CatActivity
     protected override bool BeginActivity()
     {
         pose=Cat.GetComponent<CatActivityAnimation>();
-        contact=Cat.GetComponent<CatToyContactMotion>()??Cat.gameObject.AddComponent<CatToyContactMotion>();
+        contact=Cat.GetComponent<CatToyContactMotion>();if(contact==null)contact=Cat.gameObject.AddComponent<CatToyContactMotion>();
         controller=Cat.GetComponent<CharacterController>();
         Cat.SetMovementLocked(this,true);if(controller!=null)controller.enabled=false;
         if(toy!=null){toyStart=toy.position;toyRotation=toy.rotation;}
@@ -38,7 +45,14 @@ public sealed class LivingFurnitureActivity : CatActivity
     {
         Vector3 floor=RoutineEntryPoint.position;floor.y=0;
         yield return Hop(floor,perch.position);
-        Cat.transform.rotation=perch.rotation;
+        // The table's authored heading places the paw at the loose toy. Only
+        // the free rest chooses a viewing direction before the held pose.
+        Quaternion held = perch.rotation;
+        if(!table)
+        {
+            held=HeldFacing(perch.rotation);
+        }
+        yield return CatActivityFacing.Turn(Cat,held);
         if(table && toy!=null)
         {
             PlayCatPose(CatActivityPose.Sniff,perch);yield return new WaitForSeconds(.5f);
@@ -58,12 +72,14 @@ public sealed class LivingFurnitureActivity : CatActivity
                     t+=Time.deltaTime;yield return null;
                 }
             }
-            contact.Clear();PlayCatPose(CatActivityPose.Sit,perch);yield return new WaitForSeconds(.8f);
+            contact.Clear();PlayCatPose(CatActivityPose.Sit,perch);
+            yield return CatActivityFacing.Turn(Cat,HeldFacing(Cat.transform.rotation));
+            yield return new WaitForSeconds(.8f);
         }
         else
         {
             PlayCatPose(CatActivityPose.Sleep,perch);IsResting=true;
-            yield return new WaitForSeconds(3.2f);IsResting=false;
+            while(KeepResting)yield return null;IsResting=false;
         }
         yield return Hop(perch.position,floor);
         Release();CompleteActivity(GameLanguageService.Current==GameLanguage.Turkish?(table?"Ben bir şey yapmadım!":"Ne güzel bir köşe."):(table?"It wasn't me!":"Such a cosy spot."));
@@ -91,18 +107,22 @@ public sealed class LivingFurnitureActivity : CatActivity
         while(t<.4f){t+=Time.deltaTime;toy.position=landing+Vector3.up*(Mathf.Abs(Mathf.Sin(t/.4f*Mathf.PI*2))*.05f*(1-t/.4f));yield return null;}
         toy.position=landing;
     }
+    Quaternion HeldFacing(Quaternion preferred)
+    {
+        var surface=perch.GetComponent<CatActivitySurface>();
+        return surface!=null && surface.AlignAlongSurface?
+            CatActivityFacing.AlongAxis(Cat,perch.position,perch.rotation):
+            CatActivityFacing.Resolve(Cat,perch.position,preferred);
+    }
     IEnumerator Hop(Vector3 from,Vector3 to)
     {
-        PlayCatPose(CatActivityPose.Hop);Vector3 direction=to-from;direction.y=0;
-        if(direction.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(direction);
-        float t=0;
-        while(t<.55f){t+=Time.deltaTime;Cat.transform.position=CatActivityMotion.JumpPosition(from,to,Mathf.Clamp01(t/.55f),.28f);yield return null;}
-        Cat.transform.position=to;
+        Vector3 flat=to-from;flat.y=0;
+        var facing=flat.sqrMagnitude>.001f?Quaternion.LookRotation(flat):Cat.transform.rotation;
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing,.18f);
     }
     void ResetToy(){if(toy!=null && toyStart.sqrMagnitude>.001f)toy.SetPositionAndRotation(toyStart,toyRotation);}
     void Release(){IsResting=false;if(contact!=null)contact.Clear();if(controller!=null)controller.enabled=true;if(Cat!=null)Cat.SetMovementLocked(this,false);}
-    protected override void CancelActivity(){StopAllCoroutines();Release();ResetToy();base.CancelActivity();}
-    protected override void OnDisable(){StopAllCoroutines();Release();ResetToy();base.OnDisable();}
+    protected override void CancelActivity(){if(!IsRunning)return;StopAllCoroutines();if(!HasBegunActivity){base.CancelActivity();return;}Release();ResetToy();base.CancelActivity();}
 #if UNITY_EDITOR
     public void EditorConfigureFurniture(Transform support,bool isTable,Transform prop,Vector3 edge,Vector3 landing)
     {perch=support;table=isTable;toy=prop;toyEdge=transform.InverseTransformPoint(edge);toyLanding=transform.InverseTransformPoint(landing);}

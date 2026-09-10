@@ -360,7 +360,12 @@ public sealed class HomeProductPlacement : MonoBehaviour
         if (HomeStoreService.IsFixedRoomProduct(productId))
         {
             if (!UsesRequiredProductTarget)
-                movableRoot.SetPositionAndRotation(authoredPosition, authoredRotation);
+            {
+                if (HomeRoomLayoutCatalog.TryGet(productId, out var layout) &&
+                    HomeRoomService.TryGetRoom(layout.roomId, out var room) && gameObject.scene.path == room.ScenePath)
+                    movableRoot.SetPositionAndRotation(layout.position, Quaternion.Euler(0, layout.yaw, 0));
+                else movableRoot.SetPositionAndRotation(authoredPosition, authoredRotation);
+            }
             return; // Book/TV components own their authored attachment.
         }
 
@@ -460,6 +465,16 @@ public sealed class HomeProductPlacement : MonoBehaviour
                 collisionClearance;
     }
 
+    // The authored pad touches the rear panelling. Keep furniture, entrance
+    // and front/side clearance; remove only empty padding behind this pose.
+    private float AuthoredRearWallInset(Vector3 position,float yaw)
+    {
+        if(productId!=HomeStoreService.NapPillowId || gameObject.scene.path!=HomeRoomService.LivingRoomScenePath ||
+           (position-CatRoomArrangement.RearWallNapPillowPosition).sqrMagnitude>.000001f || Mathf.Abs(Mathf.DeltaAngle(yaw,0))>.1f)return 0;
+        float panel=CatRoomArrangement.RearPanelZ;
+        return Mathf.Max(0,footprintSize.y*.5f+collisionClearance-(panel-position.z));
+    }
+
     private void RefreshValidity(bool ignoreCatProducts = false)
     {
         if (movableRoot == null)
@@ -474,6 +489,8 @@ public sealed class HomeProductPlacement : MonoBehaviour
             validationHeight * 0.5f,
             footprintSize.y * 0.5f + collisionClearance);
         Vector3 center = movableRoot.position + Vector3.up * (validationHeight * 0.5f + 0.035f);
+        float rearInset=AuthoredRearWallInset(movableRoot.position,movableRoot.eulerAngles.y);
+        center-=movableRoot.forward*(rearInset*.5f);half.z-=rearInset*.5f;
         Collider[] overlaps = Physics.OverlapBox(
             center,
             half,
@@ -518,7 +535,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
         {
             MovableRoot.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));
             GetWorldHalfExtents(out float x,out float z);
-            if(position.x-x<roomMinimum.x || position.x+x>roomMaximum.x || position.z-z<roomMinimum.y || position.z+z>roomMaximum.y)return false;
+            if(position.x-x<roomMinimum.x || position.x+x>roomMaximum.x || position.z-z<roomMinimum.y || position.z+z-AuthoredRearWallInset(position,yaw)>roomMaximum.y)return false;
             RefreshValidity(true);return previewValid;
         }
         finally { MovableRoot.SetPositionAndRotation(oldPosition,oldRotation);previewValid=oldValid; }
@@ -583,6 +600,16 @@ public sealed class HomeProductPlacement : MonoBehaviour
     public static bool FootprintsOverlap(Vector3 a, Vector2 aSize, float aYaw,
         Vector3 b, Vector2 bSize, float bYaw, float gap)
     {
+        // Automatic CAT candidates use quarter turns. Avoid quaternion work and
+        // allocations in the thousands of repeated layout/corridor comparisons.
+        if(Mathf.Abs(Mathf.DeltaAngle(aYaw,Mathf.Round(aYaw/90f)*90f))<.001f &&
+           Mathf.Abs(Mathf.DeltaAngle(bYaw,Mathf.Round(bYaw/90f)*90f))<.001f)
+        {
+            bool swapA=(Mathf.Abs(Mathf.RoundToInt(aYaw/90f))%2)==1,swapB=(Mathf.Abs(Mathf.RoundToInt(bYaw/90f))%2)==1;
+            float aw=swapA?aSize.y:aSize.x,ad=swapA?aSize.x:aSize.y;
+            float bw=swapB?bSize.y:bSize.x,bd=swapB?bSize.x:bSize.y;
+            return Mathf.Abs(b.x-a.x)<(aw+bw)*.5f+gap && Mathf.Abs(b.z-a.z)<(ad+bd)*.5f+gap;
+        }
         Vector3 ax=Quaternion.Euler(0,aYaw,0)*Vector3.right, az=Quaternion.Euler(0,aYaw,0)*Vector3.forward;
         Vector3 bx=Quaternion.Euler(0,bYaw,0)*Vector3.right, bz=Quaternion.Euler(0,bYaw,0)*Vector3.forward;
         Vector3 delta=b-a; delta.y=0;

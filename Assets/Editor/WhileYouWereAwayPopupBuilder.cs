@@ -105,23 +105,26 @@ public static class WhileYouWereAwayPopupBuilder
         Stretch(animationContainer.GetComponent<RectTransform>());
         CanvasGroup panelGroup = animationContainer.AddComponent<CanvasGroup>();
 
-        var face=U.Panel("ReturnFace",animationContainer.transform,PremiumUiStyle.Ivory,0,0,980,680,32,true);
-        var title=U.Label("Title",animationContainer.transform,font,43,ContentText,-84,253,704,70);
+        var face=JoyfulUiArt.Panel("ReturnFace",animationContainer.transform,JoyfulUiArt.Paper,0,0,980,680,32,true);
+        var banner=JoyfulUiArt.Panel("ReturnBanner",animationContainer.transform,JoyfulUiArt.Ocean,0,218,928,196,26);
+        JoyfulUiArt.Motif(banner.transform,"WelcomeStars",0,0,874,166,new Color(1,1,1,.24f));
+        var title=U.Label("Title",animationContainer.transform,font,43,Color.white,-84,251,650,70);
         TMP_Text titleShadow=null;
-        U.Panel("PortraitMedallion",animationContainer.transform,PremiumUiStyle.Mint,378,244,132,132,66);
-        var portrait=U.Rect("CatPortrait",animationContainer.transform); U.At(portrait,378,244,104,104);
+        JoyfulUiArt.Panel("PortraitMedallion",animationContainer.transform,JoyfulUiArt.Gold,366,228,140,140,48);
+        var portrait=U.Rect("CatPortrait",animationContainer.transform); U.At(portrait,366,228,118,118);
         portrait.gameObject.AddComponent<Image>().raycastTarget=false; portrait.gameObject.AddComponent<SelectedCatPortrait>();
         var durationBadge=U.Rect("AwayDurationBadge",animationContainer.transform).gameObject;
-        U.At((RectTransform)durationBadge.transform,0,183,872,42);
-        var duration=U.Label("Duration",durationBadge.transform,font,21,PremiumUiStyle.Muted,0,0,872,42);
+        U.At((RectTransform)durationBadge.transform,-84,187,650,42);
+        var duration=U.Label("Duration",durationBadge.transform,font,23,Color.white,0,0,650,42);
         var summaryBadge=U.Rect("ReturnSummaryBadge",animationContainer.transform).gameObject;
-        U.At((RectTransform)summaryBadge.transform,0,58,872,150);
-        var summaryFace=U.Panel("SummaryFace",summaryBadge.transform,PremiumUiStyle.Mint,0,0,872,150,24);
-        var summary=U.Label("ReturnSummary",summaryBadge.transform,font,29,ContentText,0,0,796,118,TextAlignmentOptions.Center);
+        U.At((RectTransform)summaryBadge.transform,0,43,872,116);
+        var summaryFace=JoyfulUiArt.Panel("SummaryFace",summaryBadge.transform,JoyfulUiArt.SkyPaper,0,0,872,116,24);
+        JoyfulUiArt.Sticker(summaryBadge.transform,"FriendBadge","Paw",JoyfulUiArt.Gold,-370,0,76,-8);
+        var summary=U.Label("ReturnSummary",summaryBadge.transform,font,28,ContentText,42,0,702,94,TextAlignmentOptions.Center);
         Row hunger=CreateNeedSummary(animationContainer.transform,"HungerRewardCard","home.hunger",-294,hungerIcon,font);
         Row thirst=CreateNeedSummary(animationContainer.transform,"ThirstRewardCard","home.thirst",0,thirstIcon,font);
         Row energy=CreateNeedSummary(animationContainer.transform,"EnergyRewardCard","home.energy",294,energyIcon,font);
-        var action=U.Action("WelcomeBackButton",animationContainer.transform,font,"return.continue",PremiumUiStyle.Coral,0,-239,400,80,out var actionLabel);
+        var action=U.Action("WelcomeBackButton",animationContainer.transform,font,"return.continue",JoyfulUiArt.Coral,0,-254,480,80,out var actionLabel);
         actionLabel.fontSize=26;
         var button=new ButtonParts(action,actionLabel,(RectTransform)action.transform);
 
@@ -163,6 +166,8 @@ public static class WhileYouWereAwayPopupBuilder
             new RectTransform[0]);
 
         PremiumUiFactory.PolishHierarchy(root.transform, font);
+        title.color=duration.color=Color.white;
+        JoyfulUiArt.ActionStyle(action,JoyfulUiArt.Coral);
         ValidateGraphics(root);
         EnsureFolder();
         PrefabUtility.SaveAsPrefabAssetAndConnect(root, PrefabPath, InteractionMode.UserAction);
@@ -200,12 +205,12 @@ public static class WhileYouWereAwayPopupBuilder
 
     private static Row CreateNeedSummary(Transform parent,string name,string key,float x,Sprite icon,TMP_FontAsset font)
     {
-        var face=U.Panel(name,parent,PremiumUiStyle.WarmIvory,x,-103,272,102,20);
+        Color paper=key=="home.hunger"?new Color32(255,232,196,255):key=="home.thirst"?JoyfulUiArt.SkyPaper:new Color32(237,225,251,255);
+        var face=JoyfulUiArt.Panel(name,parent,paper,x,-122,272,130,22);
         var group=face.gameObject.AddComponent<CanvasGroup>();
-        var picture=U.Rect("Icon",face.transform); U.At(picture,-98,0,36,36);
-        var image=picture.gameObject.AddComponent<Image>(); image.sprite=icon; image.preserveAspect=true; image.raycastTarget=false;
-        U.Localize(U.Label("NeedLabel",face.transform,font,20,PremiumUiStyle.Muted,20,22,174,30),key);
-        var value=U.Label("Value",face.transform,font,26,ContentText,20,-17,174,40);
+        JoyfulUiArt.Icon("Icon",face.transform,key=="home.hunger"?"Food":key=="home.thirst"?"Water":"Energy",-96,23,58);
+        U.Localize(U.Label("NeedLabel",face.transform,font,23,JoyfulUiArt.Ink,25,27,164,36),key);
+        var value=U.Label("Value",face.transform,font,27,ContentText,0,-29,246,42,TextAlignmentOptions.Center);
         value.textWrappingMode=TextWrappingModes.NoWrap;
         value.enableAutoSizing=true;value.fontSizeMin=20;value.fontSizeMax=26;
         return new Row(group,value,face.rectTransform,face);

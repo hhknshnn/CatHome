@@ -98,36 +98,49 @@ public sealed class CatRunnerLauncher : MonoBehaviour
 
     public void Launch()
     {
-        if (!loading)
-            StartCoroutine(LaunchRoutine());
+        if (!isActiveAndEnabled || loading ||
+            !CatRunnerSessionContext.TryBeginLaunch(RunnerSceneName))
+            return;
+        loading = true;
+        try
+        {
+            if (StartCoroutine(LaunchRoutine()) == null)
+            {
+                loading = false;
+                CatRunnerSessionContext.CompleteLaunch(RunnerSceneName);
+            }
+        }
+        catch
+        {
+            loading = false;
+            CatRunnerSessionContext.CompleteLaunch(RunnerSceneName);
+            throw;
+        }
     }
 
     private IEnumerator LaunchRoutine()
     {
-        loading = true;
-        // Opening Cat Runner only opens its welcome screen. Energy is charged by
-        // CatRunnerGameController when START is confirmed, never for looking at
-        // the menu and returning home.
-        CatRunnerSessionContext.CaptureFromHome();
-
-        Scene loaded = SceneManager.GetSceneByName(RunnerSceneName);
-        if (!loaded.IsValid() || !loaded.isLoaded)
+        try
         {
+            CatActionState.CancelForTransition(
+                FindAnyObjectByType<CatMovement>(FindObjectsInactive.Include));
+            // Viewing the welcome screen is free; START spends the life.
+            CatRunnerSessionContext.CaptureFromHome();
             AsyncOperation operation = SceneManager.LoadSceneAsync(
-                RunnerScenePath,
-                LoadSceneMode.Additive);
+                RunnerScenePath, LoadSceneMode.Additive);
             if (operation == null)
             {
                 Debug.LogError("Cat Runner scene could not be queued for loading.", this);
-                loading = false;
                 yield break;
             }
-
             while (!operation.isDone)
                 yield return null;
         }
-
-        loading = false;
+        finally
+        {
+            loading = false;
+            CatRunnerSessionContext.CompleteLaunch(RunnerSceneName);
+        }
     }
 
     public void RequestRewardedEnergy()
@@ -247,6 +260,8 @@ public sealed class CatRunnerLauncher : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (loading)
+            CatRunnerSessionContext.CompleteLaunch(RunnerSceneName);
         if (playButton != null)
             playButton.onClick.RemoveListener(OpenGames);
         if (rewardedAdButton != null)

@@ -129,6 +129,7 @@ public sealed class SettingsPanel : MonoBehaviour
             {
                 if (rows[i].stateText != null)
                 {
+                    rows[i].stateText.color = Color.white;
                     rows[i].stateText.enableAutoSizing = true;
                     rows[i].stateText.fontSizeMin = 14f;
                     rows[i].stateText.fontSizeMax = 20f;

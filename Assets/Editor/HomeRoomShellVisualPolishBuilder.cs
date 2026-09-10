@@ -80,8 +80,13 @@ public static class HomeRoomShellVisualPolishBuilder
                 BuildLoftFinish(root, materials);
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(roomId), roomId, "Unknown Cat Home room.");
+                BuildIndoorFrame(root, materials, materials["Aqua"], materials["Mint"]);
+                break;
         }
+        HomeRoomPremiumFinishBuilder.Apply(scene, roomId);
+        // Other rooms finish inside their measured architecture pass.
+        if (roomId == HomeRoomService.LivingRoomId)
+            ModernWorldArtBuilder.Apply(scene, roomId);
     }
 
     private static void BuildIndoorFrame(

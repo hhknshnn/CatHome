@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64ff236bd27288e48b35c9891dbe065a, type: 3}
+  m_Name: CatHomeLocomotionCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::CatHomeLocomotionCatalog
+  entries:
+  - breedId: domestic-shorthair
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903127
+    runCycleDistance: 1.5145894
+  - breedId: domestic-shorthair-orange
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903127
+    runCycleDistance: 1.5145894
+  - breedId: khao-manee
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903127
+    runCycleDistance: 1.5145894
+  - breedId: british-shorthair
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903096
+    runCycleDistance: 1.5145868
+  - breedId: domestic-longhair
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903127
+    runCycleDistance: 1.5145881
+  - breedId: maine-coon
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.89032197
+    runCycleDistance: 1.5145868
+  - breedId: oriental-shorthair
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903096
+    runCycleDistance: 1.5145934
+  - breedId: persian
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903189
+    runCycleDistance: 1.5145894
+  - breedId: russian-blue
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903127
+    runCycleDistance: 1.5145894
+  - breedId: sphynx
+    walkClip: {fileID: 7567813823344524472, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    runClip: {fileID: -1194496024880981489, guid: 529697c5edf72df46953b0f9a8548137, type: 3}
+    walkCycleDistance: 0.8903096
+    runCycleDistance: 1.5145907

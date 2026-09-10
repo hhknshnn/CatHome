@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6217737711397914338}
   - component: {fileID: 6397544331281801482}
   - component: {fileID: 4276889568389421576}
+  - component: {fileID: 7843139112317522684}
   m_Layer: 0
   m_Name: BalconyCushionBench
   m_TagString: Untagged
@@ -152,6 +153,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &7843139112317522684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654473987387452491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &4827156100659842806
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,23 +350,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 45326f33f189bd144848eb88906ed500, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 7ee4255c3fcf61a4a8cbf9e85e671eac, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: b1d51e05b5913c74eb6f1be4080fc554, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: e9d94e337364fa848b89204e8341ac0a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 42804f1028ddfb947b372db2a597d2d6, type: 2}
     - target: {fileID: 919132149155446097, guid: 1386f3b55fe74d14281559d6d4162853, type: 3}
       propertyPath: m_Name
       value: BalconyCushionBench_PremiumModel

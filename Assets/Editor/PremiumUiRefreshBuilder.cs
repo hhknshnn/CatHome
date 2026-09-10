@@ -361,8 +361,8 @@ public static class PremiumUiRefreshBuilder
         var old=root.Find("ContextFace");
         var surface=old!=null?old.GetComponent<LowPolyPanelGraphic>():PremiumUiElements.Panel("ContextFace",root,progress?PremiumUiStyle.Mint:PremiumUiStyle.Coral,0,0,1,1,24,!progress);
         surface.enabled=true;surface.SetPremiumBaseColor(progress?PremiumUiStyle.Mint:PremiumUiStyle.Coral);
-        var bounds=(RectTransform)root;bounds.anchorMin=bounds.anchorMax=new Vector2(progress?.5f:1f,0f);bounds.pivot=new Vector2(.5f,.5f);
-        bounds.sizeDelta=progress?new Vector2(420,66):new Vector2(280,94);bounds.anchoredPosition=progress?new Vector2(0,190):new Vector2(-190,204);
+        var bounds=(RectTransform)root;bounds.anchorMin=bounds.anchorMax=new Vector2(1f,0f);bounds.pivot=new Vector2(.5f,.5f);
+        bounds.sizeDelta=progress?new Vector2(280,66):new Vector2(280,94);bounds.anchoredPosition=new Vector2(-190,204);
         PremiumUiElements.Fill(surface.rectTransform);
         foreach(var label in root.GetComponentsInChildren<TMP_Text>(true))
         {

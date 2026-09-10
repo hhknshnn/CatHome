@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 3806725750585533825}
   - component: {fileID: 147978196855625977}
   - component: {fileID: 4147926992330770652}
+  - component: {fileID: 856385466820158367}
   m_Layer: 0
   m_Name: BedroomDreamArt
   m_TagString: Untagged
@@ -183,7 +184,7 @@ MonoBehaviour:
   productId: bedroom.dream-art
   movableRoot: {fileID: 6614979003012967513}
   legacySlots: []
-  footprintSize: {x: 1.05, y: 0.2}
+  footprintSize: {x: 1.05, y: 0.16}
   placementKind: 1
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
@@ -222,6 +223,39 @@ MonoBehaviour:
   reactionKind: 0
   lookDuration: 2.6
   completeMessage: SWEET DREAMS.
+  visibleLookTargets:
+  - {x: -0.044183034, y: 0.42280707, z: 0.036480002}
+  - {x: 0.5038246, y: 0.214272, z: -0.00084634207}
+  - {x: -0.48787197, y: 0.420672, z: 0.014400039}
+  - {x: 0.44313604, y: 0.6099839, z: 0.02207996}
+  - {x: 0.21626854, y: 0.29566208, z: 0.03551998}
+  - {x: -0.21704455, y: 0.6028609, z: 0.03992468}
+  - {x: 0.19958328, y: 0.60400736, z: 0.03379198}
+  - {x: -0.20142545, y: 0.28051195, z: 0.022080015}
+  - {x: 0.5034738, y: 0.412416, z: 0.0009170638}
+  - {x: -0.443136, y: 0.6099839, z: 0.022080036}
+  - {x: 0.015474314, y: 0.60648143, z: 0.034175996}
+  - {x: -0.36256582, y: 0.28051195, z: 0.022080028}
+  - {x: 0.36256582, y: 0.28051198, z: 0.022079967}
+  - {x: -0.28199565, y: 0.39033598, z: 0.022080023}
+  - {x: 0.36256582, y: 0.50016, z: 0.022079967}
+  - {x: -0.36256582, y: 0.50016, z: 0.022080028}
+  - {x: 0.12085529, y: 0.39033595, z: 0.022079987}
+  - {x: -0.03700325, y: 0.29948518, z: 0.03936}
+  - {x: 0.31458125, y: 0.6000526, z: 0.03513597}
+  - {x: -0.120855264, y: 0.50016, z: 0.022080008}
+  - {x: 0.04028511, y: 0.50016, z: 0.022079995}
+  - {x: 0.36256585, y: 0.39033595, z: 0.022079965}
+  - {x: 0.20142548, y: 0.50016, z: 0.02207998}
+  - {x: 0.4940439, y: 0.51148796, z: -0.022772374}
+  - {x: 0.50312304, y: 0.313344, z: 0.0026804698}
+  - {x: 0.09270476, y: 0.29777628, z: 0.04205915}
+  - {x: -0.13056, y: 0.39977646, z: 0.032553446}
+  - {x: -0.121262975, y: 0.29930753, z: 0.04549662}
+  - {x: 0.20142548, y: 0.39033595, z: 0.02207998}
+  - {x: -0.443136, y: 0.50016, z: 0.022080036}
+  - {x: -0.443136, y: 0.28051198, z: 0.022080036}
+  - {x: -0.36256582, y: 0.6099839, z: 0.022080028}
 --- !u!114 &4147926992330770652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +268,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &856385466820158367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4754315874724570576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1001 &2686597939987934962
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -297,31 +344,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: c5d67fcfdf183be4da87497c6442f18f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 6a9a38645dd6ab44c96ab40ab4d4c5f1, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: f3c8f05ae5e47f74c8689cf59085edac, type: 2}
+      objectReference: {fileID: 2100000, guid: f8c1eb866786aff4bb18126505661642, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: c4829ec5108f4fb4090335d21f44fc1b, type: 2}
+      objectReference: {fileID: 2100000, guid: f9f17f43d34a9244f98831a8d5ae944d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 66930c74da216ac43a8fc2724daf08ab, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: d0cdd28d5a647024eafb26a31ab8e338, type: 2}
     - target: {fileID: 919132149155446097, guid: 5b86b68d3dfe8b04d96cb43a0ccd71ba, type: 3}
       propertyPath: m_Name
       value: BedroomDreamArt_PremiumModel

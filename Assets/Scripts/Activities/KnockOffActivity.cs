@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -28,6 +29,9 @@ public sealed class KnockOffActivity : CatActivity
     [SerializeField, Min(1)] private int teaseCount = 2;
 
     private CharacterController characterController;
+    private List<Vector3> contactPath;
+    public Vector3 ContactStand { get; private set; }
+    public bool ContactStandBlocked { get; private set; }
     private Vector3 pivotHome;
     private Quaternion pivotHomeRotation;
     private bool pivotHomeCaptured;
@@ -37,6 +41,7 @@ public sealed class KnockOffActivity : CatActivity
     public float FallHeight => Mathf.Max(0.05f, fallHeight);
     public int TeaseCount => Mathf.Max(1, teaseCount);
     public Transform GlassPivot => glassPivot;
+    public Vector3 WorldFallDirection => transform.TransformDirection(fallDirection.sqrMagnitude > .0001f ? fallDirection.normalized : Vector3.forward).normalized;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -46,12 +51,22 @@ public sealed class KnockOffActivity : CatActivity
             return false;
         }
 
-        failureReason = string.Empty;
-        return true;
+        Vector3 authored = reachPoint.position; authored.y = Cat.transform.position.y;
+        Vector3 origin = RoutineFloorPosition; origin.y = authored.y;
+        ContactStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, glassPivot.position,
+            authored, origin, out Vector3 stand, out contactPath);
+        ContactStand = stand;
+        failureReason = ContactStandBlocked ? "LET'S MAKE SOME ROOM." : string.Empty;
+        return !ContactStandBlocked;
     }
 
     protected override bool BeginActivity()
     {
+        Vector3 authored = reachPoint.position; authored.y = Cat.transform.position.y;
+        ContactStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, glassPivot.position,
+            authored, Cat.transform.position, out Vector3 stand, out contactPath);
+        ContactStand = stand;
+        if (ContactStandBlocked) return false;
         characterController = Cat.GetComponent<CharacterController>();
         if (!pivotHomeCaptured)
         {
@@ -71,15 +86,23 @@ public sealed class KnockOffActivity : CatActivity
 
         Vector3 start = Cat.transform.position;
         Quaternion startRotation = Cat.transform.rotation;
-        Vector3 reach = Flatten(reachPoint.position, start.y);
+        Vector3 reach = Flatten(ContactStand, start.y);
 
-        Quaternion toReach = LookTowards(reach - start, startRotation);
-        yield return Move(start, reach, startRotation, toReach, 0.34f);
+        Quaternion toReach = startRotation;
+        foreach (Vector3 waypoint in contactPath)
+        {
+            Vector3 destination = Flatten(waypoint, start.y);
+            Vector3 from = Cat.transform.position;
+            toReach = LookTowards(destination - from, Cat.transform.rotation);
+            yield return Move(from, destination, Cat.transform.rotation, toReach,
+                Mathf.Max(.18f, Vector3.Distance(from, destination) / 1.1f));
+        }
 
-        Vector3 push = fallDirection.sqrMagnitude > 0.0001f
-            ? fallDirection.normalized
-            : Vector3.forward;
-        Quaternion facing = LookTowards(push, toReach);
+        Vector3 push = glassPivot.parent != null ? glassPivot.parent.InverseTransformDirection(WorldFallDirection) : WorldFallDirection;
+        // The prop's fall direction is not the direction from the cat to the
+        // prop (a glass may fall back towards the near edge).
+        Vector3 towardsGlass = Flatten(glassPivot.position - reach, 0f).normalized;
+        Quaternion facing = LookTowards(towardsGlass, toReach);
         yield return Move(reach, reach, toReach, facing, 0.20f);
 
         // Tease: paw out, the glass rocks and settles. Twice, so the third one
@@ -94,7 +117,7 @@ public sealed class KnockOffActivity : CatActivity
                 float t = Mathf.Clamp01(tap / 0.42f);
                 float paw = Mathf.Sin(t * Mathf.PI);
                 float rock = Mathf.Sin(t * Mathf.PI * 2.4f) * (1f - t);
-                Cat.transform.position = reach + push * (paw * 0.060f);
+                Cat.transform.position = reach + towardsGlass * (paw * 0.060f);
                 Cat.transform.rotation = facing * Quaternion.Euler(-paw * 18f, 0f, 0f);
                 glassPivot.localPosition = pivotHome + push * (paw * 0.022f);
                 glassPivot.localRotation = pivotHomeRotation * Quaternion.AngleAxis(
@@ -113,7 +136,7 @@ public sealed class KnockOffActivity : CatActivity
         {
             shove += Time.deltaTime;
             float t = Mathf.Clamp01(shove / 0.24f);
-            Cat.transform.position = reach + push * (Mathf.Sin(t * Mathf.PI) * 0.085f);
+            Cat.transform.position = reach + towardsGlass * (Mathf.Sin(t * Mathf.PI) * 0.085f);
             Cat.transform.rotation = facing * Quaternion.Euler(-t * 24f, 0f, 0f);
             glassPivot.localPosition = pivotHome + push * (t * 0.130f);
             yield return null;
@@ -155,7 +178,7 @@ public sealed class KnockOffActivity : CatActivity
 
         yield return Wait(0.30f);
         Cat.transform.rotation = facing;
-        Quaternion away = LookTowards(start - reach, facing);
+        Quaternion away = CatActivityFacing.Resolve(Cat, reach, LookTowards(start - reach, facing));
         yield return Move(reach, reach, facing, away, 0.24f);
 
         RestoreCat();
@@ -175,19 +198,35 @@ public sealed class KnockOffActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
+        Vector3 direction = to - from; direction.y = 0f;
+        if (direction.sqrMagnitude < .000001f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
+            yield break;
+        }
+
+        // Turn on the spot first. Interpolating a travel position while still
+        // facing the previous action made the return leg slide backwards.
+        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
+        PlayCatPose(CatActivityPose.GentleKnead);
+        yield return CatActivityFacing.Turn(Cat, travel, .16f);
         PlayCatPose(CatActivityPose.Walk);
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
+            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
             yield return null;
         }
 
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        Cat.transform.SetPositionAndRotation(to, travel);
+        if (Quaternion.Angle(travel, toRotation) > .1f)
+        {
+            PlayCatPose(CatActivityPose.GentleKnead);
+            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
+        }
     }
 
     private void RestoreCat()
@@ -222,11 +261,13 @@ public sealed class KnockOffActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

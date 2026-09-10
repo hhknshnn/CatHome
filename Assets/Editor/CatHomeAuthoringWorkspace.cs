@@ -134,7 +134,21 @@ public static class CatHomeAuthoringWorkspace
             return;
 
         if (!askToSave)
-            EditorSceneManager.SaveOpenScenes();
+        {
+            // SaveOpenScenes opens a blocking file dialog even for the clean,
+            // unnamed startup scene. Builders must preserve dirty scenes without
+            // putting automated checks behind an invisible Save dialog.
+            for(int i=0;i<SceneManager.sceneCount;i++)
+            {
+                var open=SceneManager.GetSceneAt(i);if(!open.isDirty)continue;
+                if(!string.IsNullOrEmpty(open.path))EditorSceneManager.SaveScene(open);
+                else
+                {
+                    if(!AssetDatabase.IsValidFolder("Assets/_Recovery"))AssetDatabase.CreateFolder("Assets","_Recovery");
+                    EditorSceneManager.SaveScene(open,"Assets/_Recovery/BeforeHomePreview_"+DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")+"_"+Guid.NewGuid().ToString("N").Substring(0,8)+".unity");
+                }
+            }
+        }
 
         EditorSceneManager.OpenScene(BootstrapScenePath, OpenSceneMode.Single);
         EditorSceneManager.OpenScene(UiScenePath, OpenSceneMode.Additive);
@@ -250,6 +264,7 @@ public static class CatHomeAuthoringWorkspace
                 }
             }
         }
+        CatHomeEditPreview.Refresh();
     }
 
     private static bool IsCanonicalHomeWorkspaceOpen()
@@ -329,6 +344,9 @@ public static class CatHomeAuthoringWorkspace
     public static void HoldFastPlayModeForManualTestRun()
     {
         SessionState.SetBool(ManualTestRunKey, true);
+        // A noncanonical authoring stack may have left GameScene as an explicit
+        // start scene. The native runner must be allowed to load its test scene.
+        EditorSceneManager.playModeStartScene = null;
         EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.None;
         EditorSettings.enterPlayModeOptionsEnabled = false;
         Debug.Log(

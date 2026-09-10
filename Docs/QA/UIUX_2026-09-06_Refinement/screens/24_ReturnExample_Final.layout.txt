@@ -1,2 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-WelcomeBackButton (x:760.00, y:261.00, width:400.00, height:80.00)

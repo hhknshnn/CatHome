@@ -12,32 +12,53 @@ public sealed class CatCatchLauncher : MonoBehaviour
 
     public void Launch()
     {
-        if (!loading)
-            StartCoroutine(LaunchRoutine());
+        if (!isActiveAndEnabled || loading ||
+            !CatRunnerSessionContext.TryBeginLaunch(CatchSceneName))
+            return;
+        loading = true;
+        try
+        {
+            if (StartCoroutine(LaunchRoutine()) == null)
+            {
+                loading = false;
+                CatRunnerSessionContext.CompleteLaunch(CatchSceneName);
+            }
+        }
+        catch
+        {
+            loading = false;
+            CatRunnerSessionContext.CompleteLaunch(CatchSceneName);
+            throw;
+        }
     }
 
     private IEnumerator LaunchRoutine()
     {
-        loading = true;
-        CatRunnerSessionContext.CaptureFromHome();
-
-        Scene loaded = SceneManager.GetSceneByName(CatchSceneName);
-        if (!loaded.IsValid() || !loaded.isLoaded)
+        try
         {
+            CatActionState.CancelForTransition(
+                FindAnyObjectByType<CatMovement>(FindObjectsInactive.Include));
+            CatRunnerSessionContext.CaptureFromHome();
             AsyncOperation operation = SceneManager.LoadSceneAsync(
-                CatchScenePath,
-                LoadSceneMode.Additive);
+                CatchScenePath, LoadSceneMode.Additive);
             if (operation == null)
             {
                 Debug.LogError("Cat Catch scene could not be queued for loading.", this);
-                loading = false;
                 yield break;
             }
-
             while (!operation.isDone)
                 yield return null;
         }
+        finally
+        {
+            loading = false;
+            CatRunnerSessionContext.CompleteLaunch(CatchSceneName);
+        }
+    }
 
-        loading = false;
+    private void OnDestroy()
+    {
+        if (loading)
+            CatRunnerSessionContext.CompleteLaunch(CatchSceneName);
     }
 }

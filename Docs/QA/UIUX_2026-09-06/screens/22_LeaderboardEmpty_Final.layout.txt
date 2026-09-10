@@ -1,8 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-DailyTab (x:1054.00, y:785.00, width:180.00, height:62.00)
-CatchTab (x:544.00, y:785.00, width:244.00, height:62.00)
-Close (x:1504.00, y:875.00, width:132.00, height:62.00)
-WeeklyTab (x:1250.00, y:785.00, width:180.00, height:62.00)
-RunnerTab (x:284.00, y:785.00, width:244.00, height:62.00)
-AllTimeTab (x:1446.00, y:785.00, width:180.00, height:62.00)
-Refresh (x:1358.00, y:132.00, width:276.00, height:66.00)

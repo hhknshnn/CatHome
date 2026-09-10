@@ -188,7 +188,7 @@ public sealed class GameSceneSmokeTests
             Assert.That(Object.FindAnyObjectByType<ScratchPostActivity>(
                 FindObjectsInactive.Include), Is.Not.Null);
             Assert.That(Object.FindAnyObjectByType<MouseHuntActivity>(
-                FindObjectsInactive.Include), Is.Not.Null);
+                FindObjectsInactive.Include), Is.Null);
         }
         else
         {

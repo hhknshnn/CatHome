@@ -1,0 +1,576 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e819e9b205f47014e9de3792f6635da4, type: 3}
+  m_Name: RoomLayoutCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::HomeRoomLayoutCatalog
+  layoutVersion: 1
+  entries:
+  - roomId: bedroom-01
+    productId: bedroom.dream-art
+    position: {x: -3.28, y: 1.62, z: 0.35}
+    yaw: 90
+    modelScale: 1
+    height: 0.78
+    footprint: {x: 1.05, y: 0.16}
+    zone: 4
+  - roomId: bedroom-01
+    productId: bedroom.queen-bed
+    position: {x: -2.3896, y: 0, z: 1.9325999}
+    yaw: 0
+    modelScale: 0.94
+    height: 0.9869999
+    footprint: {x: 2.1808, y: 1.3348}
+    zone: 0
+  - roomId: bedroom-01
+    productId: bedroom.star-canopy
+    position: {x: -0.27999997, y: 0, z: 2.0749998}
+    yaw: 0
+    modelScale: 1
+    height: 1.55
+    footprint: {x: 1.12, y: 1.05}
+    zone: 0
+  - roomId: bedroom-01
+    productId: bedroom.window-daybed
+    position: {x: 3.07, y: 0, z: -0.3}
+    yaw: 270
+    modelScale: 1
+    height: 0.72
+    footprint: {x: 2, y: 0.82}
+    zone: 1
+  - roomId: bedroom-01
+    productId: bedroom.wardrobe
+    position: {x: 3.219, y: 0, z: 1.8}
+    yaw: 270
+    modelScale: 0.9
+    height: 1.9350001
+    footprint: {x: 1.035, y: 0.52199996}
+    zone: 0
+  - roomId: bedroom-01
+    productId: bedroom.nightstand
+    position: {x: -3.22, y: 0, z: -0.6}
+    yaw: 90
+    modelScale: 1
+    height: 0.72
+    footprint: {x: 0.7, y: 0.52}
+    zone: 2
+  - roomId: bedroom-01
+    productId: bedroom.vanity-stool
+    position: {x: -1.7700002, y: 0, z: -0.7500002}
+    yaw: 0
+    modelScale: 1
+    height: 0.48
+    footprint: {x: 0.62, y: 0.62}
+    zone: 2
+  - roomId: bedroom-01
+    productId: bedroom.yarn-basket
+    position: {x: 1.7351997, y: 0, z: -0.7648}
+    yaw: 0
+    modelScale: 0.82
+    height: 0.451
+    footprint: {x: 0.59040004, y: 0.59040004}
+    zone: 2
+  - roomId: bedroom-01
+    productId: bedroom.night-light
+    position: {x: -2.848, y: 0, z: -1.5079999}
+    yaw: 0
+    modelScale: 0.8
+    height: 0.68
+    footprint: {x: 0.384, y: 0.384}
+    zone: 2
+  - roomId: bedroom-01
+    productId: bedroom.paw-rug
+    position: {x: 0, y: 0, z: 0.8}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 2.2, y: 1.28}
+    zone: 3
+  - roomId: garden-01
+    productId: garden.pergola
+    position: {x: 2, y: 0, z: 1.9099998}
+    yaw: 0
+    modelScale: 0.92
+    height: 1.702
+    footprint: {x: 1.84, y: 1.38}
+    zone: 0
+  - roomId: garden-01
+    productId: garden.bistro-set
+    position: {x: 2.1149995, y: 0, z: -0.805}
+    yaw: 0
+    modelScale: 1
+    height: 0.78
+    footprint: {x: 1.35, y: 1.15}
+    zone: 2
+  - roomId: garden-01
+    productId: garden.sapling
+    position: {x: -2.0387502, y: 0, z: 2.1812499}
+    yaw: 0
+    modelScale: 0.85
+    height: 1.5725001
+    footprint: {x: 0.7225, y: 0.7225}
+    zone: 0
+  - roomId: garden-01
+    productId: garden.hammock
+    position: {x: -2.7849998, y: 0, z: 0.89}
+    yaw: 180
+    modelScale: 1
+    height: 0.85
+    footprint: {x: 1.15, y: 0.7}
+    zone: 1
+  - roomId: garden-01
+    productId: garden.sun-lounger
+    position: {x: -2.02, y: 0, z: -0.785}
+    yaw: 0
+    modelScale: 1
+    height: 0.48
+    footprint: {x: 1.4, y: 0.55}
+    zone: 2
+  - roomId: garden-01
+    productId: garden.flower-pots
+    position: {x: -1.3350003, y: 0, z: 0.25}
+    yaw: 0
+    modelScale: 1
+    height: 0.62
+    footprint: {x: 0.85, y: 0.7}
+    zone: 1
+  - roomId: garden-01
+    productId: garden.grill
+    position: {x: -2.6915, y: 0, z: -1.7329999}
+    yaw: 180
+    modelScale: 0.82
+    height: 0.86099994
+    footprint: {x: 0.697, y: 0.574}
+    zone: 2
+  - roomId: garden-01
+    productId: garden.daisy-bed
+    position: {x: -0.5700003, y: 0, z: 1.53}
+    yaw: 0
+    modelScale: 1
+    height: 0.42
+    footprint: {x: 1.1, y: 0.7}
+    zone: 0
+  - roomId: garden-01
+    productId: garden.bird-bath
+    position: {x: -1.1425004, y: 0, z: -1.7225}
+    yaw: 0
+    modelScale: 0.85
+    height: 0.697
+    footprint: {x: 0.595, y: 0.595}
+    zone: 2
+  - roomId: garden-01
+    productId: garden.yarn-ball
+    position: {x: 1.0249996, y: 0, z: 0.445}
+    yaw: 0
+    modelScale: 1
+    height: 0.28
+    footprint: {x: 0.45, y: 0.45}
+    zone: 1
+  - roomId: balcony-01
+    productId: balcony.sun-awning
+    position: {x: 0, y: 2.24, z: 2.2}
+    yaw: 180
+    modelScale: 1
+    height: 0.71
+    footprint: {x: 2.4, y: 1.1}
+    zone: 4
+  - roomId: balcony-01
+    productId: balcony.lantern-string
+    position: {x: -3.33, y: 1.92, z: -0.6}
+    yaw: 90
+    modelScale: 1
+    height: 0.3
+    footprint: {x: 1.6, y: 0.3}
+    zone: 4
+  - roomId: balcony-01
+    productId: balcony.hanging-chair
+    position: {x: -2.07, y: 0, z: 2.1499999}
+    yaw: 0
+    modelScale: 1
+    height: 1.5
+    footprint: {x: 0.9, y: 0.9}
+    zone: 0
+  - roomId: balcony-01
+    productId: balcony.cushion-bench
+    position: {x: 2.2399995, y: 0, z: -0.76000017}
+    yaw: 0
+    modelScale: 1
+    height: 0.55
+    footprint: {x: 1.6, y: 0.6}
+    zone: 2
+  - roomId: balcony-01
+    productId: balcony.herb-shelf
+    position: {x: 2.01, y: 0, z: 2.3749998}
+    yaw: 180
+    modelScale: 0.9
+    height: 1.26
+    footprint: {x: 0.9, y: 0.45}
+    zone: 0
+  - roomId: balcony-01
+    productId: balcony.railing-flowers
+    position: {x: -3.305, y: 0, z: 0.90000004}
+    yaw: 90
+    modelScale: 1
+    height: 0.9
+    footprint: {x: 1.6, y: 0.35}
+    zone: 1
+  - roomId: balcony-01
+    productId: balcony.bird-feeder
+    position: {x: 2.3259995, y: 0, z: 0.7859999}
+    yaw: 0
+    modelScale: 0.82
+    height: 1.148
+    footprint: {x: 0.492, y: 0.492}
+    zone: 1
+  - roomId: balcony-01
+    productId: balcony.side-table
+    position: {x: -1.7300003, y: 0, z: -0.71}
+    yaw: 0
+    modelScale: 1
+    height: 0.5
+    footprint: {x: 0.7, y: 0.7}
+    zone: 2
+  - roomId: balcony-01
+    productId: balcony.planter-box
+    position: {x: -1.9750001, y: 0, z: -1.745}
+    yaw: 0
+    modelScale: 1
+    height: 0.5
+    footprint: {x: 0.85, y: 0.55}
+    zone: 2
+  - roomId: balcony-01
+    productId: balcony.sun-mat
+    position: {x: 0, y: 0, z: 0.8}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 1.9, y: 1.15}
+    zone: 3
+  - roomId: patio-01
+    productId: patio.parasol
+    position: {x: -2.5019999, y: 0, z: 0.758}
+    yaw: 0
+    modelScale: 0.78
+    height: 1.443
+    footprint: {x: 1.716, y: 1.716}
+    zone: 1
+  - roomId: patio-01
+    productId: patio.pergola-arch
+    position: {x: 1.4640001, y: 0, z: 2.1399999}
+    yaw: 180
+    modelScale: 0.92
+    height: 1.702
+    footprint: {x: 2.2080002, y: 0.92}
+    zone: 0
+  - roomId: patio-01
+    productId: patio.porch-swing
+    position: {x: 2.68, y: 0, z: 0.90000004}
+    yaw: 0
+    modelScale: 1
+    height: 1.5
+    footprint: {x: 1.6, y: 0.7}
+    zone: 1
+  - roomId: patio-01
+    productId: patio.dining-set
+    position: {x: 1.6499999, y: 0, z: -0.95}
+    yaw: 0
+    modelScale: 1
+    height: 0.58
+    footprint: {x: 1.7, y: 1.5}
+    zone: 2
+  - roomId: patio-01
+    productId: patio.string-lights
+    position: {x: -1.0600002, y: 0, z: 2.2899997}
+    yaw: 180
+    modelScale: 1
+    height: 2.1
+    footprint: {x: 1.4, y: 0.3}
+    zone: 0
+  - roomId: patio-01
+    productId: patio.fire-pit
+    position: {x: -2.0175002, y: 0, z: -0.9975001}
+    yaw: 0
+    modelScale: 0.85
+    height: 0.68
+    footprint: {x: 0.765, y: 0.765}
+    zone: 2
+  - roomId: patio-01
+    productId: patio.water-fountain
+    position: {x: -3.14, y: 0, z: -0.90000004}
+    yaw: 270
+    modelScale: 0.85
+    height: 0.765
+    footprint: {x: 0.68, y: 0.68}
+    zone: 2
+  - roomId: patio-01
+    productId: patio.herb-trough
+    position: {x: 3.305, y: 0, z: -0.6}
+    yaw: 270
+    modelScale: 1
+    height: 0.5
+    footprint: {x: 1.6, y: 0.35}
+    zone: 2
+  - roomId: patio-01
+    productId: patio.potted-ferns
+    position: {x: -0.8800003, y: 0, z: -0.099999964}
+    yaw: 270
+    modelScale: 0.8
+    height: 0.88000005
+    footprint: {x: 0.64000005, y: 0.48000002}
+    zone: 1
+  - roomId: patio-01
+    productId: patio.stone-rug
+    position: {x: 0, y: 0, z: 0.8}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 2, y: 1.2}
+    zone: 3
+  - roomId: second-floor-01
+    productId: loft.wall-gallery
+    position: {x: -3.3799999, y: 1.55, z: 1}
+    yaw: 90
+    modelScale: 1
+    height: 0.9
+    footprint: {x: 1.6, y: 0.2}
+    zone: 4
+  - roomId: second-floor-01
+    productId: loft.study-desk
+    position: {x: 2.1399996, y: 0, z: 0.66999996}
+    yaw: 0
+    modelScale: 1
+    height: 0.8
+    footprint: {x: 1.4, y: 0.9}
+    zone: 1
+  - roomId: second-floor-01
+    productId: loft.chaise-lounge
+    position: {x: -2.24, y: 0, z: -0.71}
+    yaw: 0
+    modelScale: 1
+    height: 0.7
+    footprint: {x: 1.6, y: 0.7}
+    zone: 2
+  - roomId: second-floor-01
+    productId: loft.tall-bookcase
+    position: {x: -2.398, y: 0, z: 2.4279997}
+    yaw: 180
+    modelScale: 0.86
+    height: 1.806
+    footprint: {x: 1.204, y: 0.344}
+    zone: 0
+  - roomId: second-floor-01
+    productId: loft.arc-lamp
+    position: {x: 1.4069996, y: 0, z: 2.1069996}
+    yaw: 90
+    modelScale: 0.82
+    height: 1.517
+    footprint: {x: 0.574, y: 0.574}
+    zone: 0
+  - roomId: second-floor-01
+    productId: loft.bean-bag
+    position: {x: 1.2749996, y: 0, z: -0.9049999}
+    yaw: 0
+    modelScale: 1
+    height: 0.55
+    footprint: {x: 0.95, y: 0.95}
+    zone: 2
+  - roomId: second-floor-01
+    productId: loft.floor-cushions
+    position: {x: -1.3100002, y: 0, z: 0.66999996}
+    yaw: 270
+    modelScale: 1
+    height: 0.5
+    footprint: {x: 0.9, y: 0.9}
+    zone: 1
+  - roomId: second-floor-01
+    productId: loft.record-player
+    position: {x: 0.28999978, y: 0, z: 1.4799998}
+    yaw: 0
+    modelScale: 1
+    height: 0.7
+    footprint: {x: 0.9, y: 0.6}
+    zone: 0
+  - roomId: second-floor-01
+    productId: loft.book-stack
+    position: {x: -2.2250001, y: 0, z: -1.81}
+    yaw: 270
+    modelScale: 0.7
+    height: 0.42000002
+    footprint: {x: 0.42000002, y: 0.35}
+    zone: 2
+  - roomId: second-floor-01
+    productId: loft.floor-runner
+    position: {x: 0, y: 0, z: 0.8}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 1.9, y: 1.15}
+    zone: 3
+  - roomId: kitchen-01
+    productId: kitchen.island
+    position: {x: -1.9875002, y: 0, z: 2.1275}
+    yaw: 0
+    modelScale: 0.9
+    height: 0.972
+    footprint: {x: 2.0249999, y: 0.94499993}
+    zone: 0
+  - roomId: kitchen-01
+    productId: kitchen.refrigerator
+    position: {x: 3.1368, y: 0, z: 1.8}
+    yaw: 90
+    modelScale: 0.88
+    height: 1.98
+    footprint: {x: 1.1, y: 0.6864}
+    zone: 0
+  - roomId: kitchen-01
+    productId: kitchen.sink-cabinet
+    position: {x: 3.105, y: 0, z: 0}
+    yaw: 90
+    modelScale: 1
+    height: 1.16
+    footprint: {x: 1.65, y: 0.75}
+    zone: 1
+  - roomId: kitchen-01
+    productId: kitchen.pantry-shelf
+    position: {x: -3.2325, y: 0, z: 0.6}
+    yaw: 270
+    modelScale: 0.9
+    height: 1.665
+    footprint: {x: 1.035, y: 0.495}
+    zone: 1
+  - roomId: kitchen-01
+    productId: kitchen.stove-oven
+    position: {x: -3.147, y: 0, z: -0.90000004}
+    yaw: 270
+    modelScale: 0.9
+    height: 1.17
+    footprint: {x: 1.0619999, y: 0.666}
+    zone: 2
+  - roomId: kitchen-01
+    productId: kitchen.dish-cart
+    position: {x: -1.7028003, y: 0, z: 0.15419984}
+    yaw: 0
+    modelScale: 0.82
+    height: 0.94299996
+    footprint: {x: 0.7544, y: 0.5084}
+    zone: 1
+  - roomId: kitchen-01
+    productId: kitchen.feeding-station
+    position: {x: 1.6734996, y: 0, z: -0.7648}
+    yaw: 0
+    modelScale: 0.82
+    height: 0.3936
+    footprint: {x: 1.107, y: 0.59040004}
+    zone: 2
+  - roomId: kitchen-01
+    productId: kitchen.counter-stool
+    position: {x: -1.4540002, y: 0, z: -0.77949995}
+    yaw: 0
+    modelScale: 0.85
+    height: 0.697
+    footprint: {x: 0.61200005, y: 0.56100005}
+    zone: 2
+  - roomId: kitchen-01
+    productId: kitchen.fruit-basket
+    position: {x: -2.1212, y: 0, z: -1.7412}
+    yaw: 0
+    modelScale: 0.68
+    height: 0.48960003
+    footprint: {x: 0.5576, y: 0.5576}
+    zone: 2
+  - roomId: kitchen-01
+    productId: kitchen.paw-mat
+    position: {x: 0, y: 0, z: 0.8}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 2.2, y: 1.15}
+    zone: 3
+  - roomId: bathroom-01
+    productId: bathroom.bath-mat
+    position: {x: 0, y: 0, z: 0.25}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 1.9, y: 1.15}
+    zone: 3
+  - roomId: bathroom-01
+    productId: bathroom.laundry-hamper
+    position: {x: -1.35, y: 0, z: -0.7}
+    yaw: 0
+    modelScale: 0.82
+    height: 0.7544
+    footprint: {x: 0.6724, y: 0.6724}
+    zone: 2
+  - roomId: bathroom-01
+    productId: bathroom.litter-box
+    position: {x: -2.8, y: 0, z: -1.35}
+    yaw: 0
+    modelScale: 1
+    height: 0.48
+    footprint: {x: 1.3, y: 1.02}
+    zone: 2
+  - roomId: bathroom-01
+    productId: bathroom.grooming-cart
+    position: {x: -0.75, y: 0, z: 2.2}
+    yaw: 0
+    modelScale: 0.84
+    height: 0.85679996
+    footprint: {x: 0.77279997, y: 0.5376}
+    zone: 0
+  - roomId: bathroom-01
+    productId: bathroom.towel-storage
+    position: {x: 2.45, y: 0, z: 2.375}
+    yaw: 0
+    modelScale: 0.9
+    height: 1.638
+    footprint: {x: 0.918, y: 0.45}
+    zone: 0
+  - roomId: bathroom-01
+    productId: bathroom.wall-mirror
+    position: {x: -0.75, y: 1.25, z: 2.65}
+    yaw: 0
+    modelScale: 1
+    height: 0.78
+    footprint: {x: 0.92, y: 0.16}
+    zone: 4
+  - roomId: bathroom-01
+    productId: bathroom.toilet
+    position: {x: 2.5, y: 0, z: -1.45}
+    yaw: 180
+    modelScale: 0.7
+    height: 1.0919999
+    footprint: {x: 0.658, y: 0.826}
+    zone: 2
+  - roomId: bathroom-01
+    productId: bathroom.vanity-sink
+    position: {x: -3.05, y: 0, z: 0.4}
+    yaw: 90
+    modelScale: 0.82
+    height: 1.3858
+    footprint: {x: 1.6072, y: 0.7052}
+    zone: 1
+  - roomId: bathroom-01
+    productId: bathroom.tub
+    position: {x: 2.85, y: 0, z: 0.35}
+    yaw: 270
+    modelScale: 0.82
+    height: 1.1152
+    footprint: {x: 2.009, y: 1.0741999}
+    zone: 1
+  - roomId: bathroom-01
+    productId: bathroom.shower
+    position: {x: -2.6, y: 0, z: 2.12}
+    yaw: 180
+    modelScale: 0.88
+    height: 1.9448
+    footprint: {x: 1.452, y: 1.1264}
+    zone: 0

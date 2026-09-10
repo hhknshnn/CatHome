@@ -1,8 +1,0 @@
-Cat Home level validation passed. Errors: 0, warnings: 0.
-GameScene
-CatHome_UI
-LivingRoom_Level01
-Active=LivingRoom_Level01
-PlayStart=null
-EnterPlayOptions=DisableSceneReload
-QAActive=False

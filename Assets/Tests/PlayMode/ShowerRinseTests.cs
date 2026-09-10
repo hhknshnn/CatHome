@@ -85,6 +85,7 @@ public sealed class ShowerRinseTests
         float deadline = Time.realtimeSinceStartup + 25f;
         while (rinse.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(rinse);
             closestToStand = Mathf.Min(closestToStand, Flat(cat.transform.position, stand.position));
             highestCat = Mathf.Max(highestCat, cat.transform.position.y);
             yield return null;

@@ -1,5 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-HubCatRunnerButton (x:308.00, y:269.00, width:636.00, height:522.00)
-GamesHubLeaderboards (x:755.00, y:160.00, width:410.00, height:62.00)
-GamesHubClose (x:1587.00, y:868.00, width:60.00, height:60.00)
-HubCatCatchButton (x:976.00, y:269.00, width:636.00, height:522.00)

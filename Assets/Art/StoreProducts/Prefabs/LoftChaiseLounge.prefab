@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 6043343613029187032}
   - component: {fileID: 7222882905644364627}
   - component: {fileID: 6109470684047738557}
+  - component: {fileID: 8869683822424492940}
   m_Layer: 0
   m_Name: LoftChaiseLounge
   m_TagString: Untagged
@@ -236,6 +237,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &8869683822424492940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2945571959125151666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &3485374704300742806
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,27 +349,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 286060d93e4edb947ba11e4f206e66d7, type: 2}
+      objectReference: {fileID: 2100000, guid: 7636f3c580c036a4292e3a4963f795c4, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 946b23c09763c9f408c05fce1c6737e7, type: 2}
     - target: {fileID: -7511558181221131132, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 5be24bf3cbd9c6247ba59c544b7f38a7, type: 2}
     - target: {fileID: 919132149155446097, guid: 6513e4d22f3d92a428228d2c9869c7e0, type: 3}
       propertyPath: m_Name
       value: LoftChaiseLounge_PremiumModel

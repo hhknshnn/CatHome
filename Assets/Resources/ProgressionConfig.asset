@@ -95,7 +95,7 @@ MonoBehaviour:
       type: 6
       requiredCount: 1
       title: Mighty Hunter
-      description: Catch the clockwork mouse three times
+      description: Catch at least three mice in one Cat Catch round
       rewardCoins: 25
       rewardBondXp: 15
       rewardDiamonds: 0
@@ -146,8 +146,8 @@ MonoBehaviour:
     - questId: level5_window
       type: 8
       requiredCount: 1
-      title: Window Watch
-      description: Sit at the window after 80 Bond
+      title: Curious Cat
+      description: Watch a bookshelf, plant or lamp
       rewardCoins: 25
       rewardBondXp: 15
       rewardDiamonds: 0

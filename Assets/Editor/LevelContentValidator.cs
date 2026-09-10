@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -634,8 +634,8 @@ public static class LevelContentValidator
                 "Cat Runner scene has no music/SFX/haptic controller.", report);
             Require(responsive != null,
                 "Cat Runner UI has no responsive safe-area layout.", report);
-            Require(track == null || track.ObjectApproachSpeedMultiplier > 1f,
-                "Cat Runner obstacles must approach faster than the visual floor scroll.", report);
+            Require(track == null || Mathf.Approximately(track.ObjectApproachSpeedMultiplier,1f),
+                "Cat Runner obstacles must stay attached to the supporting road speed.", report);
             Require(canvas != null, "Cat Runner scene has no HUD canvas.", report);
             Require(camera != null, "Cat Runner scene has no camera.", report);
             Require(FindAllInScene<AudioListener>(scene).Length == 1,
@@ -696,20 +696,20 @@ public static class LevelContentValidator
 
             CatRunnerTrackObject[] trackObjects =
                 FindAllInScene<CatRunnerTrackObject>(scene);
-            int powerUps = 0;
+            var powerUps = new HashSet<CatRunnerPowerUpKind>();
             for (int i = 0; i < trackObjects.Length; i++)
             {
                 CatRunnerTrackObject item = trackObjects[i];
                 if (item == null)
                     continue;
                 if (item.Kind == CatRunnerTrackObjectKind.PowerUp)
-                    powerUps++;
+                    powerUps.Add(item.PowerUpKind);
                 if (item.IsHazard)
                     Require(item.transform.Find("HazardWarningTelegraph") != null,
                         item.name + " has no readable hazard telegraph.", report);
             }
-            Require(powerUps == 3,
-                "Cat Runner must retain Magnet, Shield and Double Coins templates.",
+            Require(powerUps.Count == 5 && powerUps.Contains(CatRunnerPowerUpKind.Magnet) && powerUps.Contains(CatRunnerPowerUpKind.Shield) && powerUps.Contains(CatRunnerPowerUpKind.DoubleCoins) && powerUps.Contains(CatRunnerPowerUpKind.ScoreStar) && powerUps.Contains(CatRunnerPowerUpKind.MysteryGift),
+                "Cat Runner must contain all five distinct bonus templates.",
                 report);
 
             CatRunnerScenerySegment[] scenerySegments =
@@ -806,10 +806,10 @@ public static class LevelContentValidator
                     $"Level scene '{level.ScenePath}' has no ball chase activity.", report);
                 Require(FindInScene<ScratchPostActivity>(scene) != null,
                     $"Level scene '{level.ScenePath}' has no scratching activity.", report);
-                Require(FindInScene<MouseHuntActivity>(scene) != null,
-                    $"Level scene '{level.ScenePath}' has no mouse hunt activity.", report);
-                Require(FindSitLook(scene, CatActivityKind.WindowWatch) != null,
-                    $"Level scene '{level.ScenePath}' has no window-watch activity.", report);
+                Require(FindInScene<MouseHuntActivity>(scene) == null,
+                    $"Level scene '{level.ScenePath}' still contains the retired mouse hunt activity.", report);
+                Require(FindSitLook(scene, CatActivityKind.WindowWatch) == null,
+                    $"Level scene '{level.ScenePath}' still contains the retired window-watch activity.", report);
                 StoreProductDisplay[] storeProducts = FindAllInScene<StoreProductDisplay>(scene);
                 Require(storeProducts.Length >= 6,
                     $"Level scene '{level.ScenePath}' has fewer than six authored store products.",
@@ -912,6 +912,8 @@ public static class LevelContentValidator
                     report);
 
                 CatMovement cat = FindInScene<CatMovement>(scene);
+                foreach (string facingError in HomeActivityFacingValidation.Validate(scene))
+                    Require(false, facingError, report);
                 Camera[] cameras = FindAllInScene<Camera>(scene);
                 int enabledCameras = cameras.Count(camera => camera.enabled);
                 AudioListener[] listeners = FindAllInScene<AudioListener>(scene);
@@ -922,6 +924,15 @@ public static class LevelContentValidator
                     report);
                 Require(cameras.Length == 1 && enabledCameras == 1,
                     $"Home room '{room.ScenePath}' must author exactly one enabled camera.", report);
+                if (cameras.Length == 1)
+                {
+                    var view = cameras[0];
+                    Require(Vector3.Distance(view.transform.position, HomeRoomCameraProfile.Position) < .001f &&
+                        Quaternion.Angle(view.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.Angles)) < .05f &&
+                        Mathf.Abs(view.fieldOfView - HomeRoomCameraProfile.FieldOfView) < .001f && !view.orthographic &&
+                        view.GetComponent<HomeWorldViewport>() != null,
+                        $"Home room '{room.ScenePath}' must use the shared front-centred camera profile and HUD viewport.", report);
+                }
                 Require(listeners.Length == 1 && enabledListeners == 1,
                     $"Home room '{room.ScenePath}' must author exactly one enabled AudioListener.",
                     report);
@@ -934,6 +945,7 @@ public static class LevelContentValidator
                 Require(boundary != null,
                     $"Home room '{room.ScenePath}' needs its movement boundary.", report);
                 ValidateAuthoringHierarchy(scene, room.ScenePath, report);
+                report.Errors.AddRange(HomeRoomArrangementValidation.Validate(scene, room.Id));
 
                 if (room.Id == HomeRoomService.LivingRoomId)
                     ValidateLivingRoomSafety(scene, report);
@@ -966,13 +978,12 @@ public static class LevelContentValidator
             (CatActivityKind.BookSetSniff, HomeStoreService.BookSetId),
             (CatActivityKind.PlantSniff, HomeStoreService.TallPlantId),
             (CatActivityKind.PaintingWatch, HomeStoreService.ModernPaintingId),
-            (CatActivityKind.TvUnitPaw, HomeStoreService.TvUnitId),
-            (CatActivityKind.TelevisionWatch, HomeStoreService.ModernTelevisionId),
-            (CatActivityKind.ConsolePaw, HomeStoreService.GameConsoleId),
-            (CatActivityKind.SpeakerListen, HomeStoreService.StereoId)
+            (CatActivityKind.TelevisionWatch, HomeStoreService.ModernTelevisionId)
         };
         foreach (var pair in interactions)
             RequireRoomActivity(scene, pair.Item1, pair.Item2, pair.Item1.ToString(), "Living Room", report);
+        foreach(var activity in FindAllInScene<CatActivity>(scene))
+            Require(!activity.IsRetired,"Living Room retains a retired action: "+activity.Kind,report);
         GameTimeService time = FindInScene<GameTimeService>(scene);
         bool fixedDaylight = false;
         if (time != null)

@@ -110,11 +110,12 @@ public sealed class QuestPanelController : MonoBehaviour
     [SerializeField, Range(0f, 0.15f)] private float popScale = 0.035f;
     [SerializeField, Range(0f, 1f)] private float scrimTargetAlpha = 0.55f;
 
-    [Header("Row state colours")]
-    [SerializeField] private Color activeTextColor = PremiumUiStyle.Ink;
-    [SerializeField] private Color mutedTextColor = PremiumUiStyle.Muted;
-    [SerializeField] private Color readyTextColor = PremiumUiStyle.Teal;
-    [SerializeField] private Color claimedTextColor = PremiumUiStyle.Teal;
+    // Runtime rows use the shared palette; old serialized row colours must not
+    // restore the previous cream / brown treatment when the snapshot refreshes.
+    private static readonly Color activeTextColor = ModernUiArt.Ink;
+    private static readonly Color mutedTextColor = ModernUiArt.Muted;
+    private static readonly Color readyTextColor = ModernUiArt.Azure;
+    private static readonly Color claimedTextColor = ModernUiArt.Azure;
 
     // Player-facing state strings. Kept in one place so the presentation of the
     // authoritative QuestState never drifts between rows.
@@ -171,6 +172,7 @@ public sealed class QuestPanelController : MonoBehaviour
 
     private void Awake()
     {
+        PremiumScrollInput.Ensure(scrollRect);
         ResolveSceneReferences();
 
         if (rootGroup == null)
@@ -346,9 +348,7 @@ public sealed class QuestPanelController : MonoBehaviour
     private void SelectDaily(bool value) { showDaily=value; Refresh(); ResetScrollToTop(); }
     private static void PaintTab(Button button,bool selected)
     {
-        if(button==null)return;
-        if(button.targetGraphic is LowPolyPanelGraphic face) face.SetPremiumBaseColor(selected?PremiumUiStyle.Teal:PremiumUiStyle.Mint);
-        var label=button.GetComponentInChildren<TMP_Text>(true); if(label!=null) label.color=selected?Color.white:PremiumUiStyle.Ink;
+        ModernUiArt.Action(button, !selected);
     }
 
     private static string FormatChapterHeading(int chapterNumber, string chapterName)
@@ -432,7 +432,16 @@ public sealed class QuestPanelController : MonoBehaviour
         rowQuestIds[index] = snapshot.QuestId;
 
         if (row.root != null)
+        {
             row.root.SetActive(true);
+            // Stretched faces in the dormant authored pool can have zero width
+            // during editor styling. Resolve the actual row face at refresh so
+            // existing scenes and newly built rows receive the same finish.
+            Transform face = row.root.transform.Find("Face");
+            if (face != null)
+                ModernUiArt.Surface(face.GetComponent<LowPolyPanelGraphic>(), ModernUiArt.Paper, 16f);
+        }
+        ModernUiArt.Action(row.claimButton);
 
         // A quest authored without a title falls back to its description, never to
         // the raw quest id: ids are data, not player-facing copy.

@@ -44,8 +44,15 @@ public sealed class LeaderboardPanel : MonoBehaviour
     private void Awake()
     {
         activeInstance=this;
-        Bind(closeButton, Hide);
-        Bind(GetComponent<Button>(), Hide);
+        Bind(closeButton, CloseToGames);
+        // The scrim only catches rays. A root Button also receives clicks that
+        // bubble from labels/empty card space, which used to dismiss this panel.
+        var backdropButton = GetComponent<Button>();
+        if (backdropButton != null)
+        {
+            backdropButton.onClick.RemoveAllListeners();
+            backdropButton.enabled = false;
+        }
         Bind(runnerButton, () => SelectGame(CompetitionGame.CatRunner));
         Bind(catchButton, () => SelectGame(CompetitionGame.CatCatch));
         Bind(dailyButton, () => SelectPeriod(CompetitionPeriod.Daily));
@@ -65,6 +72,8 @@ public sealed class LeaderboardPanel : MonoBehaviour
 
     public void Show()
     {
+        if (HomeUiFlow.IsMiniGameVisible)
+            return;
         open = true;
         movement=FindAnyObjectByType<CatMovement>();if(movement!=null)movement.AcquireInputBlock(this);
         gameObject.SetActive(true);
@@ -81,6 +90,14 @@ public sealed class LeaderboardPanel : MonoBehaviour
     }
 
     public void Hide() => HideImmediate();
+
+    public void CloseToGames()
+    {
+        if (!open)
+            return;
+        HideImmediate();
+        FindAnyObjectByType<GamesHubPanel>(FindObjectsInactive.Include)?.Show();
+    }
     private void OnDisable() => HideImmediate();
 
     private void HideImmediate()

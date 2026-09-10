@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -67,7 +67,7 @@ public sealed class BathroomPropActivityTests
         Time.timeScale = 8f;
         float deadline = Time.realtimeSinceStartup + 40f;
         while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
-            yield return null;
+            {RoomPlayModeSupport.StopObservedRest(activity);yield return null;}
         Time.timeScale = 1f;
 
         Assert.That(activity.IsRunning, Is.False, "The routine must finish on its own.");
@@ -155,6 +155,7 @@ public sealed class BathroomPropActivityTests
         float deadline = Time.realtimeSinceStartup + 40f;
         while (dive.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(dive);
             float y = cat.transform.position.y;
             peakY = Mathf.Max(peakY, y);
             if (peakY > floorY + 0.4f)
@@ -201,7 +202,7 @@ public sealed class BathroomPropActivityTests
     }
 
     [UnityTest]
-    public IEnumerator MatKnead_FlopsTheCatAndStandsItBackUp()
+    public IEnumerator MatKnead_SettlesGentlyAndStandsBackUp()
     {
         yield return LoadBathroom();
 
@@ -217,20 +218,21 @@ public sealed class BathroomPropActivityTests
 
         RoomPlayModeSupport.ProvisionNeeds();
         Assert.That(knead.TryStart(cat), Is.True);
-        // The flop rolls the cat past what the capsule allows, so the one thing
-        // that can go wrong here is it being handed back to physics on its side.
+        // The bathroom's gentle knead settles through the skeleton. The root
+        // stays upright throughout, including the hand-off back to physics.
         Time.timeScale = 8f;
         float minUpright = 1f;
         float deadline = Time.realtimeSinceStartup + 40f;
         while (knead.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(knead);
             minUpright = Mathf.Min(minUpright, Vector3.Dot(cat.transform.up, Vector3.up));
             yield return null;
         }
         Time.timeScale = 1f;
 
         Assert.That(knead.IsRunning, Is.False);
-        Assert.That(minUpright, Is.LessThan(0.5f), "The cat must actually roll over.");
+        Assert.That(minUpright, Is.GreaterThan(.99f), "Gentle bathroom kneading must not roll the root onto its side.");
         Assert.That(Vector3.Dot(cat.transform.up, Vector3.up), Is.GreaterThan(0.9f),
             "And it must be upright again before physics resumes.");
         yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
@@ -264,6 +266,7 @@ public sealed class BathroomPropActivityTests
         float deadline = Time.realtimeSinceStartup + 40f;
         while (edge.IsRunning && Time.realtimeSinceStartup < deadline)
         {
+            RoomPlayModeSupport.StopObservedRest(edge);
             peakY = Mathf.Max(peakY, cat.transform.position.y);
             if (cat.transform.position.y > floorY + 0.4f)
                 travelled += Vector3.Distance(previous, cat.transform.position);

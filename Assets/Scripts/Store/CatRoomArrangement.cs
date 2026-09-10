@@ -7,11 +7,14 @@ using UnityEngine.SceneManagement;
 [DefaultExecutionOrder(900)]
 public sealed class CatRoomArrangement : MonoBehaviour
 {
+    public const float RearPanelZ=2.72f;
+    public static readonly Vector3 RearWallNapPillowPosition=new Vector3(-1.72f,0,2.4387f);
     public struct Pose
     {
         public Vector3 position, entry, exit;
         public float yaw;
         public bool hasExit;
+        internal int[] blockedCells;
     }
     sealed class Item
     {
@@ -23,7 +26,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     readonly List<Vector3> care=new List<Vector3>();
     readonly List<Vector3> protectedPoints=new List<Vector3>();
     readonly bool[] roomGrid=new bool[31*27];
-    bool pending=true, cached, applying;
+    bool pending=true, cached, applying, preferSaved;
     int visits;
     public string LastFailure { get; private set; }
     public int DisplayedCount { get; private set; }
@@ -78,7 +81,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
         {
             if(t.gameObject.scene!=gameObject.scene)continue;
             if(t.name=="FoodInteractionPoint" || t.name=="WaterInteractionPoint" ||
-               t.name=="SleepInteractionPoint" || t.name=="SofaJumpEntry" || t.name=="TableJumpEntry")
+               t.name=="SleepInteractionPoint" || t.name=="BedInteractionPoint" || t.name=="SofaJumpEntry" || t.name=="TableJumpEntry")
             {care.Add(t.position);protectedPoints.Add(t.position);}
         }
         Physics.SyncTransforms();
@@ -95,6 +98,10 @@ public sealed class CatRoomArrangement : MonoBehaviour
     public bool TryPlan(IReadOnlyList<string> ids,out Dictionary<string,Pose> plan)
     {
         CacheRoom();plan=new Dictionary<string,Pose>();
+        int displayed=0;foreach(var product in HomeStoreService.Products)
+            if(CatCollectionPolicy.IsCatItem(product.Id)&&HomeStoreService.IsOwned(product.Id)&&!HomeStoreService.IsStored(product.Id))displayed++;
+        bool currentDisplay=displayed==ids.Count;foreach(string id in ids)currentDisplay&=HomeStoreService.IsOwned(id)&&!HomeStoreService.IsStored(id);
+        if(preferSaved!=currentDisplay){foreach(var item in items.Values)item.poses.Clear();preferSaved=currentDisplay;}
         if(ids.Count>CatCollectionPolicy.Capacity)return false;
         var selected=new List<Item>();int beds=0;
         foreach(string id in ids)
@@ -150,20 +157,51 @@ public sealed class CatRoomArrangement : MonoBehaviour
         bool hasExit=tunnel!=null && tunnel.Mode==CatEnrichmentMode.Tunnel && tunnel.ExitPoint!=null;
         Vector3 localExit=hasExit?p.MovableRoot.InverseTransformPoint(tunnel.ExitPoint.position):Vector3.zero;
         // Five preferred display bays; a compact grid supplies alternatives for wider products.
-        var points=new List<Vector3>{new Vector3(-1.8f,0,.5f),new Vector3(-1.8f,0,-1.4f),
-            new Vector3(0,0,-1.8f),new Vector3(1.6f,0,-.75f),new Vector3(0,0,-.3f)};
-        for(int z=0;z<9;z++)for(int x=0;x<13;x++)points.Add(new Vector3(-2.25f+x*.35f,0,.6f-z*.35f));
-        foreach(var point in points)foreach(float yaw in new[]{0f,180f,90f,270f})
+        var points=new List<Vector3>{new Vector3(-1.8f,0,.85f),new Vector3(-1.8f,0,.55f),new Vector3(-1.85f,0,-1.8f),
+            new Vector3(-.35f,0,-1.5f),new Vector3(1.5f,0,-1.85f),new Vector3(-1.8f,0,-.4f),new Vector3(.10f,0,.35f)};
+        // Enclosed beds keep the rear care aisle open from their front-left bay.
+        if(CatCollectionPolicy.IsBed(p.ProductId)&&p.ProductId!=HomeStoreService.NapPillowId)points.Insert(0,new Vector3(-1.85f,0,-1.8f));
+        if(p.ProductId==HomeStoreService.NapPillowId)points.Insert(0,RearWallNapPillowPosition);
+        if(p.ProductId==HomeStoreService.BallBasketId)points.Insert(0,new Vector3(-1.65f,0,-1.75f));
+        for(int z=0;z<8;z++)for(int x=0;x<16;x++)points.Add(new Vector3(-2.35f+x*.35f,0,.6f-z*.35f));
+        // The basket is used from its room-facing side, clear of the joystick.
+        var yaws=p.ProductId==HomeStoreService.BallBasketId?new[]{180f,0f,90f,270f}:new[]{0f,180f,90f,270f};
+        // Relocating the pad must not shuffle the user's other four displays.
+        // A saved pose is preferred only when all normal clearance tests pass.
+        if(preferSaved && p.ProductId!=HomeStoreService.NapPillowId && HomeStoreService.TryGetWorldPlacement(p.ProductId,out var savedPosition,out float savedYaw))
         {
+            points.Insert(0,savedPosition);
+            var ordered=new List<float>{savedYaw};foreach(float yaw in yaws)if(Mathf.Abs(Mathf.DeltaAngle(savedYaw,yaw))>.1f)ordered.Add(yaw);
+            yaws=ordered.ToArray();
+        }
+        foreach(var point in points)foreach(float yaw in yaws)
+        {
+            // From the approved front camera this rear/right pocket is hidden
+            // by the permanent coffee table even when its floor is clear.
+            if(point.x>.45f && point.z>-.70f)continue;
             var rot=Quaternion.Euler(0,yaw,0);
             var candidate=new Pose{position=point,yaw=yaw,entry=point+rot*localEntry,exit=point+rot*localExit,hasExit=hasExit};
+            // The grid may find a clear cell beside an entrance that itself is
+            // too close to a wall. Test the actual standing capsule at both ends.
+            if(!IsEntranceClear(candidate.entry) || (hasExit && !IsEntranceClear(candidate.exit)))continue;
             bool clear=true;
             foreach(var protect in protectedPoints)
                 if(HomeProductPlacement.FootprintsOverlap(point,p.Footprint,yaw,protect,new Vector2(.56f,.56f),0,.06f)){clear=false;break;}
             if(!clear || !p.IsRoomPoseValid(point,yaw))continue;
+            var blocked=new List<int>();
+            for(int i=0;i<roomGrid.Length;i++)if(roomGrid[i] && HomeProductPlacement.FootprintsOverlap(Grid(i%31,i/31),new Vector2(.48f,.48f),0,point,p.Footprint,yaw,.01f))blocked.Add(i);
+            candidate.blockedCells=blocked.ToArray();
             item.poses.Add(candidate);
         }
         Physics.SyncTransforms();
+    }
+    bool IsEntranceClear(Vector3 point)
+    {
+        if(!CatActivityMotion.IsFloorClear(point,.27f,true))return false;
+        foreach(var f in furniture)
+            if(HomeProductPlacement.FootprintsOverlap(point,new Vector2(.54f,.54f),0,
+                f.MovableRoot.position,f.Footprint,f.MovableRoot.eulerAngles.y,.01f))return false;
+        return true;
     }
     bool Search(List<Item> selected,Pose[] chosen,int depth)
     {
@@ -181,7 +219,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     }
     static bool Conflict(HomeProductPlacement a,Pose ap,HomeProductPlacement b,Pose bp)
     {
-        if(HomeProductPlacement.FootprintsOverlap(ap.position,a.Footprint,ap.yaw,bp.position,b.Footprint,bp.yaw,.16f))return true;
+        if(HomeProductPlacement.FootprintsOverlap(ap.position,a.Footprint,ap.yaw,bp.position,b.Footprint,bp.yaw,.40f))return true;
         var clearance=new Vector2(.56f,.56f);
         if(HomeProductPlacement.FootprintsOverlap(ap.entry,clearance,0,bp.position,b.Footprint,bp.yaw,.04f) ||
            HomeProductPlacement.FootprintsOverlap(bp.entry,clearance,0,ap.position,a.Footprint,ap.yaw,.04f))return true;
@@ -192,10 +230,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     bool Connected(List<Item> selected,Pose[] poses)
     {
         var open=(bool[])roomGrid.Clone();
-        for(int i=0;i<open.Length;i++)if(open[i])
-            for(int j=0;j<selected.Count;j++)
-                if(HomeProductPlacement.FootprintsOverlap(Grid(i%31,i/31),new Vector2(.48f,.48f),0,
-                   poses[j].position,selected[j].product.Footprint,poses[j].yaw,.01f)){open[i]=false;break;}
+        foreach(var pose in poses)foreach(int cell in pose.blockedCells)open[cell]=false;
         var targets=new List<Vector3>(care);
         foreach(var pose in poses){targets.Add(pose.entry);if(pose.hasExit)targets.Add(pose.exit);}
         if(targets.Count==0)return true;
@@ -232,11 +267,14 @@ public sealed class CatRoomArrangement : MonoBehaviour
     static int NearestOpen(Vector3 p,bool[] open)
     {
         int best=-1;float distance=.30f*.30f;
-        for(int i=0;i<open.Length;i++)if(open[i])
+        int cx=Mathf.RoundToInt((p.x+3.6f)/.24f),cz=Mathf.RoundToInt((p.z+3f)/.24f);
+        for(int z=Mathf.Max(0,cz-2);z<=Mathf.Min(26,cz+2);z++)for(int x=Mathf.Max(0,cx-2);x<=Mathf.Min(30,cx+2);x++)
         {
+            int i=z*31+x;if(!open[i])continue;
             Vector3 delta=Grid(i%31,i/31)-p;delta.y=0;
             if(delta.sqrMagnitude<distance){distance=delta.sqrMagnitude;best=i;}
         }
         return best;
     }
 }
+

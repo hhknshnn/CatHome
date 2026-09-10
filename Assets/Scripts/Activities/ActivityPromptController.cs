@@ -21,6 +21,8 @@ public sealed class ActivityPromptController : MonoBehaviour
     private BowlInteraction bowlInteraction;
     private EnergySystem energySystem;
     private CatActivity candidate;
+    private CatActivity selected;
+    private ActivitySelectionGraphic selectionGraphic;
 
     public static void NotifyActivityChanged()
     {
@@ -44,10 +46,12 @@ public sealed class ActivityPromptController : MonoBehaviour
     private void Update()
     {
         ResolveReferences();
+        ReadWorldSelection();
         RefreshImmediate();
+        UpdateSelectionGraphic();
 
 #if ENABLE_INPUT_SYSTEM
-        if (candidate != null && Keyboard.current != null &&
+        if ((candidate != null || CatActivity.Active!=null && CatActivity.Active.IsWaitingForRestStop) && Keyboard.current != null &&
             (Keyboard.current.eKey.wasPressedThisFrame ||
              Keyboard.current.spaceKey.wasPressedThisFrame))
         {
@@ -86,8 +90,16 @@ public sealed class ActivityPromptController : MonoBehaviour
         if (active != null)
         {
             candidate = null;
-            HideAction();
-            ShowProgress(active.ProgressLabel);
+            if(active.IsWaitingForRestStop)
+            {
+                HideProgress();
+                string restTitle=HomeStoreService.TryGetProduct(active.StoreProductId,out var restingProduct)?restingProduct.Title:GameInteractionCopy.Text(active.DisplayName);
+                if(string.IsNullOrWhiteSpace(restTitle))restTitle=PetTutorialHint.CatName;
+                SetActionText(restTitle+"\n"+GameContentCopy.Text("Kalk","Get up"));
+                SetGroup(actionGroup,true);
+                if(actionButton!=null){actionButton.gameObject.SetActive(true);actionButton.interactable=true;}
+            }
+            else {HideAction();ShowProgress(active.ProgressLabel);}
             return;
         }
 
@@ -102,7 +114,10 @@ public sealed class ActivityPromptController : MonoBehaviour
             return;
         }
 
-        SetActionText(BuildActionText(candidate, energySystem));
+        string title=HomeStoreService.TryGetProduct(candidate.StoreProductId,out var product)?product.Title:GameInteractionCopy.Text(candidate.DisplayName);
+        string action=BuildActionText(candidate, energySystem);
+        bool needsEnergy=candidate.EnergyCost>0 && (energySystem==null || !energySystem.CanSpendEnergy(candidate.EnergyCost));
+        SetActionText(GameInteractionCopy.ProductAction(candidate.StoreProductId, title, action, needsEnergy));
         SetGroup(actionGroup, true);
         if (actionButton != null)
         {
@@ -113,8 +128,12 @@ public sealed class ActivityPromptController : MonoBehaviour
 
     private CatActivity FindNearestCandidate()
     {
-        if (cat == null || cat.AreWorldActionsBlocked)
+        if (cat == null || CatActionState.IsBusy(cat) || cat.AreWorldActionsBlocked)
             return null;
+
+        if(IsNearby(selected))
+            return selected;
+        selected=null;
 
         CatActivity nearest = null;
         float nearestDistance = float.PositiveInfinity;
@@ -122,10 +141,10 @@ public sealed class ActivityPromptController : MonoBehaviour
         for (int i = 0; i < activities.Count; i++)
         {
             CatActivity activity = activities[i];
-            if (activity == null || !activity.isActiveAndEnabled || !activity.IsUnlocked)
+            if (!IsNearby(activity))
                 continue;
 
-            float distance = activity.DistanceTo(cat);
+            activity.TryGetPromptDistance(cat, out float distance);
             if (distance <= activity.InteractionRadius && distance < nearestDistance)
             {
                 nearest = activity;
@@ -133,13 +152,85 @@ public sealed class ActivityPromptController : MonoBehaviour
             }
         }
 
+        // A small hysteresis keeps adjacent media actions from flickering as the cat idles.
+        if(IsNearby(candidate) && candidate.TryGetPromptDistance(cat,out float previousDistance) && previousDistance<=nearestDistance+.06f)return candidate;
         return nearest;
+    }
+
+    private bool IsNearby(CatActivity activity) => cat!=null && activity!=null &&
+        activity.isActiveAndEnabled && activity.IsUnlocked && activity.gameObject.scene==cat.gameObject.scene &&
+        activity.TryGetPromptDistance(cat,out _);
+
+    private void ReadWorldSelection()
+    {
+        if(cat==null || CatActionState.IsBusy(cat) || cat.AreWorldActionsBlocked || HomeUiFlow.IsHomeControlBlocked)return;
+        Vector2 point;
+#if ENABLE_INPUT_SYSTEM
+        if(Touchscreen.current!=null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)point=Touchscreen.current.primaryTouch.position.ReadValue();
+        else if(Mouse.current!=null && Mouse.current.leftButton.wasPressedThisFrame)point=Mouse.current.position.ReadValue();
+        else return;
+#else
+        if(!Input.GetMouseButtonDown(0))return;point=Input.mousePosition;
+#endif
+        var events=UnityEngine.EventSystems.EventSystem.current;
+        if(events!=null)
+        {
+            var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();
+            events.RaycastAll(new UnityEngine.EventSystems.PointerEventData(events){position=point},hits);
+            if(hits.Exists(h=>h.module is UnityEngine.UI.GraphicRaycaster))return;
+        }
+        selected=PickWorldActivity(Camera.main,point);
+    }
+
+    public static CatActivity PickWorldActivity(Camera camera,Vector2 point)
+    {
+        if(camera==null || !camera.pixelRect.Contains(point))return null;
+        var ray=camera.ScreenPointToRay(point);
+        // Walk-through toys use trigger geometry; invisible room boundaries only constrain movement.
+        var worldHits=Physics.RaycastAll(ray,30f,~0,QueryTriggerInteraction.Collide);
+        System.Array.Sort(worldHits,(a,b)=>a.distance.CompareTo(b.distance));
+        foreach(var hit in worldHits)
+        {
+            var activity=hit.collider.GetComponentInParent<CatActivity>();
+            if(activity==null)foreach(var option in CatActivity.Registered)
+                if(option is LivingFurnitureActivity furniture && furniture.SelectionVisual!=null && hit.transform.IsChildOf(furniture.SelectionVisual))
+                {activity=option;break;}
+            if(activity!=null && activity.IsUnlocked && activity.isActiveAndEnabled)return activity;
+            // The first opaque object hides objects behind it.
+            if(!hit.collider.isTrigger)
+                foreach(var surface in hit.collider.GetComponentsInChildren<Renderer>())
+                    if(surface.enabled && surface.gameObject.activeInHierarchy && surface.bounds.IntersectRay(ray))return null;
+        }
+        return null;
     }
 
     private void HandleAction()
     {
-        if (candidate != null)
+        if (!isActiveAndEnabled || cat == null || cat.AreWorldActionsBlocked || HomeUiFlow.IsHomeControlBlocked)
+            return;
+        if(CatActivity.Active!=null && CatActivity.Active.BelongsTo(cat))
+        {CatActivity.Active.RequestRestStop();return;}
+        // The cat can leave the radius between the rendered frame and a click.
+        if (IsNearby(candidate) && !CatActionState.IsBusy(cat) && !cat.AreWorldActionsBlocked && !HomeUiFlow.IsHomeControlBlocked)
             candidate.TryStart(cat);
+        else RefreshImmediate();
+    }
+
+    void UpdateSelectionGraphic()
+    {
+        if(selectionGraphic==null && actionButton!=null)
+        {
+            var canvas=actionButton.GetComponentInParent<Canvas>();
+            if(canvas==null)return;
+            var host=new GameObject("Selected product",typeof(RectTransform),typeof(CanvasRenderer));
+            host.transform.SetParent(canvas.transform,false);host.transform.SetAsFirstSibling();
+            selectionGraphic=host.AddComponent<ActivitySelectionGraphic>();selectionGraphic.raycastTarget=false;
+            selectionGraphic.color=new Color32(34,157,146,235);
+        }
+        if(selectionGraphic==null)return;
+        bool visible=selected!=null && candidate==selected && actionButton!=null && actionButton.gameObject.activeInHierarchy;
+        Transform visual=visible?(selected is LivingFurnitureActivity furniture?furniture.SelectionVisual:selected.transform):null;
+        selectionGraphic.SetTarget(visual);
     }
 
     private void ShowProgress(string text)
@@ -196,6 +287,7 @@ public sealed class ActivityPromptController : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(selectionGraphic!=null)Destroy(selectionGraphic.gameObject);
         if (instance == this)
             instance = null;
     }

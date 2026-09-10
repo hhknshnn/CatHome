@@ -1,2 +1,0 @@
-Cat Home level validation passed. Errors: 0, warnings: 0.
-Scenes=3 active=LivingRoom_Level01 enabledCameras=1 QA=False playing=False

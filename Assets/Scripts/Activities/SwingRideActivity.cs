@@ -33,6 +33,8 @@ public sealed class SwingRideActivity : CatActivity
     public override string ProgressLabel => IsRunning ? "SWINGING!" : string.Empty;
 
     public float RideDuration => Mathf.Max(1f, rideDuration);
+    public override bool SupportsContinuousRest=>true;
+    public override float EnergyCost=>0f;
     public float SwingAngle => Mathf.Clamp(swingAngle, 1f, 25f);
     public long BondReward => (long)Mathf.Max(0f, bondReward);
     public Transform SwingPivot => swingPivot;
@@ -74,6 +76,8 @@ public sealed class SwingRideActivity : CatActivity
         // Hop up onto the bench, facing back out of the swing.
         Quaternion facing = LookTowards(mount - seatPoint.position, toMount);
         yield return Hop(mount, seatPoint.position, toMount, facing, 0.38f, 0.22f);
+        facing = CatActivityFacing.AlongAxis(Cat, seatPoint.position, facing);
+        yield return CatActivityFacing.Turn(Cat, facing);
 
         // The seat point rides under the pivot, so pinning the cat to it each
         // frame swings the cat with the bench without touching its hierarchy.
@@ -81,18 +85,20 @@ public sealed class SwingRideActivity : CatActivity
         float elapsed = 0f;
         float duration = RideDuration;
         PlayCatPose(CatActivityPose.Sit, seatPoint);
-        while (elapsed < duration)
+        while (KeepResting)
         {
             elapsed += Time.deltaTime;
             // Ease the rocking in and out so it starts and stops gently.
-            float envelope = Mathf.Sin(Mathf.PI * Mathf.Clamp01(elapsed / duration));
-            float angle = SwingAngle * envelope * Mathf.Sin(elapsed * swingSpeed * Mathf.PI);
+            float envelope = Mathf.SmoothStep(0,1,elapsed/1.2f);
+            float angle = CatRunnerProgressService.ReducedMotion?0:SwingAngle * envelope * Mathf.Sin(elapsed * swingSpeed * Mathf.PI);
             swingPivot.localRotation = Quaternion.Euler(angle, 0f, 0f);
             Cat.transform.position = seatPoint.position;
             Cat.transform.rotation = swingPivot.rotation * Quaternion.Inverse(pivotRest) * facing;
             yield return null;
         }
 
+        var stoppingRotation=swingPivot.localRotation;float stopping=0;
+        while(stopping<.5f){stopping+=Time.deltaTime;swingPivot.localRotation=Quaternion.Slerp(stoppingRotation,Quaternion.identity,Mathf.SmoothStep(0,1,stopping/.5f));Cat.transform.position=seatPoint.position;Cat.transform.rotation=swingPivot.rotation*Quaternion.Inverse(pivotRest)*facing;yield return null;}
         swingPivot.localRotation = Quaternion.identity;
         Cat.transform.position = seatPoint.position;
         Cat.transform.rotation = facing;
@@ -130,20 +136,7 @@ public sealed class SwingRideActivity : CatActivity
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation,
         float duration, float arcHeight)
     {
-        PlayCatPose(CatActivityPose.Hop);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            Vector3 position = CatActivityMotion.JumpPosition(from, to, t, arcHeight);
-            Cat.transform.position = position;
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        yield return CatActivityMotion.Jump(Cat,from,to,fromRotation,toRotation,arcHeight);
     }
 
     private void RestoreCat()
@@ -174,11 +167,13 @@ public sealed class SwingRideActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

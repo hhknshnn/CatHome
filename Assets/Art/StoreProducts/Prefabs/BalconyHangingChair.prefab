@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 901386091600448175}
   - component: {fileID: 5018726392598755169}
   - component: {fileID: 8750898461925531472}
+  - component: {fileID: 6772396616263426612}
   m_Layer: 0
   m_Name: BalconyHangingChair
   m_TagString: Untagged
@@ -120,6 +121,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5cb628e03a80c48b6b54d108d6bade, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductFeedback
+--- !u!114 &6772396616263426612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548694977467536891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1600200567cabba47a545e1868b9829e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
+  appliedScale: 1
 --- !u!1 &1644159032421979520
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,23 +349,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b9403b564ed829840a64784f233e0f1e, type: 2}
+      objectReference: {fileID: 2100000, guid: 3ea64df1e3c35ef4f9a9727af4d521c3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: bcd85f92ab3e25a43b737830acf946a9, type: 2}
+      objectReference: {fileID: 2100000, guid: 7ee4255c3fcf61a4a8cbf9e85e671eac, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39e5f84d890936e4b98f3935fb587045, type: 2}
+      objectReference: {fileID: 2100000, guid: 45326f33f189bd144848eb88906ed500, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: bb692f33140884d48a02418058881758, type: 2}
+      objectReference: {fileID: 2100000, guid: 714f5e8be1571264fa0382b2d020e7b4, type: 2}
     - target: {fileID: -7511558181221131132, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7704eedab0f89bc4cb666444909012a9, type: 2}
+      objectReference: {fileID: 2100000, guid: b650fbf9e5bcb8f459a403b337a6398c, type: 2}
     - target: {fileID: 919132149155446097, guid: 5423eb88672ce1a40b04a299b666dd5c, type: 3}
       propertyPath: m_Name
       value: BalconyHangingChair_PremiumModel

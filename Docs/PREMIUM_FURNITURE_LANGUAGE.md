@@ -1,4 +1,10 @@
 # Premium Mobilya Dili — Cat Home
+
+7 Eylül mimari tamamlayıcıları (kapı, duvar paneli ve bitki) aynı ivory/mint/şampanya ailesini kullanır; mağaza ürünlerinin ölçüsü veya ortak materyali mimari renklendirme için değiştirilmez. Kalıcı üretim ve etkileşim ayrıntıları: [oda kalitesi ve etkileşim](ROOM_POLISH_INTERACTIVITY_2026-09-07.md).
+
+<!-- ROOM_LAYOUT_2026_09_07 -->
+> **7 Eylül 2026 yerleşim güncellemesi:** Diğer yedi oda kendi 70 ROOM ürününü ortak kamera, sabit alan, oranlı ölçek ve açık etkileşim girişleriyle kullanır; CAT koleksiyonu salonda kalır. Güncel uygulama, yeni oda ekleme sözleşmesi ve doğrulama durumu [ortak oda yerleşimi raporundadır](ROOM_LAYOUT_IMPLEMENTATION_2026-09-07.md). Bu belgedeki önceki koordinat/ölçek/kamera kararları yeni raporla çelişirse güncel rapor geçerlidir; tarihsel test sonuçları kendi çalışmasına aittir.
+<!-- /ROOM_LAYOUT_2026_09_07 -->
 Tarih: 2026-09-02. Karar: **80 oda ürününün tamamı** bu dile getirilecek.
 
 Bu belge, 5 üründe (BalconySunAwning, PatioPergolaArch, BedroomStarCanopy,
@@ -64,13 +70,11 @@ dosyalarından sRGB olarak alınıp lineer'e çevrilir.
   Tek FBX'e iki nesne koyulmaz: Blender o zaman Y-up dönüşümünü mesh'e gömmez,
   her çocuğa −90° X transform yazar ve ürün sırt üstü import olur.
 
-**Değişmeyecekler:** footprint, placement kind, katalog yaw'ı, fiyat, ownership
-ve save kimlikleri.
+**Korunanlar:** placement kind, fiyat, ownership ve save kimlikleri. Kullanıcının 7 Eylül kararıyla sahnedeki footprint, oranlı model ölçeği ve yön ortak yerleşim planından gelir. Ham üretim ölçüsü `WithoutRoomLayout()` ile ayrıdır; üretici ham FBX'e sahnedeki ölçeği ikinci kez uygulamaz.
 
 ## 5. Yön
 
-Oda kameraları `(-1, 3, -5.5)` konumunda ve **+Z'ye** bakar. Oyuncunun gördüğü
-yüz dünya `-Z`'sidir.
+Oda kameralarının tek kaynağı `HomeRoomCameraProfile` olur: `(0, 3.6, -6.5)`, açı `(23, 0, 0)`, temel FOV `38`. Oyuncunun gördüğü genel yüz dünya `-Z` yönüdür. Yan duvar ürünleri oda içine döner; son sahne yaw'ı ile modelin ham ön yüzü birbirinden ayrıdır. `facesBackward` ithal modelin gerçek ön yüzüne ilişkin bilgidir, yerleşim tercihi değildir.
 
 - Katalog yaw'ı 0 ise: ön yüz **-Z'ye** yazılır, `facesBackward` **eklenmez**.
 - Katalog yaw'ı 180 ise: duvar tarafı **+Z'ye** yazılır ve ürün `facesBackward`'a

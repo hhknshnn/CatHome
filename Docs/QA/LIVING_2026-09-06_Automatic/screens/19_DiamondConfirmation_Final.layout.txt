@@ -1,3 +1,0 @@
-Screen 1920x1080; SafeArea (x:0.00, y:0.00, width:1920.00, height:1080.00)
-ConfirmButton (x:970.00, y:342.00, width:394.00, height:82.00)
-CancelButton (x:556.00, y:342.00, width:394.00, height:82.00)

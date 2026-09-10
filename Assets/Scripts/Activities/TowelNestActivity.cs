@@ -32,18 +32,14 @@ public sealed class TowelNestActivity : CatActivity
     public float NapDuration => Mathf.Max(0.5f, napDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
+    public override float EnergyCost => 0f;
+    public override bool SupportsContinuousRest=>true;
 
     protected override bool CanBeginActivity(out string failureReason)
     {
         if (floorPoint == null || nestPoint == null)
         {
             failureReason = "THE NICHE IS NOT READY";
-            return false;
-        }
-
-        if (Energy != null && Energy.CurrentEnergy >= WideAwakeEnergy)
-        {
-            failureReason = "I AM WIDE AWAKE!";
             return false;
         }
 
@@ -89,7 +85,8 @@ public sealed class TowelNestActivity : CatActivity
 
         // Turn around so the cat sleeps facing out of the niche.
         Quaternion outward = LookTowards(floor - nest, inward);
-        yield return Move(nest, nest, inward, outward, 0.26f);
+        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest, outward);
+        yield return Move(nest, nest, inward, restingFacing, 0.26f);
 
         Vector3 curled = originalScale;
         curled.y *= 0.60f;
@@ -99,7 +96,7 @@ public sealed class TowelNestActivity : CatActivity
 
         float elapsed = 0f;
         PlayCatPose(CatActivityPose.Sleep, nestPoint);
-        while (elapsed < NapDuration)
+        while (KeepResting)
         {
             elapsed += Time.deltaTime;
             float breath = Mathf.Sin(elapsed * 3.1f) * 0.035f;
@@ -109,7 +106,7 @@ public sealed class TowelNestActivity : CatActivity
             breathing.z *= 1f - breath * 0.4f;
             Cat.transform.localScale = breathing;
             Cat.transform.position = nest;
-            Cat.transform.rotation = outward;
+            Cat.transform.rotation = restingFacing;
             yield return null;
         }
 
@@ -117,29 +114,13 @@ public sealed class TowelNestActivity : CatActivity
         yield return Hop(nest, floor, outward, 0.40f);
 
         RestoreCat();
-        if (Energy != null)
-            Energy.RestoreEnergy(EnergyRestore);
         CompleteActivity("SWEET DREAMS!");
     }
 
     /// <summary>Arc between two points, peaking above the higher end.</summary>
     private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
     {
-        PlayCatPose(CatActivityPose.Hop);
-        float peak = Mathf.Max(from.y, to.y) + 0.22f;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            Vector3 position = CatActivityMotion.JumpPosition(from, to, t, peak - Mathf.Max(from.y, to.y));
-            Cat.transform.position = position;
-            Cat.transform.rotation = facing;
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = facing;
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
     }
 
     private IEnumerator Move(
@@ -200,11 +181,13 @@ public sealed class TowelNestActivity : CatActivity
         return point;
     }
 
-    protected override void OnDisable()
+    protected override void CancelActivity()
     {
+        if (!IsRunning) return;
         StopAllCoroutines();
+        if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreCat();
-        base.OnDisable();
+        base.CancelActivity();
     }
 
 #if UNITY_EDITOR

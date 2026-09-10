@@ -121,10 +121,12 @@ MonoBehaviour:
   placementKind: 0
   requiredProductId: 
   bookshelfBookSet: {fileID: 0}
+  requiredProductAttachment: {fileID: 0}
   roomMinimum: {x: -3.78, y: -2.88}
   roomMaximum: {x: 3.78, y: 2.78}
   collisionClearance: 0.09
   validationHeight: 0.7
+  hungHeight: 0
 --- !u!1001 &9046242069665402348
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -133,6 +135,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1130137603466783883}
     m_Modifications:
+    - target: {fileID: 2757418388853914894, guid: 040ae70d5c7969a43a7de392c6a9b956, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9d88eeeb2ec3533488b294f098187deb, type: 2}
     - target: {fileID: 3895470427108771425, guid: 040ae70d5c7969a43a7de392c6a9b956, type: 3}
       propertyPath: m_LocalScale.x
       value: 4
