@@ -87,11 +87,13 @@ public sealed class HomeContactFacingTests
                 yield return new WaitForEndOfFrame();
                 if (!meal.IsRunning || cat.GetComponent<CatActivityAnimation>().CurrentPose != CatActivityPose.Eat) continue;
                 AssertFacing(breed.Id + " kitchen meal"); samples++;
-                Assert.That(HorizontalDistance(cat.transform.position, bowl.position),
-                    Is.InRange(HorizontalDistance(stand.position, bowl.position) - .10f,
-                        HorizontalDistance(stand.position, bowl.position) + .025f), "The existing small eating dip must still reach its bowl.");
-                Vector3 inward = bowl.position - cat.transform.position; inward.y = 0f;
-                Assert.That(Vector3.Dot(cat.transform.forward, inward.normalized), Is.GreaterThan(.98f));
+                if (samples > 30)
+                {
+                    var contact = cat.GetComponent<CatMealHeadMotion>();
+                    Assert.That(contact, Is.Not.Null);
+                    Assert.That(contact.Distance, Is.LessThan(.035f), "Actual mouth reaches the real kibble; root radius alone is insufficient.");
+                    Assert.That(contact.PawPlantError, Is.LessThan(.001f));
+                }
             }
             Assert.That(meal.IsRunning, Is.False); Assert.That(samples, Is.GreaterThan(0));
             Assert.That(hunger.CurrentHunger, Is.GreaterThan(65f), "The real completed meal restores hunger once.");
@@ -125,8 +127,9 @@ public sealed class HomeContactFacingTests
             {
                 yield return new WaitForEndOfFrame();
                 if (!sip.IsRunning || cat.GetComponent<CatActivityAnimation>().CurrentPose != CatActivityPose.Drink) continue;
+                perch=sip.PerchPoint;
                 samples++;
-                Assert.That(HorizontalDistance(cat.transform.position, perch.position), Is.LessThan(.015f), "Keep the root on its authored supported perch.");
+                Assert.That(HorizontalDistance(cat.transform.position, perch.position), Is.LessThan(.015f), "Keep the root on its fixed supported perch.");
                 Vector3 inward = sip.SipTarget != null ? sip.SipTarget.position - perch.position : perch.position - floor.position;
                 inward.y = 0f; Vector3 forward = cat.transform.forward; forward.y = 0f;
                 Assert.That(Vector3.Dot(forward.normalized, inward.normalized), Is.GreaterThan(.98f), "Face the water; never rotate the mouth away merely for the camera.");
@@ -135,6 +138,8 @@ public sealed class HomeContactFacingTests
                 {
                     System.IO.Directory.CreateDirectory("Library/SinkSipFacing");
                     System.IO.File.WriteAllText("Library/SinkSipFacing/last-regression-contact.json",JsonUtility.ToJson(sip.EditorCaptureContactDiagnostic(),true));
+                    if(setup.Item3==HomeStoreService.GardenBirdBathId)
+                        Assert.That(sip.EditorCaptureContactDiagnostic().closestJawSurfaceToWater,Is.LessThan(.045f),breed.Id+" bird bath actual mouth contact");
                     foreach (string name in new[] { "DEF-hand.L", "DEF-hand.R", "DEF-foot.L", "DEF-foot.R" })
                     {
                         Transform paw = cat.GetComponentsInChildren<Transform>().Single(t => t.name == name);
@@ -152,6 +157,39 @@ public sealed class HomeContactFacingTests
             Assert.That(CatActivityMotion.IsFloorClear(cat.transform.position, .24f), Is.True);
         }
         }
+    }
+
+    [UnityTest] public IEnumerator BathroomVanity_TenBreeds_RealMouthReachesWater_WithAllPawsSupported()
+    {
+        yield return PrepareHome("Bathroom_Level01", HomeStoreService.BathroomCollection);
+        var sip = CatActivity.Registered.OfType<SinkSipActivity>().Single(a => a.StoreProductId == HomeStoreService.BathroomVanityId);
+        var evidence = new List<string> { "breed,samples,maxMouthToWater,allPawsSupported,exitClear" };
+        foreach (var breed in CatBreedCatalog.Load().Entries)
+        {
+            CatBreedService.Select(breed.Id); yield return null; yield return null;
+            Move(sip.RoutineEntryPoint.position); Assert.That(sip.TryStart(cat), Is.True, breed.Id);
+            int frame = 0, samples = 0; float maximum = 0f;
+            float deadline = Time.realtimeSinceStartup + 20f;
+            while (sip.IsRunning && Time.realtimeSinceStartup < deadline)
+            {
+                yield return new WaitForEndOfFrame();
+                if (!sip.IsSipping || cat.GetComponent<CatActivityAnimation>().CurrentPose != CatActivityPose.Drink) continue;
+                frame++; if (frame != 24 && frame != 60 && frame != 108) continue;
+                var contact = sip.EditorCaptureContactDiagnostic(); samples++;
+                maximum = Mathf.Max(maximum, contact.closestJawSurfaceToWater);
+                Assert.That(contact.closestJawSurfaceToWater, Is.LessThan(.045f), breed.Id + " real mouth surface to basin water");
+                Assert.That(contact.paws.All(p => p.supported && p.surfaceWithin35mmOfPerch), Is.True, breed.Id + " four real support surfaces");
+                AssertFacing(breed.Id + " actual drinking");
+            }
+            Assert.That(sip.IsRunning, Is.False, breed.Id + " complete routine");
+            Assert.That(samples, Is.EqualTo(3), breed.Id + " observed drinking samples");
+            yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
+            Assert.That(CatActivityMotion.IsControllerFloorClear(cat, cat.transform.position), Is.True, breed.Id + " full controller exit");
+            evidence.Add(breed.Id + "," + samples + "," + maximum.ToString(System.Globalization.CultureInfo.InvariantCulture) + ",True,True");
+        }
+        string output = UnityEditor.SessionState.GetString("CatHome.QA.ResultDirectory", "Temp/BathroomContact");
+        System.IO.Directory.CreateDirectory(output);
+        System.IO.File.WriteAllLines(output + "/bathroom-vanity-mouth.csv", evidence);
     }
 
     [System.Serializable] sealed class SinkContactProbe

@@ -33,19 +33,19 @@ public sealed class BathroomCalmRoutineTests
         CatActionState.CancelForTransition(cat);
         tub = Object.FindAnyObjectByType<TubEdgeWalkActivity>(FindObjectsInactive.Include);
         mirror = Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-            .Single(a => a.Kind == CatActivityKind.MirrorGaze);
+            .SingleOrDefault(a => a.Kind == CatActivityKind.MirrorGaze);
         Assert.That(tub, Is.Not.Null);
         var state = HomeStoreSaveState.CreateDefault(); state.currentRoomId = HomeRoomService.BathroomId;
         HomeStoreService.ApplySavedState(state);
         yield return null;
         Assert.That(tub.TryStart(cat), Is.False, "An unowned tub must stay unavailable.");
-        Assert.That(mirror.TryStart(cat), Is.False, "An unowned mirror must stay unavailable.");
+        Assert.That(mirror, Is.Null, "The mirror stays decoration.");
         state.ownedProductIds = HomeStoreService.Products.Where(p =>
             HomeStoreService.IsProductInRoomCollection(HomeRoomService.BathroomId, p.Id)).Select(p => p.Id).ToArray();
         Assert.That(state.ownedProductIds, Has.Length.EqualTo(10), "Keep every current bathroom neighbour present.");
         HomeStoreService.ApplySavedState(state);
         yield return null; yield return null;
-        tub.RefreshUnlockPresentation(); mirror.RefreshUnlockPresentation();
+        tub.RefreshUnlockPresentation();
         spawn = cat.transform.position; originalScale = cat.transform.localScale; originalParent = cat.transform.parent;
         RoomPlayModeSupport.ProvisionNeeds();
         Assert.That(cat.HasScopedInputBlock, Is.False);
@@ -68,10 +68,11 @@ public sealed class BathroomCalmRoutineTests
     {
         observedCompletionTarget = tub; completions = 0;
         Assert.That(tub.TryStart(cat), Is.True);
-        Assert.That(mirror.TryStart(cat), Is.False, "A second activity cannot replace the rim walk.");
+        Assert.That(mirror, Is.Null);
         var animation = cat.GetComponent<CatActivityAnimation>();
-        Vector3 rimStart = Field<Transform>(tub, "rimStartPoint").position;
-        Vector3 rimEnd = Field<Transform>(tub, "rimEndPoint").position;
+        Vector3 authoredStart = Field<Transform>(tub, "rimStartPoint").position;
+        Vector3 authoredEnd = Field<Transform>(tub, "rimEndPoint").position;
+        Vector3 rimStart = authoredStart, rimEnd = authoredEnd;
         Vector3 edge = rimEnd - rimStart; edge.y = 0;
         bool walkedRim = false, reachedEnd = false, jumpedDown = false;
         float peak = cat.transform.position.y;
@@ -81,6 +82,17 @@ public sealed class BathroomCalmRoutineTests
             yield return new WaitForEndOfFrame();
             if (!tub.IsRunning) break;
             CatActivityPose pose = animation.CurrentPose;
+            if ((tub.SelectedRimEnd - tub.SelectedRimStart).sqrMagnitude > .0001f)
+            {
+                // The old endpoints extend beyond the curved mesh. Actual
+                // walking endpoints leave body clearance at both ends.
+                Vector3 authoredAxis = (authoredEnd - authoredStart).normalized;
+                float length = Vector3.Distance(authoredStart, authoredEnd);
+                foreach (var selected in new[] { tub.SelectedRimStart, tub.SelectedRimEnd })
+                    Assert.That(Vector3.Dot(selected - authoredStart, authoredAxis), Is.InRange(.20f, length - .20f));
+                rimStart = tub.SelectedRimStart; rimEnd = tub.SelectedRimEnd;
+                edge = rimEnd - rimStart; edge.y = 0;
+            }
             Assert.That(pose, Is.Not.EqualTo(CatActivityPose.Paw), "Tub balance must never switch to a water paw strike.");
             Assert.That(pose == CatActivityPose.BatLeft || pose == CatActivityPose.BatRight, Is.False);
             peak = Mathf.Max(peak, cat.transform.position.y);
@@ -106,48 +118,27 @@ public sealed class BathroomCalmRoutineTests
     }
 
     [UnityTest]
-    public IEnumerator Mirror_ObservesWhileSeated_WithStillFeetAndBoundedHeadMotion()
+    public IEnumerator Mirror_RemainsVisibleDecorationWithoutAnAction()
     {
-        observedCompletionTarget = mirror; completions = 0;
-        Assert.That(mirror.ReactionKind, Is.EqualTo(SitLookReaction.Sit));
-        Assert.That(mirror.TryStart(cat), Is.True);
-        var animation = cat.GetComponent<CatActivityAnimation>();
-        var animator = cat.GetComponentInChildren<Animator>();
-        Vector3 seated = default; bool observed = false; int observedFrames = 0; float headMotion = 0;
-        float deadline = Time.realtimeSinceStartup + 20f;
-        while (mirror.IsRunning && Time.realtimeSinceStartup < deadline)
-        {
-            yield return new WaitForEndOfFrame();
-            if (!mirror.IsRunning || mirror.GestureBeats == 0) continue;
-            if (animation.CurrentPose == CatActivityPose.StandUp) continue;
-            Assert.That(animation.CurrentPose, Is.EqualTo(CatActivityPose.Sit), "Reflection viewing is a seated gaze, not a locomotion or swat loop.");
-            Assert.That(animator.GetFloat("Speed"), Is.EqualTo(0f).Within(.001f));
-            if (!observed) { seated = cat.transform.position; observed = true; }
-            Vector3 delta = cat.transform.position - seated; delta.y = 0;
-            Assert.That(delta.magnitude, Is.LessThan(.015f), "The cat's feet stay at the mirror viewing spot.");
-            var gaze = cat.GetComponent<CatFurnitureGaze>();
-            headMotion = Mathf.Max(headMotion, gaze != null ? gaze.Deflection : 0f);
-            observedFrames++;
-        }
-        Assert.That(mirror.IsRunning, Is.False);
-        Assert.That(observedFrames, Is.GreaterThan(10));
-        Assert.That(headMotion, Is.GreaterThan(.25f), "Keep the real gentle head gaze instead of freezing the whole skeleton.");
-        Assert.That(mirror.GestureBeats, Is.EqualTo(3));
-        Assert.That(completions, Is.EqualTo(1));
-        Assert.That(cat.GetComponent<CatFurnitureGaze>().Deflection, Is.EqualTo(0f));
-        yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
-        AssertRestored();
+        Assert.That(mirror, Is.Null);
+        var product = Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            .Single(p => p.ProductId == HomeStoreService.BathroomMirrorId);
+        Assert.That(product.GetComponentsInChildren<Renderer>(true).Any(r => r.enabled && r.gameObject.activeInHierarchy), Is.True);
+        Assert.That(product.GetComponentInChildren<CatActivity>(true), Is.Null);
+        yield return null;
+        Assert.That(CatActivity.Active, Is.Null);
     }
 
     [UnityTest]
-    public IEnumerator BothRoutines_CancelCleanly_WithoutReleasingAnotherInputOwner()
+    public IEnumerator Tub_CancelsCleanly_WithoutReleasingAnotherInputOwner()
     {
-        foreach (CatActivity activity in new CatActivity[] { tub, mirror })
+        foreach (CatActivity activity in new CatActivity[] { tub })
         {
             cat.ApplySavedWorldPose(spawn, Quaternion.identity);
+            if (activity == mirror) PlaceAtMirrorPrompt();
             RoomPlayModeSupport.ProvisionNeeds();
             observedCompletionTarget = activity; completions = 0;
-            Assert.That(activity.TryStart(cat), Is.True);
+            Assert.That(activity.TryStart(cat), Is.True, activity == mirror ? MirrorStartDiagnostic() : activity.StoreProductId);
             float deadline = Time.realtimeSinceStartup + 15f;
             while (Time.realtimeSinceStartup < deadline && activity.IsRunning &&
                    (activity == tub ? cat.transform.position.y < .4f : mirror.GestureBeats == 0))
@@ -170,6 +161,26 @@ public sealed class BathroomCalmRoutineTests
     }
 
     void OnActivityCompleted(CatActivity activity) { if (activity == observedCompletionTarget) completions++; }
+    void PlaceAtMirrorPrompt()
+    {
+        // Exercise an actual player-visible prompt, rather than asking a wall
+        // observation to start four metres away from the room spawn.
+        Vector3 origin = cat.transform.position, entry = mirror.RoutineEntryPoint.position;
+        var candidates = new System.Collections.Generic.List<Vector3>();
+        for (int x = -10; x <= 10; x++) for (int z = -10; z <= 10; z++)
+            candidates.Add(new Vector3(entry.x + x * .1f, origin.y, entry.z + z * .1f));
+        foreach (var point in candidates.OrderBy(p => (p-entry).sqrMagnitude))
+        {
+            if (!CatActivityMotion.IsControllerFloorClear(cat, point)) continue;
+            cat.ApplySavedWorldPose(point, Quaternion.identity); Physics.SyncTransforms();
+            if (mirror.TryGetPromptDistance(cat, out _)) return;
+        }
+        cat.ApplySavedWorldPose(origin, Quaternion.identity);
+        Assert.Fail("The bathroom mirror has no reachable player prompt.");
+    }
+    string MirrorStartDiagnostic() => "Mirror origin=" + cat.transform.position + " entry=" + mirror.RoutineEntryPoint.position +
+        " floor=" + mirror.RoutineFloorPosition + " stand=" + mirror.ViewStand + " blocked=" + mirror.ViewStandBlocked +
+        " prompt=" + mirror.TryGetPromptDistance(cat, out _) + " input=" + cat.HasScopedInputBlock;
     void AssertRestored(bool keepModal = false)
     {
         Assert.That(CatActivity.Active, Is.Null);

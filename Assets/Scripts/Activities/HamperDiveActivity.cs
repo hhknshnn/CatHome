@@ -26,6 +26,7 @@ public sealed class HamperDiveActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatSupportedFurnitureMotion supportedMotion;
 
     public override string ProgressLabel => IsRunning ? "DIVING..." : string.Empty;
 
@@ -75,12 +76,14 @@ public sealed class HamperDiveActivity : CatActivity
         // Jump already supplies the real skeletal crouch. The old root-scale
         // squash was restored by CatActivityAnimation each frame and left a
         // motionless, rear-facing knead between the turn and take-off.
-        yield return Hop(floor, pile, inward, 0.42f);
         var support = pilePoint.GetComponent<CatActivitySurface>();
         inward = support != null && support.AlignAlongSurface ?
-            CatActivityFacing.AlongAxis(Cat, pile, pilePoint.rotation) :
+            CatActivityFacing.AlongAxis(Cat, pile, pilePoint.rotation * Quaternion.Euler(0,90,0)) :
             CatActivityFacing.Resolve(Cat, pile, inward);
-        yield return CatActivityFacing.Turn(Cat, inward, .24f);
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, pilePoint);
+        yield return supportedMotion.Jump(floor, pile, Cat.transform.rotation, inward);
+        yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, pile, inward);
+        yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .85f, pile, inward);
 
         // Sink: down into the pile and squashed wide, so the laundry looks like
         // it swallowed the cat.
@@ -131,8 +134,9 @@ public sealed class HamperDiveActivity : CatActivity
         }
 
         Quaternion outward = LookTowards(floor - pile, inward);
-        yield return Move(pile, pile, inward, outward, 0.20f);
-        yield return Hop(pile, floor, outward, 0.38f);
+        yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, pile, inward);
+        yield return supportedMotion.Pose(CatActivityPose.StandUp, .55f, pile, inward);
+        yield return supportedMotion.Jump(pile, floor, inward, outward);
 
         RestoreCat();
         if (Energy != null)
@@ -149,37 +153,7 @@ public sealed class HamperDiveActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
-        Vector3 direction = to - from; direction.y = 0f;
-        if (direction.sqrMagnitude < .000001f)
-        {
-            // An already reached entry is not an extra stationary work beat.
-            if (Quaternion.Angle(Cat.transform.rotation, toRotation) <= .1f) yield break;
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
-            yield break;
-        }
-
-        // Turn on the spot first. Interpolating a travel position while still
-        // facing the previous action made the return leg slide backwards.
-        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
-        PlayCatPose(CatActivityPose.GentleKnead);
-        yield return CatActivityFacing.Turn(Cat, travel, .16f);
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
-            yield return null;
-        }
-
-        Cat.transform.SetPositionAndRotation(to, travel);
-        if (Quaternion.Angle(travel, toRotation) > .1f)
-        {
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
-        }
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
     }
 
     private IEnumerator Squash(Vector3 from, Vector3 to, float duration)
@@ -198,6 +172,7 @@ public sealed class HamperDiveActivity : CatActivity
 
     private void RestoreCat()
     {
+        supportedMotion?.End(); supportedMotion = null;
         IsHiding = false;
         if (Cat == null)
             return;

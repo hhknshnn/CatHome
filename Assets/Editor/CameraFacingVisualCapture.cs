@@ -18,7 +18,7 @@ public static class CameraFacingVisualCapture
     public static bool IsRunning { get; private set; }
     public static int FrameCount { get; private set; }
     static readonly CatActivityKind[] Kinds = { CatActivityKind.PaperSpin, CatActivityKind.LitterDig, CatActivityKind.MatKnead,
-        CatActivityKind.TubEdgeWalk, CatActivityKind.ShowerRinse, CatActivityKind.MirrorGaze };
+        CatActivityKind.TubEdgeWalk, CatActivityKind.ShowerRinse };
     const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
     static readonly Dictionary<Behaviour, bool> states = new Dictionary<Behaviour, bool>();
     static CatMovement cat;

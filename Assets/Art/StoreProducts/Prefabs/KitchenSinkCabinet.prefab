@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 5873444288595586699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25464803, y: 0.75451267, z: -0.097423315}
+  m_LocalPosition: {x: -0.25464803, y: 0.75451267, z: -0.14458035}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -88,7 +88,7 @@ Transform:
   m_GameObject: {fileID: 7342471998659768089}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.48100173, y: 0.8111011, z: -0.097423315}
+  m_LocalPosition: {x: -0.41026616, y: 0.8105383, z: -0.18230599}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
-  size: {x: 0.42000002, y: 0.42000002}
+  size: {x: 0.28, y: 0.28}
   overridePose: 0
   preferredPose: 2
   alignAlongSurface: 0

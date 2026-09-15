@@ -30,26 +30,11 @@ public sealed class PetSoundController : MonoBehaviour
     public void BeginPettingAudio()
     {
         isPetting = true;
-        ConfigureSources();
-
-        if (purrLoop != null && audioSource != null)
-        {
-            if (purrFade != null)
-                StopCoroutine(purrFade);
-
-            audioSource.clip = purrLoop;
-            audioSource.loop = true;
-            audioSource.pitch = 1f;
-            if (!audioSource.isPlaying)
-            {
-                audioSource.volume = 0f;
-                audioSource.Play();
-            }
-
-            purrFade = StartCoroutine(FadePurr(purrVolume, fadeInDuration, false));
-        }
-
-        TryPlayMeow();
+        // Keep old serialized slots for scene compatibility; CatVoice owns the
+        // new state-bound purr so petting cannot double up two recordings.
+        StopAllAudio();
+        var movement = GetComponent<CatMovement>();
+        if (movement != null) CatVoice.EnsureOn(movement).PurrBriefly();
     }
 
     public void EndPettingAudio()

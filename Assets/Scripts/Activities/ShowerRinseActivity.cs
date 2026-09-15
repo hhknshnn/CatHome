@@ -101,7 +101,7 @@ public sealed class ShowerRinseActivity : CatActivity
 
         waterFx.Stop();
         Cat.transform.localScale = originalScale;
-        yield return CatActivityFacing.Turn(Cat, outward);
+        yield return CatActivityMotion.TurnForStep(Cat, outward);
         yield return Move(stand, door, outward, outward, 0.42f);
 
         RestoreCat();
@@ -137,19 +137,7 @@ public sealed class ShowerRinseActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
     }
 
     private void RestoreCat()

@@ -72,6 +72,8 @@ public sealed class TitleScreen : MonoBehaviour
             return;
         }
         activeInstance = this;
+        if (GetComponent<TitleMusicController>() == null)
+            gameObject.AddComponent<TitleMusicController>();
         BindListeners();
     }
 
@@ -295,6 +297,7 @@ public sealed class TitleScreen : MonoBehaviour
         if (dismissed)
             return;
         dismissed = true;
+        if (!PetTutorialHint.IsOnboardingCompleted) GameAudio.UI(AudioCue.NewGame);
         pendingAction = action;
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);

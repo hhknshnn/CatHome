@@ -1,0 +1,15 @@
+# Cat Home checkpoint — 13 Eylül 2026
+
+Önce [sıçrama/temas raporu](JUMP_CONTACT_FIX_2026-09-13.md), sonra [yerel görsel galeri](QA/JUMP_CONTACT_FIX_2026-09-13/index.html). Kullanıcının “devam” onayıyla sekiz oda kapsamındaki çıkış sıçraması, eşya teması ve vuruş/düşüş yönü düzeltildi. Kullanıcı görsel onayı beklenir.
+
+- Özgün `|Jump` ve yedi kaynak kedi FBX'i aynı. Çıkış XZ doğrusal, havada/toparlanmada kök yönü sabit; yön tam basıştan sonra çapraz pati adımlarıyla alınır. İnişin mevcut eğrisi/zamanlaması korunur. Engelli eşyalarda kalkış noktası ve basılı hazırlık yönü profil üzerinden ayarlanır.
+- `CatSurfaceTurnMotion` gerçek yüzeyde pati desteği kurar. Çadır dönüşü girişe doğru 20 cm yayla açılır; destek noktası kökle birlikte gider, görsel merkezleme adımı iptal etmez. Raf son basılı duruşu korur; yaprak üstünü zemin seçmez. Kemik boyu/model ölçeği değiştirilmez.
+- Kupa/plak sabit gövdeli mevcut yan pati klibi, gerçek el/kenar teması, güvenli giriş/çıkış. Dolap ve klozet gerçek ön yüz teması. Üç yüksek saksı toprak ekseninde. Komodinde gereksiz otur-kalk yok.
+- Bardak/kupa/kitap gerçek vuran elden uzağa, gerçek masa kenarını aşarak düşer. Araba iki ölçülen itişte tekerlek ekseninde toplam 24 cm ilerler; geri salınmaz. Ocak yanındaki dönüş açık taraftan. Kedi çıktıktan sonra tam reset; iptal/kontrol sahipliği korunur.
+- Çadır giriş süsü yükseltildi; fıskiye üst katmanları daraltıldı, alt leğen aynı. Blender kaynakları/FBX ve iki ürünün kartları/oda ön izlemeleri güncel. Çadır FBX export `FBX_SCALE_UNITS` gerekir; ara 100× küçük model son kanıt değildir. Gerçek mesh 1,028×1,523×1,028 m. Bitki rafı üst noktası +8 cm açık tarafa, GentleKnead/Align=false; üretici/prefab birlikte.
+- Son 19/19 benzersiz native,26/26 EditMode,validator0/0.39 sıçrama rutini/38 çıkışta havada kök dönüşü0°.10ırk×15/30/60fps30;90 gövde/kol,40 temas/yön/reset,20 dar yüzey pati çevrimi. Bütün eşyaların on ırkla tam matrisi değildir. Son native dosyalar `native-final-manifest.json`; ara başarısız XML kabul kanıtı değil.
+- Gerçek düğmeler74/75: salon8/9,banyo9/9,mutfak11/11,yatak8/8,bahçe10/10,balkon9/9,avlu9/9,üstkat10/10. İlk tur72/75; lambader açık taraftan, kuş QA'da250bağ şartıyla tekrar geçti. Lambader her noktadan çalışır diye sunulmaz.
+- Açık önceki konu: salon `room.modern-painting` yakın/açık giriş bulamıyor. Yerleşimi değişmedi. 75/75 veya bütün odalar kusursuz denmez. Video yok; galeri136PNG. Telefon performansı ölçülmedi.
+- Gerçek ana/recovery `58D6848FD22D6508D6D91A475E8521F5FCF861715482EA68D6E7466EF2185A53`,CP2 `03D4FD1A6420FF0D6CD6213FE08EA57598038EC589BA7CA02475692036EA9A8D`;3kayıt,14sahne,7kediFBX başlangıçla aynı.16tercih geri yüklendi. QA/Play/çekim/derleme kapalı,3temiz normal sahne,tek kedi/kamera/dinleyici,salt-okunur ön izleme açık.
+
+Yeni iş öncesi kısa sıralı plan/süre; değişiklikleri tek tek doğrulama. QA Git dışında. APK/arşiv/commit/push/yayın yapılmadı. Mevcut kirli çalışma ağacını topluca geri almayın. Onaylı salon/banyo yerleşimini yeni bulgu olmadan değiştirmeyin.

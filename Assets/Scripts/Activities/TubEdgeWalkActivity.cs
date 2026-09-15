@@ -22,6 +22,8 @@ public sealed class TubEdgeWalkActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatTubRimMotion rimMotion;
+    private float nextBalanceSpeech;
 
     public override string ProgressLabel => IsRunning ? "BALANCING..." : string.Empty;
 
@@ -62,6 +64,19 @@ public sealed class TubEdgeWalkActivity : CatActivity
         Vector3 floor = Flatten(floorPoint.position, start.y);
         Vector3 rimStart = rimStartPoint.position;
         Vector3 rimEnd = rimEndPoint.position;
+        // The old endpoints were beyond the curved lip. Leave room for the
+        // entire animal, then measure the actual low rim of this built model.
+        Vector3 axis = (rimEnd - rimStart).normalized;
+        Vector3 inward = waterPoint != null ? waterPoint.position - (rimStart + rimEnd) * .5f : transform.forward;
+        inward = Vector3.ProjectOnPlane(inward, Vector3.up).normalized;
+        float inset = Mathf.Min(.40f, Vector3.Distance(rimStart, rimEnd) * .30f);
+        rimStart += axis * inset + inward * .045f;
+        rimEnd -= axis * inset - inward * .045f;
+        rimMotion = Cat.GetComponent<CatTubRimMotion>();
+        if (rimMotion == null) rimMotion = Cat.gameObject.AddComponent<CatTubRimMotion>();
+        rimMotion.Prepare(this, GetComponentInChildren<MeshCollider>(), rimStartPoint.position, rimEndPoint.position);
+        rimStart.y = rimMotion.HeightAt(rimStart) - .045f;
+        rimEnd.y = rimMotion.HeightAt(rimEnd) - .045f;
         Quaternion authoredAlong = LookTowards(rimEnd - rimStart, startRotation);
         Quaternion viewAlong = CatActivityFacing.AlongAxis(Cat, (rimStart + rimEnd) * .5f, authoredAlong);
         if (Vector3.Dot(viewAlong * Vector3.forward, rimEnd - rimStart) < 0f)
@@ -77,21 +92,27 @@ public sealed class TubEdgeWalkActivity : CatActivity
 
         yield return Hop(floor, rimStart, up, 0.44f);
 
-        // Walk the rim. The wobble is the whole point: a straight lerp along a
-        // 0.89 ledge reads as the cat sliding on rails.
         Quaternion along = LookTowards(rimEnd - rimStart, up);
-        yield return CatActivityFacing.Turn(Cat, along, .2f);
+        yield return CatActivityMotion.TurnForStep(Cat, along);
         float elapsed = 0f;
-        PlayCatPose(CatActivityPose.Walk);
+        var animation = Cat.GetComponent<CatActivityAnimation>();
+        animation.SetWalkSpeed(Vector3.Distance(rimStart, rimEnd) / WalkDuration, null);
         IsRimWalking = true;
+        if (Time.time >= nextBalanceSpeech)
+        {
+            ShowSpeech("TUB_BALANCE");
+            nextBalanceSpeech = Time.time + 30f;
+        }
         while (elapsed < WalkDuration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / WalkDuration);
-            Vector3 position = Vector3.Lerp(rimStart, rimEnd, Mathf.SmoothStep(0f, 1f, t));
-            position.y += Mathf.Abs(Mathf.Sin(elapsed * 7.4f)) * 0.020f;
+            Vector3 position = Vector3.Lerp(rimStart, rimEnd, t);
+            // A slight crouch leaves reach for narrow, tucked paw placements.
+            position.y = rimMotion.HeightAt(position) - .045f;
             Cat.transform.position = position;
-            Cat.transform.rotation = along * Quaternion.Euler(0f, 0f, Mathf.Sin(elapsed * 4.6f) * 8f);
+            Cat.transform.rotation = along;
+            rimMotion.BalanceSeconds = elapsed;
             yield return null;
         }
 
@@ -99,6 +120,7 @@ public sealed class TubEdgeWalkActivity : CatActivity
         // centre and reaching toward the water read as an unrelated paw attack.
         Cat.transform.SetPositionAndRotation(rimEnd, along);
         IsRimWalking = false;
+        rimMotion.Clear();
         Quaternion down = LookTowards(floor - rimEnd, along);
         yield return Hop(rimEnd, floor, down, 0.40f);
 
@@ -109,48 +131,19 @@ public sealed class TubEdgeWalkActivity : CatActivity
     /// <summary>Arc between two points, peaking above the higher end.</summary>
     private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
     {
-        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
+        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing,.20f,false);
     }
 
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
-        Vector3 direction = to - from; direction.y = 0f;
-        if (direction.sqrMagnitude < .000001f)
-        {
-            // An already reached entry is not an extra stationary work beat.
-            if (Quaternion.Angle(Cat.transform.rotation, toRotation) <= .1f) yield break;
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
-            yield break;
-        }
-
-        // Turn on the spot first. Interpolating a travel position while still
-        // facing the previous action made the return leg slide backwards.
-        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
-        PlayCatPose(CatActivityPose.GentleKnead);
-        yield return CatActivityFacing.Turn(Cat, travel, .16f);
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
-            yield return null;
-        }
-
-        Cat.transform.SetPositionAndRotation(to, travel);
-        if (Quaternion.Angle(travel, toRotation) > .1f)
-        {
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
-        }
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
     }
 
     private void RestoreCat()
     {
         IsRimWalking = false;
+        if (rimMotion != null) rimMotion.Clear();
         if (Cat == null)
             return;
 

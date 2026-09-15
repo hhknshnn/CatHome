@@ -431,6 +431,9 @@ public class BowlInteraction : MonoBehaviour
             yield break;
         }
 
+        // Care audio ends with the last bite/lap, before standing and walking
+        // away. Action ownership remains held until the accepted exit finishes.
+        ActiveCareSound = null;
         try
         {
             bowl.OnInteractionCompleted?.Invoke();

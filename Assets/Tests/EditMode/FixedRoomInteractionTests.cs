@@ -94,7 +94,9 @@ public sealed class FixedRoomInteractionTests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Art/StoreProducts/Prefabs/" + definition.PrefabName + ".prefab");
             var activity = prefab.GetComponent<CatActivity>();
-            if(definition.ProductId==HomeStoreService.GameConsoleId||definition.ProductId==HomeStoreService.StereoId||definition.ProductId==HomeStoreService.TvUnitId)
+            // These room products were explicitly approved as decoration. Ownership remains active.
+            if(new HashSet<string>{HomeStoreService.GameConsoleId,HomeStoreService.StereoId,HomeStoreService.TvUnitId,
+                "bathroom.wall-mirror","bedroom.night-light","bedroom.dream-art","garden.grill","balcony.sun-awning","patio.string-lights"}.Contains(definition.ProductId))
             {
                 Assert.That(activity,Is.Null,"This purchased product is decor, with no cat action.");
                 Assert.That(prefab.GetComponent<StoreProductDisplay>(),Is.Not.Null,"Ownership must still control decor visibility.");

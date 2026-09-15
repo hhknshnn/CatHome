@@ -156,6 +156,16 @@ public static class SinkSipFacingBuilder
             readable++;
             Quaternion work=Quaternion.LookRotation(new Vector3(candidateWater.x-point.x,0,candidateWater.z-point.z));
             float cost=(point-authored).sqrMagnitude;
+            if(definition.PrefabName=="KitchenSinkCabinet")
+            {
+                // The closest authored perch can leave long-haired mouths
+                // outside the basin. Rank supported poses by the worst real
+                // source jaw reach across the ten breeds and the whole clip.
+                float reach=0f;
+                foreach(var stance in stances)
+                    reach=Mathf.Max(reach,(point+work*stance.muzzle+Correction(stance,work)-candidateWater).sqrMagnitude);
+                cost=reach+(point-authored).sqrMagnitude*.01f;
+            }
             if(cost>=best)continue;
             bool supported=true;int supportedFeet=0;
             foreach(var stance in stances)

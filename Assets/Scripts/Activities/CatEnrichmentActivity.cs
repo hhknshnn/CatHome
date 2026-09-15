@@ -15,6 +15,7 @@ public sealed class CatEnrichmentActivity : CatActivity
     [SerializeField] Transform movingPart;
     [SerializeField] float duration=3.2f;
     [SerializeField] Vector2 footprint;
+    [SerializeField] Vector2 foodSurfaceRadii;
     CharacterController controller;
     bool controllerWasEnabled;
     Vector3 startPosition, originalScale, movingPosition;
@@ -30,6 +31,10 @@ public sealed class CatEnrichmentActivity : CatActivity
     float lastImpact=-100f;
     bool reverseTunnel;
     Vector3 workPoint, touchPosition;
+    Vector3 mealReleasePoint;
+    Quaternion mealHeading;
+    bool IsCeramicMeal=>StoreProductId==HomeStoreService.CeramicBowlId&&mode==CatEnrichmentMode.Feed;
+    public Vector2 FoodSurfaceRadii=>foodSurfaceRadii;
     protected override bool AllowsPerimeterApproach => mode != CatEnrichmentMode.Tunnel &&
         mode != CatEnrichmentMode.Hide && (mode != CatEnrichmentMode.Nap ||
         StoreProductId == HomeStoreService.NapPillowId || StoreProductId == HomeStoreService.CloudBedId);
@@ -93,6 +98,7 @@ public sealed class CatEnrichmentActivity : CatActivity
     }
     bool TryNearbyContact()
     {
+        if(IsCeramicMeal)return TryNearbyMeal();
         Bounds bounds=new Bounds(contactPoint.position,Vector3.zero);bool measured=false;
         if(movingPart!=null)
             foreach(var renderer in movingPart.GetComponentsInChildren<Renderer>())
@@ -104,7 +110,8 @@ public sealed class CatEnrichmentActivity : CatActivity
         Vector3 outward=origin-bounds.center;outward.y=0;
         if(outward.sqrMagnitude<.001f)outward=-transform.forward;
         outward.Normalize();
-        float reachDistance=mode==CatEnrichmentMode.Spring||mode==CatEnrichmentMode.Grass?.30f:.39f;
+        float reachDistance=mode==CatEnrichmentMode.Spring||mode==CatEnrichmentMode.Grass?.30f:
+            StoreProductId==HomeStoreService.TreatJarId||StoreProductId==HomeStoreService.KibbleBagId?.37f:.39f;
         float best=float.PositiveInfinity;
         // Rank only sides that keep the real contact facing front/side to the
         // player. Rotating the cat after choosing a rear contact would miss it.
@@ -126,6 +133,49 @@ public sealed class CatEnrichmentActivity : CatActivity
         }
         return workApproach!=null;
     }
+    bool TryNearbyMeal()
+    {
+        var tag=Cat.GetComponentInChildren<CatBreedVisualTag>();
+        var profile=CatFeedingAlignmentCatalog.Load()?.Find(tag!=null?tag.BreedId:CatBreedService.SelectedBreedId);
+        if(profile==null||foodSurfaceRadii.x<=0||foodSurfaceRadii.y<=0)return false;
+        Vector3 origin=RoutineFloorPosition,outward=origin-contactPoint.position;outward.y=0;
+        if(outward.sqrMagnitude<.001f)outward=-transform.forward;
+        outward.Normalize();float best=float.PositiveInfinity;
+        Vector3 camera=CatActivityFacing.CameraPosition(Cat);
+        Vector3 mouth=profile.mouthOffset*(Cat.transform.lossyScale.y/.5f);mouth.y=0;
+        mouth.z+=.035f*(Cat.transform.lossyScale.y/.5f);
+        for(int i=0;i<24;i++)
+        {
+            int step=(i+1)/2*(i%2==0?-1:1);
+            Vector3 side=Quaternion.Euler(0,step*15f,0)*outward;
+            Vector3 local=contactPoint.InverseTransformDirection(side);
+            float radius=1f/Mathf.Sqrt(local.x*local.x/(foodSurfaceRadii.x*foodSurfaceRadii.x)+local.z*local.z/(foodSurfaceRadii.y*foodSurfaceRadii.y));
+            Vector3 touch=contactPoint.TransformPoint(local*(radius*.60f));
+            var heading=Quaternion.LookRotation(-side);
+            Vector3 stand=touch-heading*mouth;stand.y=0;
+            if(CatActivityFacing.FacingDot(-side,stand,camera)<CatActivityFacing.PreferredViewDot||
+               !CatActivityMotion.IsFloorClear(stand,.075f))continue;
+            // The real paws fit beside the bowl; the broad walking controller
+            // approaches and is restored only on the clear floor outside it.
+            for(float back=.12f;back<=.60f;back+=.08f)
+            {
+                Vector3 release=stand+side*back;
+                if(!CatActivityMotion.IsControllerFloorClear(Cat,release)||
+                   !CatActivityMotion.ClearSegment(release,stand,.075f)||
+                   !CatActivityMotion.TryFloorPath(Cat,origin,release,out var path))continue;
+                float length=PathLengthFrom(origin,path)+back;
+                if(length<best&&length<=2.2f)
+                {
+                    path.Add(stand);best=length;workPoint=stand;touchPosition=touch;
+                    workApproach=path;mealReleasePoint=release;mealHeading=heading;
+                }
+                break;
+            }
+        }
+        return workApproach!=null;
+    }
+    static float PathLengthFrom(Vector3 origin,List<Vector3> path)
+    {float result=0;foreach(var point in path){result+=Vector3.Distance(origin,point);origin=point;}return result;}
     float PathLength(List<Vector3> path)
     {float distance=0;Vector3 last=Cat.transform.position;foreach(var p in path){distance+=Vector3.Distance(last,p);last=p;}return distance;}
     protected override bool BeginActivity()
@@ -188,7 +238,7 @@ public sealed class CatEnrichmentActivity : CatActivity
             if(workApproach!=null)
             {foreach(var point in workApproach)yield return Walk(point,CatActivityPose.Walk);}
             else yield return Walk(working,CatActivityPose.Walk);
-            Face(touchPosition);
+            yield return Face(IsCeramicMeal?Cat.transform.position+mealHeading*Vector3.forward:touchPosition);
         }
 
         if(mode==CatEnrichmentMode.Tunnel)
@@ -204,7 +254,16 @@ public sealed class CatEnrichmentActivity : CatActivity
         }
         else if(mode==CatEnrichmentMode.Nap||mode==CatEnrichmentMode.Hide)
         {
-            Face(entry);
+            Vector3 restFacing=entry;
+            if(mode==CatEnrichmentMode.Nap)
+            {
+                // Keep the bed's safe lengthwise axis, choosing the visible end.
+                // A rear doorway need not make the resting cat face the doorway.
+                Vector3 axis=entry-Cat.transform.position;axis.y=0;
+                if(axis.sqrMagnitude>.001f)
+                    restFacing=Cat.transform.position+CatActivityFacing.AlongAxis(Cat,contactPoint.position,Quaternion.LookRotation(axis))*Vector3.forward;
+            }
+            yield return Face(restFacing,true);
             PlayCatPose(CatActivityPose.Sleep,contactPoint);yield return React(.25f);
             IsResting=mode==CatEnrichmentMode.Nap;
             if(mode==CatEnrichmentMode.Nap){while(KeepResting)yield return null;}
@@ -221,8 +280,12 @@ public sealed class CatEnrichmentActivity : CatActivity
                 Vector3 sidePoint=center+Cat.transform.right*side;
                 if(CatActivityFacing.FacingDot(touchPosition-sidePoint,sidePoint,CatActivityFacing.CameraPosition(Cat))>=CatActivityFacing.MinimumViewDot &&
                     CatActivityMotion.ClearSegment(center,sidePoint))yield return Walk(sidePoint,CatActivityPose.Stalk);
-                Face(touchPosition);
-                yield return Gesture(CatActivityPose.Pounce,1.05f,false);
+                yield return Face(touchPosition);
+                IsPerformingGesture = true;
+                Vector3 launchPoint = Cat.transform.position;
+                yield return CatActivityMotion.Jump(Cat, launchPoint, launchPoint,
+                    Cat.transform.rotation, Cat.transform.rotation, .10f, false);
+                IsPerformingGesture = false;
                 yield return Gesture(beat==0?CatActivityPose.BatLeft:CatActivityPose.BatRight,.9f,true);
             }
         }
@@ -258,7 +321,12 @@ public sealed class CatEnrichmentActivity : CatActivity
                 yield return Gesture(CatActivityPose.BatRight,1.1f,true);
             }
         }
-        Vector3 exit=mode==CatEnrichmentMode.Tunnel?Cat.transform.position:entry;
+        // A floor toy can release the cat where it finished when the full
+        // walking controller fits. Beds/hideouts still use their real exit.
+        if(IsCeramicMeal&&!CatActivityMotion.IsControllerFloorClear(Cat,Cat.transform.position))
+            yield return Walk(mealReleasePoint,CatActivityPose.Walk);
+        bool clearFinish=!enter && CatActivityMotion.IsControllerFloorClear(Cat,Cat.transform.position);
+        Vector3 exit=mode==CatEnrichmentMode.Tunnel||clearFinish?Cat.transform.position:entry;
         if(!CatActivityMotion.IsFloorClear(exit,.25f))exit=startPosition;
         if(HasNearbyApproach && !enter && CatActivityMotion.TryFloorPath(Cat.transform.position,exit,out var returnPath))
         {foreach(var point in returnPath)yield return Walk(point,CatActivityPose.Walk);}
@@ -331,21 +399,34 @@ public sealed class CatEnrichmentActivity : CatActivity
     }
     IEnumerator Walk(Vector3 target,CatActivityPose pose)
     {
-        PlayCatPose(pose);
+        if (mode == CatEnrichmentMode.Chase) target.y = startPosition.y;
         Vector3 from=Cat.transform.position;
-        float seconds=Mathf.Max(.25f,Vector3.Distance(from,target)/1.5f),t=0;
-        Face(target);
-        while(t<seconds)
+        // Paths can contain the current position, including the final tunnel
+        // exit. Do not play a quarter-second walking loop without traveling.
+        if(Vector3.Distance(from,target)<=.005f)yield break;
+        yield return Face(target,pose==CatActivityPose.Crawl);
+        PlayCatPose(pose);
+        while(Vector3.Distance(Cat.transform.position,target)>.005f)
         {
-            t+=Time.deltaTime;Cat.transform.position=Vector3.Lerp(from,target,Mathf.SmoothStep(0,1,Mathf.Clamp01(t/seconds)));
+            Cat.transform.position=Vector3.MoveTowards(Cat.transform.position,target,1.5f*Time.deltaTime);
             yield return null;
         }
         Cat.transform.position=target;
     }
-    void Face(Vector3 target)
+    IEnumerator Face(Vector3 target,bool stayLow=false)
     {
         Vector3 direction=target-Cat.transform.position;direction.y=0;
-        if(direction.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(direction);
+        if(direction.sqrMagnitude<=.001f)yield break;
+        Quaternion facing=Quaternion.LookRotation(direction);
+        float angle=Quaternion.Angle(Cat.transform.rotation,facing);
+        if(angle>1f)
+        {
+            // Hold a neutral pose during the shortest turn. Inside a tunnel
+            // keep the crawl envelope instead of lifting the head through it.
+            poseDriver.SetTimedPose(stayLow?CatActivityPose.Crawl:CatActivityPose.Sniff,0);
+            yield return CatActivityFacing.Turn(Cat,facing,Mathf.Max(.08f,angle/540f));
+        }
+        Cat.transform.rotation=facing;
     }
     void Restore(bool cancelled)
     {
@@ -364,6 +445,7 @@ public sealed class CatEnrichmentActivity : CatActivity
     }
     protected override void CancelActivity(){if(!IsRunning)return;StopAllCoroutines();if(!HasBegunActivity){base.CancelActivity();return;}Restore(true);base.CancelActivity();}
 #if UNITY_EDITOR
+    public void EditorConfigureFoodSurface(Vector2 radii){foodSurfaceRadii=radii;}
     public void EditorConfigureEnrichment(CatEnrichmentMode value,Transform contact,Transform exit,Transform moving,Vector2 size)
     {mode=value;contactPoint=contact;exitPoint=exit;movingPart=moving;footprint=size;}
 #endif

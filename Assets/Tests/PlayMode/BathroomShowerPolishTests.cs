@@ -53,6 +53,18 @@ public sealed class BathroomShowerPolishTests
         state.ownedProductIds = new[] { HomeStoreService.BathroomShowerId };
         HomeStoreService.ApplySavedState(state);
         yield return null;
+        // A preceding purchase test may leave its level celebration above the
+        // shower. Close that fixture overlay before comparing real foam pixels.
+        var celebration = Object.FindAnyObjectByType<HomeLevelUpCelebrationView>();
+        if (celebration != null && HomeLevelUpCelebrationView.IsAnyOpen)
+        {
+            typeof(HomeLevelUpCelebrationView).GetMethod("BeginClose", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(celebration, null);
+            float deadline = Time.realtimeSinceStartup + 3f;
+            while (HomeLevelUpCelebrationView.IsAnyOpen && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(HomeLevelUpCelebrationView.IsAnyOpen, Is.False, "The previous test's celebration must close before shower capture.");
+        }
         shower = Object.FindAnyObjectByType<ShowerRinseActivity>();
         cat = Object.FindAnyObjectByType<CatMovement>();
         Assert.That(shower, Is.Not.Null);

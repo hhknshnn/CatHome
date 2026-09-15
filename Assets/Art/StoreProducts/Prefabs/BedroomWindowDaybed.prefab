@@ -31,7 +31,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2329307228403258506}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1340495358031278281
+--- !u!1 &3411569816097939155
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -39,29 +39,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8480596960025152162}
+  - component: {fileID: 4481868817835321703}
+  - component: {fileID: 5614217288308587336}
   m_Layer: 0
-  m_Name: WatchLookPoint
+  m_Name: DaybedSleepPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8480596960025152162
+--- !u!4 &4481868817835321703
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340495358031278281}
+  m_GameObject: {fileID: 3411569816097939155}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9123616, z: -0.34086576}
+  m_LocalPosition: {x: 0.3, y: 0.5094049, z: 0.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2329307228403258506}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5614217288308587336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3411569816097939155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe84c158a77dec04a929df25e9bb6b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
+  size: {x: 1.12, y: 0.56}
+  overridePose: 1
+  preferredPose: 2
+  alignAlongSurface: 1
 --- !u!1 &7003333580991478862
 GameObject:
   m_ObjectHideFlags: 0
@@ -73,9 +90,9 @@ GameObject:
   - component: {fileID: 2329307228403258506}
   - component: {fileID: 2799203680827109811}
   - component: {fileID: 263220779644468381}
-  - component: {fileID: 1107748939220042045}
   - component: {fileID: 1159343741156129147}
   - component: {fileID: 7335238259165556032}
+  - component: {fileID: 6601246928737337880}
   m_Layer: 0
   m_Name: BedroomWindowDaybed
   m_TagString: Untagged
@@ -97,8 +114,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4383551220307264207}
-  - {fileID: 8480596960025152162}
   - {fileID: 7186991854093012556}
+  - {fileID: 4481868817835321703}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2799203680827109811
@@ -140,68 +157,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
---- !u!114 &1107748939220042045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7003333580991478862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: daybed-watch
-  displayName: WINDOW DAYBED
-  kind: 31
-  questType: 8
-  requiredBondXp: 0
-  storeProductId: bedroom.window-daybed
-  actionText: WATCH
-  interactionRadius: 1.1
-  energyCost: 3
-  interactionAnchor: {fileID: 7186991854093012556}
-  routineEntryPoint: {fileID: 7186991854093012556}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 7830289039338444202}
-  lookPoint: {fileID: 8480596960025152162}
-  reactionKind: 0
-  lookDuration: 3.2
-  completeMessage: SO PEACEFUL.
-  visibleLookTargets:
-  - {x: -0.92617005, y: 0.4009714, z: 0.38795975}
-  - {x: 0.88909143, y: 0.60261697, z: -0.28405488}
-  - {x: 0.14623746, y: 0.4009714, z: 0.38795966}
-  - {x: -0.9452752, y: 0.39972192, z: -0.37544253}
-  - {x: 0.8436427, y: 0.19954848, z: 0.33802512}
-  - {x: -0.32666302, y: 0.6077287, z: -0.055726502}
-  - {x: 0.32606697, y: 0.5094049, z: -0.120251894}
-  - {x: -0.43871206, y: 0.4009714, z: 0.3879597}
-  - {x: -0.7779945, y: 0.6059296, z: -0.03888585}
-  - {x: 0.6055529, y: 0.5094049, z: 0.22332484}
-  - {x: -0.904241, y: 0.19954848, z: 0.08450636}
-  - {x: -0.139743, y: 0.5094049, z: 0.2233249}
-  - {x: 0.8978225, y: 0.5068621, z: 0.046628237}
-  - {x: 0.88503903, y: 0.5000232, z: 0.34941652}
-  - {x: 0.13974297, y: 0.5094049, z: 0.12025185}
-  - {x: 0.57010984, y: 0.6002423, z: -0.24411781}
-  - {x: -0.698715, y: 0.5094049, z: 0.2576826}
-  - {x: -0.058373634, y: 0.6014871, z: -0.13099623}
-  - {x: -0.94665253, y: 0.40071112, z: -0.09188217}
-  - {x: 0.43871224, y: 0.4009714, z: 0.38795963}
-  - {x: -0.512391, y: 0.5094049, z: 0.08589423}
-  - {x: -0.79030347, y: 0.60261697, z: -0.28405473}
-  - {x: -0.9071116, y: 0.50065535, z: 0.13988492}
-  - {x: -0.9042411, y: 0.19954848, z: -0.25351885}
-  - {x: 0.512391, y: 0.5094049, z: 0.017178774}
-  - {x: -0.024618054, y: 0.28838325, z: 0.3209819}
-  - {x: 0.326067, y: 0.5094049, z: 0.22332484}
-  - {x: -0.904241, y: 0.19954848, z: 0.33802527}
-  - {x: 0.6336954, y: 0.4009714, z: 0.3879596}
-  - {x: -0.24372894, y: 0.4009714, z: 0.3879597}
-  - {x: -0.07771739, y: 0.50680476, z: 0.042367842}
-  - {x: -0.32606703, y: 0.5094049, z: 0.12025188}
 --- !u!114 &1159343741156129147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,6 +182,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
   appliedScale: 1
+--- !u!114 &6601246928737337880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7003333580991478862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f4c7789279ba54468041924f1d0f9e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::PerchNapActivity
+  activityId: daybed-watch
+  displayName: WINDOW DAYBED
+  kind: 31
+  questType: 26
+  requiredBondXp: 0
+  storeProductId: bedroom.window-daybed
+  actionText: NAP
+  interactionRadius: 1.1
+  energyCost: 0
+  interactionAnchor: {fileID: 7186991854093012556}
+  routineEntryPoint: {fileID: 7186991854093012556}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 7830289039338444202}
+  floorPoint: {fileID: 7186991854093012556}
+  perchPoint: {fileID: 4481868817835321703}
+  settleDuration: 3.5
+  energyRestore: 18
+  wideAwakeEnergy: 94
+  completeMessage: COZY BY THE WINDOW!
 --- !u!1 &7830289039338444202
 GameObject:
   m_ObjectHideFlags: 0

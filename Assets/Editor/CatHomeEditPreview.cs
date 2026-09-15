@@ -16,7 +16,7 @@ public static class CatHomeEditPreview
     static CatHomeEditPreview()
     {
         EditorApplication.playModeStateChanged+=state=>
-        {if(state==PlayModeStateChange.ExitingEditMode)Clear();if(state==PlayModeStateChange.EnteredEditMode)EditorApplication.delayCall+=Refresh;};
+        {if(state==PlayModeStateChange.ExitingEditMode||state==PlayModeStateChange.EnteredPlayMode)Clear();if(state==PlayModeStateChange.EnteredEditMode)EditorApplication.delayCall+=Refresh;};
         AssemblyReloadEvents.beforeAssemblyReload+=Clear;
         EditorSceneManager.sceneSaving+=(scene,path)=>Clear();
         EditorSceneManager.sceneSaved+=scene=>EditorApplication.delayCall+=Refresh;
@@ -24,7 +24,8 @@ public static class CatHomeEditPreview
     }
     public static void Clear()
     {
-        foreach(var state in Resources.FindObjectsOfTypeAll<EditorHomePreviewState>().Where(s=>s.gameObject.scene.IsValid()))
+        // Fast Play / scene unloading can leave a preview in an invalid scene.
+        foreach(var state in Resources.FindObjectsOfTypeAll<EditorHomePreviewState>().Where(s=>!EditorUtility.IsPersistent(s)))
         {state.Restore();UnityEngine.Object.DestroyImmediate(state.gameObject);}
     }
     public static void Refresh()

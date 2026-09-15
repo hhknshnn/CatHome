@@ -953,7 +953,7 @@ public static class HomeStoreService
             "RAINBOW FRUIT BASKET",
             HomeStoreCategory.Room,
             "KITCHEN DECOR",
-            "A gold-trimmed basket filled with bright low-poly fruit.",
+            "A gold-trimmed fruit basket for the kitchen counter. A curious paw can tip it over and scatter the fruit.",
             700L, 7L, 1, true, true),
         new HomeStoreProduct(
             KitchenFeedingStationId,
@@ -1948,6 +1948,7 @@ public static class HomeStoreService
 
     public static string GetPlacementFamilyLabel(string productId)
     {
+        if(productId==KitchenFruitBasketId)return "COUNTER";
         if (string.Equals(productId, BookSetId, StringComparison.Ordinal))
             return "BOOKSHELF";
         if (string.Equals(productId, ModernTelevisionId, StringComparison.Ordinal))
@@ -2132,6 +2133,7 @@ public static class HomeStoreService
 
     public static string GetRequiredProductId(string productId)
     {
+        if(string.Equals(productId,KitchenFruitBasketId,StringComparison.Ordinal))return KitchenIslandId;
         if (string.Equals(productId, BookSetId, StringComparison.Ordinal))
             return BookshelfId;
         if (string.Equals(productId, ModernTelevisionId, StringComparison.Ordinal))

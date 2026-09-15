@@ -1453,6 +1453,13 @@ public static class CatHomeSaveSystem
         initialized = false;
     }
 
+#if UNITY_EDITOR
+    // Fast Play can retain live scene components after Play stops. Forget the
+    // copied session before its directory override is removed, so late save
+    // callbacks cannot write that session's values into the player's save.
+    public static void EditorEndCopiedSession() => ClearReferences();
+#endif
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetRuntimeState()
     {

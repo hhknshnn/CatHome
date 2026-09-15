@@ -7,6 +7,37 @@ using UnityEngine;
 
 public sealed class HomeRoomArrangementTests
 {
+    [Test] public void ReviewedOutdoorRooms_KeepAtMostOneSeatedWatchEach()
+    {
+        foreach(var room in HomeRoomService.Rooms.Where(r=>OutdoorArrangementProfile.IsReviewedRoom(r.Id)))
+        {
+            int watches=0;
+            foreach(var d in StoreCatalogAssets.PlaceableProducts.Where(p=>HomeStoreService.IsProductInRoomCollection(room.Id,p.ProductId)))
+            {
+                var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/StoreProducts/Prefabs/"+d.PrefabName+".prefab");
+                var a=prefab.GetComponent<CatActivity>();
+                Assert.That(a==null,Is.EqualTo(OutdoorArrangementProfile.IsDecoration(d.ProductId)),d.ProductId);
+                if(a is SitLookActivity look&&look.ReactionKind==SitLookReaction.Sit)watches++;
+            }
+            // Garden's single observation belongs to the scene birds.
+            Assert.That(watches,Is.LessThanOrEqualTo(room.Id==HomeRoomService.GardenId?0:1),room.Id);
+        }
+    }
+    [Test] public void ReviewedKitchenAndBedroom_KeepAtMostOneSeatedWatchEach()
+    {
+        foreach(string room in new[]{HomeRoomService.KitchenId,HomeRoomService.BedroomId})
+        {
+            int watches=0, actions=0;
+            foreach(var d in StoreCatalogAssets.PlaceableProducts.Where(p=>HomeStoreService.IsProductInRoomCollection(room,p.ProductId)))
+            {
+                var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/StoreProducts/Prefabs/"+d.PrefabName+".prefab");
+                var a=prefab.GetComponent<CatActivity>(); if(a==null)continue;actions++;
+                if(a is SitLookActivity look && look.ReactionKind==SitLookReaction.Sit)watches++;
+                Assert.That(a.IsRetired,Is.False,d.ProductId);
+            }
+            Assert.That(watches,Is.EqualTo(room==HomeRoomService.KitchenId?1:0),room);Assert.That(actions,Is.EqualTo(room==HomeRoomService.KitchenId?10:8),room);
+        }
+    }
     [Test]
     public void PlayerFraming_ReservesTheCatsBodyInsteadOfJustItsPivot()
     {
@@ -62,7 +93,8 @@ public sealed class HomeRoomArrangementTests
             Assert.That(prefab.GetComponent<RoomProductScaleStamp>().AppliedScale, Is.EqualTo(plan.modelScale).Within(.001f), definition.ProductId);
             Assert.That(prefab.GetComponent<HomeProductPlacement>().Footprint, Is.EqualTo(plan.footprint));
             Assert.That(prefab.transform.localScale, Is.EqualTo(Vector3.one), "The cat and product root never inherit a visual resize.");
-            Assert.That(prefab.GetComponent<CatActivity>(), Is.Not.Null);
+            bool decoration = definition.ProductId == HomeStoreService.BathroomMirrorId || KitchenBedroomArrangementProfile.IsDecoration(definition.ProductId) || OutdoorArrangementProfile.IsDecoration(definition.ProductId);
+            Assert.That(prefab.GetComponent<CatActivity>() != null, Is.EqualTo(!decoration), definition.ProductId);
         }
     }
 

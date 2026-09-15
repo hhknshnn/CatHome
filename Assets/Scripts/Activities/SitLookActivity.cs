@@ -38,7 +38,8 @@ public sealed class SitLookActivity : CatActivity
     // locally once; the generic contact routes used in other rooms are unchanged.
     private bool UsesLocalViewingRoute => ReactionKind == SitLookReaction.Sit &&
         (Kind == CatActivityKind.BookshelfSniff || Kind == CatActivityKind.BookSetSniff ||
-         Kind == CatActivityKind.PlantSniff || Kind == CatActivityKind.LampWatch);
+         Kind == CatActivityKind.PlantSniff || Kind == CatActivityKind.LampWatch ||
+         Kind == CatActivityKind.FridgeStare || (IsMirrorGaze && HasNearbyApproach));
 
     public override string ProgressLabel => IsRunning ? DisplayName : string.Empty;
     public Transform LookPoint => lookPoint;
@@ -198,7 +199,13 @@ public sealed class SitLookActivity : CatActivity
         if (Cat == null || lookPoint == null) return false;
         Physics.SyncTransforms();
         plannedOrigin = origin;
-        if (UsesLocalViewingRoute) return ResolveLocalViewingRoute(origin);
+        if (UsesLocalViewingRoute)
+        {
+            if (ResolveLocalViewingRoute(origin)) return true;
+            // A distant scripted start may still need the authored room path.
+            // Normal nearby mirror taps use the same short search as the living room.
+            if (!IsMirrorGaze && Kind != CatActivityKind.FridgeStare) return false;
+        }
         Vector3 authored = Flatten(RoutineEntryPoint != null ? RoutineFloorPosition : transform.position, origin.y);
         float best = float.PositiveInfinity; viewApproach = null;
         for (int i = 0; i < Mathf.Max(1, VisibleLookTargetCount); i++)
@@ -234,13 +241,15 @@ public sealed class SitLookActivity : CatActivity
         Vector3 camera = CatActivityFacing.CameraPosition(Cat);
         float radius = CatActivityMotion.ControllerFloorRadius(Cat);
         var boundary = HomeRoomBoundary.FindFor(Cat.gameObject.scene);
+        Vector3 centre = Kind == CatActivityKind.FridgeStare && !HasNearbyApproach ? RoutineEntryPoint.position : origin;
+        centre.y = origin.y;
         var candidates = new List<Vector3> { origin };
         // Reuse the room's .2m floor lattice: polar samples can miss the narrow
         // open aisle beside the armchair. No occupancy grid or BFS is rebuilt.
         for (int x = 0; x < 38; x++) for (int z = 0; z < 32; z++)
         {
             Vector3 point = CatActivityMotion.GridPoint(x, z); point.y = origin.y;
-            if ((point - origin).sqrMagnitude <= 1.6f * 1.6f) candidates.Add(point);
+            if ((point - centre).sqrMagnitude <= 1.6f * 1.6f) candidates.Add(point);
         }
         candidates.Sort((a,b) => (a-origin).sqrMagnitude.CompareTo((b-origin).sqrMagnitude));
         foreach (Vector3 stand in candidates)
@@ -258,9 +267,18 @@ public sealed class SitLookActivity : CatActivity
                 // The approach disables the controller and uses the same .27m
                 // swept body clearance as the common floor entrance. The final
                 // seat additionally clears the full controller turning envelope.
-                if (!CatActivityMotion.ClearSegment(origin, stand)) break;
+                List<Vector3> route;
+                if (Kind == CatActivityKind.FridgeStare && !HasNearbyApproach)
+                {
+                    if (!CatActivityMotion.TryFloorPath(origin, stand, out route)) break;
+                }
+                else
+                {
+                    if (!CatActivityMotion.ClearSegment(origin, stand)) break;
+                    route = new List<Vector3> { stand };
+                }
                 ViewStand = stand; ViewRotation = rotation; ActiveLookTarget = target;
-                viewApproach = new List<Vector3> { stand };
+                viewApproach = route;
                 return true;
             }
         }

@@ -54,9 +54,7 @@ public sealed class AndroidFeedbackTests
         var home=Object.FindFirstObjectByType<HomeAudioController>();
         Assert.That(home,Is.Not.Null);
         var sources=home.GetComponents<AudioSource>();
-        Assert.That(sources.Length,Is.EqualTo(1));
-        Assert.That(sources[0].loop,Is.False);
-        Assert.That(sources[0].clip,Is.Null);
+        Assert.That(sources.Length,Is.Zero,"Home events route through the single shared pool.");
         Assert.That(typeof(HomeAudioController).GetMethod("DetectUiClick",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance),Is.Null);
     }
 }

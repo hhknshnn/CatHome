@@ -222,6 +222,7 @@ MonoBehaviour:
   lockedVisual: {fileID: 0}
   unlockedContent: {fileID: 1426441998160387059}
   reachPoint: {fileID: 4641458760196561037}
+  perchPoint: {fileID: 0}
   glassPivot: {fileID: 5854966643632544476}
   fallDirection: {x: 0, y: 0, z: 1}
   fallHeight: 0.48

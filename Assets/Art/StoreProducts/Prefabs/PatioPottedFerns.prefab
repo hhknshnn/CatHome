@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 815746029678784472}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.52800006, y: 0, z: 0}
+  m_LocalPosition: {x: 0.203, y: 0, z: -0.626}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -189,15 +189,14 @@ MonoBehaviour:
   lockedVisual: {fileID: 0}
   unlockedContent: {fileID: 1141399706066891756}
   lookPoint: {fileID: 118614540581363066}
-  reactionKind: 1
+  reactionKind: 0
   lookDuration: 2.8
-  completeMessage: WIGGLY!
+  completeMessage: SO COZY!
   visibleLookTargets:
   - {x: -0.102186166, y: 0.624, z: -0.016650379}
-  - {x: 0.031701464, y: 0.624, z: 0.042245343}
-  - {x: -0.00685003, y: 0.624, z: -0.10210625}
-  - {x: -0.0064526685, y: 0.624, z: -0.06459592}
+  - {x: 0.007349316, y: 0.63696045, z: -0.104335964}
   - {x: -0.10577906, y: 0.5999134, z: -0.023490319}
+  - {x: -0.00685003, y: 0.624, z: -0.10210625}
 --- !u!114 &8499749085292719201
 MonoBehaviour:
   m_ObjectHideFlags: 0

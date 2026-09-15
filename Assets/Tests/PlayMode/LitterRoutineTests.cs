@@ -80,12 +80,15 @@ public sealed class LitterRoutineTests
             int maximumGrains = 0, strokes = 0, replants = 0;
             Vector3 excavatedHole = Vector3.zero;
             bool left = false, right = false, headDown = false, clearedBeforeExit = false;
-            float deadline = Time.realtimeSinceStartup + 18f;
+            float deadline = Time.realtimeSinceStartup + 26f;
             while (activity.IsRunning && Time.realtimeSinceStartup < deadline)
             {
                 CatLitterPhase phase = activity.Phase;
                 if (phases.Count == 0 || phases[phases.Count - 1] != phase) phases.Add(phase);
                 Assert.That(Vector3.Distance(cat.transform.localScale, scale), Is.LessThan(.0001f), breed.Id + " root squash");
+                if (phase == CatLitterPhase.Positioning || phase == CatLitterPhase.Returning)
+                    foreach (Transform foot in cat.GetComponentsInChildren<Transform>().Where(b => b.name == "DEF-foot.L" || b.name == "DEF-foot.R" || b.name == "DEF-hand.L" || b.name == "DEF-hand.R"))
+                        Assert.That(activity.LitterSurface.Contains(foot.position, 0f), Is.True, breed.Id + " " + phase + " " + foot.name + " outside sand: " + foot.position.ToString("F5"));
                 if (phase == CatLitterPhase.Digging || phase == CatLitterPhase.Squatting || phase == CatLitterPhase.Covering)
                 {
                     Assert.That(motion.IsActive, Is.True, breed.Id);
@@ -142,6 +145,9 @@ public sealed class LitterRoutineTests
                     biggestDepth = Mathf.Max(biggestDepth, activity.LitterSurface.Depth);
                     if (phase == CatLitterPhase.Squatting)
                     {
+                        Assert.That(motion.PelvisHoleDistance, Is.LessThan(.005f), breed.Id + " pelvis must use the excavated hole");
+                        foreach (Transform foot in cat.GetComponentsInChildren<Transform>().Where(b => b.name == "DEF-foot.L" || b.name == "DEF-foot.R"))
+                            Assert.That(activity.LitterSurface.Contains(foot.position), Is.True, breed.Id + " rear paw outside sand");
                         lowestHips = Mathf.Min(lowestHips, hips.position.y);
                         Assert.That(pose.CurrentPose, Is.EqualTo(CatActivityPose.SitDown), breed.Id + " crouch must use the skeleton");
                         Assert.That(motion.ChestPitch, Is.Zero, breed.Id + " crouching uses the source spine and forelegs");
@@ -158,8 +164,8 @@ public sealed class LitterRoutineTests
                     clearedBeforeExit |= activity.LitterSurface.Depth < .0001f && !motion.IsActive;
                 yield return new WaitForEndOfFrame();
             }
-            CollectionAssert.AreEqual(new[] { CatLitterPhase.Investigating, CatLitterPhase.Digging, CatLitterPhase.Squatting,
-                CatLitterPhase.Covering, CatLitterPhase.Exiting }, phases, breed.Id + " " + ReachFailure());
+            CollectionAssert.AreEqual(new[] { CatLitterPhase.Investigating, CatLitterPhase.Digging, CatLitterPhase.Positioning,
+                CatLitterPhase.Squatting, CatLitterPhase.Returning, CatLitterPhase.Covering, CatLitterPhase.Exiting }, phases, breed.Id + " " + ReachFailure());
             Assert.That(left && right && headDown, Is.True, breed.Id + " visible alternating strokes/head inspection");
             Assert.That(standingHips - lowestHips, Is.GreaterThan(.015f), breed.Id + " actual crouch, not just a phase label");
             Assert.That(biggestDepth, Is.GreaterThan(.035f), breed.Id);
@@ -181,7 +187,7 @@ public sealed class LitterRoutineTests
     public IEnumerator EachSandPhase_PausesExactly_AndCancellationRestoresTheMeshWithoutCompletion()
     {
         yield return Prepare();
-        foreach (var phase in new[] { CatLitterPhase.Digging, CatLitterPhase.Squatting, CatLitterPhase.Covering })
+        foreach (var phase in new[] { CatLitterPhase.Digging, CatLitterPhase.Positioning, CatLitterPhase.Squatting, CatLitterPhase.Returning, CatLitterPhase.Covering })
         {
             Mesh source = activity.LitterSurface.Sand.sharedMesh; Start(); yield return WaitFor(phase);
             yield return new WaitForSeconds(phase == CatLitterPhase.Digging ? 1.65f : .65f); Time.timeScale = 0f;
@@ -193,6 +199,8 @@ public sealed class LitterRoutineTests
             var chest = cat.GetComponentsInChildren<Transform>().Single(b => b.name == "DEF-spine.001");
             Quaternion chestRotation = chest.localRotation, sourceChestRotation = motion.ChestSourceLocalRotation;
             int grains = surface.ActiveGrains, strokes = motion.ContactStrokes;
+            int wasteCount = activity.Waste != null ? activity.Waste.Emitted : 0;
+            Vector3[] wasteMesh = activity.Waste != null && activity.Waste.IsActive ? activity.Waste.RuntimeMesh.vertices : null;
             for (int frame = 0; frame < 8; frame++) yield return new WaitForEndOfFrame();
             Assert.That(activity.Phase, Is.EqualTo(phase)); CollectionAssert.AreEqual(frozen, surface.Sand.sharedMesh.vertices);
             Assert.That(surface.Depth, Is.EqualTo(depth)); Assert.That(surface.ActiveGrains, Is.EqualTo(grains));
@@ -200,6 +208,8 @@ public sealed class LitterRoutineTests
             Assert.That(motion.ChestPitch, Is.EqualTo(chestPitch));
             Assert.That(1f - Mathf.Abs(Quaternion.Dot(chest.localRotation, chestRotation)), Is.LessThan(.000001f), "actual chest pose must freeze");
             Assert.That(motion.LeftTarget, Is.EqualTo(target)); Assert.That(cat.transform.position, Is.EqualTo(position));
+            Assert.That(activity.Waste != null ? activity.Waste.Emitted : 0, Is.EqualTo(wasteCount));
+            if (wasteMesh != null) CollectionAssert.AreEqual(wasteMesh, activity.Waste.RuntimeMesh.vertices);
             activity.CancelForTransition(); Assert.That(surface.Sand.sharedMesh, Is.SameAs(source));
             if (chestPitch > 0f)
                 Assert.That(1f - Mathf.Abs(Quaternion.Dot(chest.localRotation, sourceChestRotation)), Is.LessThan(.000001f), "cancel must immediately restore the source chest rotation");
@@ -214,6 +224,8 @@ public sealed class LitterRoutineTests
 
     void AssertClean()
     {
+        Assert.That(activity.Waste == null || !activity.Waste.IsActive, Is.True);
+        Assert.That(activity.Waste == null || activity.Waste.VisibleCount == 0, Is.True);
         Assert.That(activity.LitterSurface.IsActive, Is.False); Assert.That(activity.LitterSurface.ActiveGrains, Is.Zero);
         Assert.That(cat.GetComponent<CatLitterRoutineMotion>().IsActive, Is.False);
         Assert.That(cat.GetComponent<CatLitterRoutineMotion>().ChestPitch, Is.Zero);
@@ -226,6 +238,35 @@ public sealed class LitterRoutineTests
     {
         var motion = cat != null ? cat.GetComponent<CatLitterRoutineMotion>() : null;
         return motion != null ? motion.FailureReason + " " + motion.FailureReportPath : string.Empty;
+    }
+
+    [UnityTest]
+    public IEnumerator ToiletVariants_UseSameHole_DropThreePieces_ThenBuryEverything()
+    {
+        yield return Prepare();
+        float[] heights = new float[2];
+        for (int variant = 0; variant < 2; variant++)
+        {
+            Start(); yield return WaitFor(CatLitterPhase.Digging);
+            Vector3 digRoot = cat.transform.position;
+            yield return WaitFor(CatLitterPhase.Squatting);
+            yield return new WaitForSeconds(1.65f); yield return new WaitForEndOfFrame();
+            var motion = cat.GetComponent<CatLitterRoutineMotion>();
+            var fx = activity.Waste;
+            heights[variant] = motion.PelvisPosition.y;
+            Assert.That(Vector3.Distance(digRoot, cat.transform.position), Is.GreaterThan(.2f), "walk forward before crouching");
+            Assert.That(motion.PelvisHoleDistance, Is.LessThan(.005f));
+            Assert.That(fx.IsSolid, Is.EqualTo(variant == 0));
+            Assert.That(fx.Emitted, Is.EqualTo(variant == 0 ? 3 : 1));
+            Assert.That(fx.VisibleCount, Is.EqualTo(fx.Emitted));
+            Assert.That(Vector3.Distance(fx.Hole, motion.HoleTarget), Is.LessThan(.001f));
+            yield return WaitFor(CatLitterPhase.Exiting);
+            Assert.That(fx.VisibleCount, Is.Zero, "sand must bury every piece before departure");
+            float deadline = Time.realtimeSinceStartup + 6f;
+            while (activity.IsRunning && Time.realtimeSinceStartup < deadline) yield return null;
+            Assert.That(completed, Is.EqualTo(1)); AssertClean();
+        }
+        Assert.That(heights[0] - heights[1], Is.GreaterThan(.015f), "poop holds the actual hips higher than pee");
     }
 
     [Test]

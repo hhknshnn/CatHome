@@ -107,7 +107,8 @@ public enum CatActivityKind
     BoxHide = 99,
     SofaLounge = 100,
     CoffeeTablePlay = 101,
-    CompanionCommand = 102
+    CompanionCommand = 102,
+    DiningScatter = 103
 }
 
 public abstract class CatActivity : MonoBehaviour
@@ -194,10 +195,11 @@ public abstract class CatActivity : MonoBehaviour
     public string StoreProductId => storeProductId;
     public Transform RoutineEntryPoint => routineEntryPoint != null ? routineEntryPoint : interactionAnchor;
     public bool RequiresStoreOwnership => !string.IsNullOrWhiteSpace(storeProductId);
-    public bool IsRetired => Kind == CatActivityKind.MouseHunt || Kind == CatActivityKind.ConsolePaw || Kind == CatActivityKind.SpeakerListen || Kind == CatActivityKind.TvUnitPaw || Kind == CatActivityKind.WindowWatch;
+    public bool IsRetired => Kind == CatActivityKind.MouseHunt || Kind == CatActivityKind.ConsolePaw || Kind == CatActivityKind.SpeakerListen || Kind == CatActivityKind.TvUnitPaw || Kind == CatActivityKind.WindowWatch || Kind == CatActivityKind.MirrorGaze || Kind == CatActivityKind.NightLightGaze || Kind == CatActivityKind.ArtGaze || Kind == CatActivityKind.GrillWatch || Kind == CatActivityKind.AwningGaze || Kind == CatActivityKind.FestoonGaze;
     public bool IsUnlocked =>
         ProgressionService.BondXp >= RequiredBondXp &&
-        (!RequiresStoreOwnership || (HomeStoreService.IsOwned(storeProductId)&&!HomeStoreService.IsStored(storeProductId)));
+        (!RequiresStoreOwnership || (HomeStoreService.IsOwned(storeProductId)&&!HomeStoreService.IsStored(storeProductId))) &&
+        (storeProductId!=HomeStoreService.KitchenFruitBasketId||HomeStoreService.IsProductDependencyMet(storeProductId));
     public virtual string ProgressLabel => IsRunning ? DisplayName : string.Empty;
 
     protected virtual void Awake()
@@ -349,7 +351,10 @@ public abstract class CatActivity : MonoBehaviour
             if (direction.sqrMagnitude <= .0001f) continue;
             Quaternion travel = Quaternion.LookRotation(direction);
             PlayCatPose(CatActivityPose.Sniff);
-            yield return CatActivityFacing.Turn(Cat, travel, .18f);
+            float turnSeconds = .18f;
+            if (Cat.gameObject.scene.path != HomeRoomService.LivingRoomScenePath)
+                turnSeconds = Mathf.Max(turnSeconds, Quaternion.Angle(Cat.transform.rotation, travel) / 300f);
+            yield return CatActivityFacing.Turn(Cat, travel, turnSeconds);
             PlayCatPose(CatActivityPose.Walk);
             while ((Cat.transform.position - target).sqrMagnitude > .0001f)
             {
@@ -485,7 +490,8 @@ public abstract class CatActivity : MonoBehaviour
     private void HandleStoreOwnershipChanged(string productId)
     {
         if (string.IsNullOrEmpty(productId) ||
-            string.Equals(productId, storeProductId, StringComparison.Ordinal))
+            string.Equals(productId, storeProductId, StringComparison.Ordinal) ||
+            (storeProductId==HomeStoreService.KitchenFruitBasketId&&productId==HomeStoreService.KitchenIslandId))
         {
             if(IsRunning&&!IsUnlocked)CancelActivity();
             RefreshUnlockPresentation();

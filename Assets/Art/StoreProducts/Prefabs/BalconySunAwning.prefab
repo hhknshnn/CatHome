@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1925994212008570515}
   - component: {fileID: 6095592921269381234}
   - component: {fileID: 98470955089178177}
-  - component: {fileID: 1354223115564554857}
   - component: {fileID: 3427594328695192816}
   - component: {fileID: 6489473700406839186}
   m_Layer: 0
@@ -78,68 +77,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 2.24
---- !u!114 &1354223115564554857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 43713966385309433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: awning-gaze
-  displayName: SUN AWNING
-  kind: 48
-  questType: 29
-  requiredBondXp: 0
-  storeProductId: balcony.sun-awning
-  actionText: GAZE
-  interactionRadius: 1.1
-  energyCost: 2
-  interactionAnchor: {fileID: 7908976571513520244}
-  routineEntryPoint: {fileID: 7908976571513520244}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 3575669204274875467}
-  lookPoint: {fileID: 7481201119863358473}
-  reactionKind: 0
-  lookDuration: 2.6
-  completeMessage: SO SHADY!
-  visibleLookTargets:
-  - {x: 0.73800266, y: 0.40425232, z: 0.11615689}
-  - {x: -1.1805799, y: 0.5508396, z: -0.24154119}
-  - {x: -0.3469565, y: 0.243, z: 0.5}
-  - {x: -0.07380639, y: 0.61531764, z: -0.29275078}
-  - {x: -1.15, y: 0.19966666, z: 0.4950001}
-  - {x: 0.28749996, y: 0.19966666, z: 0.49499997}
-  - {x: 1.106, y: 0.6005816, z: -0.32038307}
-  - {x: 1.15, y: 0.19966666, z: 0.49499992}
-  - {x: -0.5904189, y: 0.47638604, z: -0.037032355}
-  - {x: 0.44282174, y: 0.6092752, z: -0.29275256}
-  - {x: 0.000000014901161, y: 0.40034232, z: 0.16721922}
-  - {x: 1.1806003, y: 0.40394527, z: 0.065093994}
-  - {x: -1.0330927, y: 0.3905506, z: 0.11615553}
-  - {x: 0.7434782, y: 0.243, z: 0.5}
-  - {x: -0.73801506, y: 0.2933345, z: 0.42285895}
-  - {x: 0.36903185, y: 0.43730563, z: 0.06510092}
-  - {x: -0.44282177, y: 0.6092752, z: -0.29275247}
-  - {x: -0.028531667, y: 0.19995289, z: 0.5}
-  - {x: -0.29522994, y: 0.43906245, z: 0.06510143}
-  - {x: -0.8855404, y: 0.513296, z: -0.13923402}
-  - {x: 0.5166396, y: 0.33596385, z: 0.32051617}
-  - {x: 0.8855404, y: 0.513296, z: -0.13923417}
-  - {x: 0.9593372, y: 0.31770167, z: 0.32051367}
-  - {x: 0.1476142, y: 0.53603345, z: -0.13922924}
-  - {x: -0.5166359, y: 0.3725757, z: 0.21829918}
-  - {x: 0.5904163, y: 0.50100714, z: -0.08813224}
-  - {x: -0.22142804, y: 0.34292385, z: 0.32051775}
-  - {x: 0.22142847, y: 0.34292382, z: 0.32051772}
-  - {x: -0.07380781, y: 0.48715675, z: -0.03702961}
-  - {x: -0.9593371, y: 0.3177017, z: 0.3205138}
-  - {x: -0.7380059, y: 0.38344485, z: 0.16721562}
-  - {x: -0.295224, y: 0.53386974, z: -0.13922983}
 --- !u!114 &3427594328695192816
 MonoBehaviour:
   m_ObjectHideFlags: 0

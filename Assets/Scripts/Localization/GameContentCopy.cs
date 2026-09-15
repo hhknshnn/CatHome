@@ -12,6 +12,8 @@ public static class GameContentCopy
             case "YARN CHAMPION!": return Text("Yumağı yakaladım!","Got the yarn!");
             case "YUM!": return Text("Nefis!","Yum!");
             case "ALL COVERED UP!": return Text("İşte, tertemiz.","All covered up.");
+            case "LITTER_STINKY": return Text("Off, koktu!", "Phew, that smells!");
+            case "LITTER_PEE": return Text("Çiş yaptım, hehe!", "Had a wee, hehe!");
             case "FOUND ME!": return Text("Beni buldun!","You found me!");
             case "MAKING BISCUITS!": return Text("Patilerim iş başında.","Making biscuits.");
             case "OOPS.": return Text("Ben bir şey yapmadım…","It wasn’t me…");
@@ -26,6 +28,7 @@ public static class GameContentCopy
             case "WHEEE!": return Text("Biraz daha sallanalım mı?","Another little swing?");
             case "TUNNEL CHAMPION!": return Text("Öbür taraftan çıktım!","Made it through!");
             case "STILL DRY!": return Text("Patilerim hâlâ kuru.","Still dry.");
+            case "TUB_BALANCE": return Text("Düşmedim… bilerek sallandım!", "Didn't fall… that wobble was on purpose!");
             case "GOOD SPOT!": return Text("Ne güzel bir köşe.","Such a lovely spot.");
             case "SO COZY!": return Text("Tam bana göre.","So cosy.");
             case "WHAT A VIEW!": return Text("Manzaraya bak!","What a view!");

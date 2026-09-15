@@ -93,6 +93,7 @@ public static class PolyperfectCatIntegrationBuilder
         BuildPrefab(controller);
         BuildBreedCatalog(controller);
         CatToyAnimationBuilder.Build();
+        TowelJumpAnimationBuilder.Build();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 

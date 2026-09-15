@@ -176,6 +176,25 @@ public sealed class CameraFacingRoomAuditTests
     }
 
     [UnityTest]
+    public IEnumerator ReviewedFourRooms_DefaultBreed_AllCurrentRoomProducts()
+    {
+        fileStem = "reviewed-four-default"; report.suite = nameof(ReviewedFourRooms_DefaultBreed_AllCurrentRoomProducts);
+        var ids = new[] {HomeRoomService.GardenId, HomeRoomService.BalconyId, HomeRoomService.PatioId, HomeRoomService.SecondFloorId};
+        report.inventoryProducts = roomProducts.Count(id => ids.Any(room => HomeStoreService.IsProductInRoomCollection(room,id)));
+        foreach (var room in HomeRoomService.Rooms.Where(room => ids.Contains(room.Id)))
+        {
+            yield return Prepare(room);
+            if (cat == null) continue;
+            foreach (string product in roomProducts.Where(id => HomeStoreService.IsProductInRoomCollection(room.Id,id)))
+                yield return AuditProduct(room.Id,product);
+        }
+        Assert.That(report.rooms, Is.EqualTo(4));
+        Assert.That(report.routineInstances, Is.EqualTo(37));
+        Assert.That(report.sampledRoutineInstances, Is.EqualTo(37));
+        Finish();
+    }
+
+    [UnityTest]
     public IEnumerator Cat_DefaultBreed_CurrentCollectionWithinFiveAndOne()
     {
         fileStem = "cat-default"; report.suite = nameof(Cat_DefaultBreed_CurrentCollectionWithinFiveAndOne);
@@ -215,7 +234,8 @@ public sealed class CameraFacingRoomAuditTests
             .OrderBy(a => HierarchyPath(a.transform)).ToArray();
         if (activities.Length == 0)
         {
-            bool decoration = product == HomeStoreService.StereoId || product == HomeStoreService.GameConsoleId || product == HomeStoreService.TvUnitId;
+            bool decoration = product == HomeStoreService.StereoId || product == HomeStoreService.GameConsoleId || product == HomeStoreService.TvUnitId || product == HomeStoreService.BathroomMirrorId ||
+                product == HomeStoreService.BedroomNightLightId || product == HomeStoreService.BedroomDreamArtId || product == HomeStoreService.GardenGrillId || product == HomeStoreService.BalconySunAwningId || product == HomeStoreService.PatioStringLightsId;
             AddEmpty(room, product, decoration ? "intentional_decoration" : "missing_activity");
             if (decoration) report.decorations++;
             else Issue(room + "/" + product + ": missing activity");
@@ -239,7 +259,8 @@ public sealed class CameraFacingRoomAuditTests
         var expected = new Dictionary<string, string[]>
         {
             { HomeRoomService.LivingRoomId, new[] { "SofaLounge", "CoffeeTablePlay" } },
-            { HomeRoomService.GardenId, new[] { "BirdWatchActivity", "YarnChaseActivity" } }
+            { HomeRoomService.KitchenId, new[] { "KitchenDiningSet" } },
+            { HomeRoomService.GardenId, new[] { "BirdWatchActivity" } }
         };
         foreach (var pair in HomeRoomService.Rooms.Select(room => new KeyValuePair<string,string[]>(room.Id,
                      expected.TryGetValue(room.Id,out var names) ? names : new string[0])))
@@ -306,7 +327,9 @@ public sealed class CameraFacingRoomAuditTests
             CatActivityPose pose = animation != null ? animation.CurrentPose : CatActivityPose.Walk;
             Transform surface = animation != null ? animation.ContactSurface : null;
             Vector3 delta = cat.transform.position - previousPosition; delta.y = 0f;
-            bool traveling = IsTravelPose(pose) || delta.magnitude > Mathf.Max(.002f, Time.deltaTime * .20f);
+            bool poseTransition = pose == CatActivityPose.SitDown || pose == CatActivityPose.StandUp ||
+                pose == CatActivityPose.TowelSettle || pose == CatActivityPose.TowelWake;
+            bool traveling = poseTransition || (animation != null && animation.IsNativeJump) || IsTravelPose(pose) || delta.magnitude > Mathf.Max(.002f, Time.deltaTime * .20f);
             // A staged turn can retain the previous held pose while its root
             // rotates. Wait for that actual turn to settle, without excluding
             // a stationary backwards work pose or slow support sway.

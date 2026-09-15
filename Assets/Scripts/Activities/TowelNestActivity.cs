@@ -1,19 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Nap in the bathroom towel cabinet's open niche.
-///
-/// This is the bathroom's sleep beat: the room already owns two water beats
-/// (<see cref="ShowerRinseActivity"/>, <see cref="SinkSipActivity"/>) and one
-/// play beat (<see cref="PaperSpinActivity"/>).
-///
-/// The folded towel bed is 0.90 above the cabinet floor and the cat has no
-/// jump, so like the vanity sip this is scripted: the controller is switched
-/// off, the cat is hopped onto the stack, curled up while it breathes, and
-/// hopped back down, ending outside the product footprint before physics
-/// resumes. The cat is never re-parented under the cabinet.
-/// </summary>
+public enum CatTowelPhase { None, Approach, CrouchUp, Rising, LandOnShelf, Settling, Resting, Waking, CrouchDown, Descending, LandOnFloor }
+
+/// <summary>Native high jumps, supported settling and a soft return to the bathroom floor.</summary>
 [DisallowMultipleComponent]
 public sealed class TowelNestActivity : CatActivity
 {
@@ -26,6 +16,13 @@ public sealed class TowelNestActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private Transform jumpSupport;
+    public CatTowelPhase Phase { get; private set; }
+    public Vector3 JumpStart { get; private set; }
+    public Vector3 JumpEnd { get; private set; }
+    public float FlightProgress { get; private set; }
+    public Transform NestPoint => nestPoint;
+    public Transform FloorPoint => floorPoint;
 
     public override string ProgressLabel => IsRunning ? "NAPPING..." : string.Empty;
 
@@ -58,105 +55,90 @@ public sealed class TowelNestActivity : CatActivity
     private IEnumerator NestRoutine()
     {
         Cat.SetMovementLocked(this, true);
-        if (characterController != null)
-            characterController.enabled = false;
-
+        if (characterController != null) characterController.enabled = false;
+        Phase = CatTowelPhase.Approach;
         Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 floor = Flatten(floorPoint.position, start.y);
-        Vector3 nest = nestPoint.position;
+        Vector3 floor = Flatten(floorPoint.position, start.y), nest = nestPoint.position;
+        Quaternion toFloor = LookTowards(floor - start, Cat.transform.rotation);
+        yield return Move(start, floor, Cat.transform.rotation, toFloor, .32f);
+        Quaternion inward = LookTowards(nest - floor, toFloor);
+        yield return Move(floor, floor, Cat.transform.rotation, inward, .25f);
 
-        Quaternion toFloor = LookTowards(floor - start, startRotation);
-        yield return Move(start, floor, startRotation, toFloor, 0.32f);
-
-        Quaternion inward = LookTowards(
-            new Vector3(nest.x - floor.x, 0f, nest.z - floor.z), toFloor);
-        yield return Move(floor, floor, toFloor, inward, 0.18f);
-
-        // Crouch, then arc into the niche: a straight lerp up reads as an
-        // elevator, not a hop.
-        Vector3 crouched = originalScale;
-        crouched.y *= 0.78f;
-        crouched.x *= 1.08f;
-        crouched.z *= 1.08f;
-        yield return Squash(originalScale, crouched, 0.16f);
-        yield return Squash(crouched, originalScale, 0.10f);
-        yield return Hop(floor, nest, inward, 0.44f);
-
-        // Turn around so the cat sleeps facing out of the niche.
-        Quaternion outward = LookTowards(floor - nest, inward);
-        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest, outward);
-        yield return Move(nest, nest, inward, restingFacing, 0.26f);
-
-        Vector3 curled = originalScale;
-        curled.y *= 0.60f;
-        curled.x *= 1.12f;
-        curled.z *= 1.12f;
-        yield return Squash(originalScale, curled, 0.28f);
-
-        float elapsed = 0f;
+        var anchor = new GameObject("Towel jump support") { hideFlags = HideFlags.DontSave };
+        jumpSupport = anchor.transform; jumpSupport.SetParent(transform, true);
+        jumpSupport.SetPositionAndRotation(floor, nestPoint.rotation);
+        anchor.AddComponent<CatActivitySurface>();
+        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest,
+            nestPoint.rotation * Quaternion.Euler(0f, 90f, 0f));
+        yield return Jump(floor, nest, inward, restingFacing, true);
+        yield return PoseSegment(CatTowelPhase.Settling, CatActivityPose.SitDown, 0f, 1f, .65f, nest, restingFacing);
+        yield return PoseSegment(CatTowelPhase.Settling, CatActivityPose.TowelSettle, 0f, 1f, 1.1f, nest, restingFacing);
         PlayCatPose(CatActivityPose.Sleep, nestPoint);
+        Phase = CatTowelPhase.Resting;
         while (KeepResting)
         {
-            elapsed += Time.deltaTime;
-            float breath = Mathf.Sin(elapsed * 3.1f) * 0.035f;
-            Vector3 breathing = curled;
-            breathing.y *= 1f + breath;
-            breathing.x *= 1f - breath * 0.4f;
-            breathing.z *= 1f - breath * 0.4f;
-            Cat.transform.localScale = breathing;
-            Cat.transform.position = nest;
-            Cat.transform.rotation = restingFacing;
+            Cat.transform.SetPositionAndRotation(nest, restingFacing);
+            Cat.transform.localScale = originalScale;
             yield return null;
         }
-
-        yield return Squash(Cat.transform.localScale, originalScale, 0.24f);
-        yield return Hop(nest, floor, outward, 0.40f);
-
+        // Stand up on the same support before preparing the downward jump.
+        yield return PoseSegment(CatTowelPhase.Waking, CatActivityPose.TowelWake, 0f, 1f, .85f, nest, restingFacing);
+        yield return PoseSegment(CatTowelPhase.Waking, CatActivityPose.StandUp, 0f, 1f, .60f, nest, restingFacing);
+        Quaternion outward = LookTowards(floor - nest, restingFacing);
+        yield return Jump(nest, floor, restingFacing, outward, false);
         RestoreCat();
         CompleteActivity("SWEET DREAMS!");
     }
 
-    /// <summary>Arc between two points, peaking above the higher end.</summary>
-    private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
+    private IEnumerator PoseSegment(CatTowelPhase stage, CatActivityPose pose, float first, float last,
+        float seconds, Vector3 position, Quaternion rotation, float firstBlend = 1f, float lastBlend = 1f)
     {
-        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
+        Phase = stage;
+        var animation = Cat.GetComponent<CatActivityAnimation>();
+        float elapsed = 0f;
+        while (elapsed < seconds)
+        {
+            float t = Mathf.Clamp01(elapsed / seconds);
+            Cat.transform.SetPositionAndRotation(position, rotation);
+            jumpSupport.position = position;
+            float sample = Mathf.Lerp(first, last, t);
+            animation.SetTimedPose(pose, pose == CatActivityPose.TowelWake ? 1f - sample : sample, jumpSupport);
+            animation.SetHorizontalSupportBlend(Mathf.SmoothStep(firstBlend, lastBlend, t));
+            yield return null;
+            elapsed += Time.deltaTime;
+        }
+        animation.SetTimedPose(pose, pose == CatActivityPose.TowelWake ? 1f - last : last, jumpSupport);
+        animation.SetHorizontalSupportBlend(lastBlend);
+    }
+
+    private IEnumerator Jump(Vector3 from, Vector3 to, Quaternion startRotation, Quaternion arrival, bool up)
+    {
+        JumpStart = from; JumpEnd = to; FlightProgress = 0f;
+        yield return CatJumpMotion.Play(Cat, from, to, startRotation, arrival, up, .20f,
+            (stage, progress) =>
+            {
+                FlightProgress = progress;
+                Phase = stage == 0 ? (up ? CatTowelPhase.CrouchUp : CatTowelPhase.CrouchDown) :
+                    stage == 1 ? (up ? CatTowelPhase.Rising : CatTowelPhase.Descending) :
+                    (up ? CatTowelPhase.LandOnShelf : CatTowelPhase.LandOnFloor);
+            });
+        jumpSupport.position = to;
     }
 
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
-    }
-
-    private IEnumerator Squash(Vector3 from, Vector3 to, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            Cat.transform.localScale =
-                Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, elapsed / duration));
-            yield return null;
-        }
-
-        Cat.transform.localScale = to;
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
     }
 
     private void RestoreCat()
     {
+        Phase = CatTowelPhase.None;
+        if (jumpSupport != null)
+        {
+            if (Cat != null) Cat.GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.GentleKnead);
+            Destroy(jumpSupport.gameObject); jumpSupport = null;
+        }
         if (Cat == null)
             return;
 

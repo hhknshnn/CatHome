@@ -606,6 +606,8 @@ public sealed class ShopPanelController : MonoBehaviour
             pendingPurchaseProductId,
             currency);
         bool beginPlacement = false;
+        if (result.Status != HomeStorePurchaseStatus.Purchased && result.Status != HomeStorePurchaseStatus.AlreadyOwned &&
+            result.Status != HomeStorePurchaseStatus.RequiredProductMissing) GameAudio.UI(AudioCue.UIError);
         switch (result.Status)
         {
             case HomeStorePurchaseStatus.Purchased:

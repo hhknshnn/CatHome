@@ -30,6 +30,12 @@ public sealed class MealTimeActivity : CatActivity
     private HungerSystem hunger;
     private Vector3 contactStand;
     private List<Vector3> contactApproach;
+    private Quaternion contactHeading;
+    private Vector3 releasePoint;
+    private CatMealHeadMotion headContact;
+    private bool UsesMeasuredMeal => StoreProductId == HomeStoreService.KitchenFeedingStationId;
+    public bool IsEating { get; private set; }
+    public Transform BowlPoint => bowlPoint;
 
     public override string ProgressLabel => !IsRunning ? string.Empty : InspectingOnly ?
         (GameLanguageService.Current == GameLanguage.Turkish ? "Merakla kokluyor" : "Having a sniff") : "EATING...";
@@ -66,8 +72,71 @@ public sealed class MealTimeActivity : CatActivity
     {
         if (!FindContactStand(Cat.transform.position)) return false;
         characterController = Cat.GetComponent<CharacterController>();
-        StartCoroutine(MealRoutine());
+        StartCoroutine(UsesMeasuredMeal ? MeasuredMealRoutine() : MealRoutine());
         return true;
+    }
+
+    private IEnumerator MeasuredMealRoutine()
+    {
+        Cat.SetMovementLocked(this, true);
+        if (characterController != null) characterController.enabled = false;
+        foreach (Vector3 point in contactApproach)
+            yield return CatActivityMotion.WalkAuthoredStep(Cat, point, contactHeading, .15f);
+        Cat.transform.SetPositionAndRotation(contactStand, contactHeading);
+        PlayCatPose(InspectingOnly ? CatActivityPose.Sniff : CatActivityPose.Eat);
+        IsEating = !InspectingOnly;
+        if (IsEating)
+        {
+            headContact = Cat.GetComponent<CatMealHeadMotion>() ?? Cat.gameObject.AddComponent<CatMealHeadMotion>();
+            if (!headContact.Begin(this, bowlPoint)) { CancelForTransition(); yield break; }
+        }
+        float elapsed = 0f;
+        while (elapsed < MealDuration)
+        {
+            Cat.transform.SetPositionAndRotation(contactStand, contactHeading);
+            if (IsEating) headContact.Sample(this, Mathf.Clamp01(elapsed / .25f));
+            yield return null; elapsed += Time.deltaTime;
+        }
+        bool reached = InspectingOnly || (headContact != null && headContact.MinimumDistance <= .045f);
+        IsEating = false; if (headContact != null) headContact.Stop(this);
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, releasePoint, contactHeading, .22f);
+        RestoreCat();
+        if (!reached) { CancelForTransition(); yield break; }
+        if (hunger != null && !InspectingOnly) hunger.Feed(HungerRestore);
+        CompleteActivity("YUM!");
+    }
+
+    private bool FindMeasuredStand(Vector3 origin)
+    {
+        var tag = Cat.GetComponentInChildren<CatBreedVisualTag>();
+        var profile = CatFeedingAlignmentCatalog.Load()?.Find(tag != null ? tag.BreedId : CatBreedService.SelectedBreedId);
+        if (profile == null) return false;
+        origin.y = 0; Vector3 outward = origin - bowlPoint.position; outward.y = 0;
+        if (outward.sqrMagnitude < .001f) outward = -transform.forward;
+        outward.Normalize();
+        Vector3 offset = profile.mouthOffset * (Cat.transform.lossyScale.y / .5f); offset.y = 0;
+        // Leave the paws outside the raised front of the station. The neck
+        // reaches its real food point while the body stays on the floor.
+        offset.z += .005f * (Cat.transform.lossyScale.y / .5f);
+        for (int i = 0; i < 24; i++)
+        {
+            int step = (i + 1) / 2 * (i % 2 == 0 ? -1 : 1);
+            Vector3 side = Quaternion.Euler(0, step * 15f, 0) * outward;
+            Quaternion heading = Quaternion.LookRotation(-side);
+            Vector3 stand = bowlPoint.position - heading * offset; stand.y = 0;
+            if (CatActivityFacing.FacingDot(-side, stand, CatActivityFacing.CameraPosition(Cat)) < CatActivityFacing.PreferredViewDot ||
+                !CatActivityMotion.IsFloorClear(stand, .12f)) continue;
+            for (float back = .12f; back <= .60f; back += .08f)
+            {
+                Vector3 release = stand + side * back;
+                if (!CatActivityMotion.IsControllerFloorClear(Cat, release) ||
+                    !CatActivityMotion.ClearSegment(release, stand, .12f) ||
+                    !CatActivityMotion.TryFloorPath(Cat, origin, release, out var path)) continue;
+                path.Add(stand); contactApproach = path; contactStand = stand;
+                releasePoint = release; contactHeading = heading; return true;
+            }
+        }
+        return false;
     }
 
     private IEnumerator MealRoutine()
@@ -126,6 +195,7 @@ public sealed class MealTimeActivity : CatActivity
 
     private bool FindContactStand(Vector3 origin)
     {
+        if (UsesMeasuredMeal) return FindMeasuredStand(origin);
         Vector3 authored = Flatten(standPoint.position, Cat.transform.position.y);
         origin.y = authored.y;
         return CatActivityFacing.TryFindContactStand(Cat, bowlPoint.position, authored, origin,
@@ -154,6 +224,7 @@ public sealed class MealTimeActivity : CatActivity
 
     private void RestoreCat()
     {
+        IsEating = false; if (headContact != null) headContact.Stop(this);
         if (Cat == null)
             return;
 

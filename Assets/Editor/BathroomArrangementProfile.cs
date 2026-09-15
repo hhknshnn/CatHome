@@ -13,9 +13,9 @@ public static class BathroomArrangementProfile
         { "bathroom.grooming-cart", new Vector4(-.75f, 0, 2.20f, 0) },
         { "bathroom.towel-storage", new Vector4(2.45f, 0, 2.375f, 0) },
         { "bathroom.tub", new Vector4(2.85f, 0, .35f, 270) },
-        { "bathroom.toilet", new Vector4(2.50f, 0, -1.45f, 180) },
-        { "bathroom.laundry-hamper", new Vector4(-1.35f, 0, -.70f, 0) },
-        { "bathroom.litter-box", new Vector4(-2.80f, 0, -1.35f, 0) },
+        { "bathroom.toilet", new Vector4(3.29118f, 0, -1.30f, 270) },
+        { "bathroom.laundry-hamper", new Vector4(-1.525f, 0, 2.27108f, 0) },
+        { "bathroom.litter-box", new Vector4(-3.17891f, 0, -1.35f, 270) },
         { "bathroom.bath-mat", new Vector4(0, 0, .25f, 0) }
     };
 
@@ -23,5 +23,21 @@ public static class BathroomArrangementProfile
         IReadOnlyList<Vector3> views, IReadOnlyList<Bounds> features, IReadOnlyList<Bounds> obstacles)
     {
         return HomeRoomLayoutPlanner.PlanAuthored(items, Poses, views, features, obstacles);
+    }
+
+    // These two backs are measured against the side-wall panels at X +/-3.6615.
+    public static float SideLimit(string id) => id == "bathroom.litter-box" || id == "bathroom.toilet" ? 3.72f : 3.65f;
+
+    // Adjacent cabinets form one furniture bay; their accessible fronts stay open.
+    public static float FurnitureGap(string a, string b)
+    {
+        string neighbor = a == "bathroom.laundry-hamper" ? b : b == "bathroom.laundry-hamper" ? a : null;
+        if (neighbor == "bathroom.grooming-cart") return .03f;
+        if (neighbor == "bathroom.shower") return .01f;
+        if ((a == "bathroom.litter-box" && b == "bathroom.vanity-sink") ||
+            (b == "bathroom.litter-box" && a == "bathroom.vanity-sink")) return .27f;
+        if ((a == "bathroom.toilet" && b == "bathroom.tub") ||
+            (b == "bathroom.toilet" && a == "bathroom.tub")) return .30f;
+        return HomeRoomLayoutPlanner.ItemGap;
     }
 }

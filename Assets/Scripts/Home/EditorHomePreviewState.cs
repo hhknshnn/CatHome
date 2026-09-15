@@ -43,7 +43,7 @@ public sealed class EditorHomePreviewState : MonoBehaviour
     }
     void LateUpdate()
     {
-        if(Application.isPlaying)return;
+        if(Application.isPlaying){Restore();gameObject.SetActive(false);return;}
         RefreshProjection();
         if(dock==null||safe==null)return;
         float scale=Mathf.Min(1f,(safe.rect.width-32f)/1080f);

@@ -104,8 +104,6 @@ public sealed class BedroomActivityTests
             (CatActivityKind.KnockOff, HomeStoreService.BedroomNightstandId),
             (CatActivityKind.VanityStoolNap, HomeStoreService.BedroomVanityStoolId),
             (CatActivityKind.YarnSwat, HomeStoreService.BedroomYarnBasketId),
-            (CatActivityKind.NightLightGaze, HomeStoreService.BedroomNightLightId),
-            (CatActivityKind.ArtGaze, HomeStoreService.BedroomDreamArtId),
             (CatActivityKind.BedroomMatKnead, HomeStoreService.BedroomPawRugId),
             (CatActivityKind.CanopyNap, HomeStoreService.BedroomStarCanopyId),
         };

@@ -71,8 +71,8 @@ public static class CatActivityFacing
 
     /// <summary>Keep the authored muzzle/paw radius while finding a clear, camera-readable contact side.</summary>
     public static bool TryFindContactStand(CatMovement cat, Vector3 target, Vector3 authored, Vector3 origin,
-        out Vector3 stand, out List<Vector3> path, CatActivity sightOwner = null)
-        => TryFindStand(cat, target, authored, origin, false, out stand, out path, sightOwner);
+        out Vector3 stand, out List<Vector3> path, CatActivity sightOwner = null, bool requireTurningClearance = false)
+        => TryFindStand(cat, target, authored, origin, false, out stand, out path, sightOwner, requireTurningClearance);
 
     public static bool TryFindViewStand(CatMovement cat, Vector3 target, Vector3 authored, out Vector3 stand)
         => TryFindViewStand(cat, target, authored, authored, out stand, out _);
@@ -95,9 +95,10 @@ public static class CatActivityFacing
     }
 
     static bool TryFindStand(CatMovement cat, Vector3 target, Vector3 authored, Vector3 origin,
-        bool freeGaze, out Vector3 stand, out List<Vector3> path, CatActivity sightOwner)
+        bool freeGaze, out Vector3 stand, out List<Vector3> path, CatActivity sightOwner, bool requireTurningClearance = false)
     {
         stand = authored; path = null;
+        bool fullClearance = freeGaze || requireTurningClearance;
         Vector3 offset = authored - target; offset.y = 0f;
         if (offset.sqrMagnitude < .0001f) return false;
         Vector3 camera = CameraPosition(cat);
@@ -113,19 +114,19 @@ public static class CatActivityFacing
             float direct = Vector3.Distance(origin, candidate);
             bool readable = freeGaze ? TryResolveViewFacing(cat,candidate,target,out _) :
                 FacingDot(target-candidate,candidate,camera) >= PreferredViewDot;
-            bool floorClear = freeGaze ? CatActivityMotion.IsControllerFloorClear(cat,candidate) : CatActivityMotion.IsFloorClear(candidate);
+            bool floorClear = fullClearance ? CatActivityMotion.IsControllerFloorClear(cat,candidate) : CatActivityMotion.IsFloorClear(candidate);
             List<Vector3> route;
             if (direct > 2.2f || direct >= best ||
                 !readable || !floorClear ||
                 (sightOwner != null && !CatActivityApproach.HasClearSight(sightOwner, cat, candidate + Vector3.up * .4f, target))) continue;
-            if (!(freeGaze ? CatActivityMotion.TryFloorPath(cat,origin,candidate,out route) :
+            if (!(fullClearance ? CatActivityMotion.TryFloorPath(cat,origin,candidate,out route) :
                 CatActivityMotion.TryFloorPath(origin,candidate,out route))) continue;
             float length = 0f; Vector3 previous = origin;
             bool clear = true;
             foreach (Vector3 rawPoint in route)
             {
                 Vector3 point = rawPoint; point.y = origin.y;
-                if (!CatActivityMotion.ClearSegment(previous, point,freeGaze ? CatActivityMotion.ControllerFloorRadius(cat) : .27f)) { clear = false; break; }
+                if (!CatActivityMotion.ClearSegment(previous, point,fullClearance ? CatActivityMotion.ControllerFloorRadius(cat) : .27f)) { clear = false; break; }
                 length += Vector3.Distance(previous, point); previous = point;
             }
             if (!clear) continue;

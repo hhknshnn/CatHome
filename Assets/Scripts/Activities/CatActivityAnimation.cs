@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum CatActivityPose { Walk, Sit, Sleep, Eat, Drink, Paw, Scratch, Hop, Crawl, Groom, Stalk, Pounce, Sniff, BatLeft, BatRight, Push, Tug, Stretch, Loaf, Meow, StandUp, SitDown, GentleKnead }
+public enum CatActivityPose { Walk, Sit, Sleep, Eat, Drink, Paw, Scratch, Hop, Crawl, Groom, Stalk, Pounce, Sniff, BatLeft, BatRight, Push, Tug, Stretch, Loaf, Meow, StandUp, SitDown, GentleKnead, TowelJumpUp, TowelJumpDown, TowelSettle, TowelWake }
 
 /// <summary>
 /// One animation owner for a scripted furniture routine. The shared controller
@@ -30,10 +30,20 @@ public sealed class CatActivityAnimation : MonoBehaviour
     private CatMovement movement;
     private bool scriptedPhase;
     private float phase;
+    private float walkMetresPerSecond = -1f;
+    private CatHomeLocomotionCatalog locomotion;
+    private float horizontalSupportBlend = 1f;
+    private bool nativeJump;
+    private Vector3 jumpStartOffset, jumpEndOffset;
+    private float jumpOffsetBlend;
+    private bool ownsAnimatorSpeed;
+    private float previousAnimatorSpeed;
 
     public bool IsActive => owner != null && owner.IsRunning;
     public CatActivityPose CurrentPose => pose;
     public Transform ContactSurface => support;
+    public bool IsNativeJump => IsActive && nativeJump;
+    public float NativeJumpPhase => phase;
 
     public void Begin(CatActivity activity)
     {
@@ -46,7 +56,10 @@ public sealed class CatActivityAnimation : MonoBehaviour
 
     public void SetPose(CatActivityPose value, Transform contactSurface = null)
     {
+        nativeJump = false;
         scriptedPhase = false;
+        horizontalSupportBlend = 1f;
+        walkMetresPerSecond = -1f;
         var area = contactSurface != null ? contactSurface.GetComponent<CatActivitySurface>() : null;
         if (area != null) value = area.ResolvePose(value);
         needsState |= pose != value || stateHash == 0;
@@ -59,15 +72,63 @@ public sealed class CatActivityAnimation : MonoBehaviour
         SetPose(value,contactSurface); scriptedPhase=true; phase=Mathf.Clamp01(normalizedTime);
     }
 
+    public void SetWalkSpeed(float metresPerSecond, Transform contactSurface)
+    {
+        SetPose(CatActivityPose.Walk, contactSurface);
+        walkMetresPerSecond = Mathf.Max(0f, metresPerSecond);
+    }
+
+    public void SetHorizontalSupportBlend(float blend) => horizontalSupportBlend = Mathf.Clamp01(blend);
+
+    // A jump has one translation owner. Keep planted paws at their authored
+    // horizontal position; transfer seat centering only while airborne.
+    public void BeginNativeJump(bool landOnSupport)
+    {
+        GetComponent<CatSurfaceTurnMotion>()?.Clear();
+        ResolveVisual();
+        if (animator == null || visual == null || skin == null) return;
+        jumpStartOffset = transform.InverseTransformVector(visual.position - visual.parent.TransformPoint(visualPosition));
+        jumpStartOffset.y = 0f;
+        RestoreVisual();
+        animator.Play("Base Layer.NativeJump", 0, 0f);
+        animator.Update(0f);
+        if (sampledMesh == null) sampledMesh = new Mesh { name = "Cat contact sample" };
+        skin.BakeMesh(sampledMesh, true); sampledMesh.GetVertices(vertices);
+        Bounds bounds = new Bounds(); bool first = true;
+        foreach (int i in bodyVertices)
+        {
+            Vector3 point = transform.InverseTransformPoint(skin.transform.TransformPoint(vertices[i]));
+            if (first) { bounds = new Bounds(point, Vector3.zero); first = false; }
+            else bounds.Encapsulate(point);
+        }
+        jumpEndOffset = landOnSupport && !first ? new Vector3(-bounds.center.x, 0f, -bounds.center.z) : Vector3.zero;
+    }
+
+    public void SetNativeJumpSample(CatActivityPose value, float normalizedTime, float airborneBlend, bool linearOffset = false)
+    {
+        SetTimedPose(value, normalizedTime);
+        nativeJump = true;
+        jumpOffsetBlend = linearOffset ? Mathf.Clamp01(airborneBlend) : Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(airborneBlend));
+    }
+
+    private void RestoreAnimatorSpeed()
+    {
+        if (ownsAnimatorSpeed && animator != null) animator.speed = previousAnimatorSpeed;
+        ownsAnimatorSpeed = false;
+    }
+
     private void Update()
     {
         if (!IsActive || movement == null || !movement.IsMovementPhysicallyLocked) return;
         ResolveVisual();
         if (animator == null || !animator.isActiveAndEnabled) return;
+        if (!scriptedPhase) RestoreAnimatorSpeed();
         string state = StateFor(pose);
         int hash = Animator.StringToHash("Base Layer." + state);
         if (scriptedPhase && animator.HasState(0, hash))
         {
+            if (!ownsAnimatorSpeed) { previousAnimatorSpeed = animator.speed; ownsAnimatorSpeed = true; }
+            animator.speed = 0f;
             animator.Play(hash, 0, phase); stateHash=hash; needsState=false;
         }
         else if (needsState && animator.HasState(0, hash))
@@ -78,6 +139,15 @@ public sealed class CatActivityAnimation : MonoBehaviour
         }
         // Runs after CatMovement, which correctly clears locomotion input while locked.
         animator.SetFloat("Speed", pose == CatActivityPose.Walk ? .5f : 0f);
+        if (pose == CatActivityPose.Walk && walkMetresPerSecond >= 0f)
+        {
+            if (locomotion == null) locomotion = Resources.Load<CatHomeLocomotionCatalog>(CatHomeLocomotionCatalog.ResourceName);
+            var tag = animator.GetComponentInParent<CatBreedVisualTag>();
+            var entry = locomotion != null ? locomotion.Find(tag != null ? tag.BreedId : CatBreedCatalog.DefaultBreedId) : null;
+            float blend = CatHomeLocomotionCatalog.RunBlendForSpeed(walkMetresPerSecond);
+            animator.SetFloat("Speed", Mathf.Lerp(.5f, 1f, blend));
+            animator.SetFloat("LocomotionRate", entry != null ? entry.PlaybackRate(walkMetresPerSecond, blend, transform.lossyScale.x) : 1f);
+        }
     }
 
     private void LateUpdate()
@@ -87,6 +157,15 @@ public sealed class CatActivityAnimation : MonoBehaviour
         // while the actual skeleton animates, including on larger/smaller breeds.
         transform.localScale = rootScale;
         if (visual == null || skin == null) return;
+        // Coroutines set this frame's trajectory after Update. Evaluate that
+        // exact pose here, before contact correction, without an extra frame.
+        if (scriptedPhase && animator.isActiveAndEnabled)
+        {
+            if (!ownsAnimatorSpeed) { previousAnimatorSpeed = animator.speed; ownsAnimatorSpeed = true; }
+            animator.speed = 0f;
+            animator.Play(Animator.StringToHash("Base Layer." + StateFor(pose)), 0, phase);
+            animator.Update(0f);
+        }
         visual.localPosition = visualPosition;
         visual.localScale = visualScale;
         visual.localRotation = visualRotation;
@@ -120,10 +199,15 @@ public sealed class CatActivityAnimation : MonoBehaviour
         // Contact areas are measured on the BUILT prefab, never inferred from its box.
         // Keep the breed's natural scale. Tail tips can hang below a seat and
         // must not lift the paws off it or drag the body centre backwards.
-        if (area != null)
+        if (nativeJump)
         {
-            Vector3 correction = new Vector3(-bounds.center.x,
-                -bounds.min.y + .008f, -bounds.center.z);
+            visual.position += transform.TransformVector(Vector3.Lerp(jumpStartOffset, jumpEndOffset, jumpOffsetBlend));
+            visual.position += Vector3.up * (-bounds.min.y + .008f);
+        }
+        else if (area != null)
+        {
+            Vector3 correction = new Vector3(-bounds.center.x * horizontalSupportBlend,
+                -bounds.min.y + .008f, -bounds.center.z * horizontalSupportBlend);
             visual.position += support.TransformVector(correction);
         }
         else
@@ -160,6 +244,8 @@ public sealed class CatActivityAnimation : MonoBehaviour
 
     public void End()
     {
+        GetComponent<CatSurfaceTurnMotion>()?.Clear();
+        RestoreAnimatorSpeed();
         if (owner != null)
         {
             transform.localScale = rootScale;
@@ -193,7 +279,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
             case CatActivityPose.Drink: return "Drink";
             case CatActivityPose.Paw: return "ActivityPawSwat";
             case CatActivityPose.Scratch: return "ToyScratch";
-            case CatActivityPose.Hop: return "ToyPounce";
+            case CatActivityPose.Hop: return "NativeJump";
             case CatActivityPose.Crawl: return "ActivityTunnelCrawl";
             case CatActivityPose.Groom: return "ActivityScratch";
             case CatActivityPose.Stalk: return "ToyStalk";
@@ -208,6 +294,10 @@ public sealed class CatActivityAnimation : MonoBehaviour
             case CatActivityPose.Meow: return "CompanionMeow";
             case CatActivityPose.StandUp: return "CompanionStandUp";
             case CatActivityPose.SitDown: return "CompanionSitDown";
+            case CatActivityPose.TowelJumpUp: return "NativeJump";
+            case CatActivityPose.TowelJumpDown: return "NativeJump";
+            case CatActivityPose.TowelSettle: return "TowelSettle";
+            case CatActivityPose.TowelWake: return "TowelWake";
             default: return "Idle";
         }
     }

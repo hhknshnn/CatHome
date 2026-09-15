@@ -32,13 +32,23 @@ public static class RoomProductInteractionBuilder
         try
         {
             HomeRoomArrangementBuilder.ApplyProductScale(root, definition);
+            if (definition.ProductId == HomeStoreService.BathroomMirrorId || KitchenBedroomArrangementProfile.IsDecoration(definition.ProductId) || OutdoorArrangementProfile.IsDecoration(definition.ProductId))
+                foreach (var retired in root.GetComponentsInChildren<CatActivity>(true))
+                    UnityEngine.Object.DestroyImmediate(retired);
             ConfigureLivingRoomActivity(root,definition);
+            KitchenScatterBuilder.Configure(root,definition);
+            if (definition.ProductId == HomeStoreService.BedroomYarnBasketId)
+                BedroomPlayRestBuilder.ConfigureYarn(root, root.transform.Find("VisualContent").gameObject);
+            if (definition.ProductId == HomeStoreService.BedroomWindowDaybedId)
+            {
+                BedroomPlayRestBuilder.ConfigureDaybed(root, root.transform.Find("VisualContent").gameObject);
+            }
             if(root.GetComponent<RoomProductFeedback>()==null)root.AddComponent<RoomProductFeedback>();
             BathroomActionPartsBuilder.Configure(root);
             ConfigurePhysicalGeometry(root,definition);ConfigureMeasuredPoints(root,definition);
             SinkSipFacingBuilder.Configure(root, definition);
             SitLookFacingBuilder.Configure(root, definition);
-            ConfigureContactSurfaces(root,definition,report);ConfigureEntry(root);
+            ConfigureContactSurfaces(root,definition,report);OutdoorPolishBuilder.ConfigureProduct(root,definition);ConfigureEntry(root);
             PrefabUtility.SaveAsPrefabAsset(root,path);
         }
         finally{PrefabUtility.UnloadPrefabContents(root);}
@@ -134,12 +144,11 @@ public static class RoomProductInteractionBuilder
                 SetPoint(root, "interactionAnchor", LivingRoomGazeLayoutBuilder.TallPlantEntryLocal);
                 break;
             case "BathroomWallMirror":
-                // Stand beside the grooming cart below the mirror, leaving its own entrance distinct.
-                SetPoint(root, "interactionAnchor", new Vector3(-.78f, 0, -.85f));
-                var gaze = root.GetComponent<SitLookActivity>();
-                var gazeData = new SerializedObject(gaze);
-                gazeData.FindProperty("reactionKind").enumValueIndex = (int)SitLookReaction.Sit;
-                gazeData.ApplyModifiedPropertiesWithoutUndo();
+                // Decoration: no cat action or approach point is configured.
+                break;
+            case "BathroomToilet":
+                // BathroomActionPartsBuilder keeps the real holder, paw stand
+                // and open front entrance together after the wall rotation.
                 break;
             case "BathroomShower":
                 var outlet = root.transform.Find("RinseWaterOutlet");
@@ -156,13 +165,45 @@ public static class RoomProductInteractionBuilder
                 break;
             case "ClassicArmchair": SetPoint(root,"perchPoint",new Vector3(0,.34f,-.06f));break;
             case "KitchenSinkCabinet": SetPoint(root, "perchPoint", new Vector3(-.47f, .811f, -.10f)); break;
+            case "BedroomQueenBed": SetPoint(root, "perchPoint", new Vector3(-.4787234f, .57888f, .0531915f)); break;
+            case "BedroomNightstand":
+                var point = Point(root, "KnockPerchPoint", new Vector3(-.03f, .55f, 0f));
+                root.GetComponent<KnockOffActivity>().EditorConfigurePerch(point);
+                break;
+            case "BedroomStarCanopy": SetPoint(root, "nestPoint", new Vector3(0f, .195f, -.10f)); break;
+            case "KitchenIsland":
+                SetPoint(root, "floorPoint", new Vector3(-.30f, 0f, -.92f));
+                SetPoint(root, "perchPoint", new Vector3(-.70f,.8256f,-.11f));
+                break;
+            case "KitchenFeedingStation":
+                SetPoint(root, "standPoint", new Vector3(-.50f, 0, .60f));
+                // Vertex on the actual front kibble, measured from the premium
+                // Cream submesh; the .82 room scale is applied exactly once.
+                SetPoint(root, "bowlPoint", new Vector3(.22252827f, .23703012f, .0704091f));
+                var meal = root.GetComponent<MealTimeActivity>();
+                var mealData = new SerializedObject(meal);
+                meal.EditorConfigureMeal(mealData.FindProperty("standPoint").objectReferenceValue as Transform,
+                    meal.BowlPoint, 4.3f, 40f, 96f);
+                break;
+            case "KitchenRefrigerator":
+                var fridge = root.GetComponent<SitLookActivity>();
+                fridge.EditorConfigureLook(fridge.LookPoint, SitLookReaction.Sit, 2.8f, "OPEN IT!");
+                break;
+            case "KitchenDishCart":
+                SetPoint(root, "shovePoint", new Vector3(.50f, 0f, -.60f));
+                SetPoint(root, "interactionAnchor", new Vector3(.50f, 0f, -.60f));
+                var cart = root.GetComponent<CartNudgeActivity>();
+                var cartData = new SerializedObject(cart);
+                cart.EditorConfigureNudge(cartData.FindProperty("shovePoint").objectReferenceValue as Transform,
+                    cart.CartVisual, Vector3.left, .24f, 2);
+                break;
             case "BathroomTowelStorage": SetPoint(root, "nestPoint", new Vector3(0f, 1.7472f, 0f)); break;
             case "KitchenPantryShelf":
                 SetPoint(root, "upperShelfPoint", new Vector3(0f, 1.7696f, 0f));
                 root.GetComponent<PantryClimbActivity>().EditorConfigureDirectClimb(true);
                 break;
             case "BalconyHerbShelf":
-                SetPoint(root, "upperShelfPoint", new Vector3(0f, 1.27f, -.035f));
+                SetPoint(root, "upperShelfPoint", new Vector3(0f, 1.27f, .05388889f));
                 root.GetComponent<PantryClimbActivity>().EditorConfigureDirectClimb(true);
                 break;
             case "LoftTallBookcase":
@@ -233,6 +274,7 @@ public static class RoomProductInteractionBuilder
         var triangles = ReadTriangles(root);
         foreach (var activity in root.GetComponentsInChildren<CatActivity>(true))
         {
+            if(activity is SurfaceScatterActivity)continue; // Supported by its required counter, not the basket mesh.
             var serialized = new SerializedObject(activity);
             foreach (string name in new[] { "seatPoint", "perchPoint", "nestPoint", "pilePoint",
                          "upperShelfPoint", "lowerShelfPoint", "padPoint", "digPoint" })
@@ -261,8 +303,11 @@ public static class RoomProductInteractionBuilder
                 }
                 var surface = point.GetComponent<CatActivitySurface>() ?? point.gameObject.AddComponent<CatActivitySurface>();
                 surface.EditorConfigure(new Vector2(halfX * step * 2f, halfZ * step * 2f));
-                if (definition.PrefabName == "KitchenCounterStool" || definition.PrefabName == "BedroomVanityStool" ||
-                    definition.PrefabName == "BalconyHerbShelf")
+                if (definition.PrefabName == "BalconyHerbShelf")
+                    surface.EditorConfigurePose(CatActivityPose.GentleKnead, false);
+                else if (definition.PrefabName == "BedroomStarCanopy")
+                    surface.EditorConfigurePose(CatActivityPose.Sleep, false);
+                else if (definition.PrefabName == "KitchenCounterStool" || definition.PrefabName == "BedroomVanityStool")
                     surface.EditorConfigurePose(CatActivityPose.Sit, false);
                 else if (name == "upperShelfPoint" || definition.PrefabName == "GardenHammock" ||
                     definition.PrefabName == "BathroomTowelStorage")

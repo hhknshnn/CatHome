@@ -8,20 +8,32 @@ using UnityEngine.TestTools;
 /// <summary>All 80 purchased products, with the complete room present, on all ten breeds.</summary>
 public sealed class RoomFurnitureBreedMatrixTests
 {
+    private float savedCapture,savedTime;
+    private static string Output => UnityEditor.SessionState.GetString("CatHome.QA.ResultDirectory","Temp/FixedRoomAudit")+"/breed-matrix";
+    private static bool Decoration(string id) => id==HomeStoreService.GardenGrillId||id==HomeStoreService.BalconySunAwningId || id==HomeStoreService.PatioStringLightsId||id==HomeStoreService.BathroomMirrorId||
+        id==HomeStoreService.BedroomNightLightId||id==HomeStoreService.BedroomDreamArtId||
+        id==HomeStoreService.StereoId||id==HomeStoreService.GameConsoleId||id==HomeStoreService.TvUnitId;
     private string originalBreed;
     private HomeStoreSaveState originalStore;
     private readonly List<string> failures = new List<string>();
+    private CatActivity tracked;
+    private int completionEvents;
+    private void OnCompleted(CatActivity activity) { if(activity==tracked) completionEvents++; }
 
     [SetUp] public void SetUp()
     {
+        Assert.That(EditorQaSession.IsActive,Is.True);
+        savedCapture=Time.captureDeltaTime;savedTime=Time.timeScale;Time.timeScale=1;Time.captureFramerate=30;
         originalBreed = CatBreedService.SelectedBreedId;
         originalStore = HomeStoreService.CaptureState();
         failures.Clear();
+        tracked=null;completionEvents=0;CatActivity.Completed+=OnCompleted;
     }
 
     [TearDown] public void TearDown()
     {
-        Time.timeScale = 1f;
+        CatActivity.Completed-=OnCompleted;tracked=null;
+        Time.timeScale = savedTime;Time.captureDeltaTime=savedCapture;
         if (CatActivity.Active != null) CatActivity.Active.enabled = false;
         RoomPlayModeSupport.ReleaseRoom();
         CatBreedService.Select(originalBreed);
@@ -32,10 +44,10 @@ public sealed class RoomFurnitureBreedMatrixTests
     [UnityTest] public IEnumerator Bathroom_AllBreeds() => RunRoom("Bathroom_Level01", HomeRoomService.BathroomId);
     [UnityTest] public IEnumerator Kitchen_AllBreeds() => RunRoom("Kitchen_Level01", HomeRoomService.KitchenId);
     [UnityTest] public IEnumerator Bedroom_AllBreeds() => RunRoom("Bedroom_Level01", HomeRoomService.BedroomId);
-    [UnityTest] public IEnumerator Garden_AllBreeds() => RunRoom("Garden_Level01", HomeRoomService.GardenId);
-    [UnityTest] public IEnumerator Balcony_AllBreeds() => RunRoom("Balcony_Level01", HomeRoomService.BalconyId);
-    [UnityTest] public IEnumerator Patio_AllBreeds() => RunRoom("Patio_Level01", HomeRoomService.PatioId);
-    [UnityTest] public IEnumerator SecondFloor_AllBreeds() => RunRoom("SecondFloor_Level01", HomeRoomService.SecondFloorId);
+    [UnityTest,Timeout(600000)] public IEnumerator Garden_AllBreeds() => RunRoom("Garden_Level01", HomeRoomService.GardenId);
+    [UnityTest,Timeout(600000)] public IEnumerator Balcony_AllBreeds() => RunRoom("Balcony_Level01", HomeRoomService.BalconyId);
+    [UnityTest,Timeout(600000)] public IEnumerator Patio_AllBreeds() => RunRoom("Patio_Level01", HomeRoomService.PatioId);
+    [UnityTest,Timeout(600000)] public IEnumerator SecondFloor_AllBreeds() => RunRoom("SecondFloor_Level01", HomeRoomService.SecondFloorId);
 
     [UnityTest]
     public IEnumerator SwapDuringSwing_AndCancel_RestoresContactAndControls()
@@ -81,11 +93,14 @@ public sealed class RoomFurnitureBreedMatrixTests
         foreach (var display in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (!HomeStoreService.IsProductInRoomCollection(roomId, display.ProductId)) continue;
+            owned.Add(display.ProductId);
             var activity = display.GetComponent<CatActivity>();
+            if(Decoration(display.ProductId)){Assert.That(activity,Is.Null,display.ProductId);continue;}
             Assert.That(activity, Is.Not.Null, display.ProductId + " must have its own routine.");
-            products.Add(activity); owned.Add(display.ProductId);
+            products.Add(activity);
         }
-        Assert.That(products.Count, Is.EqualTo(10), roomId);
+        Assert.That(owned.Count, Is.EqualTo(10), roomId);
+        Assert.That(products.Count,Is.EqualTo(owned.FindAll(id=>!Decoration(id)).Count),roomId);
         var state = HomeStoreSaveState.CreateDefault();
         state.ownedProductIds = owned.ToArray();
         HomeStoreService.ApplySavedState(state);
@@ -98,8 +113,8 @@ public sealed class RoomFurnitureBreedMatrixTests
         Vector3 spawn = cat.transform.position;
         var breeds = CatBreedCatalog.Load();
         Assert.That(breeds.Count, Is.EqualTo(10));
-        Directory.CreateDirectory("Temp/FixedRoomAudit/Matrix");
-        var report = new System.Text.StringBuilder("product,breed,started,finished,poses,boneMotion,exitClear\n");
+        Directory.CreateDirectory(Output);
+        var report = new System.Text.StringBuilder("product,breed,started,finished,poses,boneMotion,exitClear,completionEvents\n");
         for (int breed = 0; breed < breeds.Count; breed++)
         {
             string breedId = breeds.Get(breed).Id;
@@ -129,9 +144,10 @@ public sealed class RoomFurnitureBreedMatrixTests
                 controller.enabled = true;
                 Physics.SyncTransforms();
                 string label = roomId + "/" + activity.Kind + "/" + breedId;
+                tracked=activity;completionEvents=0;
                 bool started = activity.TryStart(cat);
                 if (!started) { failures.Add(label + " refused start"); continue; }
-                Time.timeScale = 12f;
+                Time.timeScale = 1f;
                 float deadline = Time.realtimeSinceStartup + 12f;
                 var poses = new HashSet<CatActivityPose>();
                 bool productResponded = false;
@@ -166,7 +182,7 @@ public sealed class RoomFurnitureBreedMatrixTests
                             contactChecked = true;
                         }
                     }
-                    if (!captured && breedId.Contains("maine") && poseTime > .5f &&
+                    if (!captured && breedId.Contains("maine") && !animation.IsNativeJump && poseTime > .5f &&
                         lastPose != CatActivityPose.Walk && lastPose != CatActivityPose.Hop)
                     {
                         yield return new WaitForEndOfFrame();
@@ -175,9 +191,10 @@ public sealed class RoomFurnitureBreedMatrixTests
                     }
                 }
                 bool finished = !activity.IsRunning;
+                if(completionEvents!=1)failures.Add(label+" did not finish exactly once: "+completionEvents);
                 if (!finished) { failures.Add(label + " timed out"); activity.enabled = false; activity.enabled = true; }
                 yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
-                bool exitClear = CatActivityMotion.IsFloorClear(cat.transform.position, .24f);
+                bool exitClear = CatActivityMotion.IsControllerFloorClear(cat,cat.transform.position);
                 if (!productResponded) failures.Add(label + " product did not respond visually");
                 if (!exitClear) failures.Add(label + " ended inside a collider at " + cat.transform.position.ToString("F3"));
                 if (!CatActivityMotion.TryFloorPath(cat.transform.position, spawn, out _)) failures.Add(label + " ended in an isolated floor pocket");
@@ -185,11 +202,11 @@ public sealed class RoomFurnitureBreedMatrixTests
                 if (cat.transform.parent != parent || cat.transform.localScale != scale) failures.Add(label + " changed hierarchy/scale");
                 if (poses.Count < 2 || boneMotion < .01f) failures.Add(label + " did not animate a furniture pose");
                 report.AppendLine(activity.StoreProductId + "," + breedId + "," + started + "," + finished + "," +
-                    string.Join("|", poses) + "," + boneMotion.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + "," + exitClear);
+                    string.Join("|", poses) + "," + boneMotion.ToString("F3", System.Globalization.CultureInfo.InvariantCulture) + "," + exitClear + "," + completionEvents);
             }
         }
         Time.timeScale = 1f;
-        File.WriteAllText("Temp/FixedRoomAudit/Matrix/" + roomId + ".csv", report.ToString());
+        File.WriteAllText(Output+"/" + roomId + ".csv", report.ToString());
         Assert.That(failures, Is.Empty, string.Join("\n", failures));
     }
 
@@ -248,9 +265,9 @@ public sealed class RoomFurnitureBreedMatrixTests
         {
             camera.targetTexture = target; camera.Render(); RenderTexture.active = target;
             texture.ReadPixels(new Rect(0, 0, 768, 640), 0, 0); texture.Apply();
-            File.WriteAllBytes("Temp/FixedRoomAudit/Matrix/" + activity.StoreProductId + ".png", texture.EncodeToPNG());
+            File.WriteAllBytes(Output+"/" + activity.StoreProductId + ".png", texture.EncodeToPNG());
             var animation = cat.GetComponent<CatActivityAnimation>();
-            File.WriteAllText("Temp/FixedRoomAudit/Matrix/" + activity.StoreProductId + "-contact.txt",
+            File.WriteAllText(Output+"/" + activity.StoreProductId + "-contact.txt",
                 "cat=" + cat.transform.position + " scale=" + cat.transform.lossyScale +
                 " pose=" + animation.CurrentPose + " surface=" +
                 (animation.ContactSurface == null ? "none" : animation.ContactSurface.position.ToString()));
@@ -272,7 +289,7 @@ public sealed class RoomFurnitureBreedMatrixTests
         {
             camera.targetTexture = target; camera.Render(); RenderTexture.active = target;
             texture.ReadPixels(new Rect(0, 0, 1920, 1080), 0, 0); texture.Apply();
-            File.WriteAllBytes("Temp/FixedRoomAudit/Matrix/" + productId + "-room.png", texture.EncodeToPNG());
+            File.WriteAllBytes(Output+"/" + productId + "-room.png", texture.EncodeToPNG());
         }
         finally
         {

@@ -19,6 +19,7 @@ public sealed class ScratchPostActivity : CatActivity
     protected override bool UsesNearbyRoutineEntry=>true;
     CatToyContactMotion contact;
     CatActivityAnimation poses;
+    MeshCollider[] measuredSurfaces;
     public int LeftStrokes {get;private set;}
     public int RightStrokes {get;private set;}
     // This routine already owns its complete floor approach and controller state.
@@ -41,10 +42,13 @@ public sealed class ScratchPostActivity : CatActivity
             for(int step=0;step<=8;step++)
             {
                 float bestLength=float.PositiveInfinity;
-                for(int side=0;side<24;side++)
+                // A planted tree has a narrow open arc between its trunk base
+                // and the boundary. A 15-degree ring can skip that whole arc.
+                int directions=StoreProductId==HomeStoreService.GardenSaplingId?180:24;
+                for(int side=0;side<directions;side++)
                 {
                     int stepAngle=(side+1)/2*(side%2==0?-1:1);
-                    float angle=stepAngle*15f;
+                    float angle=stepAngle*(360f/directions);
                     float padding=.29f+step*.02f;
                     Vector3 candidate=center+(Quaternion.Euler(0,angle,0)*toward.normalized)*(ropeRadius+padding);
                     float view=CatActivityFacing.FacingDot(center-candidate,candidate,camera);
@@ -84,6 +88,7 @@ public sealed class ScratchPostActivity : CatActivity
         Cat.SetMovementLocked(this,true);if(controller!=null)controller.enabled=false;
         contact=Cat.GetComponent<CatToyContactMotion>();if(contact==null)contact=Cat.gameObject.AddComponent<CatToyContactMotion>();
         poses=Cat.GetComponent<CatActivityAnimation>();LeftStrokes=RightStrokes=0;
+        measuredSurfaces=StoreProductId==HomeStoreService.BedroomWardrobeId?GetComponentsInChildren<MeshCollider>():null;
         StartCoroutine(Routine());return true;
     }
     IEnumerator Routine()
@@ -91,7 +96,7 @@ public sealed class ScratchPostActivity : CatActivity
         foreach(var point in approach)yield return Walk(point);
         yield return Walk(workingPoint);
         Vector3 facing=transform.TransformPoint(ropeCenter)-Cat.transform.position;facing.y=0;
-        if(facing.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(facing);
+        if(facing.sqrMagnitude>.001f)yield return Face(facing);
         Vector3 surface=transform.TransformPoint(ropeCenter)-Cat.transform.forward*ropeRadius;
         float spread=.045f;
         if(HomeStoreService.IsFixedRoomProduct(StoreProductId))
@@ -113,6 +118,7 @@ public sealed class ScratchPostActivity : CatActivity
             float leftPhase=Mathf.Repeat(cycle,1),rightPhase=Mathf.Repeat(cycle+.5f,1);
             Vector3 left=center-Cat.transform.right*spread+Vector3.up*Mathf.Lerp(.48f,.34f,leftPhase);
             Vector3 right=center+Cat.transform.right*spread+Vector3.up*Mathf.Lerp(.48f,.34f,rightPhase);
+            left=MeasuredDoorContact(left);right=MeasuredDoorContact(right);
             contact.ReachBoth(left,right,Mathf.Clamp01(time/.20f));
             if(leftPhase>.4f && contact.LeftDistance<.075f && lastLeft!=(int)cycle){LeftStrokes++;lastLeft=(int)cycle;}
             if(rightPhase>.4f && contact.RightDistance<.075f && lastRight!=(int)(cycle+.5f)){RightStrokes++;lastRight=(int)(cycle+.5f);}
@@ -124,14 +130,45 @@ public sealed class ScratchPostActivity : CatActivity
             foreach(var point in exit)yield return Walk(point);
         Restore(false);CompleteActivity("CLAWS FEEL GREAT!");
     }
+    Vector3 MeasuredDoorContact(Vector3 target)
+    {
+        if(measuredSurfaces==null)return target;
+        // Door trim varies with stroke height. A single mid-height plane put
+        // the lower hand inside the moulding; measure each real near face.
+        Vector3 origin=Cat.transform.position;origin.y=target.y;
+        origin+=Cat.transform.right*Vector3.Dot(target-origin,Cat.transform.right);
+        var ray=new Ray(origin,Cat.transform.forward);float nearest=1.8f;
+        foreach(var mesh in measuredSurfaces)
+        {
+            RaycastHit hit;
+            if(mesh.enabled&&!mesh.isTrigger&&mesh.Raycast(ray,out hit,nearest))
+            {nearest=hit.distance;target=hit.point+hit.normal*.018f;}
+        }
+        return target;
+    }
     IEnumerator Walk(Vector3 point)
     {
-        PlayCatPose(CatActivityPose.Walk);
+        if(StoreProductId==HomeStoreService.ScratchPostId && Vector3.Distance(Cat.transform.position,point)<=.005f)yield break;
         Vector3 direction=point-Cat.transform.position;direction.y=0;
-        if(direction.sqrMagnitude>.001f)Cat.transform.rotation=Quaternion.LookRotation(direction);
+        if(direction.sqrMagnitude>.001f)yield return Face(direction);
+        PlayCatPose(CatActivityPose.Walk);
         while(Vector3.Distance(Cat.transform.position,point)>.005f)
         {Cat.transform.position=Vector3.MoveTowards(Cat.transform.position,point,1.5f*Time.deltaTime);yield return null;}
         Cat.transform.position=point;
+    }
+    IEnumerator Face(Vector3 direction)
+    {
+        var target=Quaternion.LookRotation(direction);
+        if(StoreProductId==HomeStoreService.ScratchPostId)
+        {
+            float angle=Quaternion.Angle(Cat.transform.rotation,target);
+            if(angle>1f)
+            {
+                poses.SetTimedPose(CatActivityPose.Sniff,0);
+                yield return CatActivityFacing.Turn(Cat,target,Mathf.Max(.08f,angle/540f));
+            }
+        }
+        Cat.transform.rotation=target;
     }
     void Restore(bool cancel)
     {

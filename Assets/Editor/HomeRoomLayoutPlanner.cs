@@ -19,6 +19,7 @@ public static class HomeRoomLayoutPlanner
         public Vector2 size;
         public float height, scale = 1, hungHeight;
         public Vector3 entry, originalPosition;
+        public bool hasActivity = true;
         public Vector3 requiredFacing;
         public float originalYaw;
         public bool wallEdge;
@@ -50,7 +51,7 @@ public static class HomeRoomLayoutPlanner
             case "BathroomVanitySink": return .82f;
             case "BathroomTub": return .82f;
             case "BathroomShower": return .88f;
-            case "KitchenFruitBasket": return .68f;
+            case "KitchenFruitBasket": return .52f;
             case "KitchenFeedingStation": return .82f;
             case "KitchenCounterStool": return .85f;
             case "KitchenPantryShelf": return .90f;
@@ -116,7 +117,7 @@ public static class HomeRoomLayoutPlanner
         foreach (var item in items)
         {
             if (!poses.TryGetValue(item.id, out var pose))
-                throw new InvalidOperationException("Review the bathroom bay for the new product: " + item.id);
+                throw new InvalidOperationException("Review the room bay for the new product: " + item.id);
             item.architecturalViews = architecturalViews; item.protectedFeatures = protectedFeatures;
             item.fixedObstacles = fixedObstacles; item.candidates.Clear();
             Add(item, new Vector3(pose.x, pose.y, pose.z), pose.w, 0);
@@ -125,7 +126,7 @@ public static class HomeRoomLayoutPlanner
             var candidate = item.candidates[0];
             for (int i = 0; i < selected.Count; i++)
                 if (Conflict(item, candidate, items[i], selected[i]))
-                    throw new InvalidOperationException("Authored bays conflict: " + item.id + " / " + items[i].id);
+                    throw new InvalidOperationException("Authored bays conflict: " + item.id + " / " + items[i].id + ": " + ConflictReason(item,candidate,items[i],selected[i]));
             selected.Add(candidate);
             result.Add(new HomeRoomLayoutEntry { roomId = item.roomId, productId = item.id,
                 position = candidate.position, yaw = candidate.yaw, modelScale = item.scale,
@@ -200,8 +201,10 @@ public static class HomeRoomLayoutPlanner
             CatActivityFacing.FacingDot(Quaternion.Euler(0, yaw, 0) * item.requiredFacing,
                 entry, HomeRoomCameraProfile.Position) < .30f)
         { item.rejection = "camera-facing physical action axis"; return; }
-        if (body.min.x < -3.65f || body.max.x > 3.65f || body.min.z < FrontLimit || body.max.z > 2.76f) return;
-        if (Mathf.Abs(entry.x) > 3.43f || entry.z < -2.35f || entry.z > 2.40f) return;
+        float sideLimit = OutdoorArrangementProfile.IsReviewedProduct(item.id)?3.70f:KitchenBedroomArrangementProfile.SideLimit(item.id);
+        float frontLimit = OutdoorArrangementProfile.IsReviewedProduct(item.id)?-2.20f:KitchenBedroomArrangementProfile.FrontLimit(item.id);
+        if (body.min.x < -sideLimit || body.max.x > sideLimit || body.min.z < frontLimit || body.max.z > 2.76f) return;
+        if (item.hasActivity && (Mathf.Abs(entry.x) > 3.43f || entry.z < -2.35f || entry.z > 2.40f)) return;
         if (!item.Flat && !item.Hung && body.min.z < CorridorBack && body.max.x > -CorridorHalfWidth && body.min.x < CorridorHalfWidth) return;
         if (!item.Hung && item.height >= 1.25f && position.z < .40f) return;
         if (!item.Hung && item.height >= 1.25f && body.min.z < CorridorBack && body.min.x > -3.20f && body.max.x < 3.20f) return;
@@ -211,15 +214,15 @@ public static class HomeRoomLayoutPlanner
         if (item.protectedFeatures != null && item.protectedFeatures.Any(feature => feature.Intersects(body))) return;
         item.rejection = "fixed obstacle";
         if (item.fixedObstacles != null && item.fixedObstacles.Any(obstacle =>
-            obstacle.Intersects(body) || Contains(obstacle, entry, EntryRadius))) return;
+            obstacle.Intersects(body) || (item.hasActivity && Contains(obstacle, entry, EntryRadius)))) return;
         float desiredZ = item.height >= 1.25f || item.size.x >= 1.7f ? 2.15f : item.height >= .8f ? .80f : -.75f;
         float score = preference + Mathf.Abs(position.z - desiredZ) * 3f + Mathf.Abs(Mathf.Abs(position.x) - 2.1f) * .35f;
         var rotation = Quaternion.Euler(0, yaw, 0);
         var views = item.activityViews.Select(view => position + rotation * view + Vector3.up * .18f).ToList();
-        views.Add(entry + Vector3.up * .35f);
+        if (item.hasActivity) views.Add(entry + Vector3.up * .35f);
         // Reserve the visible cat, not merely its pivot: foreground edge activities
         // otherwise leave half the body outside the player's viewport.
-        if (views.Any(view => !FitsPlayerView(view)))
+        if (views.Any(view => !FitsPlayerView(view, item.id == "bathroom.toilet" ? .995f : .94f)))
         { item.rejection = "cat framing"; return; }
         views.Add(position + Vector3.up * Mathf.Max(.18f, item.height * .55f));
         item.rejection = "fixed obstacle sightline";
@@ -244,13 +247,17 @@ public static class HomeRoomLayoutPlanner
         return false;
     }
     public static bool Conflict(Item a, Candidate ap, Item b, Candidate bp)
+        => ConflictReason(a,ap,b,bp)!=null;
+    public static string ConflictReason(Item a, Candidate ap, Item b, Candidate bp)
     {
-        if (!a.Flat && !b.Flat && ap.body.max.y + .08f > bp.body.min.y && bp.body.max.y + .08f > ap.body.min.y &&
-            Overlap(ap.body, bp.body, ItemGap)) return true;
-        if (!b.Flat && !b.Hung && Contains(bp.body, ap.entry, EntryRadius)) return true;
-        if (!a.Flat && !a.Hung && Contains(ap.body, bp.entry, EntryRadius)) return true;
-        if (Vector2.Distance(new Vector2(ap.entry.x, ap.entry.z), new Vector2(bp.entry.x, bp.entry.z)) < .62f) return true;
-        return ap.views.Any(view => Hides(view, bp.body)) || bp.views.Any(view => Hides(view, ap.body));
+        if (!KitchenScatterBuilder.SupportedPair(a.id,b.id) && !a.Flat && !b.Flat && ap.body.max.y + .08f > bp.body.min.y && bp.body.max.y + .08f > ap.body.min.y &&
+            Overlap(ap.body, bp.body, OutdoorArrangementProfile.FurnitureGap(a.id, b.id))) return "furniture gap";
+        if (a.hasActivity && !b.Flat && !b.Hung && Contains(bp.body, ap.entry, EntryRadius)) return a.id+" entry "+ap.entry+" in "+b.id;
+        if (b.hasActivity && !a.Flat && !a.Hung && Contains(ap.body, bp.entry, EntryRadius)) return b.id+" entry "+bp.entry+" in "+a.id;
+        if (a.hasActivity && b.hasActivity && Vector2.Distance(new Vector2(ap.entry.x, ap.entry.z), new Vector2(bp.entry.x, bp.entry.z)) < .62f) return "entry spacing: "+ap.entry+" / "+bp.entry;
+        foreach(var view in ap.views)if(Hides(view,bp.body))return a.id+" view "+view+" hidden by "+b.id;
+        foreach(var view in bp.views)if(Hides(view,ap.body))return b.id+" view "+view+" hidden by "+a.id;
+        return null;
     }
     private static bool Overlap(Bounds a, Bounds b, float gap) =>
         a.min.x < b.max.x + gap && a.max.x + gap > b.min.x && a.min.z < b.max.z + gap && a.max.z + gap > b.min.z;
@@ -262,7 +269,7 @@ public static class HomeRoomLayoutPlanner
         return body.IntersectRay(new Ray(HomeRoomCameraProfile.Position, delta.normalized), out float distance) && distance < delta.magnitude - .18f;
     }
 
-    public static bool FitsPlayerView(Vector3 center)
+    public static bool FitsPlayerView(Vector3 center, float horizontalInset = .94f)
     {
         var inverse = Quaternion.Inverse(Quaternion.Euler(HomeRoomCameraProfile.Angles));
         float tangent = Mathf.Tan(HomeRoomCameraProfile.FieldOfView * .5f * Mathf.Deg2Rad);
@@ -274,7 +281,7 @@ public static class HomeRoomLayoutPlanner
         {
             var local = inverse * (center + new Vector3(x, y, 0) - HomeRoomCameraProfile.Position);
             float halfHeight = local.z * tangent;
-            if (local.z <= 0 || Mathf.Abs(local.x) > halfHeight * aspect * .94f ||
+            if (local.z <= 0 || Mathf.Abs(local.x) > halfHeight * aspect * horizontalInset ||
                 local.y > halfHeight * .86f || local.y < -halfHeight * .96f) return false;
         }
         return true;

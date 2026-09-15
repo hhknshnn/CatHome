@@ -29,6 +29,7 @@ public sealed class SwingRideActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatSupportedFurnitureMotion supportedMotion;
 
     public override string ProgressLabel => IsRunning ? "SWINGING!" : string.Empty;
 
@@ -74,17 +75,21 @@ public sealed class SwingRideActivity : CatActivity
         yield return Move(start, mount, startRotation, toMount, 0.34f);
 
         // Hop up onto the bench, facing back out of the swing.
-        Quaternion facing = LookTowards(mount - seatPoint.position, toMount);
-        yield return Hop(mount, seatPoint.position, toMount, facing, 0.38f, 0.22f);
-        facing = CatActivityFacing.AlongAxis(Cat, seatPoint.position, facing);
-        yield return CatActivityFacing.Turn(Cat, facing);
+        Quaternion facing = CatActivityFacing.AlongAxis(Cat, seatPoint.position,
+            seatPoint.rotation * Quaternion.Euler(0f, 90f, 0f));
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, seatPoint);
+        yield return supportedMotion.Jump(mount, seatPoint.position, toMount, facing);
+        var area = seatPoint.GetComponent<CatActivitySurface>();
+        bool sleeping = area != null && area.ResolvePose(CatActivityPose.Sit) == CatActivityPose.Sleep;
+        yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, seatPoint.position, facing);
+        if (sleeping) yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .90f, seatPoint.position, facing);
 
         // The seat point rides under the pivot, so pinning the cat to it each
         // frame swings the cat with the bench without touching its hierarchy.
         Quaternion pivotRest = swingPivot.rotation;
         float elapsed = 0f;
         float duration = RideDuration;
-        PlayCatPose(CatActivityPose.Sit, seatPoint);
+        PlayCatPose(sleeping ? CatActivityPose.Sleep : CatActivityPose.Sit, seatPoint);
         while (KeepResting)
         {
             elapsed += Time.deltaTime;
@@ -103,10 +108,12 @@ public sealed class SwingRideActivity : CatActivity
         Cat.transform.position = seatPoint.position;
         Cat.transform.rotation = facing;
 
+        if (sleeping) yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, seatPoint.position, facing);
+        yield return supportedMotion.Pose(CatActivityPose.StandUp, .55f, seatPoint.position, facing);
+
         Vector3 landing = Flatten(mountPoint.position, start.y);
-        yield return Hop(Cat.transform.position, landing, Cat.transform.rotation,
-                         LookTowards(landing - seatPoint.position, Cat.transform.rotation),
-                         0.34f, 0.16f);
+        yield return supportedMotion.Jump(Cat.transform.position, landing, Cat.transform.rotation,
+                         LookTowards(landing - seatPoint.position, Cat.transform.rotation));
 
         RestoreCat();
         if (BondReward > 0L)
@@ -117,19 +124,7 @@ public sealed class SwingRideActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
     }
 
     private IEnumerator Hop(
@@ -141,6 +136,7 @@ public sealed class SwingRideActivity : CatActivity
 
     private void RestoreCat()
     {
+        supportedMotion?.End(); supportedMotion = null;
         if (swingPivot != null)
             swingPivot.localRotation = Quaternion.identity;
         if (Cat == null)

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7162373534755073565}
   - component: {fileID: 2177202327852115133}
   - component: {fileID: 1587924115322009739}
-  - component: {fileID: 6538104819695690613}
   - component: {fileID: 3233688591739458909}
   - component: {fileID: 3243155214248411892}
   m_Layer: 0
@@ -78,68 +77,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 1.58
---- !u!114 &6538104819695690613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3814735218558991018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: mirror-gaze
-  displayName: WALL MIRROR
-  kind: 16
-  questType: 19
-  requiredBondXp: 0
-  storeProductId: bathroom.wall-mirror
-  actionText: LOOK
-  interactionRadius: 1.1
-  energyCost: 3
-  interactionAnchor: {fileID: 1049256756923623463}
-  routineEntryPoint: {fileID: 1049256756923623463}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 8168328301737794378}
-  lookPoint: {fileID: 2152407358617504595}
-  reactionKind: 0
-  lookDuration: 2.6
-  completeMessage: WHO IS THAT?
-  visibleLookTargets:
-  - {x: 0.116746575, y: 0.433727, z: -0.0155405095}
-  - {x: -0.42067206, y: 0.25244507, z: 0.009419492}
-  - {x: -0.22556159, y: 0.6381888, z: -0.005940509}
-  - {x: 0.42067203, y: 0.25244507, z: 0.009419492}
-  - {x: 0.41636303, y: 0.60301614, z: 0.005579491}
-  - {x: -0.15037438, y: 0.28995836, z: -0.005940509}
-  - {x: -0.42067203, y: 0.51923776, z: 0.009419492}
-  - {x: 0.1503744, y: 0.6381888, z: -0.005940509}
-  - {x: 0.2255616, y: 0.2899584, z: -0.005940509}
-  - {x: -0.075187206, y: 0.5386944, z: -0.005940509}
-  - {x: 0.375936, y: 0.43919998, z: -0.005940509}
-  - {x: -0.2255616, y: 0.43919998, z: -0.005940509}
-  - {x: 0.075187206, y: 0.28995842, z: -0.005940509}
-  - {x: -0.2890654, y: 0.29836404, z: -0.027083881}
-  - {x: -0.375936, y: 0.38945282, z: -0.005940509}
-  - {x: 0.20867503, y: 0.51809835, z: -0.0155405095}
-  - {x: -0.075187206, y: 0.3894528, z: -0.005940509}
-  - {x: -0.36699694, y: 0.60301614, z: 0.005579491}
-  - {x: 0.2255616, y: 0.38945282, z: -0.005940509}
-  - {x: -0.2255616, y: 0.5386944, z: -0.005940509}
-  - {x: -0.075187206, y: 0.6381888, z: -0.005940509}
-  - {x: 0.42067203, y: 0.35916218, z: 0.009419492}
-  - {x: 0, y: 0.43919998, z: -0.005940509}
-  - {x: 0.42067203, y: 0.51923776, z: 0.009419492}
-  - {x: 0.077067055, y: 0.5001075, z: -0.014385584}
-  - {x: -0.1503744, y: 0.43919998, z: -0.005940509}
-  - {x: -0.3007488, y: 0.43919998, z: -0.005940509}
-  - {x: -0.1503744, y: 0.5386944, z: -0.005940509}
-  - {x: 0.1503744, y: 0.28995836, z: -0.005940509}
-  - {x: 0.22556159, y: 0.6381888, z: -0.005940509}
-  - {x: -0.075187206, y: 0.2899584, z: -0.005940509}
-  - {x: -0.15037441, y: 0.6381888, z: -0.005940509}
 --- !u!114 &3233688591739458909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,7 +158,7 @@ Transform:
   m_GameObject: {fileID: 7854673225968729255}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.78, y: 0, z: -0.85}
+  m_LocalPosition: {x: 0.78, y: 0, z: -0.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

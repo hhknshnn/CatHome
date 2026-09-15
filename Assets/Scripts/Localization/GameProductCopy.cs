@@ -52,7 +52,7 @@ public static class GameProductCopy
         {"bathroom.tub",new[]{"Küvet","Kedinin kenarını keşfedebileceği şık bir küvet."}},
         {"bathroom.shower",new[]{"Duş","Cam bölmeli, renkli çerçeveli bir duş alanı."}},
         {"kitchen.paw-mat",new[]{"Mutfak halısı","Kahvaltı köşesinde yumuşak bir mola."}},
-        {"kitchen.fruit-basket",new[]{"Meyve sepeti","Renkli meyvelerle dolu dekoratif sepet."}},
+        {"kitchen.fruit-basket",new[]{"Meyve sepeti","Tezgâha yerleşir. Kedin sepeti devirip meyveleri dağıtır."}},
         {"kitchen.feeding-station",new[]{"Mama köşesi","Kolay ulaşılan iki kapla düzenli bir beslenme köşesi."}},
         {"kitchen.counter-stool",new[]{"Mutfak taburesi","Kahvaltı köşesine yakışan rahat bir tabure."}},
         {"kitchen.pantry-shelf",new[]{"Kiler rafı","Renkli kavanozlarla dolu bir keşif alanı."}},

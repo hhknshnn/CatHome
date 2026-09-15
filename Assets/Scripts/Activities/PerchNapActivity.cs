@@ -27,6 +27,9 @@ public sealed class PerchNapActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatSupportedFurnitureMotion supportedMotion;
+    public Transform PerchPoint => perchPoint;
+    public Transform FloorPoint => floorPoint;
 
     public override string ProgressLabel => IsRunning ? "SETTLING..." : string.Empty;
 
@@ -52,110 +55,45 @@ public sealed class PerchNapActivity : CatActivity
     {
         characterController = Cat.GetComponent<CharacterController>();
         originalScale = Cat.transform.localScale;
-        StartCoroutine(PerchRoutine());
+        StartCoroutine(SupportedRoutine());
         return true;
     }
 
-    private IEnumerator PerchRoutine()
+    private IEnumerator SupportedRoutine()
     {
         Cat.SetMovementLocked(this, true);
-        if (characterController != null)
-            characterController.enabled = false;
-
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 floor = Flatten(floorPoint.position, start.y);
-        Vector3 perch = perchPoint.position;
-
-        Quaternion toFloor = LookTowards(floor - start, startRotation);
-        yield return Move(start, floor, startRotation, toFloor, 0.32f);
-
-        Quaternion inward = LookTowards(
-            new Vector3(perch.x - floor.x, 0f, perch.z - floor.z), toFloor);
-        yield return Move(floor, floor, toFloor, inward, 0.18f);
-
-        Vector3 crouched = originalScale;
-        crouched.y *= 0.76f;
-        crouched.x *= 1.09f;
-        crouched.z *= 1.09f;
-        yield return Squash(originalScale, crouched, 0.17f);
-        yield return Squash(crouched, originalScale, 0.09f);
-        yield return Hop(floor, perch, inward, 0.44f);
-
-        // Turn to face the room, then loaf: front paws tucked, breathing.
-        Quaternion outward = LookTowards(floor - perch, inward);
-        Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, perch, outward);
-        yield return Move(perch, perch, inward, restingFacing, 0.26f);
-        Vector3 loafed = originalScale;
-        loafed.y *= 0.68f;
-        loafed.x *= 1.08f;
-        loafed.z *= 1.08f;
-        yield return Squash(originalScale, loafed, 0.26f);
-
-        float elapsed = 0f;
-        PlayCatPose(CatActivityPose.Sleep, perchPoint);
+        if (characterController != null) characterController.enabled = false;
+        Vector3 floor = Flatten(floorPoint.position, Cat.transform.position.y), perch = perchPoint.position;
+        bool directChair = StoreProductId == "room.armchair";
+        // Keep one seat position throughout the chair routine. Its front half
+        // leaves room for the original jump pose's head and the short yaw.
+        if (directChair) perch += transform.TransformDirection(Vector3.back) * .10f;
+        Quaternion inward = LookTowards(perch - floor, Cat.transform.rotation);
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, floor, inward, .26f);
+        var area = perchPoint.GetComponent<CatActivitySurface>();
+        bool sitOnly = area != null && area.ResolvePose(CatActivityPose.Sleep) == CatActivityPose.Sit;
+        Quaternion preferred = perchPoint.rotation * Quaternion.Euler(0, 90, 0);
+        Quaternion facing = sitOnly ? CatActivityFacing.Resolve(Cat, perch, preferred) : CatActivityFacing.AlongAxis(Cat, perch, preferred);
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, perchPoint);
+        yield return supportedMotion.Jump(floor, perch, inward, facing);
+        yield return supportedMotion.Pose(CatActivityPose.SitDown, .60f, perch, facing);
+        if (!sitOnly) yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .95f, perch, facing);
+        if (directChair) supportedMotion.Rest(sitOnly ? CatActivityPose.Sit : CatActivityPose.Sleep);
+        else PlayCatPose(sitOnly ? CatActivityPose.Sit : CatActivityPose.Sleep, perchPoint);
         while (KeepResting)
         {
-            elapsed += Time.deltaTime;
-            float breath = Mathf.Sin(elapsed * 3.0f) * 0.032f;
-            Vector3 breathing = loafed;
-            breathing.y *= 1f + breath;
-            breathing.x *= 1f - breath * 0.4f;
-            breathing.z *= 1f - breath * 0.4f;
-            Cat.transform.localScale = breathing;
-            Cat.transform.position = perch;
-            Cat.transform.rotation = restingFacing;
+            Cat.transform.SetPositionAndRotation(perch, facing); Cat.transform.localScale = originalScale;
             yield return null;
         }
-
-        yield return Squash(Cat.transform.localScale, originalScale, 0.22f);
-        yield return Hop(perch, floor, outward, 0.40f);
-
-        RestoreCat();
-        CompleteActivity(string.IsNullOrWhiteSpace(completeMessage)
-            ? "GOOD SPOT!" : completeMessage);
-    }
-
-    /// <summary>Arc between two points, peaking above the higher end.</summary>
-    private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
-    {
-        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
-    }
-
-    private IEnumerator Move(
-        Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
-    {
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
-    }
-
-    private IEnumerator Squash(Vector3 from, Vector3 to, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            Cat.transform.localScale =
-                Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, elapsed / duration));
-            yield return null;
-        }
-
-        Cat.transform.localScale = to;
+        if (!sitOnly) yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, perch, facing);
+        yield return supportedMotion.Pose(CatActivityPose.StandUp, .55f, perch, facing);
+        yield return supportedMotion.Jump(perch, floor, facing, LookTowards(floor - perch, facing));
+        RestoreCat(); CompleteActivity(string.IsNullOrWhiteSpace(completeMessage) ? "GOOD SPOT!" : completeMessage);
     }
 
     private void RestoreCat()
     {
+        if (supportedMotion != null) { supportedMotion.End(); supportedMotion = null; }
         if (Cat == null)
             return;
 

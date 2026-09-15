@@ -137,7 +137,6 @@ public sealed class GardenActivityTests
             (CatActivityKind.BistroPerch, HomeStoreService.GardenBistroSetId),
             (CatActivityKind.HammockSway, HomeStoreService.GardenHammockId),
             (CatActivityKind.SunBask, HomeStoreService.GardenSunLoungerId),
-            (CatActivityKind.GrillWatch, HomeStoreService.GardenGrillId),
             (CatActivityKind.BirdBathSip, HomeStoreService.GardenBirdBathId),
             (CatActivityKind.PotDig, HomeStoreService.GardenFlowerPotsId),
             (CatActivityKind.DaisyRoll, HomeStoreService.GardenDaisyBedId),

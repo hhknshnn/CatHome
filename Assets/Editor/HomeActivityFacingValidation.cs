@@ -14,6 +14,9 @@ public static class HomeActivityFacingValidation
         typeof(LitterDigActivity), typeof(PaperSpinActivity), typeof(ScratchPostActivity),
         typeof(SinkSipActivity), typeof(MealTimeActivity), typeof(TubEdgeWalkActivity),
         typeof(GroomBrushActivity), typeof(HamperDiveActivity), typeof(KnockOffActivity),
+        // KitchenScatterTests verifies real torso facing, paw support/contact,
+        // full return paths and pause/cancel ownership for both kitchen props.
+        typeof(SurfaceScatterActivity),
         typeof(CartNudgeActivity), typeof(BirdFeederShakeActivity), typeof(BallChaseActivity),
         typeof(GardenYarnChaseActivity)
     };
@@ -25,6 +28,9 @@ public static class HomeActivityFacingValidation
         {
             if (!ReviewedTypes.Contains(activity.GetType()))
                 yield return scene.name + "/" + activity.name + ": add an explicit camera-facing/contact/path policy and native evidence for " + activity.GetType().Name;
+            if(activity is SurfaceScatterActivity scatter &&
+                ((scatter.Kind!=CatActivityKind.FruitSwat&&scatter.Kind!=CatActivityKind.DiningScatter)||scatter.PerchPoint==null||scatter.PropPivot==null||scatter.LooseParts.Count==0))
+                yield return scene.name+"/"+activity.name+": scatter action needs a reviewed kind, real support and loose props.";
             var litter = activity as LitterDigActivity;
             if (litter != null && litter.UsesGentleScraping && (litter.LitterSurface == null || !litter.LitterSurface.IsConfigured))
                 yield return scene.name + "/" + activity.name + ": litter action needs its independent excavatable surface.";

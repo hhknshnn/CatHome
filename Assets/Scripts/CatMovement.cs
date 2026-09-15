@@ -103,26 +103,18 @@ public class CatMovement : MonoBehaviour
     public bool IsIdle => !IsMovementLocked && !IsMovementInputActive;
 
     /// <summary>
-    /// Soft-turns the cat toward a world point while it is standing still.
+    /// Turns only the head toward a world point while the body stands still.
     /// Used by courtyard birds so they can steal attention without stealing
     /// the movement lock from care or activities.
     /// </summary>
+    private CatFurnitureGaze idleGaze;
     public void SuggestLookDirection(Vector3 worldPoint)
     {
-        if (!IsIdle)
-            return;
-
-        Vector3 flat = worldPoint - transform.position;
-        flat.y = 0f;
-        if (flat.sqrMagnitude < 0.04f)
-            return;
-
-        Quaternion look = Quaternion.LookRotation(flat.normalized, Vector3.up) *
-                          Quaternion.Euler(0f, modelForwardOffset, 0f);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            look,
-            Time.deltaTime * 4f);
+        if (!IsIdle) return;
+        if (idleGaze == null) idleGaze = GetComponent<CatFurnitureGaze>() ?? gameObject.AddComponent<CatFurnitureGaze>();
+        // Idle attention must not turn an offset CharacterController between
+        // its movement updates: that dragged the root after every garden jump.
+        idleGaze.LookAt(worldPoint, .65f);
     }
 
     private void Awake()

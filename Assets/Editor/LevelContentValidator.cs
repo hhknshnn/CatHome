@@ -1079,9 +1079,8 @@ public static class LevelContentValidator
         Require(matKnead == null ||
                 matKnead.StoreProductId == HomeStoreService.BathroomBathMatId,
             "The mat knead activity must be gated on owning BathroomBathMat.", report);
-        // The mirror reuses the shared sit-and-look, so it is found by kind.
-        Require(FindSitLook(scene, CatActivityKind.MirrorGaze) != null,
-            "Bathroom needs the wall mirror gaze activity.", report);
+        Require(FindSitLook(scene, CatActivityKind.MirrorGaze) == null,
+            "Bathroom wall mirror must remain decoration only.", report);
         TubEdgeWalkActivity tubEdge = FindInScene<TubEdgeWalkActivity>(scene);
         Require(tubEdge != null,
             "Bathroom needs the tub rim walk activity.", report);
@@ -1136,6 +1135,12 @@ public static class LevelContentValidator
 
     private static void ValidateKitchenRoom(Scene scene, LevelValidationReport report)
     {
+        var dining=FindAllInScene<SurfaceScatterActivity>(scene).Where(a=>a.Kind==CatActivityKind.DiningScatter).ToArray();
+        Require(dining.Length==1&&dining[0].LooseParts.Count==3&&string.IsNullOrEmpty(dining[0].StoreProductId),
+            "Kitchen needs one fixed dining table with three loose props.",report);
+        if(dining.Length==1)
+            Require(dining[0].GetComponentsInChildren<MeshCollider>(true).Length==5&&dining[0].GetComponentsInChildren<Transform>(true).Count(t=>t.name.StartsWith("DiningChair_",StringComparison.Ordinal))==4,
+                "Kitchen dining table and four chairs need solid support.",report);
         Require(FindNamedInScene(scene, "Sunshine Checker Floor") != null &&
                 FindNamedInScene(scene, "Candy Backsplash Ribbon") != null,
             "Kitchen needs its sunshine floor and candy backsplash ribbon.", report);
@@ -1203,7 +1208,7 @@ public static class LevelContentValidator
         RequireRoomActivity(scene, CatActivityKind.WardrobeScratch,
             HomeStoreService.BedroomWardrobeId, "wardrobe scratch", "Bedroom", report);
         RequireRoomActivity(scene, CatActivityKind.DaybedWatch,
-            HomeStoreService.BedroomWindowDaybedId, "daybed window watch", "Bedroom",
+            HomeStoreService.BedroomWindowDaybedId, "daybed cushion nap", "Bedroom",
             report);
         RequireRoomActivity(scene, CatActivityKind.KnockOff,
             HomeStoreService.BedroomNightstandId, "nightstand knock off", "Bedroom",
@@ -1212,12 +1217,10 @@ public static class LevelContentValidator
             HomeStoreService.BedroomVanityStoolId, "vanity stool nap", "Bedroom",
             report);
         RequireRoomActivity(scene, CatActivityKind.YarnSwat,
-            HomeStoreService.BedroomYarnBasketId, "yarn basket pounce", "Bedroom",
+            HomeStoreService.BedroomYarnBasketId, "yarn ball play", "Bedroom",
             report);
-        RequireRoomActivity(scene, CatActivityKind.NightLightGaze,
-            HomeStoreService.BedroomNightLightId, "night light gaze", "Bedroom", report);
-        RequireRoomActivity(scene, CatActivityKind.ArtGaze,
-            HomeStoreService.BedroomDreamArtId, "dream art gaze", "Bedroom", report);
+        Require(FindSitLook(scene, CatActivityKind.NightLightGaze) == null && FindSitLook(scene, CatActivityKind.ArtGaze) == null,
+            "Bedroom night light and wall art must remain decoration only.", report);
         RequireRoomActivity(scene, CatActivityKind.BedroomMatKnead,
             HomeStoreService.BedroomPawRugId, "bedside rug knead", "Bedroom", report);
         RequireRoomActivity(scene, CatActivityKind.CanopyNap,
@@ -1269,8 +1272,7 @@ public static class LevelContentValidator
     /// </summary>
     private static void ValidateBalconyRoom(Scene scene, LevelValidationReport report)
     {
-        RequireRoomActivity(scene, CatActivityKind.AwningGaze,
-            HomeStoreService.BalconySunAwningId, "sun awning gaze", "Balcony", report);
+        Require(FindSitLook(scene,CatActivityKind.AwningGaze)==null,"Balcony awning must remain decoration only.",report);
         RequireRoomActivity(scene, CatActivityKind.HerbShelfClimb,
             HomeStoreService.BalconyHerbShelfId, "herb shelf climb", "Balcony", report);
         RequireRoomActivity(scene, CatActivityKind.FeederShake,
@@ -1344,8 +1346,7 @@ public static class LevelContentValidator
             HomeStoreService.PatioPottedFernsId, "potted ferns watch", "Patio", report);
         RequireRoomActivity(scene, CatActivityKind.HerbTroughDig,
             HomeStoreService.PatioHerbTroughId, "herb trough dig", "Patio", report);
-        RequireRoomActivity(scene, CatActivityKind.FestoonGaze,
-            HomeStoreService.PatioStringLightsId, "string lights gaze", "Patio", report);
+        Require(FindSitLook(scene,CatActivityKind.FestoonGaze)==null,"Patio string lights must remain decoration only.",report);
         RequireRoomActivity(scene, CatActivityKind.StoneRugKnead,
             HomeStoreService.PatioStoneRugId, "stone rug knead", "Patio", report);
     }
@@ -1407,8 +1408,9 @@ public static class LevelContentValidator
             HomeStoreService.GardenHammockId, "hammock sway", "Garden", report);
         RequireRoomActivity(scene, CatActivityKind.SunBask,
             HomeStoreService.GardenSunLoungerId, "sun lounger bask", "Garden", report);
-        RequireRoomActivity(scene, CatActivityKind.GrillWatch,
-            HomeStoreService.GardenGrillId, "grill stare", "Garden", report);
+        // The garden keeps one observation activity: its live birds. The grill is decoration.
+        Require(FindSitLook(scene,CatActivityKind.GrillWatch)==null,"Garden grill must remain decoration only.",report);
+        Require(FindAllInScene<GardenYarnChaseActivity>(scene).Length==1,"Garden needs one catalog yarn chase without legacy duplicate stations.",report);
         RequireRoomActivity(scene, CatActivityKind.BirdBathSip,
             HomeStoreService.GardenBirdBathId, "bird bath sip", "Garden", report);
         RequireRoomActivity(scene, CatActivityKind.PotDig,

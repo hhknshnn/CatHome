@@ -212,7 +212,7 @@ public sealed class ActivityPromptController : MonoBehaviour
         {CatActivity.Active.RequestRestStop();return;}
         // The cat can leave the radius between the rendered frame and a click.
         if (IsNearby(candidate) && !CatActionState.IsBusy(cat) && !cat.AreWorldActionsBlocked && !HomeUiFlow.IsHomeControlBlocked)
-            candidate.TryStart(cat);
+        { if (!candidate.TryStart(cat)) GameAudio.UI(AudioCue.UIError); }
         else RefreshImmediate();
     }
 

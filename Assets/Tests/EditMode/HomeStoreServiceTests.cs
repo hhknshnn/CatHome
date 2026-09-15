@@ -422,6 +422,7 @@ public sealed class HomeStoreServiceTests
         int chef = 0;
         int floor = 0;
         int wall = 0;
+        int counter = 0;
         bool foundFruitLayout = false;
         bool foundPantryLayout = false;
         var ids = new System.Collections.Generic.HashSet<string>();
@@ -467,9 +468,11 @@ public sealed class HomeStoreServiceTests
             {
                 foundFruitLayout = true;
                 Assert.That(authoredAsset.DefaultPosition.x,
-                    Is.EqualTo(-2.9f).Within(.001f));
+                    Is.EqualTo(-1.72f).Within(.001f));
                 Assert.That(authoredAsset.DefaultPosition.z,
-                    Is.EqualTo(-.55f).Within(.001f));
+                    Is.EqualTo(2.05f).Within(.001f));
+                Assert.That(authoredAsset.DefaultPosition.y,Is.EqualTo(KitchenScatterBuilder.CounterTop));
+                Assert.That(HomeStoreService.GetRequiredProductId(id),Is.EqualTo(HomeStoreService.KitchenIslandId));
             }
             else if (id == HomeStoreService.KitchenPantryShelfId)
             {
@@ -480,6 +483,7 @@ public sealed class HomeStoreServiceTests
                     Is.EqualTo(270f).Within(.001f));
             }
             string authoredPlacement = authoredAsset.PlacementKind ==
+                HomeProductPlacementKind.ProductSurfaceOnly ? "COUNTER" : authoredAsset.PlacementKind ==
                 HomeProductPlacementKind.WallEdge ? "WALL" : "FLOOR";
             Assert.That(placement, Is.EqualTo(authoredPlacement), id);
 
@@ -487,13 +491,15 @@ public sealed class HomeStoreServiceTests
             if (set == "CHEF") chef++;
             if (placement == "FLOOR") floor++;
             if (placement == "WALL") wall++;
+            if (placement == "COUNTER") counter++;
             previousPrice = product.CoinPrice;
         }
 
         Assert.That(cafe, Is.EqualTo(4));
         Assert.That(chef, Is.EqualTo(6));
-        Assert.That(floor, Is.EqualTo(6));
+        Assert.That(floor, Is.EqualTo(5));
         Assert.That(wall, Is.EqualTo(4));
+        Assert.That(counter,Is.EqualTo(1));
         Assert.That(foundFruitLayout, Is.True);
         Assert.That(foundPantryLayout, Is.True);
         Assert.That(HomeStoreService.TryGetKitchenDesignSetProgress(

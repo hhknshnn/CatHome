@@ -35,7 +35,7 @@ public sealed class BathroomArrangementProfileTests
     }
 
     [Test]
-    public void Mirror_UsesTheReviewedHeightAndItsOwnGroundEntryAboveTheGroomingCart()
+    public void Mirror_RemainsDecorationAtTheReviewedHeightAboveTheGroomingCart()
     {
         Assert.That(StoreCatalogAssets.TryGet(HomeStoreService.BathroomMirrorId, out var mirror), Is.True);
         Assert.That(HomeRoomLayoutCatalog.TryGet(mirror.ProductId, out var mirrorRow), Is.True);
@@ -47,21 +47,13 @@ public sealed class BathroomArrangementProfileTests
         Assert.That(mirrorRow.position.y - (cartRow.position.y + cartRow.height), Is.GreaterThanOrEqualTo(.35f));
 
         var mirrorPrefab = Prefab(mirror);
-        var activity = mirrorPrefab.GetComponent<SitLookActivity>();
-        Assert.That(activity, Is.Not.Null);
-        Assert.That(activity.RoutineEntryPoint, Is.Not.Null);
-        float scale = mirrorPrefab.GetComponent<RoomProductScaleStamp>().AppliedScale;
-        var rawEntry = mirrorPrefab.transform.InverseTransformPoint(activity.RoutineEntryPoint.position) / scale;
-        Assert.That(Vector3.Distance(rawEntry, new Vector3(-.78f, 0, -.85f)), Is.LessThan(.0001f));
-        Assert.That(new SerializedObject(activity).FindProperty("reactionKind").enumValueIndex,
-            Is.EqualTo((int)SitLookReaction.Sit));
+        Assert.That(mirrorPrefab.GetComponentInChildren<CatActivity>(true), Is.Null);
+        Assert.That(mirrorPrefab.GetComponentsInChildren<Renderer>(true), Is.Not.Empty);
 
         Assert.That(StoreCatalogAssets.TryGet(HomeStoreService.BathroomGroomingCartId, out var cart), Is.True);
-        Vector3 mirrorEntry = GroundEntry(mirrorPrefab, mirrorRow);
         Vector3 cartEntry = GroundEntry(Prefab(cart), cartRow);
-        Assert.That(Vector3.Distance(mirrorEntry, cartEntry), Is.GreaterThanOrEqualTo(.62f),
-            "The mirror must not share the cart's interaction opening.");
-        Assert.That(HomeRoomLayoutPlanner.FitsPlayerView(mirrorEntry + Vector3.up * .35f), Is.True);
+        Assert.That(HomeRoomLayoutPlanner.FitsPlayerView(cartEntry + Vector3.up * .35f), Is.True,
+            "The remaining grooming action keeps its visible entrance.");
 
         var otherRows = Catalog().Entries.Where(row => row.roomId != HomeRoomService.BathroomId).ToArray();
         Assert.That(otherRows.Length, Is.EqualTo(60));

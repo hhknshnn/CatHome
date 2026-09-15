@@ -127,7 +127,6 @@ GameObject:
   - component: {fileID: 6614979003012967513}
   - component: {fileID: 1398138820627075968}
   - component: {fileID: 3806725750585533825}
-  - component: {fileID: 147978196855625977}
   - component: {fileID: 4147926992330770652}
   - component: {fileID: 856385466820158367}
   m_Layer: 0
@@ -194,68 +193,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 1.62
---- !u!114 &147978196855625977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4754315874724570576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: art-gaze
-  displayName: DREAM ART
-  kind: 36
-  questType: 26
-  requiredBondXp: 0
-  storeProductId: bedroom.dream-art
-  actionText: LOOK
-  interactionRadius: 1.1
-  energyCost: 2
-  interactionAnchor: {fileID: 4086088041557171875}
-  routineEntryPoint: {fileID: 4086088041557171875}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 1353415939658610794}
-  lookPoint: {fileID: 6907429928068978494}
-  reactionKind: 0
-  lookDuration: 2.6
-  completeMessage: SWEET DREAMS.
-  visibleLookTargets:
-  - {x: -0.044183034, y: 0.42280707, z: 0.036480002}
-  - {x: 0.5038246, y: 0.214272, z: -0.00084634207}
-  - {x: -0.48787197, y: 0.420672, z: 0.014400039}
-  - {x: 0.44313604, y: 0.6099839, z: 0.02207996}
-  - {x: 0.21626854, y: 0.29566208, z: 0.03551998}
-  - {x: -0.21704455, y: 0.6028609, z: 0.03992468}
-  - {x: 0.19958328, y: 0.60400736, z: 0.03379198}
-  - {x: -0.20142545, y: 0.28051195, z: 0.022080015}
-  - {x: 0.5034738, y: 0.412416, z: 0.0009170638}
-  - {x: -0.443136, y: 0.6099839, z: 0.022080036}
-  - {x: 0.015474314, y: 0.60648143, z: 0.034175996}
-  - {x: -0.36256582, y: 0.28051195, z: 0.022080028}
-  - {x: 0.36256582, y: 0.28051198, z: 0.022079967}
-  - {x: -0.28199565, y: 0.39033598, z: 0.022080023}
-  - {x: 0.36256582, y: 0.50016, z: 0.022079967}
-  - {x: -0.36256582, y: 0.50016, z: 0.022080028}
-  - {x: 0.12085529, y: 0.39033595, z: 0.022079987}
-  - {x: -0.03700325, y: 0.29948518, z: 0.03936}
-  - {x: 0.31458125, y: 0.6000526, z: 0.03513597}
-  - {x: -0.120855264, y: 0.50016, z: 0.022080008}
-  - {x: 0.04028511, y: 0.50016, z: 0.022079995}
-  - {x: 0.36256585, y: 0.39033595, z: 0.022079965}
-  - {x: 0.20142548, y: 0.50016, z: 0.02207998}
-  - {x: 0.4940439, y: 0.51148796, z: -0.022772374}
-  - {x: 0.50312304, y: 0.313344, z: 0.0026804698}
-  - {x: 0.09270476, y: 0.29777628, z: 0.04205915}
-  - {x: -0.13056, y: 0.39977646, z: 0.032553446}
-  - {x: -0.121262975, y: 0.29930753, z: 0.04549662}
-  - {x: 0.20142548, y: 0.39033595, z: 0.02207998}
-  - {x: -0.443136, y: 0.50016, z: 0.022080036}
-  - {x: -0.443136, y: 0.28051198, z: 0.022080036}
-  - {x: -0.36256582, y: 0.6099839, z: 0.022080028}
 --- !u!114 &4147926992330770652
 MonoBehaviour:
   m_ObjectHideFlags: 0

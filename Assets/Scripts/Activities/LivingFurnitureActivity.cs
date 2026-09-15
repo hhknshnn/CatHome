@@ -17,6 +17,7 @@ public sealed class LivingFurnitureActivity : CatActivity
     CatActivityAnimation pose;
     CatToyContactMotion contact;
     CharacterController controller;
+    CatSupportedFurnitureMotion supportedMotion;
     Vector3 toyStart;
     Quaternion toyRotation;
     public bool IsResting {get;private set;}
@@ -43,8 +44,7 @@ public sealed class LivingFurnitureActivity : CatActivity
     }
     IEnumerator Routine()
     {
-        Vector3 floor=RoutineEntryPoint.position;floor.y=0;
-        yield return Hop(floor,perch.position);
+        Vector3 floor=RoutineEntryPoint.position;floor.y=Cat.transform.position.y;
         // The table's authored heading places the paw at the loose toy. Only
         // the free rest chooses a viewing direction before the held pose.
         Quaternion held = perch.rotation;
@@ -52,7 +52,16 @@ public sealed class LivingFurnitureActivity : CatActivity
         {
             held=HeldFacing(perch.rotation);
         }
-        yield return CatActivityFacing.Turn(Cat,held);
+        Vector3 seat=perch.position;
+        if(!table)
+        {
+            // One fixed seat centre gives the original jump room in front
+            // of the backrest and keeps the haunches clear of the armrest.
+            seat+=Vector3.ProjectOnPlane(floor-seat,Vector3.up).normalized*.10f;
+            seat+=held*Vector3.forward*.08f;
+        }
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, perch);
+        yield return supportedMotion.Jump(floor, seat, Cat.transform.rotation, held);
         if(table && toy!=null)
         {
             PlayCatPose(CatActivityPose.Sniff,perch);yield return new WaitForSeconds(.5f);
@@ -72,46 +81,60 @@ public sealed class LivingFurnitureActivity : CatActivity
                     t+=Time.deltaTime;yield return null;
                 }
             }
-            contact.Clear();PlayCatPose(CatActivityPose.Sit,perch);
-            yield return CatActivityFacing.Turn(Cat,HeldFacing(Cat.transform.rotation));
+            contact.Clear();
+            yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, perch.position, Cat.transform.rotation);
+            PlayCatPose(CatActivityPose.Sit,perch);
             yield return new WaitForSeconds(.8f);
         }
         else
         {
-            PlayCatPose(CatActivityPose.Sleep,perch);IsResting=true;
+            yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, seat, held);
+            yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .90f, seat, held);
+            supportedMotion.Rest(CatActivityPose.Sleep);IsResting=true;
             while(KeepResting)yield return null;IsResting=false;
+            yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, seat, held);
         }
-        yield return Hop(perch.position,floor);
+        yield return supportedMotion.Pose(CatActivityPose.StandUp, .55f, seat, Cat.transform.rotation);
+        yield return supportedMotion.Jump(seat, floor, Cat.transform.rotation,
+            Quaternion.LookRotation(Vector3.ProjectOnPlane(floor-seat,Vector3.up)));
         Release();CompleteActivity(GameLanguageService.Current==GameLanguage.Turkish?(table?"Ben bir şey yapmadım!":"Ne güzel bir köşe."):(table?"It wasn't me!":"Such a cosy spot."));
         // Reset only after the cat is back on the floor, ready for the next visit.
         ResetToy();
     }
     IEnumerator PushToy()
     {
+        GameAudio.Play(AudioCue.BallTap,.7f);
+        GameAudio.Play(AudioCue.BallRoll,.5f);
         PlayCatPose(CatActivityPose.Sniff,perch);float t=0;
         Vector3 edge=transform.TransformPoint(toyEdge),landing=transform.TransformPoint(toyLanding);
         Vector3 start=toy.position;
         while(t<.45f)
         {
+            if(Time.timeScale<=0f){yield return null;continue;}
             t+=Time.deltaTime;toy.position=Vector3.Lerp(start,edge,Mathf.Clamp01(t/.45f));
             toy.Rotate(Vector3.forward,-240*Time.deltaTime,Space.World);yield return null;
         }
         t=0;
         while(t<.38f)
         {
+            if(Time.timeScale<=0f){yield return null;continue;}
             t+=Time.deltaTime;float p=Mathf.Clamp01(t/.38f);
             Vector3 at=Vector3.Lerp(edge,landing,p);at.y=Mathf.Lerp(edge.y,landing.y,p*p);
-            toy.position=at;toy.Rotate(Vector3.forward,-360*Time.deltaTime,Space.World);yield return null;
+            toy.position=at;toy.Rotate(Vector3.forward,-360*Time.deltaTime,Space.World);
+            // The solid object's first floor contact is distinct from the
+            // light paw tap and rolling sound on the tabletop.
+            if(p>=1f)GameAudio.Play(AudioCue.PropLand,1f);
+            yield return null;
         }
         t=0;
-        while(t<.4f){t+=Time.deltaTime;toy.position=landing+Vector3.up*(Mathf.Abs(Mathf.Sin(t/.4f*Mathf.PI*2))*.05f*(1-t/.4f));yield return null;}
+        while(t<.4f){if(Time.timeScale<=0f){yield return null;continue;}t+=Time.deltaTime;toy.position=landing+Vector3.up*(Mathf.Abs(Mathf.Sin(t/.4f*Mathf.PI*2))*.05f*(1-t/.4f));yield return null;}
         toy.position=landing;
     }
     Quaternion HeldFacing(Quaternion preferred)
     {
         var surface=perch.GetComponent<CatActivitySurface>();
         return surface!=null && surface.AlignAlongSurface?
-            CatActivityFacing.AlongAxis(Cat,perch.position,perch.rotation):
+            CatActivityFacing.AlongAxis(Cat,perch.position,perch.rotation * Quaternion.Euler(0,90,0)):
             CatActivityFacing.Resolve(Cat,perch.position,preferred);
     }
     IEnumerator Hop(Vector3 from,Vector3 to)
@@ -121,7 +144,7 @@ public sealed class LivingFurnitureActivity : CatActivity
         yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing,.18f);
     }
     void ResetToy(){if(toy!=null && toyStart.sqrMagnitude>.001f)toy.SetPositionAndRotation(toyStart,toyRotation);}
-    void Release(){IsResting=false;if(contact!=null)contact.Clear();if(controller!=null)controller.enabled=true;if(Cat!=null)Cat.SetMovementLocked(this,false);}
+    void Release(){supportedMotion?.End();supportedMotion=null;IsResting=false;if(contact!=null)contact.Clear();if(controller!=null)controller.enabled=true;if(Cat!=null)Cat.SetMovementLocked(this,false);}
     protected override void CancelActivity(){if(!IsRunning)return;StopAllCoroutines();if(!HasBegunActivity){base.CancelActivity();return;}Release();ResetToy();base.CancelActivity();}
 #if UNITY_EDITOR
     public void EditorConfigureFurniture(Transform support,bool isTable,Transform prop,Vector3 edge,Vector3 landing)

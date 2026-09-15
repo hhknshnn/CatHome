@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 6034626931436844758}
   - component: {fileID: 4979663561851577529}
   - component: {fileID: 6981131582007461411}
-  - component: {fileID: 5576691056906004976}
   - component: {fileID: 6487767835640154200}
   - component: {fileID: 7353017652349548977}
   m_Layer: 0
@@ -109,56 +108,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
---- !u!114 &5576691056906004976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2358109909082412254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: night-light-gaze
-  displayName: NIGHT LIGHT
-  kind: 35
-  questType: 26
-  requiredBondXp: 0
-  storeProductId: bedroom.night-light
-  actionText: GAZE
-  interactionRadius: 1.1
-  energyCost: 2
-  interactionAnchor: {fileID: 480594986581375262}
-  routineEntryPoint: {fileID: 480594986581375262}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 3772068874835351030}
-  lookPoint: {fileID: 4392954873942389289}
-  reactionKind: 0
-  lookDuration: 2.8
-  completeMessage: SO WARM.
-  visibleLookTargets:
-  - {x: -9.155273e-10, y: 0.37940675, z: -0.146688}
-  - {x: -0.000000007218807, y: 0.51625407, z: 0.095616}
-  - {x: 0.15633786, y: 0.36295858, z: 0.0000000053274416}
-  - {x: -0.06392511, y: 0.516254, z: -0.08015965}
-  - {x: 0.103326775, y: 0.52224, z: -0.023583604}
-  - {x: -0.12647998, y: 0.36295858, z: -0.091893084}
-  - {x: 0.10123156, y: 0.4244783, z: -0.0936379}
-  - {x: 0.02358366, y: 0.52224, z: -0.10332675}
-  - {x: 0.12647998, y: 0.36295858, z: -0.09189308}
-  - {x: -0.07924798, y: 0.45481402, z: -0.09937395}
-  - {x: 0.1386452, y: 0.4244783, z: 0.0000000055247438}
-  - {x: 0.07924807, y: 0.45481402, z: -0.0993739}
-  - {x: 0.10461046, y: 0.36295858, z: -0.11618167}
-  - {x: -0.10461046, y: 0.36295858, z: -0.11618167}
-  - {x: 0.007561777, y: 0.4012027, z: -0.15742293}
-  - {x: -0.000000007740649, y: 0.516254, z: -0.10252799}
-  - {x: 0.102528, y: 0.51625407, z: 0.000000015137257}
-  - {x: -0.0075617754, y: 0.4012027, z: -0.15742293}
-  - {x: 0.008221182, y: 0.3803833, z: -0.146688}
-  - {x: 0.022814628, y: 0.516254, z: -0.0999574}
 --- !u!114 &6487767835640154200
 MonoBehaviour:
   m_ObjectHideFlags: 0

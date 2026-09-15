@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8386187372734640966}
   - component: {fileID: 961668284388069313}
   - component: {fileID: 6623138140045113844}
-  - component: {fileID: 2074076379715052522}
   - component: {fileID: 3221540674292002503}
   - component: {fileID: 4460473569685737602}
+  - component: {fileID: 744820430508461604}
   m_Layer: 0
   m_Name: BedroomYarnBasket
   m_TagString: Untagged
@@ -37,6 +37,7 @@ Transform:
   - {fileID: 7576381656284632944}
   - {fileID: 61006119010738623}
   - {fileID: 7438799375131047583}
+  - {fileID: 5816202327985152303}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &961668284388069313
@@ -78,66 +79,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
---- !u!114 &2074076379715052522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3692585346780155083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: yarn-swat
-  displayName: YARN BASKET
-  kind: 34
-  questType: 4
-  requiredBondXp: 0
-  storeProductId: bedroom.yarn-basket
-  actionText: POUNCE
-  interactionRadius: 1.1
-  energyCost: 6
-  interactionAnchor: {fileID: 7438799375131047583}
-  routineEntryPoint: {fileID: 7438799375131047583}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 7992416089137857997}
-  lookPoint: {fileID: 61006119010738623}
-  reactionKind: 2
-  lookDuration: 2.6
-  completeMessage: GOT THE YARN!
-  visibleLookTargets:
-  - {x: -0.10832815, y: 0.30816942, z: -0.11639475}
-  - {x: 0.117387064, y: 0.29132286, z: 0.23760855}
-  - {x: 0.25594407, y: 0.29132283, z: -0.06877636}
-  - {x: -0.2101419, y: 0.29132283, z: 0.16148667}
-  - {x: 0.08981788, y: 0.2992332, z: -0.22861965}
-  - {x: 0.052826554, y: 0.29806113, z: 0.04818353}
-  - {x: -0.26278105, y: 0.29132283, z: -0.034404423}
-  - {x: -0.034404483, y: 0.29132286, z: 0.26278105}
-  - {x: 0.22961201, y: 0.29132283, z: 0.13234757}
-  - {x: -0.06877636, y: 0.2913228, z: -0.25594407}
-  - {x: 0.01519081, y: 0.29919267, z: -0.1267407}
-  - {x: -0.15621103, y: 0.2979068, z: 0.02119028}
-  - {x: -0.22961204, y: 0.2913228, z: -0.13234757}
-  - {x: 0.2101419, y: 0.2913228, z: -0.16148667}
-  - {x: 0.26278105, y: 0.29132283, z: 0.034404453}
-  - {x: -0.16148661, y: 0.2913228, z: -0.21014196}
-  - {x: -0.13234752, y: 0.29132283, z: 0.22961205}
-  - {x: 0.14844848, y: 0.30816942, z: 0.086591445}
-  - {x: -0.25708982, y: 0.29132283, z: 0.08752369}
-  - {x: 0.15001954, y: 0.29985997, z: -0.20624948}
-  - {x: 0.021615466, y: 0.2984914, z: 0.10179659}
-  - {x: 0.0687764, y: 0.29132286, z: 0.25594404}
-  - {x: -0.1207977, y: 0.29892167, z: -0.07031203}
-  - {x: -0.02513218, y: 0.29966143, z: -0.1516266}
-  - {x: 0.13467933, y: 0.29916772, z: 0.04862791}
-  - {x: 0.062490337, y: 0.30816942, z: -0.21835992}
-  - {x: 0.11529767, y: 0.30816942, z: -0.22794667}
-  - {x: -0.105596446, y: 0.29701793, z: -0.13202588}
-  - {x: 0.004080996, y: 0.30816942, z: -0.13336147}
-  - {x: -0.01430218, y: 0.30816942, z: -0.14442895}
 --- !u!114 &3221540674292002503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,6 +104,66 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CatHome.Runtime::RoomProductScaleStamp
   appliedScale: 0.82
+--- !u!114 &744820430508461604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3692585346780155083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17896631c487fc0479bae63e167673ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CatHome.Runtime::BallChaseActivity
+  activityId: yarn-swat
+  displayName: YARN BASKET
+  kind: 34
+  questType: 4
+  requiredBondXp: 0
+  storeProductId: bedroom.yarn-basket
+  actionText: PLAY BALL
+  interactionRadius: 1.1
+  energyCost: 6
+  interactionAnchor: {fileID: 7438799375131047583}
+  routineEntryPoint: {fileID: 7438799375131047583}
+  lockedVisual: {fileID: 0}
+  unlockedContent: {fileID: 7992416089137857997}
+  ball: {fileID: 5816202327985152303}
+  landingPoints: []
+  catchesToComplete: 3
+--- !u!1 &4403353082437289380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5816202327985152303}
+  m_Layer: 0
+  m_Name: BedroomPlayBall
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &5816202327985152303
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4403353082437289380}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.4, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1807923120912650731}
+  m_Father: {fileID: 8386187372734640966}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4754139081414540702
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,6 +195,97 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8386187372734640966}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5111733405337460205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1807923120912650731}
+  - component: {fileID: 3005899765919528263}
+  - component: {fileID: 7162299601435862404}
+  m_Layer: 0
+  m_Name: YarnBall
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1807923120912650731
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111733405337460205}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.03155963, y: -0.076834835, z: 0.031572096}
+  m_LocalScale: {x: 0.5733945, y: 0.5733945, z: 0.5733945}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5816202327985152303}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &3005899765919528263
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111733405337460205}
+  m_Mesh: {fileID: 3648892314004000765, guid: 708461be07a6513449de883286283d07, type: 3}
+--- !u!23 &7162299601435862404
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5111733405337460205}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 71488629bac628546ac411accb339777, type: 2}
+  - {fileID: 2100000, guid: 25b9a9e0d09367845a1d50dc18f529a1, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7344226407662457135
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +311,7 @@ Transform:
   m_GameObject: {fileID: 7344226407662457135}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.11614427, y: 0, z: -0.6396}
+  m_LocalPosition: {x: 0.12, y: 0, z: -0.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

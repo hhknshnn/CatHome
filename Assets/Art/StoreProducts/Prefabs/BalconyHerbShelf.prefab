@@ -80,7 +80,7 @@ Transform:
   m_GameObject: {fileID: 714562792455226511}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.143, z: -0.0315}
+  m_LocalPosition: {x: 0, y: 1.143, z: 0.0485}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: CatHome.Runtime::CatActivitySurface
   size: {x: 0.77, y: 0.14}
   overridePose: 1
-  preferredPose: 1
+  preferredPose: 22
   alignAlongSurface: 0
 --- !u!1 &5614587768910682670
 GameObject:

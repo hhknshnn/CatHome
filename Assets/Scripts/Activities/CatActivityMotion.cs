@@ -5,27 +5,46 @@ using UnityEngine;
 /// <summary>Floor clearance and short routes for furniture approaches.</summary>
 public static class CatActivityMotion
 {
-    public static IEnumerator Jump(CatMovement cat,Vector3 from,Vector3 to,Quaternion startRotation,Quaternion endRotation,float clearance=.20f)
+    /// <summary>Turn in a neutral pose; the caller retains action and support ownership.</summary>
+    public static IEnumerator TurnForStep(CatMovement cat, Quaternion target, float minimumSeconds = .18f)
     {
-        var pose=cat.GetComponent<CatActivityAnimation>();Vector3 flat=to-from;flat.y=0;
-        Quaternion launch=flat.sqrMagnitude>.001f?Quaternion.LookRotation(flat):startRotation;
-        float elapsed=0;
-        while(elapsed<.18f)
+        var pose = cat.GetComponent<CatActivityAnimation>();
+        if (pose != null) pose.SetPose(CatActivityPose.GentleKnead);
+        float angle = Quaternion.Angle(cat.transform.rotation, target);
+        if (angle < .1f) yield break;
+        yield return CatActivityFacing.Turn(cat, target, Mathf.Max(minimumSeconds, angle / 300f));
+    }
+
+    /// <summary>Traverse an already validated authored segment without idle walking or sideways sliding.</summary>
+    public static IEnumerator WalkAuthoredStep(CatMovement cat, Vector3 target, Quaternion arrival, float minimumSeconds)
+    {
+        Vector3 from = cat.transform.position, flat = target - from; flat.y = 0f;
+        if (flat.sqrMagnitude < .0001f)
         {
-            elapsed+=Time.deltaTime;float t=Mathf.Clamp01(elapsed/.18f);
-            cat.transform.SetPositionAndRotation(from,Quaternion.Slerp(startRotation,launch,t));
-            if(pose!=null)pose.SetTimedPose(CatActivityPose.Hop,t*.22f);yield return null;
+            cat.transform.position = target;
+            yield return TurnForStep(cat, arrival);
+            yield break;
         }
-        float duration=Mathf.Clamp(.32f+flat.magnitude*.13f+Mathf.Abs(to.y-from.y)*.12f,.38f,.85f);elapsed=0;
-        while(elapsed<duration)
+        var travel = Quaternion.LookRotation(flat);
+        yield return TurnForStep(cat, travel);
+        var pose = cat.GetComponent<CatActivityAnimation>();
+        if (pose != null) pose.SetPose(CatActivityPose.Walk);
+        float duration = Mathf.Max(minimumSeconds, flat.magnitude / 1.5f), elapsed = 0f;
+        while (elapsed < duration)
         {
-            elapsed+=Time.deltaTime;float t=Mathf.Clamp01(elapsed/duration);
-            cat.transform.SetPositionAndRotation(JumpPosition(from,to,t,clearance),Quaternion.Slerp(launch,endRotation,Mathf.InverseLerp(.7f,1f,t)));
-            if(pose!=null)pose.SetTimedPose(CatActivityPose.Hop,Mathf.Lerp(.22f,.78f,t));yield return null;
+            elapsed += Time.deltaTime;
+            cat.transform.SetPositionAndRotation(Vector3.Lerp(from, target, Mathf.Clamp01(elapsed / duration)), travel);
+            yield return null;
         }
-        cat.transform.SetPositionAndRotation(to,endRotation);elapsed=0;
-        while(elapsed<.18f)
-        {elapsed+=Time.deltaTime;if(pose!=null)pose.SetTimedPose(CatActivityPose.Hop,Mathf.Lerp(.78f,1,elapsed/.18f));yield return null;}
+        cat.transform.position = target;
+        yield return TurnForStep(cat, arrival);
+    }
+
+    public static IEnumerator Jump(CatMovement cat, Vector3 from, Vector3 to, Quaternion startRotation, Quaternion endRotation, float clearance = .20f, bool centerOnLanding = true)
+    {
+        Vector3 flat = to - from; flat.y = 0f;
+        Quaternion launch = flat.sqrMagnitude > .001f ? Quaternion.LookRotation(flat) : startRotation;
+        yield return CatJumpMotion.Play(cat, from, to, launch, endRotation, centerOnLanding && to.y > .12f, clearance);
     }
     private const float Step = .2f;
     private const int Width = 38, Depth = 32;

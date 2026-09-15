@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 1274407649136881673}
   - component: {fileID: 6244126501974934058}
   - component: {fileID: 8019634277046770554}
-  - component: {fileID: 6635964354534044885}
   - component: {fileID: 2381872033557767258}
   - component: {fileID: 4131279976131910327}
   m_Layer: 0
@@ -109,68 +108,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
---- !u!114 &6635964354534044885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5807357609124787499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: grill-watch
-  displayName: GRILL
-  kind: 43
-  questType: 28
-  requiredBondXp: 0
-  storeProductId: garden.grill
-  actionText: STARE
-  interactionRadius: 1.1
-  energyCost: 3
-  interactionAnchor: {fileID: 1650165775742787999}
-  routineEntryPoint: {fileID: 1650165775742787999}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 9014242899970694003}
-  lookPoint: {fileID: 4937848839581603394}
-  reactionKind: 0
-  lookDuration: 2.8
-  completeMessage: SMELLS GOOD!
-  visibleLookTargets:
-  - {x: -0.09491872, y: 0.4796969, z: 0.2076714}
-  - {x: 0.30413368, y: 0.5003829, z: -0.13420191}
-  - {x: -0.12373301, y: 0.70937514, z: -0.104493484}
-  - {x: -0.30502093, y: 0.49706852, z: 0.0000000055884093}
-  - {x: 0.23188737, y: 0.47892675, z: 0.13910508}
-  - {x: -0.01613491, y: 0.70937514, z: 0.10012323}
-  - {x: -0.102275215, y: 0.27781168, z: 0.14110175}
-  - {x: -0.2043263, y: 0.63750577, z: 0.12696998}
-  - {x: 0.04068055, y: 0.66700673, z: -0.09098545}
-  - {x: 0.0709944, y: 0.49706852, z: 0.18107957}
-  - {x: -0.20483097, y: 0.39978224, z: 0.13481994}
-  - {x: -0.2543047, y: 0.63750577, z: -0.023188766}
-  - {x: -0.040777665, y: 0.60087126, z: 0.19032632}
-  - {x: -0.008963762, y: 0.39978224, z: 0.17690095}
-  - {x: 0.3041337, y: 0.5003829, z: 0.044733927}
-  - {x: 0.07950625, y: 0.63750577, z: 0.09937896}
-  - {x: 0.2285915, y: 0.38609058, z: 0.08253373}
-  - {x: -0.28208444, y: 0.49706852, z: 0.10049148}
-  - {x: -0.13876806, y: 0.70937514, z: 0.09504634}
-  - {x: 0.042567447, y: 0.70937514, z: -0.0000000037252903}
-  - {x: -0.21688226, y: 0.63750577, z: -0.114414014}
-  - {x: 0.2932579, y: 0.5003829, z: -0.04473397}
-  - {x: -0.11556835, y: 0.39978224, z: 0.18470094}
-  - {x: 0.3041337, y: 0.5003829, z: 0.13420185}
-  - {x: 0.15857169, y: 0.47983187, z: 0.12895578}
-  - {x: -0.16492921, y: 0.44352478, z: 0.19003837}
-  - {x: -0.2441009, y: 0.39978224, z: 0.08219966}
-  - {x: -0.10604547, y: 0.60087126, z: 0.19032632}
-  - {x: -0.3036506, y: 0.50805473, z: -0.05255052}
-  - {x: -0.29921404, y: 0.49706852, z: 0.05153785}
-  - {x: 0.02708003, y: 0.49706852, z: 0.20867279}
-  - {x: -0.1974044, y: 0.6784838, z: 0.098881006}
 --- !u!114 &2381872033557767258
 MonoBehaviour:
   m_ObjectHideFlags: 0

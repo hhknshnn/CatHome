@@ -456,20 +456,11 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
-    public void MirrorGaze_WaitsForTheMirrorPurchaseAndReusesTheSharedSitLook()
+    public void BathroomMirror_IsDecorationOnly()
     {
         var prefab = LoadStoreProduct("BathroomWallMirror");
-        SitLookActivity gaze = prefab.GetComponentInChildren<SitLookActivity>(true);
-        Assert.That(gaze, Is.Not.Null, "The mirror must carry a sit-and-look.");
-        Assert.That(gaze.Kind, Is.EqualTo(CatActivityKind.MirrorGaze));
-        Assert.That(gaze.QuestType, Is.EqualTo(QuestType.MirrorGaze));
-        Assert.That(gaze.ReactionKind, Is.EqualTo(SitLookReaction.Sit),
-            "The cat calmly observes its reflection without locomotion or swatting.");
-        Assert.That(gaze.LookPoint, Is.Not.Null);
-        Assert.That(gaze.LookPoint.localPosition.y, Is.GreaterThan(0.3f),
-            "The look point is the glass, which is above the shelf.");
-
-        AssertUnlocksWithPurchase(gaze, HomeStoreService.BathroomMirrorId);
+        Assert.That(prefab.GetComponentInChildren<CatActivity>(true), Is.Null);
+        Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length, Is.GreaterThan(0));
     }
 
     [Test]
@@ -632,8 +623,11 @@ public sealed class ActivityUnlockTests
             "The food bowl is authored at -X and lands at +X.");
         Assert.That(bowl.localPosition.y, Is.GreaterThan(0.15f),
             "The bowl rim sits on the raised stand.");
-        Assert.That(stand.localPosition.x, Is.EqualTo(bowl.localPosition.x).Within(0.001f));
-        Assert.That(stand.localPosition.z, Is.LessThan(bowl.localPosition.z));
+        // The accepted side approach keeps the body on the floor. The mouth,
+        // rather than the root, reaches the food point during the source clip.
+        Assert.That(stand.localPosition.y, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(Vector2.Distance(new Vector2(stand.localPosition.x, stand.localPosition.z),
+            new Vector2(bowl.localPosition.x, bowl.localPosition.z)), Is.InRange(0.5f, 0.9f));
         Assert.That(meal.HungerRestore, Is.GreaterThan(0f));
 
         AssertUnlocksWithPurchase(meal, HomeStoreService.KitchenFeedingStationId);
@@ -703,7 +697,7 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
-    public void Bedroom_EveryProductCarriesItsOwnRoutine()
+    public void Bedroom_EightRoutinesAndTwoDecorations()
     {
         // The whole room in one table: ten products, ten kinds, ten gates. Nine
         // of the ten routines come from six shared classes, so the table is the
@@ -715,17 +709,13 @@ public sealed class ActivityUnlockTests
             ("BedroomWardrobe", CatActivityKind.WardrobeScratch,
              HomeStoreService.BedroomWardrobeId, QuestType.Scratch),
             ("BedroomWindowDaybed", CatActivityKind.DaybedWatch,
-             HomeStoreService.BedroomWindowDaybedId, QuestType.WindowWatch),
+             HomeStoreService.BedroomWindowDaybedId, QuestType.BedroomWatch),
             ("BedroomNightstand", CatActivityKind.KnockOff,
              HomeStoreService.BedroomNightstandId, QuestType.KnockOff),
             ("BedroomVanityStool", CatActivityKind.VanityStoolNap,
              HomeStoreService.BedroomVanityStoolId, QuestType.Sleep),
             ("BedroomYarnBasket", CatActivityKind.YarnSwat,
              HomeStoreService.BedroomYarnBasketId, QuestType.PlayBall),
-            ("BedroomNightLight", CatActivityKind.NightLightGaze,
-             HomeStoreService.BedroomNightLightId, QuestType.BedroomWatch),
-            ("BedroomDreamArt", CatActivityKind.ArtGaze,
-             HomeStoreService.BedroomDreamArtId, QuestType.BedroomWatch),
             ("BedroomPawRug", CatActivityKind.BedroomMatKnead,
              HomeStoreService.BedroomPawRugId, QuestType.MatKnead),
             ("BedroomStarCanopy", CatActivityKind.CanopyNap,
@@ -739,6 +729,8 @@ public sealed class ActivityUnlockTests
             Assert.That(activity.StoreProductId, Is.EqualTo(row.ProductId), row.Prefab);
             Assert.That(activity.IsUnlocked, Is.False, row.Prefab + " waits for the purchase.");
         }
+        foreach (string name in new[] { "BedroomNightLight", "BedroomDreamArt" })
+            Assert.That(LoadStoreProduct(name).GetComponent<CatActivity>(), Is.Null, name + " decoration");
     }
 
     /// <summary>
@@ -859,24 +851,15 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
-    public void DaybedWatch_SitsOnTheCushionAndLooksOutTheWindow()
+    public void DaybedNap_UsesRealCushionAndKeepsPurchaseAndQuestIdentity()
     {
-        var watch = (SitLookActivity)LoadRoomActivity(
-            "BedroomWindowDaybed", CatActivityKind.DaybedWatch);
-        var prefab = LoadStoreProduct("BedroomWindowDaybed");
-
-        Assert.That(watch.LookPoint, Is.Not.Null);
-        Assert.That(watch.LookPoint.name, Is.EqualTo("WatchLookPoint"));
-        Assert.That(watch.LookPoint.localPosition.y, Is.GreaterThan(0.5f),
-            "The look point is up at the sill, not down at the cushion.");
-        // The cat arrives from root +Z and looks the other way, out of the
-        // window at root -Z. Both signs matter and they are opposites.
-        Assert.That(watch.LookPoint.localPosition.z, Is.LessThan(0f),
-            "The window is at root -Z, behind the daybed.");
-        Assert.That(prefab.transform.Find("InteractionAnchor").localPosition.z,
-            Is.GreaterThan(0f), "The cat still arrives from the room at root +Z.");
-
-        AssertUnlocksWithPurchase(watch, HomeStoreService.BedroomWindowDaybedId);
+        var nap = (PerchNapActivity)LoadRoomActivity("BedroomWindowDaybed", CatActivityKind.DaybedWatch);
+        Assert.That(nap.PerchPoint, Is.Not.Null);
+        Assert.That(nap.PerchPoint.localPosition.y, Is.InRange(.49f,.53f));
+        Assert.That(nap.PerchPoint.GetComponent<CatActivitySurface>().ResolvePose(CatActivityPose.Sit), Is.EqualTo(CatActivityPose.Sleep));
+        Assert.That(nap.SupportsContinuousRest, Is.True);
+        Assert.That(nap.FloorPoint.localPosition.z, Is.GreaterThan(.7f));
+        AssertUnlocksWithPurchase(nap, HomeStoreService.BedroomWindowDaybedId);
     }
 
     [Test]
@@ -1022,49 +1005,26 @@ public sealed class ActivityUnlockTests
         // The towel is authored at +X across the foot half and lands at -X.
         Assert.That(nest.localPosition.x, Is.LessThan(0f),
             "The towel is authored at +X and lands at -X.");
-        // Yaw 90 like the hammock, but this one stands at x +2.55 where the
-        // courtyard is at -X, so it stays OUT of `facesBackward` and the room is
-        // at root -Z. The hammock's points are positive; these must not be.
-        Assert.That(floor.localPosition.z, Is.LessThan(0f),
-            "The cat climbs on from the courtyard, which here is root -Z.");
-        Assert.That(prefab.transform.Find("InteractionAnchor").localPosition.z,
-            Is.LessThan(floor.localPosition.z),
-            "The cat walks in from further out than it climbs on.");
+        Assert.That(floor.localPosition.x, Is.LessThan(-.9f),
+            "The cat boards from the open foot end; the side lane stays free.");
+        Assert.That(Mathf.Abs(floor.localPosition.z), Is.LessThan(.01f));
         Assert.That(bask.EnergyRestore, Is.GreaterThan(0f));
 
         AssertUnlocksWithPurchase(bask, HomeStoreService.GardenSunLoungerId);
     }
 
     [Test]
-    public void GrillWatch_StaresAtTheLidSeamFromTheCourtyardSide()
+    public void GardenGrill_RemainsVisibleDecorationWithoutASecondWatchAction()
     {
-        var watch = (SitLookActivity)LoadRoomActivity(
-            "GardenGrill", CatActivityKind.GrillWatch);
-        var prefab = LoadStoreProduct("GardenGrill");
-
-        Assert.That(watch.LookPoint, Is.Not.Null);
-        Assert.That(watch.LookPoint.name, Is.EqualTo("StareLookPoint"));
-        Assert.That(watch.LookPoint.localPosition.y / ProductScale(prefab),
-            Is.GreaterThan(0.5f).And.LessThan(0.8f),
-            "The stare lands on the lid seam, not up at the 1.05 vent.");
-        // The grill is the third Garden product with a non-zero yaw and the
-        // second that needs `facesBackward`: yaw 270 at x +2.65 would face the
-        // fence. Z flips, so the courtyard is at root +Z — the same side as the
-        // hammock and the opposite of the lounger, which shares the lounger's
-        // yaw family but not its position.
-        Assert.That(watch.LookPoint.localPosition.z, Is.GreaterThan(0f),
-            "The cat looks at the front of the grill, which is root +Z.");
-        Assert.That(prefab.transform.Find("InteractionAnchor").localPosition.z,
-            Is.GreaterThan(watch.LookPoint.localPosition.z),
-            "The cat sits further out than the face it stares at.");
-
-        AssertUnlocksWithPurchase(watch, HomeStoreService.GardenGrillId);
+        var prefab=LoadStoreProduct("GardenGrill");
+        Assert.That(prefab.GetComponentsInChildren<CatActivity>(true),Is.Empty);
+        Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.GreaterThan(0));
     }
 
     [Test]
-    public void Garden_EveryProductCarriesItsOwnRoutine()
+    public void Garden_EveryInteractiveProductCarriesItsOwnRoutine()
     {
-        // The whole room in one table: ten products, ten kinds, ten gates. Every
+        // Nine interactive products; the grill remains decoration. Every
         // routine here is a reused class, so the table is the only place the
         // pairing is written down in full.
         var expected = new (string Prefab, CatActivityKind Kind, string ProductId, QuestType Quest)[]
@@ -1079,8 +1039,6 @@ public sealed class ActivityUnlockTests
              HomeStoreService.GardenHammockId, QuestType.SwingRide),
             ("GardenSunLounger", CatActivityKind.SunBask,
              HomeStoreService.GardenSunLoungerId, QuestType.Sleep),
-            ("GardenGrill", CatActivityKind.GrillWatch,
-             HomeStoreService.GardenGrillId, QuestType.GardenWatch),
             ("GardenBirdBath", CatActivityKind.BirdBathSip,
              HomeStoreService.GardenBirdBathId, QuestType.Drink),
             ("GardenFlowerPots", CatActivityKind.PotDig,
@@ -1147,10 +1105,11 @@ public sealed class ActivityUnlockTests
         Assert.That(floor, Is.Not.Null);
         Assert.That(perch.localPosition.y / ProductScale(prefab), Is.GreaterThan(0.5f),
             "The cat drinks from the rim, not from the base at 0.10.");
-        // The bird sculpture sits on the BACK of the rim, so the cat's side of
-        // the bowl is the courtyard side and the perch is at root -Z.
-        Assert.That(perch.localPosition.z, Is.LessThan(0f),
-            "The perch is on the near rim, clear of the bird.");
+        // The supported root is between the paws, not itself on the near rim.
+        // Actual paw/rim support is checked in the native jump/contact tests.
+        Assert.That(floor.localPosition.y, Is.EqualTo(0f).Within(0.001f));
+        Assert.That(Vector2.Distance(new Vector2(floor.localPosition.x, floor.localPosition.z),
+            new Vector2(perch.localPosition.x, perch.localPosition.z)), Is.GreaterThan(0.5f));
         Assert.That(floor.localPosition.z, Is.LessThan(perch.localPosition.z),
             "The cat climbs up from further out than it perches.");
         Assert.That(sip.ThirstRestore, Is.GreaterThan(0f));
@@ -1187,28 +1146,11 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
-    public void AwningGaze_LooksUpAtTheValanceFromTheDeck()
+    public void BalconyAwning_RemainsVisibleDecoration()
     {
-        var gaze = (SitLookActivity)LoadRoomActivity(
-            "BalconySunAwning", CatActivityKind.AwningGaze);
         var prefab = LoadStoreProduct("BalconySunAwning");
-
-        Assert.That(gaze.LookPoint, Is.Not.Null);
-        Assert.That(gaze.LookPoint.name, Is.EqualTo("GazeLookPoint"));
-        // The awning hangs at HungHeight 2.24 and its own box is capped at 0.71,
-        // so nothing on it is reachable and the routine is a look-up, not a
-        // swat. The look point is the valance near the bottom of that box.
-        Assert.That(gaze.LookPoint.localPosition.y, Is.LessThan(0.3f),
-            "The gaze lands on the valance, not on the housing at the wall.");
-        // The awning is in `facesBackward`: yaw 180 would point the fabric at
-        // the balcony wall, so Z flips and the deck is at root +Z.
-        Assert.That(gaze.LookPoint.localPosition.z, Is.GreaterThan(0f),
-            "The decorated side faces the deck, which is root +Z.");
-        Assert.That(prefab.transform.Find("InteractionAnchor").localPosition.z,
-            Is.GreaterThan(gaze.LookPoint.localPosition.z),
-            "The cat sits further out on the deck than the edge it looks at.");
-
-        AssertUnlocksWithPurchase(gaze, HomeStoreService.BalconySunAwningId);
+        Assert.That(prefab.GetComponent<CatActivity>(),Is.Null);
+        Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.GreaterThan(0));
     }
 
     /// <summary>
@@ -1264,6 +1206,14 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
+    public void PatioStringLights_RemainVisibleDecoration()
+    {
+        var prefab=LoadStoreProduct("PatioStringLights");
+        Assert.That(prefab.GetComponent<CatActivity>(),Is.Null);
+        Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.GreaterThan(0));
+    }
+
+    [Test]
     public void Patio_EveryProductCarriesItsOwnRoutine()
     {
         // Patio v1 shipped one routine — the porch swing ride — across ten
@@ -1287,8 +1237,6 @@ public sealed class ActivityUnlockTests
              HomeStoreService.PatioPottedFernsId, QuestType.PatioWatch),
             ("PatioHerbTrough", CatActivityKind.HerbTroughDig,
              HomeStoreService.PatioHerbTroughId, QuestType.LitterDig),
-            ("PatioStringLights", CatActivityKind.FestoonGaze,
-             HomeStoreService.PatioStringLightsId, QuestType.PatioWatch),
             ("PatioStoneRug", CatActivityKind.StoneRugKnead,
              HomeStoreService.PatioStoneRugId, QuestType.MatKnead),
         };
@@ -1402,13 +1350,20 @@ public sealed class ActivityUnlockTests
                 prefabName + " is in `facesBackward`: the courtyard is at root +Z.");
         }
 
-        foreach (string prefabName in new[] { "PatioWaterFountain", "PatioPottedFerns" })
+        foreach (string prefabName in new[] { "PatioWaterFountain" })
         {
             Transform anchor = LoadStoreProduct(prefabName).transform.Find("InteractionAnchor");
             Assert.That(anchor, Is.Not.Null, prefabName + " has no InteractionAnchor.");
             Assert.That(anchor.localPosition.x, Is.LessThan(-0.4f),
                 prefabName + " stands at the right edge: the courtyard is at root -X.");
         }
+
+        Transform fern = LoadStoreProduct("PatioPottedFerns").transform.Find("InteractionAnchor");
+        Assert.That(fern, Is.Not.Null);
+        Assert.That(fern.localPosition.z, Is.LessThan(-0.5f),
+            "The rotated fern leaves its front open to the courtyard.");
+        Assert.That(fern.localPosition.x, Is.GreaterThan(0.1f),
+            "The entry clears the side of the fern pot.");
 
         foreach (string prefabName in new[] { "PatioParasol", "PatioDiningSet",
                                               "PatioFirePit", "PatioStoneRug" })
@@ -1615,14 +1570,20 @@ public sealed class ActivityUnlockTests
             "The lamp stands at the LEFT of the loft, so the room is at root +X.");
 
         foreach (string prefabName in new[] { "LoftFloorRunner", "LoftBeanBag",
-                                              "LoftRecordPlayer", "LoftStudyDesk",
-                                              "LoftChaiseLounge" })
+                                              "LoftRecordPlayer", "LoftStudyDesk" })
         {
             Transform anchor = LoadStoreProduct(prefabName).transform.Find("InteractionAnchor");
             Assert.That(anchor, Is.Not.Null, prefabName + " has no InteractionAnchor.");
             Assert.That(anchor.localPosition.z, Is.LessThan(-0.4f),
                 prefabName + " is open floor: the room is at root -Z.");
         }
+
+        Transform chaise = LoadStoreProduct("LoftChaiseLounge").transform.Find("InteractionAnchor");
+        Assert.That(chaise, Is.Not.Null);
+        Assert.That(chaise.localPosition.z, Is.GreaterThan(0.5f),
+            "With the headboard against the wall, entry is on the open seat side.");
+        Assert.That(chaise.localPosition.x, Is.GreaterThan(0.5f),
+            "The entry clears the end of the chaise.");
     }
 
     /// <summary>
@@ -1727,15 +1688,13 @@ public sealed class ActivityUnlockTests
     }
 
     [Test]
-    public void Balcony_EveryProductCarriesItsOwnRoutine()
+    public void Balcony_EveryInteractiveProductCarriesItsOwnRoutine()
     {
         // Balcony v1 shipped deliberately without cat routines; the wave-3
         // decision brought it up to the same contract as every other room. This
         // is the table that says so.
         var expected = new (string Prefab, CatActivityKind Kind, string ProductId, QuestType Quest)[]
         {
-            ("BalconySunAwning", CatActivityKind.AwningGaze,
-             HomeStoreService.BalconySunAwningId, QuestType.BalconyWatch),
             ("BalconyHerbShelf", CatActivityKind.HerbShelfClimb,
              HomeStoreService.BalconyHerbShelfId, QuestType.PantryClimb),
             ("BalconyBirdFeeder", CatActivityKind.FeederShake,

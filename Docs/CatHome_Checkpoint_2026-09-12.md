@@ -1,0 +1,12 @@
+# Cat Home checkpoint — 12 Eylül 2026
+
+Son doğrulama: 2026-09-12T02:56:04+00:00. Önce [genel sıçrama ve dört oda raporunu](GLOBAL_JUMP_ROOMS_2026-09-11.md) okuyun. [Yerel görsel galeri](QA/GLOBAL_JUMP_ROOMS_2026-09-11/index.html).
+
+- Genel mobilya sıçraması özgün `|Jump` klibiyle hazır. Kaynak yedi FBX değişmedi; 39 rutin/76 sıçrama, on ırk×15/30/60 fps30 çevrim başarılı. İniş yatay kayması ve kontrol bırakma adımı0. Destekli oturma/uyuma/kalkma geçişleri korunur.
+- Bahçe, balkon, avlu ve üst kat düzen/animasyon çalışmaları kullanıcı incelemesine hazır. 40 ürün/37 eşya rutini, bahçede tek ücretsiz kuş izleme. Her odada en fazla bir yalnız izleme. Mangal, tente ve avlu ışıkları dekor; kimlikler korunur. Koleksiyon sayısı aynı.
+- Yerleşim kaynakları `OutdoorArrangementProfile` ve `OutdoorPolishBuilder`. Gerçek giriş/engel/temas birlikte düzenlenir. Üst kat divanı yaw90, başlık arkada; plak(-3,05;0;-1,40). Yemlik kök mesafesi gerçek direkten0,66m; baş/gövde payı ve gerçek pati teması korunur. Üç yüksek saksı gerçek çıkış/eşeleme/iniş kullanır. Dört yeni oda paspası ve sıcak dinlenme alanları doğal geçişlerle yatar.
+- Son370/370 eşya/ırk;37/37 yeni oda kamera rutini;38/38 gerçek düğme;40 on-ırk fiziksel pati çevrimi;70/70 hedefli EditMode;validator0/0. Son yemlik kanıtı `bird-release`; eski yakınlık karesi geçersiz. Galeri55PNG, video yok. Fiziksel telefon performansı ölçülmedi.
+- **Açık ayrı bulgu:** salon tablosu (`room.modern-painting`) için yakın ve açık giriş yok. Ek tüm-oda taramasının tek hatası; gerçek düğme hazırlığında da tekrarlandı. Onaylı salon yerleşimine dokunulmadı. Tüm80 eşya taraması tamamen geçti diye sunmayın. Yeni bulgu kullanıcıya raporlandı; sonraki işte kapsamı netleştirin.
+- Ana/recoveryhash `42291458FBAC457CF9C505417B278E97CA3B81F9210498EA4270AA3ACE38A93F`, CP2 `03D4FD1A6420FF0D6CD6213FE08EA57598038EC589BA7CA02475692036EA9A8D`; üçü başlangıçla aynı.16 tercih geri yüklendi.14sahneden yalnız dört hedef oda değişti; ilk dört onaylı oda sahnesi aynı. QA/Play/derleme kapalı; normal üç sahne temiz; tek kedi/kamera/dinleyici. APK/arşiv/commit/push/yayın yok. Kullanıcı onayı gerektirmeyen yerel çalışma dosyaları korunur; mevcut değişiklikleri topluca geri almayın.
+
+Her yeni işten önce kısa sıralı plan ve süre; değişiklikleri tek tek doğrulama sürer. QA çıktıları yerel kalır, Git'e zorla eklenmez. Kullanıcı bu son dört odanın görsel onayını henüz vermedi.

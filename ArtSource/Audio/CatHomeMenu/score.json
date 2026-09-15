@@ -1,0 +1,3416 @@
+{
+  "title": "Minik Kaşif",
+  "bpm_quarter": 120,
+  "meter": "6/8",
+  "key": "C major",
+  "harmony": [
+    "C",
+    "G",
+    "C",
+    "C",
+    "F6",
+    "Dm",
+    "G",
+    "C",
+    "F6",
+    "C",
+    "Dm",
+    "G",
+    "C",
+    "Am",
+    "F6",
+    "C/E",
+    "Dm",
+    "G",
+    "C",
+    "C6",
+    "C",
+    "G",
+    "C",
+    "C",
+    "F6",
+    "Dm",
+    "G",
+    "C",
+    "F6",
+    "C",
+    "Dm",
+    "G",
+    "C",
+    "Am",
+    "F6",
+    "C/E",
+    "Dm",
+    "G",
+    "C",
+    "C6"
+  ],
+  "events": [
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 0,
+      "duration_eighths": 0.9,
+      "velocity": 0.4904,
+      "render_start_seconds": 0.1,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 3.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3233,
+      "render_start_seconds": 0.8481666666666666,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 1.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2847,
+      "render_start_seconds": 0.47591666666666665,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 1.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2986,
+      "render_start_seconds": 0.4816666666666667,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 4.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2976,
+      "render_start_seconds": 1.2228958333333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 4.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2845,
+      "render_start_seconds": 1.2319791666666666,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 6,
+      "duration_eighths": 0.9,
+      "velocity": 0.4695,
+      "render_start_seconds": 1.5978125,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 9.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3187,
+      "render_start_seconds": 2.346375,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 8.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2827,
+      "render_start_seconds": 2.1031666666666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 8.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2836,
+      "render_start_seconds": 2.108625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 12,
+      "duration_eighths": 0.9,
+      "velocity": 0.4752,
+      "render_start_seconds": 3.0961041666666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 15.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3232,
+      "render_start_seconds": 3.8460833333333335,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 13.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2967,
+      "render_start_seconds": 3.4713333333333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 13.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2852,
+      "render_start_seconds": 3.4775416666666668,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 16.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2844,
+      "render_start_seconds": 4.226479166666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 16.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2936,
+      "render_start_seconds": 4.228208333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 18,
+      "duration_eighths": 0.9,
+      "velocity": 0.4765,
+      "render_start_seconds": 4.6011875,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 20.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2827,
+      "render_start_seconds": 5.101770833333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 20.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2945,
+      "render_start_seconds": 5.108666666666666,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 24,
+      "duration_eighths": 0.9,
+      "velocity": 0.4722,
+      "render_start_seconds": 6.102145833333333,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 27.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3235,
+      "render_start_seconds": 6.850666666666666,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 25.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2976,
+      "render_start_seconds": 6.4778125,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 25.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2825,
+      "render_start_seconds": 6.4779375,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 28.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2825,
+      "render_start_seconds": 7.223645833333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 28.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2906,
+      "render_start_seconds": 7.233083333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 28.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2951,
+      "render_start_seconds": 7.227520833333333,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 30,
+      "duration_eighths": 0.9,
+      "velocity": 0.4865,
+      "render_start_seconds": 7.597541666666666,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 33.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3185,
+      "render_start_seconds": 8.350125,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 32.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2906,
+      "render_start_seconds": 8.098958333333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 32.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2901,
+      "render_start_seconds": 8.103770833333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 36,
+      "duration_eighths": 0.9,
+      "velocity": 0.4927,
+      "render_start_seconds": 9.099104166666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 39.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3223,
+      "render_start_seconds": 9.849458333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 37.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2951,
+      "render_start_seconds": 9.473291666666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 37.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2813,
+      "render_start_seconds": 9.477708333333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 40.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2911,
+      "render_start_seconds": 10.225541666666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 40.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2887,
+      "render_start_seconds": 10.230625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 40.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2934,
+      "render_start_seconds": 10.222041666666666,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 42,
+      "duration_eighths": 0.9,
+      "velocity": 0.4892,
+      "render_start_seconds": 10.603083333333334,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 42.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2898,
+      "render_start_seconds": 10.598145833333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 42.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2839,
+      "render_start_seconds": 10.607958333333332,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 48,
+      "duration_eighths": 0.9,
+      "velocity": 0.4291,
+      "render_start_seconds": 12.096583333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 51.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3138,
+      "render_start_seconds": 12.853625,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 50.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2841,
+      "render_start_seconds": 12.597416666666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 50.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.291,
+      "render_start_seconds": 12.607458333333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 53.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2957,
+      "render_start_seconds": 13.346875,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 53.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2869,
+      "render_start_seconds": 13.357270833333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 54,
+      "duration_eighths": 0.9,
+      "velocity": 0.4426,
+      "render_start_seconds": 13.603375,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 57.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3175,
+      "render_start_seconds": 14.352291666666666,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 56.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2926,
+      "render_start_seconds": 14.10225,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 56.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2861,
+      "render_start_seconds": 14.109770833333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 59.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2962,
+      "render_start_seconds": 14.84725,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 59.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2834,
+      "render_start_seconds": 14.859895833333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 60,
+      "duration_eighths": 0.9,
+      "velocity": 0.4378,
+      "render_start_seconds": 15.0973125,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 63.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3156,
+      "render_start_seconds": 15.8530625,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 62.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2897,
+      "render_start_seconds": 15.598895833333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 62.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2956,
+      "render_start_seconds": 15.609375,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 65.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2916,
+      "render_start_seconds": 16.347229166666665,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 65.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.285,
+      "render_start_seconds": 16.352729166666666,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 66,
+      "duration_eighths": 0.9,
+      "velocity": 0.4232,
+      "render_start_seconds": 16.599229166666667,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 68.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2915,
+      "render_start_seconds": 17.096708333333332,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 68.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2949,
+      "render_start_seconds": 17.1090625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 71.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.293,
+      "render_start_seconds": 17.848104166666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 71.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2829,
+      "render_start_seconds": 17.860145833333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 72,
+      "duration_eighths": 0.9,
+      "velocity": 0.4748,
+      "render_start_seconds": 18.10225,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 75.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3289,
+      "render_start_seconds": 18.852083333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 73.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2895,
+      "render_start_seconds": 18.4715,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 73.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.283,
+      "render_start_seconds": 18.4790625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 76.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2853,
+      "render_start_seconds": 19.224708333333332,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 76.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2843,
+      "render_start_seconds": 19.229333333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 76.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2989,
+      "render_start_seconds": 19.2226875,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 78,
+      "duration_eighths": 0.9,
+      "velocity": 0.4919,
+      "render_start_seconds": 19.596208333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 81.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.322,
+      "render_start_seconds": 20.351458333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 80.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2836,
+      "render_start_seconds": 20.100708333333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 80.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2889,
+      "render_start_seconds": 20.10333333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 84,
+      "duration_eighths": 0.9,
+      "velocity": 0.4675,
+      "render_start_seconds": 21.096791666666668,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 87.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.317,
+      "render_start_seconds": 21.8465625,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 85.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2973,
+      "render_start_seconds": 21.475166666666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 85.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2983,
+      "render_start_seconds": 21.4804375,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 88.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2851,
+      "render_start_seconds": 22.224875,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 88.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2861,
+      "render_start_seconds": 22.230645833333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 88.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.3067,
+      "render_start_seconds": 22.228833333333334,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 40,
+      "eighth": 90,
+      "duration_eighths": 0.9,
+      "velocity": 0.4897,
+      "render_start_seconds": 22.5978125,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 93.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3118,
+      "render_start_seconds": 23.347104166666668,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 92.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2855,
+      "render_start_seconds": 23.096666666666668,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 92.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2966,
+      "render_start_seconds": 23.109541666666665,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 96,
+      "duration_eighths": 0.9,
+      "velocity": 0.4726,
+      "render_start_seconds": 24.097604166666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 99.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3192,
+      "render_start_seconds": 24.8499375,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 97.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.287,
+      "render_start_seconds": 24.4746875,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 97.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2868,
+      "render_start_seconds": 24.480729166666666,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 100.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2851,
+      "render_start_seconds": 25.223270833333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 100.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2962,
+      "render_start_seconds": 25.231125,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 100.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2951,
+      "render_start_seconds": 25.226520833333332,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 102,
+      "duration_eighths": 0.9,
+      "velocity": 0.4746,
+      "render_start_seconds": 25.597458333333332,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 105.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3269,
+      "render_start_seconds": 26.346979166666667,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 104.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2955,
+      "render_start_seconds": 26.098958333333332,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 104.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2895,
+      "render_start_seconds": 26.1055625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 108,
+      "duration_eighths": 0.9,
+      "velocity": 0.4924,
+      "render_start_seconds": 27.0961875,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 111.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3109,
+      "render_start_seconds": 27.8519375,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 109.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2862,
+      "render_start_seconds": 27.474895833333335,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 109.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.295,
+      "render_start_seconds": 27.479958333333332,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 112.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2888,
+      "render_start_seconds": 28.228520833333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 112.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2813,
+      "render_start_seconds": 28.2339375,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 112.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.3061,
+      "render_start_seconds": 28.2256875,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 114,
+      "duration_eighths": 0.9,
+      "velocity": 0.4752,
+      "render_start_seconds": 28.600479166666666,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 114.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2955,
+      "render_start_seconds": 28.5993125,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 114.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2822,
+      "render_start_seconds": 28.605833333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 120,
+      "duration_eighths": 0.9,
+      "velocity": 0.4913,
+      "render_start_seconds": 30.102333333333334,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 123.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3255,
+      "render_start_seconds": 30.853666666666665,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 121.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2941,
+      "render_start_seconds": 30.474083333333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 121.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2986,
+      "render_start_seconds": 30.482895833333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 124.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2931,
+      "render_start_seconds": 31.227270833333332,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 124.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2978,
+      "render_start_seconds": 31.234770833333332,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 126,
+      "duration_eighths": 0.9,
+      "velocity": 0.4727,
+      "render_start_seconds": 31.598604166666668,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 129.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3117,
+      "render_start_seconds": 32.34772916666667,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 128.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2827,
+      "render_start_seconds": 32.097875,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 128.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2926,
+      "render_start_seconds": 32.110083333333336,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 132,
+      "duration_eighths": 0.9,
+      "velocity": 0.4716,
+      "render_start_seconds": 33.097208333333334,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 135.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3211,
+      "render_start_seconds": 33.8496875,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 133.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2847,
+      "render_start_seconds": 33.47677083333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 133.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2921,
+      "render_start_seconds": 33.483875,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 136.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2931,
+      "render_start_seconds": 34.226625,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 136.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2932,
+      "render_start_seconds": 34.232458333333334,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 138,
+      "duration_eighths": 0.9,
+      "velocity": 0.4803,
+      "render_start_seconds": 34.59685416666667,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 140.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.297,
+      "render_start_seconds": 35.0968125,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 140.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2828,
+      "render_start_seconds": 35.1078125,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 144,
+      "duration_eighths": 0.9,
+      "velocity": 0.4814,
+      "render_start_seconds": 36.1019375,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 147.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3263,
+      "render_start_seconds": 36.848333333333336,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 145.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2816,
+      "render_start_seconds": 36.475458333333336,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 145.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2888,
+      "render_start_seconds": 36.47833333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 148.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2955,
+      "render_start_seconds": 37.22379166666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 148.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2825,
+      "render_start_seconds": 37.227979166666664,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 148.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2981,
+      "render_start_seconds": 37.22770833333333,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 150,
+      "duration_eighths": 0.9,
+      "velocity": 0.4868,
+      "render_start_seconds": 37.603520833333334,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 153.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3166,
+      "render_start_seconds": 38.347125,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 152.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2957,
+      "render_start_seconds": 38.09725,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 152.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2862,
+      "render_start_seconds": 38.10820833333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 156,
+      "duration_eighths": 0.9,
+      "velocity": 0.4815,
+      "render_start_seconds": 39.1010625,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 159.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.313,
+      "render_start_seconds": 39.850125,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 157.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2968,
+      "render_start_seconds": 39.47258333333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 157.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2861,
+      "render_start_seconds": 39.483104166666664,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 160.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2909,
+      "render_start_seconds": 40.22591666666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 160.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2923,
+      "render_start_seconds": 40.2301875,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 160.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2975,
+      "render_start_seconds": 40.22772916666667,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 162,
+      "duration_eighths": 0.9,
+      "velocity": 0.4754,
+      "render_start_seconds": 40.602125,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 162.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.288,
+      "render_start_seconds": 40.598958333333336,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 162.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2892,
+      "render_start_seconds": 40.603625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 168,
+      "duration_eighths": 0.9,
+      "velocity": 0.4358,
+      "render_start_seconds": 42.100145833333336,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 171.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3128,
+      "render_start_seconds": 42.851083333333335,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 170.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.289,
+      "render_start_seconds": 42.603625,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 170.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.286,
+      "render_start_seconds": 42.60477083333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 173.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2947,
+      "render_start_seconds": 43.349979166666664,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 173.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2974,
+      "render_start_seconds": 43.35427083333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 174,
+      "duration_eighths": 0.9,
+      "velocity": 0.4378,
+      "render_start_seconds": 43.6026875,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 177.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3264,
+      "render_start_seconds": 44.3510625,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 176.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2894,
+      "render_start_seconds": 44.09695833333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 176.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2982,
+      "render_start_seconds": 44.10483333333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 179.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2984,
+      "render_start_seconds": 44.851958333333336,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 179.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2949,
+      "render_start_seconds": 44.8565625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 180,
+      "duration_eighths": 0.9,
+      "velocity": 0.4275,
+      "render_start_seconds": 45.0975,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 183.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3287,
+      "render_start_seconds": 45.84675,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 182.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2959,
+      "render_start_seconds": 45.60275,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 182.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2987,
+      "render_start_seconds": 45.60602083333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 185.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2826,
+      "render_start_seconds": 46.352895833333335,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 185.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2841,
+      "render_start_seconds": 46.35766666666667,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 186,
+      "duration_eighths": 0.9,
+      "velocity": 0.4234,
+      "render_start_seconds": 46.599354166666664,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 188.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2973,
+      "render_start_seconds": 47.1015625,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 188.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2935,
+      "render_start_seconds": 47.10625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 191.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2945,
+      "render_start_seconds": 47.84616666666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 191.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2957,
+      "render_start_seconds": 47.85325,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 192,
+      "duration_eighths": 0.9,
+      "velocity": 0.4755,
+      "render_start_seconds": 48.1035,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 195.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3123,
+      "render_start_seconds": 48.8489375,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 193.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2843,
+      "render_start_seconds": 48.47264583333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 193.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2904,
+      "render_start_seconds": 48.4844375,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 196.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2839,
+      "render_start_seconds": 49.22479166666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 196.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2819,
+      "render_start_seconds": 49.23079166666667,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 196.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2977,
+      "render_start_seconds": 49.228479166666666,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 198,
+      "duration_eighths": 0.9,
+      "velocity": 0.4873,
+      "render_start_seconds": 49.59647916666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 201.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3105,
+      "render_start_seconds": 50.35158333333333,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 200.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2963,
+      "render_start_seconds": 50.10341666666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 200.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2955,
+      "render_start_seconds": 50.1025625,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 41,
+      "eighth": 204,
+      "duration_eighths": 0.9,
+      "velocity": 0.4942,
+      "render_start_seconds": 51.0989375,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 207.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3197,
+      "render_start_seconds": 51.8471875,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 205.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2898,
+      "render_start_seconds": 51.47570833333333,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 205.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2836,
+      "render_start_seconds": 51.48520833333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 208.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2858,
+      "render_start_seconds": 52.2216875,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 208.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.286,
+      "render_start_seconds": 52.2278125,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 208.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.295,
+      "render_start_seconds": 52.22775,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 40,
+      "eighth": 210,
+      "duration_eighths": 0.9,
+      "velocity": 0.4889,
+      "render_start_seconds": 52.59670833333333,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 213.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3249,
+      "render_start_seconds": 53.349270833333335,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 212.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.2956,
+      "render_start_seconds": 53.1038125,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 212.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2838,
+      "render_start_seconds": 53.110125,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 50,
+      "eighth": 216,
+      "duration_eighths": 0.9,
+      "velocity": 0.488,
+      "render_start_seconds": 54.10072916666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 45,
+      "eighth": 219.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3223,
+      "render_start_seconds": 54.85302083333333,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 217.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2833,
+      "render_start_seconds": 54.47120833333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 217.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.298,
+      "render_start_seconds": 54.47825,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 220.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2815,
+      "render_start_seconds": 55.22110416666667,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 65,
+      "eighth": 220.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2837,
+      "render_start_seconds": 55.230916666666666,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 220.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2957,
+      "render_start_seconds": 55.22195833333333,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 222,
+      "duration_eighths": 0.9,
+      "velocity": 0.4678,
+      "render_start_seconds": 55.60222916666667,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 225.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3185,
+      "render_start_seconds": 56.35097916666667,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 59,
+      "eighth": 224.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.284,
+      "render_start_seconds": 56.097458333333336,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 62,
+      "eighth": 224.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2828,
+      "render_start_seconds": 56.110166666666665,
+      "pan": -0.13
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 228,
+      "duration_eighths": 0.9,
+      "velocity": 0.4875,
+      "render_start_seconds": 57.10245833333333,
+      "pan": 0
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 43,
+      "eighth": 231.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.3157,
+      "render_start_seconds": 57.8465625,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 229.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2888,
+      "render_start_seconds": 57.475833333333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 229.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2847,
+      "render_start_seconds": 57.477833333333336,
+      "pan": -0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 232.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.2873,
+      "render_start_seconds": 58.223979166666666,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 232.526,
+      "duration_eighths": 0.67,
+      "velocity": 0.2881,
+      "render_start_seconds": 58.22945833333333,
+      "pan": -0.13
+    },
+    {
+      "instrument": "wood",
+      "midi_note": 65,
+      "eighth": 232.5,
+      "duration_eighths": 0.15,
+      "velocity": 0.2933,
+      "render_start_seconds": 58.22566666666667,
+      "pan": 0.2
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 234,
+      "duration_eighths": 0.9,
+      "velocity": 0.4796,
+      "render_start_seconds": 58.603145833333336,
+      "pan": 0
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 60,
+      "eighth": 234.0,
+      "duration_eighths": 0.67,
+      "velocity": 0.286,
+      "render_start_seconds": 58.603833333333334,
+      "pan": -0.2
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 234.026,
+      "duration_eighths": 0.67,
+      "velocity": 0.2855,
+      "render_start_seconds": 58.6093125,
+      "pan": -0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 0,
+      "duration_eighths": 0.72,
+      "velocity": 0.6595,
+      "render_start_seconds": 0.1,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 1.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5755,
+      "render_start_seconds": 0.3481666666666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 2.5,
+      "duration_eighths": 0.62,
+      "velocity": 0.5775,
+      "render_start_seconds": 0.7255,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 4,
+      "duration_eighths": 0.65,
+      "velocity": 0.5789,
+      "render_start_seconds": 1.1025416666666668,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 6.5,
+      "duration_eighths": 0.86,
+      "velocity": 0.6804,
+      "render_start_seconds": 1.7237083333333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 79,
+      "eighth": 8,
+      "duration_eighths": 0.86,
+      "velocity": 0.5706,
+      "render_start_seconds": 2.0991458333333335,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 9.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.5656,
+      "render_start_seconds": 2.4762291666666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 10.5,
+      "duration_eighths": 0.72,
+      "velocity": 0.5824,
+      "render_start_seconds": 2.7278333333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 55,
+      "eighth": 11.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3343,
+      "render_start_seconds": 2.9743333333333335,
+      "pan": -0.17
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 12,
+      "duration_eighths": 0.62,
+      "velocity": 0.653,
+      "render_start_seconds": 3.1026458333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 13.5,
+      "duration_eighths": 0.55,
+      "velocity": 0.5646,
+      "render_start_seconds": 3.4724166666666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 15,
+      "duration_eighths": 0.73,
+      "velocity": 0.5861,
+      "render_start_seconds": 3.8491041666666668,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 16.5,
+      "duration_eighths": 0.75,
+      "velocity": 0.585,
+      "render_start_seconds": 4.224854166666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 18,
+      "duration_eighths": 0.77,
+      "velocity": 0.6705,
+      "render_start_seconds": 4.600458333333333,
+      "pan": -0.12
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 67,
+      "eighth": 19.5,
+      "duration_eighths": 0.76,
+      "velocity": 0.564,
+      "render_start_seconds": 4.978666666666666,
+      "pan": -0.12
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 72,
+      "eighth": 21,
+      "duration_eighths": 1.1,
+      "velocity": 0.5759,
+      "render_start_seconds": 5.3501875,
+      "pan": -0.12
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 24,
+      "duration_eighths": 0.85,
+      "velocity": 0.6726,
+      "render_start_seconds": 6.098458333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 25.5,
+      "duration_eighths": 0.65,
+      "velocity": 0.5789,
+      "render_start_seconds": 6.474104166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 26.5,
+      "duration_eighths": 0.68,
+      "velocity": 0.5811,
+      "render_start_seconds": 6.727479166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 28,
+      "duration_eighths": 1.14,
+      "velocity": 0.5738,
+      "render_start_seconds": 7.096583333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 30,
+      "duration_eighths": 0.72,
+      "velocity": 0.6727,
+      "render_start_seconds": 7.603166666666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 31.0,
+      "duration_eighths": 0.64,
+      "velocity": 0.5932,
+      "render_start_seconds": 7.847270833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 32.5,
+      "duration_eighths": 0.65,
+      "velocity": 0.5846,
+      "render_start_seconds": 8.225104166666666,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 34,
+      "duration_eighths": 0.85,
+      "velocity": 0.5774,
+      "render_start_seconds": 8.596520833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 57,
+      "eighth": 35.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.339,
+      "render_start_seconds": 8.978895833333333,
+      "pan": -0.17
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 71,
+      "eighth": 36,
+      "duration_eighths": 0.77,
+      "velocity": 0.685,
+      "render_start_seconds": 9.0995,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 37.0,
+      "duration_eighths": 0.72,
+      "velocity": 0.5819,
+      "render_start_seconds": 9.352229166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 79,
+      "eighth": 38.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5682,
+      "render_start_seconds": 9.728958333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 40,
+      "duration_eighths": 1.0,
+      "velocity": 0.5662,
+      "render_start_seconds": 10.102458333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 42,
+      "duration_eighths": 0.75,
+      "velocity": 0.6894,
+      "render_start_seconds": 10.599145833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 43.0,
+      "duration_eighths": 0.7,
+      "velocity": 0.5755,
+      "render_start_seconds": 10.851520833333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 79,
+      "eighth": 44.0,
+      "duration_eighths": 0.85,
+      "velocity": 0.5627,
+      "render_start_seconds": 11.1004375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 48,
+      "duration_eighths": 1.05,
+      "velocity": 0.6197,
+      "render_start_seconds": 12.096395833333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 49.5,
+      "duration_eighths": 0.72,
+      "velocity": 0.518,
+      "render_start_seconds": 12.4754375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 51,
+      "duration_eighths": 1.6,
+      "velocity": 0.534,
+      "render_start_seconds": 12.851875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 54,
+      "duration_eighths": 1.2,
+      "velocity": 0.6094,
+      "render_start_seconds": 13.59725,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 56,
+      "duration_eighths": 0.7,
+      "velocity": 0.517,
+      "render_start_seconds": 14.097166666666666,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 57,
+      "duration_eighths": 1.6,
+      "velocity": 0.53,
+      "render_start_seconds": 14.3495,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 60,
+      "duration_eighths": 0.75,
+      "velocity": 0.5925,
+      "render_start_seconds": 15.097125,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 61.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5258,
+      "render_start_seconds": 15.4784375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 63,
+      "duration_eighths": 0.7,
+      "velocity": 0.5418,
+      "render_start_seconds": 15.846083333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 64.5,
+      "duration_eighths": 0.86,
+      "velocity": 0.5341,
+      "render_start_seconds": 16.2218125,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 71,
+      "eighth": 66,
+      "duration_eighths": 1.1,
+      "velocity": 0.6145,
+      "render_start_seconds": 16.602666666666668,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 68,
+      "duration_eighths": 0.86,
+      "velocity": 0.5343,
+      "render_start_seconds": 17.0978125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 67,
+      "eighth": 69.5,
+      "duration_eighths": 1.0,
+      "velocity": 0.5227,
+      "render_start_seconds": 17.476145833333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 72,
+      "duration_eighths": 0.72,
+      "velocity": 0.661,
+      "render_start_seconds": 18.103041666666666,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 73.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5896,
+      "render_start_seconds": 18.349166666666665,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 74.5,
+      "duration_eighths": 0.62,
+      "velocity": 0.5882,
+      "render_start_seconds": 18.724625,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 76,
+      "duration_eighths": 0.65,
+      "velocity": 0.5803,
+      "render_start_seconds": 19.098875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 78.5,
+      "duration_eighths": 0.87,
+      "velocity": 0.6555,
+      "render_start_seconds": 19.721625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 80,
+      "duration_eighths": 0.74,
+      "velocity": 0.5676,
+      "render_start_seconds": 20.102354166666668,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 81.0,
+      "duration_eighths": 0.72,
+      "velocity": 0.5856,
+      "render_start_seconds": 20.34979166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 82.5,
+      "duration_eighths": 0.84,
+      "velocity": 0.585,
+      "render_start_seconds": 20.726416666666665,
+      "pan": 0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 57,
+      "eighth": 83.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3353,
+      "render_start_seconds": 20.9753125,
+      "pan": -0.17
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 84,
+      "duration_eighths": 0.65,
+      "velocity": 0.6773,
+      "render_start_seconds": 21.096833333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 85.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5831,
+      "render_start_seconds": 21.347708333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 86.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5858,
+      "render_start_seconds": 21.728833333333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 88,
+      "duration_eighths": 0.96,
+      "velocity": 0.5742,
+      "render_start_seconds": 22.0991875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 64,
+      "eighth": 90,
+      "duration_eighths": 0.74,
+      "velocity": 0.6562,
+      "render_start_seconds": 22.596041666666668,
+      "pan": -0.12
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 67,
+      "eighth": 91,
+      "duration_eighths": 0.79,
+      "velocity": 0.5715,
+      "render_start_seconds": 22.851625,
+      "pan": -0.12
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 72,
+      "eighth": 92.5,
+      "duration_eighths": 0.83,
+      "velocity": 0.5794,
+      "render_start_seconds": 23.2254375,
+      "pan": -0.12
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 67,
+      "eighth": 94,
+      "duration_eighths": 0.88,
+      "velocity": 0.5892,
+      "render_start_seconds": 23.598854166666666,
+      "pan": -0.12
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 96,
+      "duration_eighths": 0.86,
+      "velocity": 0.6831,
+      "render_start_seconds": 24.101770833333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 97.5,
+      "duration_eighths": 0.84,
+      "velocity": 0.5697,
+      "render_start_seconds": 24.474854166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 99,
+      "duration_eighths": 0.78,
+      "velocity": 0.5692,
+      "render_start_seconds": 24.852833333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 100.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5908,
+      "render_start_seconds": 25.2223125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 71,
+      "eighth": 102,
+      "duration_eighths": 0.7,
+      "velocity": 0.6678,
+      "render_start_seconds": 25.597708333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 103,
+      "duration_eighths": 0.69,
+      "velocity": 0.569,
+      "render_start_seconds": 25.847083333333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 79,
+      "eighth": 104.5,
+      "duration_eighths": 0.7,
+      "velocity": 0.5705,
+      "render_start_seconds": 26.224958333333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 71,
+      "eighth": 106,
+      "duration_eighths": 0.9,
+      "velocity": 0.5741,
+      "render_start_seconds": 26.596791666666668,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 55,
+      "eighth": 107.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3397,
+      "render_start_seconds": 26.977645833333334,
+      "pan": -0.17
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 108,
+      "duration_eighths": 0.77,
+      "velocity": 0.6762,
+      "render_start_seconds": 27.097291666666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 109,
+      "duration_eighths": 0.78,
+      "velocity": 0.5788,
+      "render_start_seconds": 27.348520833333332,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 110.5,
+      "duration_eighths": 0.73,
+      "velocity": 0.5663,
+      "render_start_seconds": 27.724604166666666,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 112,
+      "duration_eighths": 1.18,
+      "velocity": 0.5791,
+      "render_start_seconds": 28.09825,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 64,
+      "eighth": 114,
+      "duration_eighths": 0.78,
+      "velocity": 0.6739,
+      "render_start_seconds": 28.601270833333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 115,
+      "duration_eighths": 0.75,
+      "velocity": 0.5815,
+      "render_start_seconds": 28.8526875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 116.5,
+      "duration_eighths": 2.05,
+      "velocity": 0.5816,
+      "render_start_seconds": 29.227291666666666,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 64,
+      "eighth": 116.5,
+      "duration_eighths": 1.6,
+      "velocity": 0.247,
+      "render_start_seconds": 29.221895833333335,
+      "pan": 0.14
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 116.5,
+      "duration_eighths": 1.5,
+      "velocity": 0.3706,
+      "render_start_seconds": 29.223375,
+      "pan": 0
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 120,
+      "duration_eighths": 0.72,
+      "velocity": 0.6632,
+      "render_start_seconds": 30.097270833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 121.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5702,
+      "render_start_seconds": 30.353395833333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 122.5,
+      "duration_eighths": 0.62,
+      "velocity": 0.5684,
+      "render_start_seconds": 30.7215625,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 124,
+      "duration_eighths": 0.65,
+      "velocity": 0.5968,
+      "render_start_seconds": 31.096458333333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 126.5,
+      "duration_eighths": 0.86,
+      "velocity": 0.6818,
+      "render_start_seconds": 31.723354166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 79,
+      "eighth": 128,
+      "duration_eighths": 0.86,
+      "velocity": 0.5791,
+      "render_start_seconds": 32.09883333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 129.5,
+      "duration_eighths": 0.67,
+      "velocity": 0.5635,
+      "render_start_seconds": 32.4721875,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 130.5,
+      "duration_eighths": 0.72,
+      "velocity": 0.5902,
+      "render_start_seconds": 32.7255625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 55,
+      "eighth": 131.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3412,
+      "render_start_seconds": 32.9726875,
+      "pan": -0.17
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 132,
+      "duration_eighths": 0.62,
+      "velocity": 0.6851,
+      "render_start_seconds": 33.096666666666664,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 133.5,
+      "duration_eighths": 0.55,
+      "velocity": 0.5688,
+      "render_start_seconds": 33.47377083333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 135,
+      "duration_eighths": 0.73,
+      "velocity": 0.5711,
+      "render_start_seconds": 33.8535625,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 136.5,
+      "duration_eighths": 0.75,
+      "velocity": 0.5844,
+      "render_start_seconds": 34.221041666666665,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 138,
+      "duration_eighths": 0.72,
+      "velocity": 0.6551,
+      "render_start_seconds": 34.601166666666664,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 139.5,
+      "duration_eighths": 0.74,
+      "velocity": 0.5822,
+      "render_start_seconds": 34.9729375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 141,
+      "duration_eighths": 0.8,
+      "velocity": 0.5961,
+      "render_start_seconds": 35.35102083333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 142.5,
+      "duration_eighths": 0.64,
+      "velocity": 0.5964,
+      "render_start_seconds": 35.72360416666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 144,
+      "duration_eighths": 0.85,
+      "velocity": 0.6548,
+      "render_start_seconds": 36.09735416666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 145.5,
+      "duration_eighths": 0.65,
+      "velocity": 0.5945,
+      "render_start_seconds": 36.4788125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 146.5,
+      "duration_eighths": 0.68,
+      "velocity": 0.5713,
+      "render_start_seconds": 36.7240625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 148,
+      "duration_eighths": 1.14,
+      "velocity": 0.5684,
+      "render_start_seconds": 37.1016875,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 150,
+      "duration_eighths": 0.7,
+      "velocity": 0.6892,
+      "render_start_seconds": 37.59889583333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 151,
+      "duration_eighths": 0.64,
+      "velocity": 0.573,
+      "render_start_seconds": 37.853833333333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 152.5,
+      "duration_eighths": 0.76,
+      "velocity": 0.5855,
+      "render_start_seconds": 38.2236875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 154,
+      "duration_eighths": 0.82,
+      "velocity": 0.596,
+      "render_start_seconds": 38.59910416666666,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 57,
+      "eighth": 155.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3344,
+      "render_start_seconds": 38.97270833333334,
+      "pan": -0.17
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 71,
+      "eighth": 156,
+      "duration_eighths": 0.77,
+      "velocity": 0.6875,
+      "render_start_seconds": 39.0978125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 157.0,
+      "duration_eighths": 0.72,
+      "velocity": 0.5755,
+      "render_start_seconds": 39.349666666666664,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 79,
+      "eighth": 158.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5907,
+      "render_start_seconds": 39.727645833333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 160,
+      "duration_eighths": 1.0,
+      "velocity": 0.5699,
+      "render_start_seconds": 40.099375,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 162,
+      "duration_eighths": 0.75,
+      "velocity": 0.6861,
+      "render_start_seconds": 40.60310416666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 163.0,
+      "duration_eighths": 0.7,
+      "velocity": 0.5819,
+      "render_start_seconds": 40.85089583333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 79,
+      "eighth": 164.0,
+      "duration_eighths": 0.85,
+      "velocity": 0.5744,
+      "render_start_seconds": 41.1021875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 168,
+      "duration_eighths": 1.05,
+      "velocity": 0.6084,
+      "render_start_seconds": 42.099833333333336,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 169.5,
+      "duration_eighths": 0.72,
+      "velocity": 0.5374,
+      "render_start_seconds": 42.47602083333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 171,
+      "duration_eighths": 1.6,
+      "velocity": 0.5276,
+      "render_start_seconds": 42.85010416666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 174,
+      "duration_eighths": 0.76,
+      "velocity": 0.6083,
+      "render_start_seconds": 43.5991875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 175.5,
+      "duration_eighths": 0.72,
+      "velocity": 0.5228,
+      "render_start_seconds": 43.976958333333336,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 79,
+      "eighth": 177,
+      "duration_eighths": 1.5,
+      "velocity": 0.5412,
+      "render_start_seconds": 44.350625,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 180,
+      "duration_eighths": 0.78,
+      "velocity": 0.6177,
+      "render_start_seconds": 45.09914583333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 181.5,
+      "duration_eighths": 0.8,
+      "velocity": 0.5301,
+      "render_start_seconds": 45.472520833333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 183,
+      "duration_eighths": 0.68,
+      "velocity": 0.5324,
+      "render_start_seconds": 45.854,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 184.5,
+      "duration_eighths": 0.82,
+      "velocity": 0.5128,
+      "render_start_seconds": 46.22454166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 71,
+      "eighth": 186,
+      "duration_eighths": 1.1,
+      "velocity": 0.6191,
+      "render_start_seconds": 46.6014375,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 188,
+      "duration_eighths": 0.86,
+      "velocity": 0.5254,
+      "render_start_seconds": 47.0965,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 67,
+      "eighth": 189.5,
+      "duration_eighths": 1.0,
+      "velocity": 0.5394,
+      "render_start_seconds": 47.471625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 192,
+      "duration_eighths": 0.72,
+      "velocity": 0.6794,
+      "render_start_seconds": 48.101479166666664,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 193.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5967,
+      "render_start_seconds": 48.34797916666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 194.5,
+      "duration_eighths": 0.62,
+      "velocity": 0.585,
+      "render_start_seconds": 48.72870833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 196,
+      "duration_eighths": 0.65,
+      "velocity": 0.5784,
+      "render_start_seconds": 49.099979166666664,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 198.5,
+      "duration_eighths": 0.87,
+      "velocity": 0.6631,
+      "render_start_seconds": 49.722208333333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 200,
+      "duration_eighths": 0.74,
+      "velocity": 0.5791,
+      "render_start_seconds": 50.1028125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 201.0,
+      "duration_eighths": 0.72,
+      "velocity": 0.5839,
+      "render_start_seconds": 50.34741666666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 202.5,
+      "duration_eighths": 0.84,
+      "velocity": 0.5774,
+      "render_start_seconds": 50.723083333333335,
+      "pan": 0.13
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 57,
+      "eighth": 203.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3436,
+      "render_start_seconds": 50.97439583333333,
+      "pan": -0.17
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 77,
+      "eighth": 204,
+      "duration_eighths": 0.65,
+      "velocity": 0.6585,
+      "render_start_seconds": 51.0964375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 205.0,
+      "duration_eighths": 0.65,
+      "velocity": 0.5821,
+      "render_start_seconds": 51.3478125,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 206.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5744,
+      "render_start_seconds": 51.72441666666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 69,
+      "eighth": 208,
+      "duration_eighths": 0.96,
+      "velocity": 0.5644,
+      "render_start_seconds": 52.0969375,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 210,
+      "duration_eighths": 0.74,
+      "velocity": 0.6655,
+      "render_start_seconds": 52.602666666666664,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 211,
+      "duration_eighths": 0.79,
+      "velocity": 0.5952,
+      "render_start_seconds": 52.850625,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 212.5,
+      "duration_eighths": 0.83,
+      "velocity": 0.5825,
+      "render_start_seconds": 53.226104166666666,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 214,
+      "duration_eighths": 0.88,
+      "velocity": 0.583,
+      "render_start_seconds": 53.59664583333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 216,
+      "duration_eighths": 0.86,
+      "velocity": 0.6882,
+      "render_start_seconds": 54.1005625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 77,
+      "eighth": 217.5,
+      "duration_eighths": 0.84,
+      "velocity": 0.5649,
+      "render_start_seconds": 54.47179166666667,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 69,
+      "eighth": 219,
+      "duration_eighths": 0.78,
+      "velocity": 0.5681,
+      "render_start_seconds": 54.852125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 220.5,
+      "duration_eighths": 0.77,
+      "velocity": 0.5914,
+      "render_start_seconds": 55.225125,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 71,
+      "eighth": 222,
+      "duration_eighths": 0.7,
+      "velocity": 0.6575,
+      "render_start_seconds": 55.59860416666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 74,
+      "eighth": 223,
+      "duration_eighths": 0.69,
+      "velocity": 0.596,
+      "render_start_seconds": 55.847520833333334,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 79,
+      "eighth": 224.5,
+      "duration_eighths": 0.7,
+      "velocity": 0.5808,
+      "render_start_seconds": 56.22541666666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 71,
+      "eighth": 226,
+      "duration_eighths": 0.9,
+      "velocity": 0.5906,
+      "render_start_seconds": 56.599270833333335,
+      "pan": -0.06
+    },
+    {
+      "instrument": "pluck",
+      "midi_note": 55,
+      "eighth": 227.5,
+      "duration_eighths": 0.42,
+      "velocity": 0.3323,
+      "render_start_seconds": 56.978875,
+      "pan": -0.17
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 228,
+      "duration_eighths": 0.77,
+      "velocity": 0.6871,
+      "render_start_seconds": 57.10208333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 76,
+      "eighth": 229,
+      "duration_eighths": 0.78,
+      "velocity": 0.5822,
+      "render_start_seconds": 57.34608333333333,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 74,
+      "eighth": 230.5,
+      "duration_eighths": 0.73,
+      "velocity": 0.5717,
+      "render_start_seconds": 57.7220625,
+      "pan": 0.13
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 72,
+      "eighth": 232,
+      "duration_eighths": 1.18,
+      "velocity": 0.569,
+      "render_start_seconds": 58.103833333333334,
+      "pan": 0.13
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 76,
+      "eighth": 234,
+      "duration_eighths": 0.78,
+      "velocity": 0.6527,
+      "render_start_seconds": 58.5998125,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 72,
+      "eighth": 235,
+      "duration_eighths": 0.75,
+      "velocity": 0.571,
+      "render_start_seconds": 58.84985416666667,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 237.5,
+      "duration_eighths": 0.7,
+      "velocity": 0.5728,
+      "render_start_seconds": 59.476875,
+      "pan": -0.06
+    },
+    {
+      "instrument": "mallet",
+      "midi_note": 67,
+      "eighth": 239,
+      "duration_eighths": 0.44,
+      "velocity": 0.5771,
+      "render_start_seconds": 59.85395833333333,
+      "pan": -0.06
+    },
+    {
+      "instrument": "reed",
+      "midi_note": 64,
+      "eighth": 236.5,
+      "duration_eighths": 1.6,
+      "velocity": 0.2334,
+      "render_start_seconds": 59.22658333333333,
+      "pan": 0.14
+    },
+    {
+      "instrument": "bass",
+      "midi_note": 48,
+      "eighth": 236.5,
+      "duration_eighths": 1.5,
+      "velocity": 0.369,
+      "render_start_seconds": 59.22595833333333,
+      "pan": 0
+    }
+  ]
+}

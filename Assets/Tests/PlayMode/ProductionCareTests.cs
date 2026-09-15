@@ -115,15 +115,15 @@ public sealed class ProductionCareTests
         }
         Object.Destroy(mesh);
     }
-    [UnityTest]public IEnumerator CatVoice_UsesNaturalAssetsAndHonoursMuteAndCancel()
+    [UnityTest]public IEnumerator CatVoice_UsesAuthoredAssetsAndHonoursMuteAndCancel()
     {
         yield return Prepare();var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();cc.enabled=false;cat.transform.position=new Vector3(-.5f,.05f,-1.4f);cc.enabled=true;
         var voice=CatVoice.EnsureOn(cat);var command=cat.GetComponent<CatCommandActivity>();HomeAudioService.SoundEnabled=true;
         Assert.That(command.Kind,Is.EqualTo(CatActivityKind.CompanionCommand),"A runtime command must not inherit a toy's default activity identity");
-        foreach(string name in new[]{"CatMeow","CatPurr","CatEat","CatDrink"})Assert.That(Resources.Load<AudioClip>("CatAudio/"+name).length,Is.GreaterThan(1));
+        foreach(var cue in new[]{AudioCue.Meow,AudioCue.Purr,AudioCue.Eat,AudioCue.Drink})Assert.That(GameAudio.Clip(cue).length,Is.GreaterThan(.3f));
         Assert.That(voice.Meow(),Is.True);Assert.That(voice.Meow(),Is.False,"Repeated taps cannot stack the call");
         Assert.That(command.Issue(CatCompanionCommand.Loaf),Is.True);yield return new WaitForSeconds(1.5f);
-        Assert.That(voice.PlayingLoop,Is.EqualTo("CatPurr"));HomeAudioService.SoundEnabled=false;yield return null;
+        Assert.That(voice.PlayingLoop,Is.EqualTo("Purr_1"));HomeAudioService.SoundEnabled=false;yield return null;
         Assert.That(voice.PlayingLoop,Is.Empty);Assert.That(voice.IsVocalizing,Is.False);
         command.enabled=false;HomeAudioService.SoundEnabled=true;yield return new WaitForSeconds(.3f);Assert.That(voice.PlayingLoop,Is.Empty);
     }

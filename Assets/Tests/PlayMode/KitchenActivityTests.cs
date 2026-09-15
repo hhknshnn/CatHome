@@ -66,7 +66,7 @@ public sealed class KitchenActivityTests
         Transform originalParent = cat.transform.parent;
 
         RoomPlayModeSupport.ProvisionNeeds();
-        Assert.That(activity.TryStart(cat), Is.True, activity.Kind + " must be usable when owned.");
+        Assert.That(activity.TryStart(cat), Is.True, activity.Kind + " must be usable when owned. blocked=" + cat.AreWorldActionsBlocked + " locked=" + cat.IsMovementPhysicallyLocked + " viewBlocked=" + (activity is SitLookActivity look && look.ViewStandBlocked));
         Assert.That(activity.IsRunning, Is.True);
 
         Time.timeScale = 8f;

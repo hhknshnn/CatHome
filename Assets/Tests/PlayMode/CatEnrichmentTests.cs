@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 
 public sealed class CatEnrichmentTests
 {
+    static string Output => Path.Combine(EditorQaSession.IsActive ? EditorQaSession.SaveDirectory : "Temp", "CatEnrichment");
     HomeStoreSaveState store;string breed;float speed;
     [SetUp] public void Before(){store=HomeStoreService.CaptureState();breed=CatBreedService.SelectedBreedId;speed=Time.timeScale;}
     [TearDown] public void After()
@@ -69,7 +70,7 @@ public sealed class CatEnrichmentTests
                 Assert.That(cat.transform.parent,Is.EqualTo(parent));Assert.That(cat.transform.localScale,Is.EqualTo(scale));
             }
         }
-        Directory.CreateDirectory("Docs/QA/CAT_2026-09-06_Refinement");File.WriteAllText("Docs/QA/CAT_2026-09-06_Refinement/breed_matrix.csv",report.ToString());
+        Directory.CreateDirectory(Output);File.WriteAllText(Path.Combine(Output,"breed_matrix.csv"),report.ToString());
         Assert.That(failures,Is.Empty,string.Join("\n",failures));
     }
     [UnityTest] public IEnumerator CancelAndOwnership_RestorePhysicsPoseAndToy()
@@ -204,6 +205,6 @@ public sealed class CatEnrichmentTests
                 Assert.That(maximum,Is.LessThan(1f),breeds.Get(i).Id+" must not penetrate the tunnel fabric");
             }
         }
-        finally{Object.Destroy(sample);Directory.CreateDirectory("Docs/QA/CAT_2026-09-06_Refinement");File.WriteAllText("Docs/QA/CAT_2026-09-06_Refinement/tunnel_clearance.csv",report.ToString());}
+        finally{Object.Destroy(sample);Directory.CreateDirectory(Output);File.WriteAllText(Path.Combine(Output,"tunnel_clearance.csv"),report.ToString());}
     }
 }

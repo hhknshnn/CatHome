@@ -109,7 +109,7 @@ public static class GardenLevelBuilder
         GardenBirdFlock flock = BuildBirdFlock(environment, materials, treeRoost);
         BuildBirdAttention(setup, cat, flock);
         BuildBirdWatchActivity(gameplay, treeRoost);
-        BuildChaseToys(gameplay, materials);
+        // The catalog yarn ball owns the single garden chase routine.
         BuildAmbientCritters(environment, materials, flowerAnchors);
         BuildGameTimeService(setup);
         BuildArchitecture(setup, camera, cat);

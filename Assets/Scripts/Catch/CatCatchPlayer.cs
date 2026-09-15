@@ -343,6 +343,8 @@ public sealed class CatCatchPlayer : MonoBehaviour
 
     private void TickPounce(float delta)
     {
+        if (phaseTimer <= CatchHuntRules.PouncePrepareSeconds && phaseTimer + delta > CatchHuntRules.PouncePrepareSeconds)
+            GameAudio.Play(AudioCue.Jump, .65f, AudioBus.MiniGame);
         phaseTimer += delta;
         float t = Mathf.Clamp01((phaseTimer-CatchHuntRules.PouncePrepareSeconds) / pounceTravel);
         float eased = t; // A committed ballistic lunge does not stop in mid-air to ease in/out.
@@ -363,6 +365,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
         Vector3 landed = pounceTo;
         landed.y = floorY;
         MoveBody(landed - transform.position);
+        GameAudio.Play(AudioCue.LandSoft, .55f, AudioBus.MiniGame);
         strikePending = true;
         strikePoint = landed;
         strikePrey = prey;

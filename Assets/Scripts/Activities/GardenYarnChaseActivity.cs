@@ -142,6 +142,7 @@ public sealed class GardenYarnChaseActivity : CatActivity
                 if (Time.deltaTime > 0f && phase >= .34f && phase < .75f && contact.Distance < .095f)
                 {
                     LastHitDistance = contact.Distance; hit = true; catches++; NotifyChanged();
+                    GameAudio.Play(AudioCue.Cloth, .85f);
                     contact.Clear(); yield return NudgeBall(toward.normalized); break;
                 }
                 elapsed += Time.deltaTime; yield return null;

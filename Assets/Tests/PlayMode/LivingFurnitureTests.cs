@@ -6,12 +6,12 @@ using UnityEngine.TestTools;
 
 public sealed class LivingFurnitureTests
 {
-    HomeStoreSaveState store;string breed;float speed;
-    [SetUp] public void Before(){store=HomeStoreService.CaptureState();breed=CatBreedService.SelectedBreedId;speed=Time.timeScale;}
+    HomeStoreSaveState store;string breed;float speed,capture;
+    [SetUp] public void Before(){store=HomeStoreService.CaptureState();breed=CatBreedService.SelectedBreedId;speed=Time.timeScale;capture=Time.captureDeltaTime;Time.captureFramerate=60;}
     [TearDown] public void After()
     {
         if(CatActivity.Active!=null)CatActivity.Active.enabled=false;
-        Time.timeScale=speed;RoomPlayModeSupport.ReleaseRoom();HomeStoreService.ApplySavedState(store);CatBreedService.Select(breed);
+        Time.timeScale=speed;Time.captureDeltaTime=capture;RoomPlayModeSupport.ReleaseRoom();HomeStoreService.ApplySavedState(store);CatBreedService.Select(breed);
     }
     IEnumerator Prepare()
     {
@@ -80,8 +80,8 @@ public sealed class LivingFurnitureTests
         }
         finally
         {
-            Object.Destroy(mesh);System.IO.Directory.CreateDirectory("Docs/QA/LIVING_2026-09-06_Automatic");
-            System.IO.File.WriteAllText("Docs/QA/LIVING_2026-09-06_Automatic/furniture-breeds.csv",report.ToString());
+            Object.Destroy(mesh);var folder=UnityEditor.SessionState.GetString("CatHome.QA.ResultDirectory","Temp/LivingFurniture");System.IO.Directory.CreateDirectory(folder);
+            System.IO.File.WriteAllText(folder+"/living-furniture-breeds.csv",report.ToString());
         }
     }
     [UnityTest] public IEnumerator AutomaticPlacement_ReplacesOldCoordinates_AndLeavesCareAccessible()

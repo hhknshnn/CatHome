@@ -37,6 +37,7 @@ public sealed class StoreProductDisplay : MonoBehaviour
         {
             visualRoot.SetActive(
                 HomeStoreService.IsOwned(productId) &&
+                (productId!=HomeStoreService.KitchenFruitBasketId||HomeStoreService.IsProductDependencyMet(productId)) &&
                 !HomeStoreService.IsStored(productId));
             // CatActivity can reveal the same content earlier in OwnershipChanged.
             // Always check the cat after visibility resolves, regardless of listener order.
@@ -57,7 +58,8 @@ public sealed class StoreProductDisplay : MonoBehaviour
     private void HandleOwnershipChanged(string changedProductId)
     {
         if (string.IsNullOrEmpty(changedProductId) ||
-            string.Equals(changedProductId, productId, StringComparison.Ordinal))
+            string.Equals(changedProductId, productId, StringComparison.Ordinal) ||
+            (productId==HomeStoreService.KitchenFruitBasketId&&changedProductId==HomeStoreService.KitchenIslandId))
         {
             Refresh();
         }

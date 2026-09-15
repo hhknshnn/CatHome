@@ -37,6 +37,7 @@ public static class UiQaTestSession
     public static void End()
     {
         if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Finish Play Mode before ending QA.");
+        CatHomeSaveSystem.EditorEndCopiedSession();
         SessionState.EraseString("CatHome.QA.SaveDirectory");
     }
     private sealed class Results:ICallbacks

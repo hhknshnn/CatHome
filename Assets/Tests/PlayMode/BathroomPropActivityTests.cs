@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -106,7 +107,7 @@ public sealed class BathroomPropActivityTests
     }
 
     [UnityTest]
-    public IEnumerator GroomBrush_DragsTheCatAlongTheRoller()
+    public IEnumerator GroomBrush_UsesPawGroomWithoutLeavingNearbyFloor()
     {
         yield return LoadBathroom();
 
@@ -120,12 +121,13 @@ public sealed class BathroomPropActivityTests
         Buy(HomeStoreService.BathroomGroomingCartId);
         groom.RefreshUnlockPresentation();
 
-        // The rub is lateral, so the cat has to actually travel along the roller
-        // rather than pump in place.
+        var controller = cat.GetComponent<CharacterController>(); controller.enabled = false;
+        Vector3 entry = groom.RoutineEntryPoint.position; entry.y = .05f;
+        cat.transform.position = entry; controller.enabled = true; Physics.SyncTransforms();
         Vector3 before = cat.transform.position;
         yield return RunAndAssertClean(groom, cat);
-        Assert.That(Vector3.Distance(before, cat.transform.position), Is.GreaterThan(0.2f),
-            "The cat must move to the cart, not groom where it stood.");
+        Assert.That(Vector3.Distance(before, cat.transform.position), Is.LessThan(.002f),
+            "Paw grooming must stay where the nearby button was pressed.");
     }
 
     [UnityTest]
@@ -178,27 +180,13 @@ public sealed class BathroomPropActivityTests
     }
 
     [UnityTest]
-    public IEnumerator MirrorGaze_RunsTheSharedSitLook()
+    public IEnumerator Mirror_IsDecorationAfterPurchase()
     {
         yield return LoadBathroom();
-
-        SitLookActivity gaze = null;
-        foreach (SitLookActivity candidate in
-                 Object.FindObjectsByType<SitLookActivity>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
-        {
-            if (candidate.Kind == CatActivityKind.MirrorGaze)
-                gaze = candidate;
-        }
-        CatMovement cat = Object.FindAnyObjectByType<CatMovement>(FindObjectsInactive.Include);
-        Assert.That(gaze, Is.Not.Null, "The Bathroom scene must carry the mirror gaze.");
-        Assert.That(cat, Is.Not.Null);
-
-        Assert.That(gaze.TryStart(cat), Is.False, "An unowned mirror has no reflection.");
         Buy(HomeStoreService.BathroomMirrorId);
-        gaze.RefreshUnlockPresentation();
-
-        yield return RunAndAssertClean(gaze, cat);
+        yield return null;
+        Assert.That(Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            .Any(a => a.Kind == CatActivityKind.MirrorGaze), Is.False);
     }
 
     [UnityTest]

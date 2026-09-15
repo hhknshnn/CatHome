@@ -35,7 +35,7 @@ public sealed class CatActivityReaction : MonoBehaviour
 
     public void PlayPounceReaction()
     {
-        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Hop);
+        GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.Pounce);
         BeginReaction(OneShotRoutine(pounceState, 0.72f));
     }
 

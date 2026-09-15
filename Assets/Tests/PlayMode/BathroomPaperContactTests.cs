@@ -164,7 +164,7 @@ public sealed class BathroomPaperContactTests
         {
             yield return new WaitForEndOfFrame();
             turn = Mathf.Max(turn, Quaternion.Angle(original,paper.RollPivot.localRotation));
-            if (!paper.IsRunning || cat.GetComponent<CatActivityAnimation>().CurrentPose != CatActivityPose.Paw) continue;
+            if (!paper.IsRunning || !paper.IsRecordTapping) continue;
             samples++;
             Assert.That(paper.RecordStandBlocked, Is.False);
             Assert.That(CatActivityMotion.IsFloorClear(paper.RecordStand), Is.True);
@@ -320,7 +320,8 @@ public sealed class BathroomPaperContactTests
     {
         Assert.That(cat.GetComponent<CharacterController>().enabled, Is.True);
         Assert.That(cat.IsMovementPhysicallyLocked, Is.False);
-        Assert.That(CatActivityMotion.IsFloorClear(cat.transform.position, .24f), Is.True);
+        Assert.That(CatActivityMotion.IsControllerFloorClear(cat, cat.transform.position), Is.True,
+            "The released controller must fit beside the toilet with room to turn.");
         Assert.That(cat.GetComponent<CatPaperRollPawMotion>().IsActive, Is.False);
         var fx = paper.GetComponent<CatPaperTearFx>();
         Assert.That(fx.ActivePieces, Is.Zero);

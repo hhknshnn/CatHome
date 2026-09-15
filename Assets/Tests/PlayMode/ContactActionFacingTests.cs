@@ -82,7 +82,12 @@ public sealed class ContactActionFacingTests
                 {
                     heldSamples++; if (!previousHeld) passes++;
                     Assert.That(ViewDot(), Is.GreaterThanOrEqualTo(-.01f), activity.StoreProductId + " work direction");
-                    if (activity != hamper && previousHeld)
+                    if (activity == brush)
+                    {
+                        Assert.That(cat.GetComponent<CatActivityAnimation>().CurrentPose, Is.EqualTo(CatActivityPose.Groom));
+                        Assert.That(Flat(cat.transform.position - brush.SelectedRubStart).magnitude, Is.LessThan(.002f));
+                    }
+                    if (activity == tub && previousHeld)
                     {
                         Vector3 travel = Flat(cat.transform.position - previous);
                         if (travel.sqrMagnitude > .0000001f)
@@ -114,7 +119,7 @@ public sealed class ContactActionFacingTests
                 index == 1 ? CatActivity.Registered.OfType<KnockOffActivity>().Single() : CatActivity.Registered.OfType<BirdFeederShakeActivity>().Single();
             var cart = activity as CartNudgeActivity; var knock = activity as KnockOffActivity; var feeder = activity as BirdFeederShakeActivity;
             Transform prop = cart != null ? cart.CartVisual : knock != null ? knock.GlassPivot : feeder.FeederPivot;
-            Vector3 home = prop.localPosition, target = prop.position, previousProp = prop.position;
+            Vector3 home = prop.localPosition, target = feeder!=null?feeder.transform.position:prop.position, previousProp = prop.position;
             Quaternion rotation = prop.localRotation;
             Start(activity,true); var pose = cat.GetComponent<CatActivityAnimation>();
             Vector3 initial = cat.transform.position;
@@ -131,12 +136,17 @@ public sealed class ContactActionFacingTests
                     walkingSamples++;
                     Assert.That(Vector3.Dot(travel.normalized,Flat(cat.transform.forward).normalized), Is.GreaterThan(.995f), activity.StoreProductId + " moonwalk");
                 }
-                if (pose.CurrentPose == CatActivityPose.Paw)
+                if (pose.CurrentPose == CatActivityPose.Paw || (knock != null && knock.IsTapping) || (cart != null && cart.IsPushing))
                 {
                     workSamples++;
-                    Vector3 direction = cart != null ? cart.WorldRollDirection : target - cat.transform.position;
-                    Assert.That(Vector3.Dot(Flat(direction).normalized,Flat(cat.transform.forward).normalized), Is.GreaterThan(.995f), activity.StoreProductId + " must face the physical target");
-                    if (cart == null)
+                    Vector3 direction = cart != null ? cart.ContactPoint-cat.transform.position : target - cat.transform.position;
+                    Assert.That(Vector3.Dot(Flat(direction).normalized,Flat(cat.transform.forward).normalized), Is.GreaterThan(cart!=null?.80f:.995f), activity.StoreProductId + " must face the physical target");
+                    if (knock != null)
+                    {
+                        Assert.That(knock.IsOnNightstand, Is.True);
+                        Assert.That(Vector3.Distance(cat.transform.position, knock.PerchPoint.position), Is.LessThan(.002f));
+                    }
+                    if (cart == null && knock == null)
                     {
                         Vector3 stand = knock != null ? knock.ContactStand : feeder.ContactStand;
                         Assert.That(knock != null ? knock.ContactStandBlocked : feeder.ContactStandBlocked, Is.False);

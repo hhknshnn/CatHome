@@ -25,6 +25,7 @@ public sealed class OvenWarmthActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatSupportedFurnitureMotion supportedMotion;
 
     public override string ProgressLabel => IsRunning ? "WARMING UP..." : string.Empty;
 
@@ -50,8 +51,27 @@ public sealed class OvenWarmthActivity : CatActivity
     {
         characterController = Cat.GetComponent<CharacterController>();
         originalScale = Cat.transform.localScale;
-        StartCoroutine(BaskRoutine());
+        StartCoroutine(StoreProductId == HomeStoreService.KitchenStoveOvenId ||
+            StoreProductId == HomeStoreService.PatioFirePitId || StoreProductId == HomeStoreService.LoftArcLampId ? SupportedBask() : BaskRoutine());
         return true;
+    }
+
+    private IEnumerator SupportedBask()
+    {
+        Cat.SetMovementLocked(this, true);
+        if (characterController != null) characterController.enabled = false;
+        Vector3 bask = Flatten(baskPoint.position, Cat.transform.position.y);
+        Vector3 toDoor = doorPoint.position - bask; toDoor.y = 0;
+        Quaternion facing = CatActivityFacing.AlongAxis(Cat, bask, LookTowards(Vector3.Cross(Vector3.up, toDoor), Cat.transform.rotation));
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, bask, facing, .28f);
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, baskPoint);
+        yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, bask, facing);
+        yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .90f, bask, facing);
+        PlayCatPose(CatActivityPose.Sleep, baskPoint);
+        while (KeepResting) { Cat.transform.SetPositionAndRotation(bask, facing); yield return null; }
+        yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, bask, facing);
+        yield return supportedMotion.Pose(CatActivityPose.StandUp, .55f, bask, facing);
+        RestoreCat(); CompleteActivity("TOASTY!");
     }
 
     private IEnumerator BaskRoutine()
@@ -142,6 +162,7 @@ public sealed class OvenWarmthActivity : CatActivity
 
     private void RestoreCat()
     {
+        if (supportedMotion != null) { supportedMotion.End(); supportedMotion = null; }
         if (Cat == null)
             return;
 

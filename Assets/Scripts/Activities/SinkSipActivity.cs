@@ -28,6 +28,7 @@ public sealed class SinkSipActivity : CatActivity
     private ThirstSystem thirst;
     private Vector3 originalScale;
     private CatSipHeadMotion sipHead;
+    private Transform workingPerch;
 
     public override string ProgressLabel => !IsRunning ? string.Empty : InspectingOnly ?
         (GameLanguageService.Current == GameLanguage.Turkish ? "Merakla inceliyor" : "Curiously exploring") : "SIPPING...";
@@ -37,7 +38,7 @@ public sealed class SinkSipActivity : CatActivity
     public float NotThirstyAbove => Mathf.Clamp(notThirstyAbove, 0f, 100f);
     public bool InspectingOnly { get; private set; }
     public Transform SipTarget => sipTarget;
-    public Transform PerchPoint => perchPoint;
+    public Transform PerchPoint => workingPerch != null ? workingPerch : perchPoint;
     public bool IsSipping { get; private set; }
     protected override bool RecordsQuestProgress => !InspectingOnly;
 
@@ -61,12 +62,21 @@ public sealed class SinkSipActivity : CatActivity
     {
         characterController = Cat.GetComponent<CharacterController>();
         originalScale = Cat.transform.localScale;
+        if(StoreProductId==HomeStoreService.GardenBirdBathId&&sipTarget!=null)
+        {
+            // Keep the hind paws inside the shallow bowl instead of on its
+            // sloping rim. One fixed support serves landing, sipping and exit.
+            workingPerch=Instantiate(perchPoint,transform,true);
+            workingPerch.name="Bird bath pose support";workingPerch.gameObject.hideFlags=HideFlags.DontSave;
+            workingPerch.position+=Vector3.ProjectOnPlane(sipTarget.position-perchPoint.position,Vector3.up).normalized*.055f;
+        }
         StartCoroutine(SipRoutine());
         return true;
     }
 
     private IEnumerator SipRoutine()
     {
+        var perchPoint=PerchPoint;
         Cat.SetMovementLocked(this, true);
         if (characterController != null)
             characterController.enabled = false;
@@ -84,15 +94,25 @@ public sealed class SinkSipActivity : CatActivity
         yield return Move(floor, floor, toFloor, inward, 0.18f);
 
         // Shared Jump owns its real skeletal preparation and landing.
-        yield return Hop(floor, perch, inward, 0.42f);
+        bool fountain = StoreProductId == HomeStoreService.PatioWaterFountainId && sipTarget != null;
+        if (fountain)
+        {
+            var working = LookTowards(sipTarget.position-perch, inward);
+            yield return CatActivityMotion.Jump(Cat, floor, perch, inward, working);
+            inward = working;
+        }
+        else yield return Hop(floor, perch, inward, 0.42f);
 
         // The builder supplies the real water contact and a supported perch.
         // Preserve the existing inward reach for older, unbound fountains.
         if (sipTarget != null)
         {
             inward = LookTowards(sipTarget.position - perch, inward);
-            PlayCatPose(CatActivityPose.Sniff, perchPoint);
-            yield return CatActivityFacing.Turn(Cat, inward, .24f);
+            if (!fountain)
+            {
+                PlayCatPose(CatActivityPose.Sniff, perchPoint);
+                yield return CatActivityFacing.Turn(Cat, inward, .24f);
+            }
         }
 
         float elapsed = 0f;
@@ -124,7 +144,15 @@ public sealed class SinkSipActivity : CatActivity
         sipHead?.Stop(this);
         Cat.transform.rotation = inward;
         Quaternion outward = LookTowards(floor - perch, inward);
-        yield return Move(perch, perch, inward, outward, 0.20f);
+        if(fountain)
+        {
+            // Finish the drinking posture before freezing the brief pivot.
+            // The supported crossfade avoids a low chest snapping into Jump.
+            PlayCatPose(CatActivityPose.GentleKnead,perchPoint);
+            yield return new WaitForSeconds(.20f);
+        }
+        else
+            yield return Move(perch, perch, inward, outward, 0.20f);
         yield return Hop(perch, floor, outward, 0.38f);
 
         RestoreCat();
@@ -173,6 +201,7 @@ public sealed class SinkSipActivity : CatActivity
     {
         IsSipping = false;
         sipHead?.Stop(this);
+        if(workingPerch!=null){Destroy(workingPerch.gameObject);workingPerch=null;}
         if (Cat == null)
             return;
 
@@ -236,6 +265,7 @@ public sealed class SinkSipActivity : CatActivity
     /// <summary>Read-only native QA evidence; never changes the pose or support.</summary>
     public ContactDiagnostic EditorCaptureContactDiagnostic()
     {
+        var perchPoint=PerchPoint;
         var animator=Cat.GetComponentInChildren<Animator>();
         var pose=Cat.GetComponent<CatActivityAnimation>();
         var report=new ContactDiagnostic {

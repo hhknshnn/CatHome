@@ -58,7 +58,7 @@ public static class RoomActivityLayoutBuilder
                     foreach (Vector3 p in floor)
                         if ((candidate - p).sqrMagnitude < .063f && CatActivityMotion.ClearSegment(candidate, p))
                             nearest = Mathf.Min(nearest, Vector3.Distance(candidate, p));
-                    if (!CatActivityMotion.IsFloorClear(candidate, .30f) || nearest > .25f ||
+                    if (!CatActivityMotion.IsFloorClear(candidate, .32f) || nearest > .25f ||
                         (isAnchor && IsClaimed(claimedAnchors, candidate)))
                     {
                         Vector3 reference = original; reference.y = 0f;
@@ -66,7 +66,7 @@ public static class RoomActivityLayoutBuilder
                         foreach (Vector3 p in floor)
                         {
                             float distance = (p - reference).sqrMagnitude;
-                            if (distance >= best || !CatActivityMotion.IsFloorClear(p, .30f) ||
+                            if (distance >= best || !CatActivityMotion.IsFloorClear(p, .32f) ||
                                 (isAnchor && IsClaimed(claimedAnchors, p))) continue;
                             best = distance; candidate = p;
                         }
@@ -95,7 +95,7 @@ public static class RoomActivityLayoutBuilder
                     foreach (Vector3 point in floor)
                     {
                         float distance = (point - original).sqrMagnitude;
-                        if (distance >= best || IsClaimed(claimedEntries, point) || !CatActivityMotion.IsFloorClear(point, .30f) ||
+                        if (distance >= best || IsClaimed(claimedEntries, point) || !CatActivityMotion.IsFloorClear(point, .32f) ||
                             !HomeRoomLayoutPlanner.FitsPlayerView(point + Vector3.up * .35f)) continue;
                         best = distance; candidate = point;
                     }

@@ -220,6 +220,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         lastCatchTime = float.NegativeInfinity;
         remaining = HuntDuration;
         hunting = true;
+        GameAudio.Play(AudioCue.Start, .85f, AudioBus.MiniGame);
         SetPanel(welcomePanel, false);
         SetPanel(resultPanel, false);
         SetPanel(hudRoot, true);
@@ -340,6 +341,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         }
 
         bool newBest = score > bestScore;
+        GameAudio.Play(AudioCue.Result, .9f, AudioBus.MiniGame);
         if (newBest)
             bestScore = score;
         long coins = CatchScoring.CoinsForCatches(catches);
@@ -400,6 +402,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         if (target == null)
         {
             StrikesMissed++;
+            GameAudio.Play(AudioCue.Miss, .55f, AudioBus.MiniGame);
             combo = 0;
             PanicNearbyMice(strikePoint);
             return;
@@ -409,6 +412,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         target.Hide();
         catches++;
         combo = CatchScoring.ComboFor(combo, Time.time - lastCatchTime);
+        GameAudio.Play(combo > 1 ? AudioCue.Combo : AudioCue.Catch, .85f, AudioBus.MiniGame);
         comboStepsTotal += Mathf.Clamp(combo - 1, 0, CatchScoring.MaximumComboSteps);
         lastCatchTime = Time.time;
         score += CatchScoring.ScoreForCatch(combo);

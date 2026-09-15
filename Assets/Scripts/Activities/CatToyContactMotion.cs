@@ -15,12 +15,13 @@ public sealed class CatToyContactMotion : MonoBehaviour
         public float distance=float.PositiveInfinity;
     }
     readonly Limb[] limbs={new Limb(),new Limb()};
+    public Vector3 LastContactPosition {get;private set;}
     public float Distance {get;private set;}=float.PositiveInfinity;
     public float LeftDistance=>limbs[0].distance;
     public float RightDistance=>limbs[1].distance;
-    public void Reach(Vector3 point,bool left,float phase)
+    public void Reach(Vector3 point,bool left,float phase,int iterations=8)
     {
-        Set(left?0:1,point,Mathf.SmoothStep(0,1,phase<.42f?phase/.42f:(1-phase)/.58f));
+        Set(left?0:1,point,Mathf.SmoothStep(0,1,phase<.42f?phase/.42f:(1-phase)/.58f),iterations);
     }
     public void ReachBoth(Vector3 left,Vector3 right,float weight=1f,int iterations=8)
     {Set(0,left,weight,iterations);Set(1,right,weight,iterations);}
@@ -45,7 +46,7 @@ public sealed class CatToyContactMotion : MonoBehaviour
             limb.requested=false;limb.armPose=limb.arm.localRotation;limb.forePose=limb.fore.localRotation;limb.adjusted=true;
             Vector3 goal=Vector3.Lerp(limb.hand.position,limb.target,limb.weight);
             for(int i=0;i<limb.iterations;i++){Aim(limb.fore,limb.hand,goal);Aim(limb.arm,limb.hand,goal);}
-            limb.distance=Vector3.Distance(limb.hand.position,limb.target);Distance=limb.distance;
+            limb.distance=Vector3.Distance(limb.hand.position,limb.target);Distance=limb.distance;LastContactPosition=limb.hand.position;
         }
     }
     static void Aim(Transform joint,Transform hand,Vector3 goal)

@@ -29,6 +29,8 @@ public static class GameInteractionCopy
         {"PLAY YARN","Yumakla oyna"},
         {"POUNCE","Atıl"},
         {"PUSH","İt"},
+        {"TIP BASKET","Sepeti devir"},
+        {"TOSS THINGS","Eşyaları at"},
         {"RINSE","Duş al"},
         {"SCRATCH","Tırmala"},
         {"SHAKE","Salla"},
@@ -40,6 +42,7 @@ public static class GameInteractionCopy
         {"SWING","Sallan"},
         {"WARM UP","Isın"},
         {"WATCH","İzle"},
+        {"BIRD WATCH","Kuşları izle"},
         {"ZOOM","Tünelden geç"},
         {"WAKE UP","Uyan"},
         {"ZOOMING THROUGH!","Tünelden geçiyor"},
@@ -65,8 +68,12 @@ public static class GameInteractionCopy
     public static string ProductAction(string productId, string title, string action, bool needsEnergy)
     {
         if (needsEnergy) return title + "\n" + action;
+        if (productId == HomeStoreService.BedroomWindowDaybedId) return GameContentCopy.Text("Divanda yat", "Nap on daybed");
+        if (productId == HomeStoreService.BedroomYarnBasketId) return GameContentCopy.Text("Topla oyna", "Play with yarn ball");
         if (productId == HomeStoreService.BathroomLitterBoxId)
             return GameContentCopy.Text("Kum kabını kullan", "Use litter tray");
+        if(productId==HomeStoreService.KitchenFruitBasketId)return GameContentCopy.Text("Sepeti devir","Tip the basket");
+        if(string.IsNullOrEmpty(productId)&&action==Text("TOSS THINGS"))return GameContentCopy.Text("Masadan eşya at","Toss things off table");
         if (GameLanguageService.Current != GameLanguage.Turkish) return action + " · " + title;
         // RINSE already translates to the complete Turkish phrase "Duş al".
         if (productId == HomeStoreService.BathroomShowerId) return action;

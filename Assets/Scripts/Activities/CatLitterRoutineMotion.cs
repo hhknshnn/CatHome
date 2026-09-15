@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum CatLitterPhase { None, Entering, Investigating, Digging, Squatting, Covering, Exiting }
+public enum CatLitterPhase { None, Entering, Investigating, Digging, Squatting, Covering, Exiting, Positioning, Returning }
 
 /// <summary>Sand-directed head and alternating paw strokes, over the breed's real skeleton.</summary>
 [DefaultExecutionOrder(550)]
@@ -40,6 +40,8 @@ public sealed class CatLitterRoutineMotion : MonoBehaviour
     public Vector3 LeftTarget { get; private set; }
     public Vector3 RightTarget { get; private set; }
     public Vector3 HoleTarget { get; private set; }
+    public Vector3 PelvisPosition => hips != null ? hips.position : transform.position;
+    public float PelvisHoleDistance { get; private set; }
     public int ContactStrokes { get; private set; }
     public int ReplantCount { get; private set; }
     public Vector3 LastContactTarget { get; private set; }
@@ -94,6 +96,14 @@ public sealed class CatLitterRoutineMotion : MonoBehaviour
         lastEmittedStroke = -1;
     }
 
+    public void PrepareStep(LitterDigActivity activity, CatLitterPhase phase)
+    {
+        if (owner != activity) return;
+        contact?.Clear(); RestoreBodyPose();
+        awaitingReplant = true; pendingContact = false;
+        LeftLift = RightLift = 0f; Phase = phase;
+    }
+
     void Update() => RestoreBodyPose();
 
     void LateUpdate()
@@ -141,11 +151,22 @@ public sealed class CatLitterRoutineMotion : MonoBehaviour
             // standing foot plant cannot constrain those changed shoulders.
             contact.Clear();
             ChestPitch = ChestShoulderDrop = RearSupportDisplacement = ForelegLengthChange = 0f;
+            // Translate the supported source pose as one rigid body. Knees,
+            // scale and bone lengths stay native while the pelvis uses THIS hole.
+            var animator = GetComponentInChildren<Animator>();
+            if (hips != null && animator != null)
+            {
+                Vector3 shift = HoleTarget - hips.position; shift.y = 0f;
+                animator.transform.position += shift;
+                PelvisHoleDistance = Vector3.ProjectOnPlane(hips.position - HoleTarget, Vector3.up).magnitude;
+            }
+            if (owner.Waste != null) owner.Waste.Sample(owner, HoleTarget, PelvisPosition, elapsed);
             ApplyHeadPose(envelope);
             LeftTarget = left.position; RightTarget = right.position;
             return;
         }
         LeftTarget = Target(leftPlant, leftClearance, leftStroke ? reach : 0f, LeftLift);
+        if (Phase == CatLitterPhase.Covering && owner.Waste != null) owner.Waste.Cover(owner, elapsed / duration);
         RightTarget = Target(rightPlant, rightClearance, leftStroke ? 0f : reach, RightLift);
         // The ground-support pass has already placed the native standing pose.
         // Follow the excavation with the chest, leaving hips and rear paws in
@@ -216,6 +237,8 @@ public sealed class CatLitterRoutineMotion : MonoBehaviour
         // Increasing support correction must reach this frame's real surface;
         // the gradually excavated mesh makes that correction gradual too. Ease
         // its release, and preserve the identical pose while scaled time stops.
+        float workingLean = Phase == CatLitterPhase.Digging ? 9f : Phase == CatLitterPhase.Covering ? 6f : 0f;
+        desired = Mathf.Max(desired, workingLean * Mathf.SmoothStep(0f, 1f, elapsed / .4f));
         if (Time.deltaTime > 0f)
             ChestPitch = Mathf.Max(desired, Mathf.MoveTowards(ChestPitch, desired, 75f * Time.deltaTime));
         chest.rotation = Quaternion.AngleAxis(ChestPitch, transform.right) * neutral;
@@ -239,7 +262,7 @@ public sealed class CatLitterRoutineMotion : MonoBehaviour
         if (head != null)
         {
             headPose = head.localRotation; headAdjusted = true;
-            float targetPitch = Phase == CatLitterPhase.Squatting ? 8f : 30f;
+            float targetPitch = Phase == CatLitterPhase.Squatting ? 8f : Phase == CatLitterPhase.Digging ? 35f : 30f;
             float desiredPitch = targetPitch * (Phase == CatLitterPhase.Investigating ? Mathf.SmoothStep(0f, 1f, elapsed / .55f) :
                 Phase == CatLitterPhase.Digging ? 1f : envelope);
             HeadPitch = Mathf.MoveTowards(HeadPitch, desiredPitch, 75f * Time.deltaTime);

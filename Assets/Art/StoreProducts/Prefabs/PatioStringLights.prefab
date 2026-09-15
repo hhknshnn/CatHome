@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 7271609344337064962}
   - component: {fileID: 5502767156847501229}
   - component: {fileID: 3046462090291919695}
-  - component: {fileID: 2271644443890663641}
   - component: {fileID: 4333994237435087846}
   - component: {fileID: 8183833255138330181}
   m_Layer: 0
@@ -109,68 +108,6 @@ MonoBehaviour:
   collisionClearance: 0.09
   validationHeight: 0.7
   hungHeight: 0
---- !u!114 &2271644443890663641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5296761694567899942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb1059b1ecf6fb42bfa5a188d51272d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CatHome.Runtime::SitLookActivity
-  activityId: festoon-gaze
-  displayName: STRING LIGHTS
-  kind: 65
-  questType: 32
-  requiredBondXp: 0
-  storeProductId: patio.string-lights
-  actionText: GAZE
-  interactionRadius: 1.1
-  energyCost: 2
-  interactionAnchor: {fileID: 3862889438592666094}
-  routineEntryPoint: {fileID: 3862889438592666094}
-  lockedVisual: {fileID: 0}
-  unlockedContent: {fileID: 8896923411171178945}
-  lookPoint: {fileID: 5654912619326429454}
-  reactionKind: 0
-  lookDuration: 2.6
-  completeMessage: SO WARM!
-  visibleLookTargets:
-  - {x: -0.65401566, y: 1.2045264, z: -0.00032056798}
-  - {x: 0.644, y: 1.807, z: 0.030999944}
-  - {x: 0.545886, y: 0.6184211, z: -0.0006886105}
-  - {x: -0.052863363, y: 1.6197706, z: -0.011117328}
-  - {x: -0.644, y: 1.807, z: 0.031000055}
-  - {x: -0.5459844, y: 0.6184211, z: -0.0003205774}
-  - {x: 0.6482613, y: 1.2045264, z: 0.00785913}
-  - {x: 0.3525, y: 1.5715896, z: 0.025117302}
-  - {x: -0.4072282, y: 1.5976148, z: 0.0070000347}
-  - {x: 0.64100003, y: 1.4975789, z: 0.009999942}
-  - {x: 0.54687035, y: 0.91147375, z: 0.0029907664}
-  - {x: -0.65421253, y: 0.91147375, z: -0.0010564432}
-  - {x: -0.6546063, y: 1.4975789, z: -0.0025281943}
-  - {x: 0.11749999, y: 1.4515896, z: 0.025117323}
-  - {x: 0.41713664, y: 1.8597707, z: -0.011117369}
-  - {x: 0.20566306, y: 1.7001404, z: -0.01111735}
-  - {x: -0.22706395, y: 1.712, z: -0.0039230124}
-  - {x: -0.11750001, y: 1.4515896, z: 0.025117345}
-  - {x: -0.47, y: 1.7405896, z: 0.025117375}
-  - {x: -0.583, y: 1.0497, z: 0.014000052}
-  - {x: 0.545, y: 1.595263, z: -0.0644211}
-  - {x: -0.23500001, y: 1.5605896, z: 0.025117354}
-  - {x: 0.52687037, y: 1.8770095, z: -0.10600005}
-  - {x: 0.545, y: 1.1068422, z: -0.025578998}
-  - {x: -0.5459844, y: 0.8137894, z: -0.0003205773}
-  - {x: -0.65421253, y: 0.71610534, z: -0.0010564432}
-  - {x: -0.545886, y: 1.3022105, z: -0.0006885151}
-  - {x: 0.6496136, y: 0.7161053, z: 0.006506804}
-  - {x: 0.5451969, y: 1.3022105, z: -0.003264174}
-  - {x: 0.650425, y: 1.0091579, z: 0.005695408}
-  - {x: -0.545886, y: 1.5952631, z: -0.000688515}
-  - {x: 0.47, y: 1.7405896, z: 0.025117293}
 --- !u!114 &4333994237435087846
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -70,6 +70,8 @@ public static class CatProductContentBuilder
                     if(mode==CatEnrichmentMode.Feed)touch=new Vector3(0,mb.min.y+.025f,mb.min.z+.015f);
                     if(mode==CatEnrichmentMode.Track)touch=new Vector3(mb.center.x,mb.center.y,mb.center.z);
                 }
+                Vector2 foodRadii=Vector2.zero;
+                if(definition.ProductId==HomeStoreService.CeramicBowlId)touch=MeasureCeramicFood(body,root.transform,out foodRadii);
                 var contact=Point(root.transform,"ContactPoint",touch);
                 if(mode==CatEnrichmentMode.Nap||mode==CatEnrichmentMode.Hide)
                 {
@@ -83,6 +85,7 @@ public static class CatProductContentBuilder
                 activity.EditorConfigure("pet-"+definition.PrefabName,product.Title,kind,quest,0,mode==CatEnrichmentMode.Nap?"REST":"PLAY",1.35f,mode==CatEnrichmentMode.Nap?0:4,entry,null,visual);
                 activity.EditorConfigureStoreProduct(definition.ProductId);activity.EditorConfigureEntry(entry);
                 activity.EditorConfigureEnrichment(mode,contact,exit,moving,definition.Footprint);
+                activity.EditorConfigureFoodSurface(foodRadii);
             }
             ModernWorldArtBuilder.ApplyRoot(root.transform,HomeRoomService.LivingRoomId);
             PrefabUtility.SaveAsPrefabAsset(root,Prefabs+definition.PrefabName+".prefab");
@@ -92,6 +95,50 @@ public static class CatProductContentBuilder
     }
     public static void BuildLegacyAssets(IReadOnlyDictionary<string,Material> materials)
     {foreach(var definition in LegacyDefinitions)TryBuild(definition,materials);}
+    public static void ApplyCeramicFoodContact()
+    {
+        if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Edit Mode required");
+        string path=Prefabs+"CeramicBowl.prefab";
+        var root=PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var activity=root.GetComponent<CatEnrichmentActivity>();
+            activity.ContactPoint.localPosition=MeasureCeramicFood(root,root.transform,out var radii);
+            activity.EditorConfigureFoodSurface(radii);
+            PrefabUtility.SaveAsPrefabAsset(root,path);
+        }
+        finally{PrefabUtility.UnloadPrefabContents(root);}
+    }
+    static Vector3 MeasureCeramicFood(GameObject body,Transform root,out Vector2 radii)
+    {
+        Bounds bounds=default;bool found=false;
+        foreach(var filter in body.GetComponentsInChildren<MeshFilter>(true))
+        {
+            var renderer=filter.GetComponent<Renderer>();if(renderer==null)continue;
+            using(var data=MeshUtility.AcquireReadOnlyMeshData(filter.sharedMesh))
+            using(var vertices=new Unity.Collections.NativeArray<Vector3>(data[0].vertexCount,Unity.Collections.Allocator.Temp))
+            {
+                data[0].GetVertices(vertices);
+                for(int sub=0;sub<data[0].subMeshCount;sub++)
+                {
+                    var material=renderer.sharedMaterials[sub];
+                    if(material==null||material.name.IndexOf("Cream",StringComparison.OrdinalIgnoreCase)<0)continue;
+                    using(var indices=new Unity.Collections.NativeArray<int>(data[0].GetSubMesh(sub).indexCount,Unity.Collections.Allocator.Temp))
+                    {
+                        data[0].GetIndices(indices,sub);
+                        foreach(int index in indices)
+                        {
+                            Vector3 point=root.InverseTransformPoint(filter.transform.TransformPoint(vertices[index]));
+                            if(!found){bounds=new Bounds(point,Vector3.zero);found=true;}else bounds.Encapsulate(point);
+                        }
+                    }
+                }
+            }
+        }
+        if(!found)throw new InvalidOperationException("Ceramic bowl's actual food mesh is missing.");
+        radii=new Vector2(bounds.extents.x,bounds.extents.z);
+        return new Vector3(bounds.center.x,bounds.max.y,bounds.center.z);
+    }
     public static void BuildCollectionSilently()
     {
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);

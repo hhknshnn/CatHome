@@ -111,30 +111,13 @@ public sealed class GardenGentleInteractionTests
     }
 
     [UnityTest]
-    public IEnumerator Grill_UsesSeatedGazeWithoutPawSwats()
+    public IEnumerator Garden_HasOneBirdWatch_AndNoGrillOrDuplicateChaseAction()
     {
         yield return Prepare();
-        var cat = Object.FindAnyObjectByType<CatMovement>();
-        var grill = CatActivity.Registered.OfType<SitLookActivity>()
-            .Single(a => a.Kind == CatActivityKind.GrillWatch);
-        Assert.That(grill.ReactionKind, Is.EqualTo(SitLookReaction.Sit));
-        MoveToEntry(cat, grill);
-        Assert.That(grill.TryStart(cat), Is.True);
-        var pose = cat.GetComponent<CatActivityAnimation>();
-        float deadline = Time.realtimeSinceStartup + 15f;
-        bool sat = false;
-        while (grill.IsRunning && Time.realtimeSinceStartup < deadline)
-        {
-            if (grill.GestureBeats > 0)
-            {
-                sat = true;
-                Assert.That(pose.CurrentPose, Is.EqualTo(CatActivityPose.Sit));
-            }
-            yield return null;
-        }
-        Assert.That(sat, Is.True);
-        Assert.That(grill.IsRunning, Is.False);
-        Assert.That(cat.IsMovementPhysicallyLocked, Is.False);
-        Assert.That(cat.GetComponent<CharacterController>().enabled, Is.True);
+        var watches=CatActivity.Registered.OfType<SitLookActivity>().ToArray();
+        Assert.That(watches.Length,Is.EqualTo(1));
+        Assert.That(watches[0].Kind,Is.EqualTo(CatActivityKind.BirdWatch));
+        Assert.That(watches[0].ReactionKind,Is.EqualTo(SitLookReaction.Sit));
+        Assert.That(CatActivity.Registered.OfType<GardenYarnChaseActivity>().Count(),Is.EqualTo(1));
     }
 }

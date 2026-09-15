@@ -54,7 +54,8 @@ public static class HomeRoomArrangementBuilder
                     size = raw.Footprint * scale, height = raw.Height * scale, scale = scale,
                     hungHeight = raw.HungHeight, originalPosition = new Vector3(raw.DefaultPosition.x, raw.HungHeight, raw.DefaultPosition.z),
                     originalYaw = raw.DefaultYaw, entry = entry * scale, wallEdge = raw.PlacementKind == HomeProductPlacementKind.WallEdge };
-                if (activity != null)
+                item.hasActivity = !KitchenBedroomArrangementProfile.IsDecoration(raw.ProductId) && !OutdoorArrangementProfile.IsDecoration(raw.ProductId);
+                if (activity != null && item.hasActivity)
                 {
                     if (activity is CartNudgeActivity cart)
                         item.requiredFacing = root.transform.InverseTransformDirection(cart.WorldRollDirection);
@@ -66,6 +67,25 @@ public static class HomeRoomArrangementBuilder
                         if (point != null) item.activityViews.Add(root.transform.InverseTransformPoint(point.position) * (scale / oldScale));
                     }
                 }
+                if (raw.ProductId == HomeStoreService.KitchenDishCartId)
+                {
+                    item.requiredFacing = Vector3.left;
+                    item.entry = new Vector3(.50f, 0, -.60f) * scale;
+                }
+                if (raw.ProductId == HomeStoreService.KitchenIslandId)
+                    item.entry = new Vector3(-.30f, 0, -.92f) * scale;
+                if(raw.ProductId==HomeStoreService.KitchenFruitBasketId)
+                {item.entry=new Vector3(.51f,0,-1.05f);item.activityViews.Clear();item.activityViews.Add(new Vector3(.302f,0,.328f));}
+                if (raw.ProductId == HomeStoreService.KitchenFeedingStationId)
+                    item.entry = new Vector3(-.50f, 0, .60f) * scale;
+                if(raw.ProductId==HomeStoreService.GardenSunLoungerId)
+                    item.entry=new Vector3(-1.08f,0,0);
+                if(raw.ProductId==HomeStoreService.GardenBirdBathId)
+                    item.entry=new Vector3(0,0,-.78f);
+                if(raw.ProductId==HomeStoreService.PatioPottedFernsId)
+                    item.entry=new Vector3(.203f,0,-.626f);
+                if(raw.ProductId==HomeStoreService.LoftChaiseLoungeId)
+                    item.entry=new Vector3(.74f,0,.44f);
                 items.Add(item);
             }
             finally { PrefabUtility.UnloadPrefabContents(root); }
@@ -74,6 +94,10 @@ public static class HomeRoomArrangementBuilder
         var views = ArchitecturalViews(roomId, features, obstacles);
         if (roomId == HomeRoomService.BathroomId)
             return BathroomArrangementProfile.Plan(items, views, features, obstacles);
+        if (KitchenBedroomArrangementProfile.IsReviewedRoom(roomId))
+            return KitchenBedroomArrangementProfile.Plan(roomId, items, views, features, obstacles);
+        if (OutdoorArrangementProfile.IsReviewedRoom(roomId))
+            return OutdoorArrangementProfile.Plan(roomId, items, views, features, obstacles);
         return HomeRoomLayoutPlanner.Plan(items, views, features, obstacles);
     }
 
@@ -129,17 +153,26 @@ public static class HomeRoomArrangementBuilder
         var tree = nodes.FirstOrDefault(node => node.name == "Courtyard Tree");
         if (tree != null)
         {
-            tree.position = new Vector3(-3.02f, 0, 2.12f); tree.localScale = Vector3.one * .65f;
+            tree.position = new Vector3(-4.35f, 0, 1.80f); tree.localScale = Vector3.one * .65f;
             var watch = nodes.FirstOrDefault(node => node.name == "BirdWatchActivity");
             var roost = tree.Find("BirdRoost");
             if (watch != null && roost != null)
             {
-                watch.position = new Vector3(-2.25f, 0, 1.6f);
+                var sapling = nodes.Select(node => node.GetComponent<HomeProductPlacement>()).FirstOrDefault(
+                    product => product != null && product.ProductId == HomeStoreService.GardenSaplingId);
+                // Birds visit the tree inside the fence, where the cat can
+                // actually see them. The outside tree remains scenery.
+                if (sapling != null) roost.position = sapling.transform.position + new Vector3(.04f, 1.52f, .02f);
+                watch.position = new Vector3(-2.0f, 0, 1.6f);
+                var activity=watch.GetComponent<CatActivity>();
+                if(activity!=null&&activity.RoutineEntryPoint!=null)activity.RoutineEntryPoint.position=watch.position;
                 var look = watch.Find("BirdLookPoint"); if (look != null) look.position = roost.position;
             }
         }
         foreach (var node in nodes)
         {
+            if (scene.name == "Patio_Level01" && node.name.StartsWith("CornerPot_", StringComparison.Ordinal))
+                node.position = new Vector3(Mathf.Sign(node.position.x) * 3.0f, 0, 3.15f);
             if (node.name == "FrontLeftFence" || node.name == "FrontRightFence") HomeRoomCameraBuilder.HideForeground(node);
             if (node.name == "Courtyard Tree" || node.name == "Loft Stair Landing" || node.name.StartsWith("CornerPot_", StringComparison.Ordinal))
                 if (node.GetComponent<HomeRoomLayoutObstacle>() == null) node.gameObject.AddComponent<HomeRoomLayoutObstacle>();

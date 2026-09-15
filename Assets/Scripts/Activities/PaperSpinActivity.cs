@@ -24,11 +24,17 @@ public sealed class PaperSpinActivity : CatActivity
     private CatPaperRollPawMotion paperPaw;
     private CatPaperTearFx paperFx;
     private List<Vector3> paperApproach;
+    private List<Vector3> paperExit;
     private List<Vector3> recordApproach;
+    private List<Vector3> recordExit;
     public Vector3 RecordStand { get; private set; }
     public bool RecordStandBlocked { get; private set; }
     private float paperSpeed;
     private int lastPaperStroke;
+    private CatToyContactMotion recordPaw;
+    public bool IsRecordTapping { get; private set; }
+    public int RecordContactCount { get; private set; }
+    public float RecordContactDistance { get; private set; } = float.PositiveInfinity;
 
     public override string ProgressLabel => IsRunning ? "SPINNING..." : string.Empty;
 
@@ -62,18 +68,17 @@ public sealed class PaperSpinActivity : CatActivity
             return false;
         }
 
-        if (UsesPaperTears && Cat != null && (!CatActivityMotion.IsFloorClear(swatPoint.position) ||
-            !CatActivityMotion.TryFloorPath(Cat.transform.position, Flatten(swatPoint.position, Cat.transform.position.y), out paperApproach)))
+        if (UsesPaperTears && Cat != null && !PlanPaperApproach(Cat.transform.position))
         {
             failureReason = "LET'S GET A LITTLE CLOSER!";
             return false;
         }
+        if (UsesPaperTears && !PlanPaperExit())
+        { failureReason = "LET'S MAKE SOME ROOM."; return false; }
 
         if (Kind == CatActivityKind.RecordSpin)
         {
-            Vector3 authored = Flatten(swatPoint.position, Cat.transform.position.y);
-            RecordStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, rollPivot.position, authored,
-                Flatten(RoutineFloorPosition, authored.y), out Vector3 stand, out recordApproach);
+            RecordStandBlocked = !FindRecordStand(Flatten(RoutineFloorPosition, Cat.transform.position.y), out Vector3 stand);
             RecordStand = stand;
             if (RecordStandBlocked) { failureReason = "LET'S MAKE SOME ROOM."; return false; }
         }
@@ -89,31 +94,161 @@ public sealed class PaperSpinActivity : CatActivity
         pivotRest = rollPivot.localRotation;
         if (Kind == CatActivityKind.RecordSpin)
         {
-            RecordStandBlocked = !CatActivityFacing.TryFindContactStand(Cat, rollPivot.position,
-                Flatten(swatPoint.position, Cat.transform.position.y), Cat.transform.position,
-                out Vector3 stand, out recordApproach);
+            RecordStandBlocked = !FindRecordStand(Cat.transform.position, out Vector3 stand);
             RecordStand = stand;
             if (RecordStandBlocked) return false;
         }
         if (UsesPaperTears)
         {
-            if (!CatActivityMotion.TryFloorPath(Cat.transform.position, Flatten(swatPoint.position, Cat.transform.position.y), out paperApproach)) return false;
+            if (!PlanPaperApproach(Cat.transform.position)) return false;
             paperPaw = Cat.GetComponent<CatPaperRollPawMotion>() ?? Cat.gameObject.AddComponent<CatPaperRollPawMotion>();
             paperFx = GetComponent<CatPaperTearFx>() ?? gameObject.AddComponent<CatPaperTearFx>();
             PaperContactCount = lastPaperStroke = 0; paperSpeed = 0; LastPaperContactDistance = float.PositiveInfinity;
             paperFx.Begin(this);
             StartCoroutine(PaperRoutine());
         }
+        else if (Kind == CatActivityKind.RecordSpin)
+        {
+            RecordContactCount = 0; RecordContactDistance = float.PositiveInfinity;
+            StartCoroutine(RecordRoutine());
+        }
         else StartCoroutine(SpinRoutine());
         return true;
+    }
+
+    private IEnumerator RecordRoutine()
+    {
+        Cat.SetMovementLocked(this, true);
+        if (characterController != null) characterController.enabled = false;
+        Vector3 stand = Flatten(RecordStand, Cat.transform.position.y);
+        Quaternion facing = RecordFacing(stand);
+        foreach (var point in recordApproach)
+        {
+            var destination = Flatten(point, stand.y);
+            yield return CatActivityMotion.WalkAuthoredStep(Cat, destination,
+                LookTowards(destination - Cat.transform.position, Cat.transform.rotation), .20f);
+        }
+        yield return CatActivityFacing.Turn(Cat, facing, .20f);
+        recordPaw = Cat.GetComponent<CatToyContactMotion>() ?? Cat.gameObject.AddComponent<CatToyContactMotion>();
+        var animation = Cat.GetComponent<CatActivityAnimation>();
+        Bounds disc = rollPivot.GetComponentInChildren<Renderer>().bounds;
+        Vector3 near = stand-disc.center;near.y=0;
+        Vector3 contact = disc.center + near.normalized * (Mathf.Min(disc.extents.x, disc.extents.z)+.012f);
+        contact.y = disc.max.y + .003f;
+        bool left=Vector3.Dot(contact-stand,facing*Vector3.right)<0;
+        float speed = 0f;
+        for (int beat = 0; beat < Swats; beat++)
+        {
+            IsRecordTapping = true; bool touched = false; float elapsed = 0f;
+            while (elapsed < .80f)
+            {
+                float phase = elapsed / .80f;
+                Cat.transform.SetPositionAndRotation(stand, facing);
+                // A side reach keeps the head outside the cabinet. Attack's
+                // 30 cm body lunge formerly carried the chest through it.
+                animation.SetTimedPose(left ? CatActivityPose.BatLeft : CatActivityPose.BatRight, phase);
+                recordPaw.Reach(contact, left, phase);
+                if (phase > .28f && phase < .70f)
+                {
+                    RecordContactDistance = Mathf.Min(RecordContactDistance, recordPaw.Distance);
+                    if (!touched && recordPaw.Distance < .025f)
+                    { touched = true; RecordContactCount++; speed += SpinPerSwat; }
+                }
+                speed = SpinDown(speed, Time.deltaTime);
+                yield return null; elapsed += Time.deltaTime;
+            }
+            IsRecordTapping = false; recordPaw.Clear();
+            if (!touched) { CancelForTransition(); yield break; }
+        }
+        PlayCatPose(CatActivityPose.GentleKnead);
+        while (speed > 12f)
+        {
+            Cat.transform.SetPositionAndRotation(stand, facing);
+            speed = SpinDown(speed, Time.deltaTime); yield return null;
+        }
+        foreach (var destination in recordExit)
+            yield return CatActivityMotion.WalkAuthoredStep(Cat, destination,
+                LookTowards(destination-Cat.transform.position, Cat.transform.rotation), .20f);
+        RestoreCat(); CompleteActivity("Plak dönüyor!");
+    }
+
+    private bool FindRecordStand(Vector3 origin, out Vector3 stand)
+    {
+        stand=origin;recordExit=null;recordApproach=null;
+        float best=float.PositiveInfinity;
+        for(int attempt=0;attempt<3;attempt++)
+        {
+        for(int angle=0;angle<360;angle+=15)
+        {
+            Vector3 candidate=rollPivot.position+Quaternion.Euler(0,angle,0)*Vector3.forward*(.58f+attempt*.025f);candidate.y=origin.y;
+            // Finish the approach along the working heading. Turning only
+            // after reaching the near stand swept the nose through the desk.
+            Vector3 staging=candidate-RecordFacing(candidate)*Vector3.forward*.18f;
+            if(!CatActivityMotion.IsFloorClear(candidate)||
+                !CatActivityMotion.ClearSegment(staging,candidate)||
+                !CatActivityMotion.TryFloorPath(origin,staging,out var path)||!PlanExit(candidate,out var exit))continue;
+            path.Add(candidate);
+            // A quarter-turn side reach is anatomically reachable; a paw
+            // cannot wrap behind the body to satisfy a camera preference.
+            var towards=LookTowards(rollPivot.position-candidate,Quaternion.identity);
+            if(Quaternion.Angle(towards,RecordFacing(candidate))>42f)continue;
+            float length=0;Vector3 previous=origin;
+            foreach(var p in path){length+=Vector3.Distance(previous,p);previous=p;}
+            if(length>2.2f||length>=best)continue;
+            best=length;stand=candidate;recordApproach=path;recordExit=exit;
+        }
+        if(recordApproach!=null)return true;
+        }
+        return recordApproach!=null;
+    }
+
+    private Quaternion RecordFacing(Vector3 stand)
+    {
+        var towards=LookTowards(rollPivot.position-stand,Cat.transform.rotation);
+        var view=LookTowards(CatActivityFacing.CameraPosition(Cat)-stand,towards);
+        return Quaternion.RotateTowards(towards,view,Mathf.Max(0,Quaternion.Angle(towards,view)-80f));
+    }
+
+    private bool PlanPaperExit()
+        => PlanExit(Flatten(swatPoint.position, Cat.transform.position.y), out paperExit);
+
+    private Quaternion PaperFacing()
+        => CatActivityFacing.Resolve(Cat,Flatten(swatPoint.position,Cat.transform.position.y),
+            LookTowards(PaperContactPosition-swatPoint.position,Cat.transform.rotation));
+
+    private bool PlanPaperApproach(Vector3 origin)
+    {
+        Vector3 stand=Flatten(swatPoint.position,origin.y);
+        Vector3 staging=stand-PaperFacing()*Vector3.forward*.18f;
+        paperApproach=null;
+        if(!CatActivityMotion.IsFloorClear(stand)||!CatActivityMotion.ClearSegment(staging,stand)||
+            !CatActivityMotion.TryFloorPath(origin,staging,out paperApproach))return false;
+        paperApproach.Add(stand);return true;
+    }
+
+    private bool PlanExit(Vector3 stand, out List<Vector3> exit)
+    {
+        exit = null;
+        if (CatActivityMotion.IsControllerFloorClear(Cat, stand))
+        { exit = new List<Vector3>(); return true; }
+        var candidates = new List<Vector3>();
+        for (int x = -6; x <= 6; x++) for (int z = -6; z <= 6; z++)
+            candidates.Add(stand + new Vector3(x * .1f, 0, z * .1f));
+        candidates.Sort((a,b) => (a-stand).sqrMagnitude.CompareTo((b-stand).sqrMagnitude));
+        foreach (var candidate in candidates)
+        {
+            if (!CatActivityMotion.IsControllerFloorClear(Cat, candidate) ||
+                !CatActivityMotion.TryFloorPath(stand, candidate, out var path)) continue;
+            exit = path; return true;
+        }
+        return false;
     }
 
     private IEnumerator PaperRoutine()
     {
         Cat.SetMovementLocked(this, true);
         if (characterController != null) characterController.enabled = false;
-        Quaternion facing = CatActivityFacing.Resolve(Cat, Flatten(swatPoint.position, Cat.transform.position.y),
-            LookTowards(PaperContactPosition - swatPoint.position, Cat.transform.rotation));
+        Quaternion facing = PaperFacing();
         foreach (var point in paperApproach)
         {
             Vector3 destination = Flatten(point, Cat.transform.position.y);
@@ -163,6 +298,15 @@ public sealed class PaperSpinActivity : CatActivity
         }
         paperPaw.Clear(); paperFx.Stop();
         rollPivot.localRotation = pivotRest;
+        // The narrow paw stance can fit beside the roll while the complete
+        // walking controller still overlaps the toilet. Walk out before release.
+        foreach (var destination in paperExit)
+        {
+            Vector3 from = Cat.transform.position;
+            yield return Move(from, destination, Cat.transform.rotation,
+                LookTowards(destination - from, Cat.transform.rotation),
+                Mathf.Max(.12f, Vector3.Distance(from, destination) / 1.2f));
+        }
         RestoreCat();
         CompleteActivity(GameContentCopy.Text("Kâğıtlar uçuşuyor!", "Paper everywhere!"));
     }
@@ -272,6 +416,11 @@ public sealed class PaperSpinActivity : CatActivity
     private IEnumerator Move(
         Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
     {
+        if (UsesPaperTears)
+        {
+            yield return CatActivityMotion.WalkAuthoredStep(Cat, to, toRotation, duration);
+            yield break;
+        }
         Quaternion arrival = toRotation;
         bool contactRoute = UsesPaperTears || Kind == CatActivityKind.RecordSpin;
         if (contactRoute)
@@ -303,6 +452,7 @@ public sealed class PaperSpinActivity : CatActivity
 
     private void RestoreCat()
     {
+        IsRecordTapping = false; recordPaw?.Clear();
         if (Cat == null)
             return;
 
@@ -311,6 +461,20 @@ public sealed class PaperSpinActivity : CatActivity
         if (characterController != null)
             characterController.enabled = true;
         Cat.SetMovementLocked(this, false);
+    }
+
+    private void RestorePaperFloor()
+    {
+        if (!UsesPaperTears || Cat == null || paperExit == null || paperExit.Count == 0 ||
+            CatActivityMotion.IsControllerFloorClear(Cat, Cat.transform.position)) return;
+        Vector3 point = paperExit[paperExit.Count - 1];
+        if (!CatActivityMotion.IsControllerFloorClear(Cat, point)) return;
+        var controller = Cat.GetComponent<CharacterController>();
+        bool enabled = controller != null && controller.enabled;
+        if (controller != null) controller.enabled = false;
+        Cat.transform.position = point;
+        if (controller != null) controller.enabled = enabled;
+        Physics.SyncTransforms();
     }
 
     private static Quaternion LookTowards(Vector3 direction, Quaternion fallback)
@@ -331,12 +495,13 @@ public sealed class PaperSpinActivity : CatActivity
     {
         if (!IsRunning) return;
         StopAllCoroutines();
-        if (!HasBegunActivity) { base.CancelActivity(); return; }
+        if (!HasBegunActivity) { base.CancelActivity(); RestorePaperFloor(); return; }
         if (rollPivot != null)
             rollPivot.localRotation = pivotRest;
         if (UsesPaperTears) { paperPaw?.Clear(); paperFx?.Stop(); paperSpeed = 0f; }
         RestoreCat();
         base.CancelActivity();
+        RestorePaperFloor();
     }
 
 #if UNITY_EDITOR

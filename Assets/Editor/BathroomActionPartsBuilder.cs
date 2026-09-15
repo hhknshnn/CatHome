@@ -64,7 +64,7 @@ public static class BathroomActionPartsBuilder
         var body = root.GetComponentsInChildren<MeshFilter>(true).First(m => m.name.EndsWith("_PremiumModel"));
         // Same authored axis as Blender: the holder is advanced along the real
         // side of the toilet, so the clear floor bay is within normal arm reach.
-        Vector3 newAxis = body.transform.TransformPoint(new Vector3(.375f, .760f, -.245f));
+        Vector3 newAxis = body.transform.TransformPoint(new Vector3(.375f, .760f, -.545f));
         activity.RollPivot.position = newAxis;
         activity.RollPivot.localRotation = Quaternion.identity;
         var roll = activity.RollPivot.Find("ToiletPaperRoll");
@@ -75,11 +75,11 @@ public static class BathroomActionPartsBuilder
         float radius = axis.y * (.115f / .760f);
         point.localPosition = axis + new Vector3(0f, -1f, 1f).normalized * radius;
         activity.EditorConfigurePaperContact(point);
-        // The complete toilet faces the player. Its open right-hand floor bay
-        // lets the cat reach the real holder while showing its face and side.
+        // The toilet now backs onto the right wall. The extended real holder
+        // reaches its open front bay, where the cat can show its side and face.
         var swat = root.transform.Find("SwatPoint");
-        if (swat != null) swat.localPosition = new Vector3(-.60f, 0f, .15f);
+        if (swat != null) swat.localPosition = new Vector3(.02f, 0f, .67f);
         var entry = root.transform.Find("InteractionAnchor");
-        if (entry != null) entry.localPosition = new Vector3(-.60f, 0f, -.15f);
+        if (entry != null) entry.localPosition = new Vector3(.04f, 0f, .80f);
     }
 }

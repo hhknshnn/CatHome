@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -344,10 +344,6 @@ public static class StoreProductContentBuilder
             AttachKnockOffActivity(root, visual, materials);
         else if (id == HomeStoreService.BedroomYarnBasketId)
             AttachYarnSwatActivity(root, visual);
-        else if (id == HomeStoreService.BedroomNightLightId)
-            AttachNightLightGazeActivity(root, visual);
-        else if (id == HomeStoreService.BedroomDreamArtId)
-            AttachArtGazeActivity(root, visual);
         else if (id == HomeStoreService.BedroomPawRugId)
             AttachBedroomMatKneadActivity(root, visual);
     }
@@ -422,29 +418,11 @@ public static class StoreProductContentBuilder
     }
 
     /// <summary>
-    /// The daybed sits under the window, so the beat is the window watch the
-    /// shared <see cref="SitLookActivity"/> already does. `facesBackward` is on,
-    /// so Z flips and X does not.
+    /// A supported nap on the window cushion; saved activity identity is retained.
     /// </summary>
     private static void AttachDaybedWatchActivity(GameObject root, GameObject visual)
     {
-        float scale = ReadModelScale(visual);
-        const float authoredSeatTop = .520f;
-
-        // The window is in the wall behind the daybed, which is root -Z once
-        // `facesBackward` has flipped the authored front; the cat approaches
-        // from root +Z, which is the room.
-        Transform look = MakePoint(root, "WatchLookPoint",
-            new Vector3(0f, authoredSeatTop * scale + .420f, -.360f * scale));
-        Transform anchor = MakePoint(root, "InteractionAnchor",
-            new Vector3(.520f, 0f, .86f));
-
-        SitLookActivity activity = root.AddComponent<SitLookActivity>();
-        activity.EditorConfigure(
-            "daybed-watch", "WINDOW DAYBED", CatActivityKind.DaybedWatch,
-            QuestType.WindowWatch, 0, "WATCH", 1.1f, 3f, anchor, null, visual);
-        activity.EditorConfigureStoreProduct(HomeStoreService.BedroomWindowDaybedId);
-        activity.EditorConfigureLook(look, SitLookReaction.Sit, 3.2f, "SO PEACEFUL.");
+        BedroomPlayRestBuilder.ConfigureDaybed(root, visual);
     }
 
     /// <summary>
@@ -501,24 +479,10 @@ public static class StoreProductContentBuilder
         activity.EditorConfigureKnock(reach, pivot, Vector3.forward, .55f, 2);
     }
 
-    /// <summary>A ball spilling over the basket lip: a pounce, not a stare.</summary>
+    /// <summary>Three real paw contacts, short yarn rolls and a floor chase.</summary>
     private static void AttachYarnSwatActivity(GameObject root, GameObject visual)
     {
-        float scale = ReadModelScale(visual);
-        var authoredBall = new Vector3(-.150f, .398f, -.230f);
-
-        Transform look = MakePoint(root, "SwatLookPoint",
-            new Vector3(-authoredBall.x * scale, authoredBall.y * scale,
-                        authoredBall.z * scale));
-        Transform anchor = MakePoint(root, "InteractionAnchor",
-            new Vector3(-authoredBall.x * scale, 0f, -.78f));
-
-        SitLookActivity activity = root.AddComponent<SitLookActivity>();
-        activity.EditorConfigure(
-            "yarn-swat", "YARN BASKET", CatActivityKind.YarnSwat, QuestType.PlayBall,
-            0, "POUNCE", 1.1f, 6f, anchor, null, visual);
-        activity.EditorConfigureStoreProduct(HomeStoreService.BedroomYarnBasketId);
-        activity.EditorConfigureLook(look, SitLookReaction.Pounce, 2.6f, "GOT THE YARN!");
+        BedroomPlayRestBuilder.ConfigureYarn(root, visual);
     }
 
     /// <summary>Cat sits in the lamp's glow and stares up at the moon crest.</summary>
@@ -647,8 +611,6 @@ public static class StoreProductContentBuilder
             AttachHammockSwayActivity(root, visual, materials);
         else if (id == HomeStoreService.GardenSunLoungerId)
             AttachSunBaskActivity(root, visual);
-        else if (id == HomeStoreService.GardenGrillId)
-            AttachGrillWatchActivity(root, visual);
         else if (id == HomeStoreService.GardenBirdBathId)
             AttachBirdBathSipActivity(root, visual);
         else if (id == HomeStoreService.GardenFlowerPotsId)
@@ -1127,7 +1089,7 @@ public static class StoreProductContentBuilder
             "fridge-stare", "REFRIGERATOR", CatActivityKind.FridgeStare,
             QuestType.KitchenWatch, 0, "STARE", 1.1f, 3f, anchor, null, visual);
         activity.EditorConfigureStoreProduct(HomeStoreService.KitchenRefrigeratorId);
-        activity.EditorConfigureLook(look, SitLookReaction.PawSwat, 2.8f, "OPEN IT!");
+        activity.EditorConfigureLook(look, SitLookReaction.Sit, 2.8f, "OPEN IT!");
     }
 
     /// <summary>Fruit heaped proud of the upper tier: a swat, not a climb.</summary>
@@ -1322,8 +1284,7 @@ public static class StoreProductContentBuilder
                 AttachGroomBrushActivity(root, visual);
             if (definition.ProductId == HomeStoreService.BathroomLaundryHamperId)
                 AttachHamperDiveActivity(root, visual);
-            if (definition.ProductId == HomeStoreService.BathroomMirrorId)
-                AttachMirrorGazeActivity(root, visual);
+            // The bathroom wall mirror is decoration only.
             if (definition.ProductId == HomeStoreService.BathroomBathMatId)
                 AttachMatKneadActivity(root, visual);
             if (definition.ProductId == HomeStoreService.BathroomTubId)
@@ -3173,6 +3134,7 @@ public static class StoreProductContentBuilder
         IReadOnlyDictionary<string, Material> materials)
     {
         string id = definition.ProductId;
+        if (OutdoorArrangementProfile.IsDecoration(id)) return;
         if (id == HomeStoreService.BalconySunAwningId)
             AttachAwningGazeActivity(root, visual);
         else if (id == HomeStoreService.BalconyHerbShelfId)
@@ -3770,6 +3732,7 @@ public static class StoreProductContentBuilder
         IReadOnlyDictionary<string, Material> materials)
     {
         string id = definition.ProductId;
+        if (OutdoorArrangementProfile.IsDecoration(id)) return;
         if (id == HomeStoreService.PatioPergolaArchId)
             AttachArchClimbActivity(root, visual);
         else if (id == HomeStoreService.PatioParasolId)
@@ -5785,8 +5748,10 @@ public static class StoreProductContentBuilder
                 placed,
                 Quaternion.Euler(0f, definition.DefaultYaw, 0f));
         }
+        OutdoorPolishBuilder.ConfigureScene(scene, roomId);
         HomeRoomArrangementBuilder.ConfigureApproaches(scene, roomId);
         ModernWorldArtBuilder.ApplyRoot(root.transform, roomId);
+        if(roomId==HomeRoomService.KitchenId)KitchenDiningSetBuilder.Apply(scene);
     }
 
     private static GameObject CreateHierarchyGroup(string name, Transform parent)

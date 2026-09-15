@@ -40,8 +40,10 @@ public static class HomeRoomArrangementValidation
             for (int i = 0; i < bodies.Count; i++)
             {
                 var other = bodies[i];
+                if(KitchenScatterBuilder.SupportedPair(definition.ProductId,ids[i]))continue;
                 if (body.max.y + .08f <= other.min.y || other.max.y + .08f <= body.min.y) continue;
-                var expanded = body; expanded.Expand(new Vector3(HomeRoomLayoutPlanner.ItemGap * 2 - .002f, 0, HomeRoomLayoutPlanner.ItemGap * 2 - .002f));
+                float gap = OutdoorArrangementProfile.FurnitureGap(definition.ProductId, ids[i]);
+                var expanded = body; expanded.Expand(new Vector3(gap * 2 - .002f, 0, gap * 2 - .002f));
                 if (expanded.Intersects(other)) errors.Add(definition.ProductId + ": insufficient clearance from " + ids[i]);
             }
             bodies.Add(body); ids.Add(definition.ProductId);
@@ -55,7 +57,8 @@ public static class HomeRoomArrangementValidation
         {
             if (activities[i].RoutineEntryPoint == null) continue;
             var entry = activities[i].RoutineEntryPoint.position; entry.y = 0;
-            if (!HomeRoomLayoutPlanner.FitsPlayerView(entry + Vector3.up * .35f))
+            if (!HomeRoomLayoutPlanner.FitsPlayerView(entry + Vector3.up * .35f,
+                activities[i].StoreProductId == "bathroom.toilet" ? .995f : .94f))
                 errors.Add(activities[i].name + ": activity cuts the cat off at the screen edge");
             for (int j = 0; j < i; j++)
             {

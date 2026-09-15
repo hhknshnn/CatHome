@@ -21,7 +21,11 @@ public static class SceneObservationFacingBuilder
                 if (window != null) surface = window.Find("GlassPanel") ?? window.Find("Window");
             }
             else if (activity.Kind == CatActivityKind.BirdWatch)
-                surface = nodes.FirstOrDefault(node => node.name == "Courtyard Tree");
+            {
+                var sapling = nodes.Select(node => node.GetComponent<HomeProductPlacement>()).FirstOrDefault(
+                    product => product != null && product.ProductId == HomeStoreService.GardenSaplingId);
+                surface = sapling != null ? sapling.MovableRoot : nodes.FirstOrDefault(node => node.name == "Courtyard Tree");
+            }
             else continue;
             if (surface == null)
                 throw new InvalidOperationException(scene.name + "/" + activity.name + ": missing real observation surface.");

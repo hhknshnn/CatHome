@@ -25,6 +25,8 @@ public sealed class PantryClimbActivity : CatActivity
 
     private CharacterController characterController;
     private Vector3 originalScale;
+    private CatSupportedFurnitureMotion supportedMotion;
+    public Transform UpperShelfPoint => upperShelfPoint;
 
     public override string ProgressLabel => IsRunning ? "EXPLORING..." : string.Empty;
 
@@ -47,120 +49,70 @@ public sealed class PantryClimbActivity : CatActivity
     {
         characterController = Cat.GetComponent<CharacterController>();
         originalScale = Cat.transform.localScale;
-        StartCoroutine(ClimbRoutine());
+        StartCoroutine(SupportedClimb());
         return true;
     }
 
-    private IEnumerator ClimbRoutine()
+    private IEnumerator SupportedClimb()
     {
         Cat.SetMovementLocked(this, true);
-        if (characterController != null)
-            characterController.enabled = false;
-
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 floor = Flatten(floorPoint.position, start.y);
-        Vector3 lower = lowerShelfPoint.position;
-        Vector3 upper = upperShelfPoint.position;
-
-        Quaternion toFloor = LookTowards(floor - start, startRotation);
-        yield return Move(start, floor, startRotation, toFloor, 0.32f);
-
-        Vector3 firstLanding = directClimb ? upper : lower;
-        Quaternion inward = LookTowards(
-            new Vector3(firstLanding.x - floor.x, 0f, firstLanding.z - floor.z), toFloor);
-        yield return Move(floor, floor, toFloor, inward, 0.18f);
-
-        Vector3 crouched = originalScale;
-        crouched.y *= 0.76f;
-        crouched.x *= 1.09f;
-        crouched.z *= 1.09f;
-        yield return Squash(originalScale, crouched, 0.16f);
-        yield return Squash(crouched, originalScale, 0.09f);
-        if (directClimb)
-            yield return Hop(floor, upper, inward, .75f);
-        else
+        if (characterController != null) characterController.enabled = false;
+        Vector3 floor = Flatten(floorPoint.position, Cat.transform.position.y), upper = upperShelfPoint.position;
+        bool bookcase=StoreProductId=="loft.tall-bookcase";
+        if(bookcase)upper+=transform.TransformDirection(Vector3.forward)*.08f;
+        Vector3 exit=floor;
+        Vector3 exitDirection=StoreProductId==HomeStoreService.BalconyHerbShelfId?new Vector3(.94f,0,.342f):
+            bookcase?new Vector3(-.7071f,0,.7071f):Vector3.zero;
+        if(exitDirection.sqrMagnitude>.1f)
         {
-            yield return Hop(floor, lower, inward, 0.40f);
-            yield return Squash(originalScale, crouched, 0.13f);
-            yield return Squash(crouched, originalScale, 0.08f);
-            yield return Hop(lower, upper, inward, 0.38f);
+            // Leave the narrow shelf diagonally from its long axis. Facing
+            // squarely out would put the native crouch against the wall.
+            // Choose the actual clear landing first and keep that heading
+            // throughout the jump, with no shuffle along the shelf.
+            bool found=false;exitDirection=transform.TransformDirection(exitDirection).normalized;
+            foreach(float distance in new[]{.90f,1.05f,1.20f})
+            {
+                var candidate=Flatten(upper+exitDirection*distance,floor.y);
+                if(!CatActivityMotion.IsControllerFloorClear(Cat,candidate)||!CatActivityMotion.TryFloorPath(candidate,floor,out _))continue;
+                exit=candidate;found=true;break;
+            }
+            if(!found){CancelForTransition();yield break;}
         }
-
-        // Sniff along the shelf: nose left, nose right, one lean in.
-        Quaternion perchFacing = LookTowards(floor - upper, inward);
-        perchFacing = CatActivityFacing.AlongAxis(Cat, upper, perchFacing);
-        yield return CatActivityFacing.Turn(Cat, perchFacing);
-        float elapsed = 0f;
-        PlayCatPose(CatActivityPose.Sit, upperShelfPoint);
-        while (elapsed < SniffDuration)
+        Quaternion inward = LookTowards(upper - floor, Cat.transform.rotation);
+        yield return CatActivityMotion.WalkAuthoredStep(Cat, floor, inward, .28f);
+        Quaternion facing = CatActivityFacing.AlongAxis(Cat, upper, upperShelfPoint.rotation * Quaternion.Euler(0, 90, 0));
+        bool herbShelf=StoreProductId==HomeStoreService.BalconyHerbShelfId;
+        supportedMotion = new CatSupportedFurnitureMotion(this, Cat, upperShelfPoint);
+        if (!directClimb)
         {
-            elapsed += Time.deltaTime;
-            float sweep = Mathf.Sin(elapsed * 2.3f);
-            float lean = Mathf.Abs(Mathf.Sin(elapsed * 1.1f));
-            Vector3 position = upper;
-            position += (perchFacing * Vector3.forward) * (lean * 0.045f);
-            Cat.transform.position = position;
-            Cat.transform.rotation =
-                perchFacing * Quaternion.Euler(lean * 9f, sweep * 26f, 0f);
-            yield return null;
+            Vector3 lower = lowerShelfPoint.position;
+            yield return supportedMotion.Jump(floor, lower, inward, inward);
+            yield return supportedMotion.Jump(lower, upper, inward, facing);
         }
-
-        Cat.transform.position = upper;
-        Quaternion outward = LookTowards(floor - upper, inward);
-        yield return Move(upper, upper, Cat.transform.rotation, outward, 0.24f);
-        if (directClimb)
-            yield return Hop(upper, floor, outward, .65f);
-        else
+        else yield return supportedMotion.Jump(floor, upper, inward, facing);
+        var area = upperShelfPoint.GetComponent<CatActivitySurface>();
+        bool sleeping = area != null && area.ResolvePose(CatActivityPose.Sit) == CatActivityPose.Sleep;
+        yield return supportedMotion.Pose(herbShelf?CatActivityPose.GentleKnead:CatActivityPose.SitDown, .55f, upper, facing);
+        if (sleeping) yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .90f, upper, facing);
+        if(bookcase)supportedMotion.Rest(sleeping?CatActivityPose.Sleep:CatActivityPose.Sit);
+        else PlayCatPose(herbShelf?CatActivityPose.GentleKnead:sleeping ? CatActivityPose.Sleep : CatActivityPose.Sit, upperShelfPoint);
+        yield return new WaitForSeconds(SniffDuration);
+        if (sleeping) yield return supportedMotion.Pose(CatActivityPose.TowelWake, .80f, upper, facing);
+        yield return supportedMotion.Pose(herbShelf?CatActivityPose.GentleKnead:CatActivityPose.StandUp, .55f, upper, facing);
+        if (!directClimb)
         {
-            yield return Hop(upper, lower, outward, 0.34f);
-            yield return Hop(lower, floor, outward, 0.36f);
+            Vector3 lower = lowerShelfPoint.position;
+            Quaternion outward = LookTowards(floor - lower, facing);
+            yield return supportedMotion.Jump(upper, lower, facing, outward);
+            yield return supportedMotion.Jump(lower, floor, outward, outward);
         }
-
-        RestoreCat();
-        CompleteActivity("NOTHING UP HERE!");
-    }
-
-    /// <summary>Arc between two points, peaking above the higher end.</summary>
-    private IEnumerator Hop(Vector3 from, Vector3 to, Quaternion facing, float duration)
-    {
-        yield return CatActivityMotion.Jump(Cat,from,to,Cat.transform.rotation,facing);
-    }
-
-    private IEnumerator Move(
-        Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation, float duration)
-    {
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.position = Vector3.Lerp(from, to, t);
-            Cat.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        Cat.transform.position = to;
-        Cat.transform.rotation = toRotation;
-    }
-
-    private IEnumerator Squash(Vector3 from, Vector3 to, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            Cat.transform.localScale =
-                Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, elapsed / duration));
-            yield return null;
-        }
-
-        Cat.transform.localScale = to;
+        else yield return supportedMotion.Jump(upper, exit, facing, LookTowards(exit - upper, facing));
+        RestoreCat(); CompleteActivity("NOTHING UP HERE!");
     }
 
     private void RestoreCat()
     {
+        if (supportedMotion != null) { supportedMotion.End(); supportedMotion = null; }
         if (Cat == null)
             return;
 

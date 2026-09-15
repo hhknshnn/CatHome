@@ -1,0 +1,21 @@
+# Banyo — toplu son kontrol / adım 7, 11 Eylül 2026
+
+Kullanıcı 7. adımı 25 dakika hedefiyle onayladı. Özgün planın kapsamı değişen temasları farklı ırklarda, yaklaşma/tamamlama/iptali gerçek oyun akışında denetlemek ve banyoyu kullanıcıya açık bırakmaktır. Sonraki video talebi iptal edildi: yalnız gerçek PNG teslimi. Banyonun kullanıcı tarafından kapatıldığı veya mutfağa geçildiği anlamına gelmez.
+
+İlk siyah kedi düğme turu **8/9** geçti (`Docs/QA/ROOM_INTERACTIONS_2026-09-11/bathroom-step7-full/report.json`). Patiyle bakım, kum tuvaleti, havlu rafı ve küvet dahil sekiz rutin tek tamamlanma/açık çıkış/kontrol iadesi verdi. Klozetin kâğıt rulosu sıfır temasla, tamamlanma vermeden çıktı. Bu hata önceki klozet dönüşünden sonra toplu kontrolde bulundu; aynanın dekor olması nedeniyle 10 ürünün 9 eylemi vardır.
+
+Eski kâğıt duruşu `(3.14118,0,-1.90000)` gerçek ruloya yöneldiğinde kedinin sırtını kameraya döndürüyordu; görünür yöne düzeltme eli erişimin dışına taşıyordu. Sadece kediyi öbür açık yana almak da erişimi yaklaşık 18.5 cm aşıyordu. Temas eşiği veya kemik uzunluğu gevşetilmedi.
+
+Gerçek rulo ve metal tutucu birlikte yaklaşık **20.4 cm** klozetin açık ön tarafına uzatıldı. Blender kaynağında önceki .30 yer değiştirmesi .60 oldu; tutucunun bağlantı çubuğu aynı ölçüde uzatıldı. Klozetin rezervuarı, gövdesi, dünya konumu `(3.29118,0,-1.30)` ve yaw270 duvar hizası korundu. `--paper-only` yalnız iki kâğıt/klozet FBX çıktısını yeniler; kum modellerini yeniden üretmez. Kaynak Python, iki FBX, klozet prefabı ve banyo sahnesindeki ilgili temas/giriş noktaları birlikte güncellendi.
+
+Yeni gerçek temas `(2.85259,.46162,-1.54645)`, pati duruşu `(2.62118,0,-1.28000)`, giriş `(2.49118,0,-1.26000)`. `BathroomActionPartsBuilder` üç noktayı birlikte kurar; `RoomProductInteractionBuilder` eski yan girişle üzerine yazmaz. Banyo yerleşimindeki diğer dokuz ürün taşınmadı. Kaynak Scratch animasyonu, 35 mm gerçek el temas koşulu, üç vuruş, kâğıt üretimi ve iptal/ödül sahipliği aynı.
+
+Eski yerleşim testi aynadan hâlâ animasyon ve giriş bekliyordu; güncel dekor kararını, aynı asılı yüksekliği ve bakım arabasının açık girişini doğrulayacak şekilde düzeltildi. Bakım/küvet tanı çıktıları artık etkin QA klasörüne yazılır; önceki adım kanıtları ezilmez. Yerleşim/temas/geometri **8/8 EditMode** başarılı (`bathroom-edit.xml`).
+
+Bu turun kanıt kökü `Docs/QA/BATHROOM_FINAL_2026-09-11`. İlk başarısız tur ve aday duruş son doğrulama değildir. Tam proje EditMode paketi, APK veya telefon performansı bu dar son kontrolde ölçülmez. Video/arşiv/commit/push/yayın/kapatma yok. Kullanıcı denemesi ayrı kayıt kopyasındadır; gerçek kayıt ve tercihler bu kopyayla değiştirilmez.
+
+Son native kapsam **33 benzersiz test / 33 başarılı**, yerleşim **8/8**, validator **0 hata / 0 uyarı**. İlk native dosyasında duşun piksel testi 0 görünür köpükle başarısızdır: gerçek ekranı önceki satın alma testinden kalan seviye kutlaması kapatıyordu. Yalnız duş testinin hazırlığı bu eski pencereyi normal kapatma yoluyla kapatır; oyun davranışı değiştirilmedi. Üç duş testi yeniden **3/3** geçti. `test-summary.json` her benzersiz testin son sonucunu kaynak XML ile birleştirir; ilk başarısız XML tarihsel kanıttır.
+
+Son gerçek oyun düğmesi turu **9/9**: `Docs/QA/ROOM_INTERACTIONS_2026-09-11/bathroom-step7-verified/report.json`. Tam siyah Oriental, her eylemde tek tamamlanma, açık çıkış ve kontrol iadesi doğrulandı. `paper-contact.png` gerçek native turunda pati/rulo temasını gösterir. `bathroom-ready.png` kullanıcıya bırakılan gerçek ekran; `editor-ready.json` tek kedi, tek kamera/dinleyici, ayrı QA, çekim0 ve kayıt kapalı durumunu doğrular. Oda deneme paneli açık; klozet düğmesi hazır. Paneldeki denemeyi bitir veya Play'den çıkış 16 tercihi geri yükler. Banyo onayı kullanıcıya aittir.
+
+On ırklı temas kontrolleri paspas, kâğıt, patiyle bakım, kum, havlu rafı, küvet ve lavabo içerir. Dokuz eylemin tümünü on ırkta taradığımız anlamına gelmez. Duraklatma, iptal, disable/oda kaldırma, hareket sahipliği ve ödül sınırları ilgili native testlerde denetlendi. Gerçek ana kayıt/recovery SHA256 **3558D75B36B1710960624B629C8F0C2C51A1E1B231E2572B12984F825F896B9B**, CP2 **03D4FD1A6420FF0D6CD6213FE08EA57598038EC589BA7CA02475692036EA9A8D** başlangıçla aynı. Banyo sahnesindeki kâğıt noktaları güncellendi; diğer yedi oda sahnesi hash olarak aynı.
