@@ -10,6 +10,8 @@ public class ThirstSystem : MonoBehaviour
     [SerializeField] private Image thirstFill;
     [SerializeField] private Image thirstFrame;
     [SerializeField] private TMP_Text percentageText;
+    private int displayedPercentage = -1;
+    private string displayedPercentageText;
 
     [Header("Cat")]
     [SerializeField] private CatMovement catMovement;
@@ -31,9 +33,10 @@ public class ThirstSystem : MonoBehaviour
     private readonly Color darkCriticalColor = new Color32(120, 20, 20, 255);
     private readonly Color textColor = new Color32(255, 244, 214, 255);
 
+    public CatMovement CatMovement => catMovement;
     public bool IsDrinking => isDrinking;
     public bool IsDrinkingFor(UnityEngine.Object owner) => isDrinking && ReferenceEquals(drinkingOwner, owner);
-    public bool CanDrink => !isDrinking && currentThirst < 99.9f;
+    public bool CanDrink => !isDrinking && currentThirst < CatCareEligibility.SatisfiedThreshold;
     public float CurrentThirst => currentThirst;
 
     /// <summary>Raised when a drinking interaction finishes. Not raised on load.</summary>
@@ -78,8 +81,10 @@ public class ThirstSystem : MonoBehaviour
 
     public bool BeginDrinking(float duration, UnityEngine.Object owner, Action onCompleted = null)
     {
-        if (!isActiveAndEnabled || !CanDrink)
-            return false;
+        if (!isActiveAndEnabled || isDrinking) return false;
+        ResolveSceneReferences();
+        if (!CatCareEligibility.TryAccept(catMovement, CatCareNeed.Water)) return false;
+        if (!CanDrink) return false;
 
         if (drinkingCoroutine != null)
         {
@@ -151,8 +156,19 @@ public class ThirstSystem : MonoBehaviour
 
         if (percentageText != null)
         {
-            percentageText.text = Mathf.CeilToInt(currentThirst) + "%";
-            percentageText.color = PremiumUiStyle.Ink;
+            int percentage = Mathf.CeilToInt(currentThirst);
+            if (displayedPercentage != percentage || displayedPercentageText == null)
+            {
+                displayedPercentage = percentage;
+                displayedPercentageText = percentage + "%";
+            }
+            if (percentageText.text != displayedPercentageText)
+                percentageText.text = displayedPercentageText;
+            Color legacyColor = isDehydrated
+                ? Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255),
+                    (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f)
+                : (Color)PremiumUiStyle.Ink;
+            percentageText.color = StorybookHudLayout.NeedPercentageColor(percentageText, percentage, legacyColor);
         }
 
         if (isDehydrated)
@@ -226,8 +242,6 @@ public class ThirstSystem : MonoBehaviour
         if (thirstFrame != null)
             thirstFrame.color = flashingRed;
 
-        if (percentageText != null)
-            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     public void CancelDrinking(UnityEngine.Object owner)

@@ -62,7 +62,7 @@ public sealed class MiniGameTransitionSafetyTests
         {
             if (!player.IsBusy && player.Prey == null)
             {
-                var prey = Object.FindObjectsByType<CatCatchMouse>(FindObjectsSortMode.None)
+                var prey = Object.FindObjectsByType<CatCatchMouse>()
                     .Where(m => m.IsCatchable)
                     .OrderBy(m => (m.transform.position - player.Position).sqrMagnitude).FirstOrDefault();
                 if (prey != null)
@@ -108,7 +108,7 @@ public sealed class MiniGameTransitionSafetyTests
             "A click queued after exit must not spend another hunt life.");
         yield return WaitUntilUnloaded(CatCatchLauncher.CatchSceneName);
         Assert.That(Time.timeScale, Is.EqualTo(1f));
-        Assert.That(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<Camera>()
             .Count(c => c.enabled && c.targetTexture == null), Is.EqualTo(1));
     }
 
@@ -134,7 +134,7 @@ public sealed class MiniGameTransitionSafetyTests
         runner.Launch();
         yield return WaitUntilLoaded(CatRunnerLauncher.RunnerSceneName);
         Assert.That(SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).IsValid(), Is.False);
-        Assert.That(Object.FindObjectsByType<CatRunnerGameController>(FindObjectsSortMode.None).Length, Is.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<CatRunnerGameController>().Length, Is.EqualTo(1));
         catcher.Launch();
         Assert.That(SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).IsValid(), Is.False);
         Object.FindAnyObjectByType<CatRunnerGameController>().ExitFromWelcome();
@@ -223,7 +223,7 @@ public sealed class MiniGameTransitionSafetyTests
         {
             if (!player.IsBusy && player.Prey == null)
             {
-                var prey = Object.FindObjectsByType<CatCatchMouse>(FindObjectsSortMode.None)
+                var prey = Object.FindObjectsByType<CatCatchMouse>()
                     .Where(m => m.IsCatchable)
                     .OrderBy(m => (m.transform.position - player.Position).sqrMagnitude).FirstOrDefault();
                 if (prey != null) player.ChasePrey(prey);
@@ -370,7 +370,7 @@ public sealed class MiniGameTransitionSafetyTests
                 {
                     var cat = Object.FindAnyObjectByType<CatMovement>();
                     CatActionState.CancelForTransition(cat);
-                    var spawn = Object.FindObjectsByType<LevelSpawnPoint>(FindObjectsSortMode.None)
+                    var spawn = Object.FindObjectsByType<LevelSpawnPoint>()
                         .First(p => p.gameObject.scene == cat.gameObject.scene &&
                                     p.SpawnPointId == loader.CurrentRoom.SpawnPointId);
                     MoveHomeCat(cat, spawn.transform.position, spawn.transform.rotation);
@@ -492,7 +492,7 @@ public sealed class MiniGameTransitionSafetyTests
         Assert.That(loader.CurrentRoom.Id, Is.EqualTo(roomId));
         Assert.That(CatRunnerSessionContext.ReturnRoomId, Is.EqualTo(roomId));
         Assert.That(cat.IsMovementLocked && cat.AreWorldActionsBlocked, Is.True);
-        Assert.That(Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<CatMovement>(), Has.Length.EqualTo(1));
         AssertSinglePresentation();
         var joystick = Read<MobileJoystick>(cat, "mobileJoystick");
         Assert.That(joystick, Is.Not.Null);
@@ -524,7 +524,7 @@ public sealed class MiniGameTransitionSafetyTests
         Assert.That(loader.CurrentRoom.Id, Is.EqualTo(roomId));
         Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(roomScene));
         Assert.That(Object.FindAnyObjectByType<CatMovement>(), Is.SameAs(cat));
-        Assert.That(Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<CatMovement>(), Has.Length.EqualTo(1));
         Assert.That(CatActionState.IsBusy(cat), Is.False);
         Assert.That(cat.IsMovementLocked || cat.AreWorldActionsBlocked, Is.False,
             "Returning from welcome must restore normal home input without restarting the old action.");
@@ -569,9 +569,9 @@ public sealed class MiniGameTransitionSafetyTests
 
     private static void AssertSinglePresentation()
     {
-        Assert.That(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<Camera>()
             .Count(c => c.enabled && c.targetTexture == null), Is.EqualTo(1));
-        Assert.That(Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<AudioListener>()
             .Count(l => l.enabled), Is.EqualTo(1));
     }
 

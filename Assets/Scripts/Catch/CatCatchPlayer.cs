@@ -36,7 +36,6 @@ public sealed class CatCatchPlayer : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private Camera gameplayCamera;
     [SerializeField, Min(0.5f)] private float moveSpeed = CatchHuntRules.CatRunSpeed;
-    [SerializeField, Min(1f)] private float rotationSpeed = 16f;
     [SerializeField, Min(0.02f)] private float animationDampTime = 0.1f;
     [SerializeField, Min(0.05f)] private float pounceHeight = 0.45f;
     [SerializeField] private string speedParameterName = "Speed";

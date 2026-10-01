@@ -168,7 +168,7 @@ public sealed class GameNavigationTests
             Assert.That(CatchLivesService.CurrentLives, Is.EqualTo(catchLives));
             Assert.That(EconomyService.Coins, Is.EqualTo(coins), "Changing navigation destination cannot pay the result again.");
             Assert.That(CatRunnerSessionContext.IsLaunching, Is.False);
-            Assert.That(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None)
+            Assert.That(Object.FindObjectsByType<Camera>()
                 .Count(c => c.enabled && c.targetTexture == null), Is.EqualTo(1));
             hub.Hide();
             Assert.That(cat.IsMovementLocked, Is.False);

@@ -18,23 +18,22 @@ public enum CatInputCategory
 [RequireComponent(typeof(CharacterController))]
 public class CatMovement : MonoBehaviour
 {
-    [Header("Hareket AyarlarÄ±")]
+    [Header("Hareket Ayarlarý")]
     [SerializeField] private float moveSpeed = HomeRunSpeed;
-    [SerializeField] private float rotationSpeed = 12f;
     [SerializeField] private float gravity = -20f;
 
-    [Header("Model AyarlarÄ±")]
-    [Tooltip("Kedi hareket yÃ¶nÃ¼nÃ¼n tersine bakÄ±yorsa 180 yap.")]
+    [Header("Model Ayarlarý")]
+    [Tooltip("Kedi hareket yönünün tersine bakýyorsa 180 yap.")]
     [SerializeField] private float modelForwardOffset = 0f;
 
-    [Header("Animasyon AyarlarÄ±")]
+    [Header("Animasyon Ayarlarý")]
     [SerializeField] private string speedParameterName = "Speed";
 
     [Header("Mobil Kontrol")]
     [SerializeField] private MobileJoystick mobileJoystick;
 
-    [Header("Oda SÄ±nÄ±rlarÄ±")]
-    [Tooltip("Kedinin gÃ¶rÃ¼nen modelini duvardan ayÄ±ran ek dÃ¼nya boÅŸluÄŸu.")]
+    [Header("Oda Sýnýrlarý")]
+    [Tooltip("Kedinin görünen modelini duvardan ayýran ek dünya boþluðu.")]
     [SerializeField, Min(0f)] private float roomEdgeClearance = 0.03f;
 
     private CharacterController characterController;
@@ -42,6 +41,28 @@ public class CatMovement : MonoBehaviour
     private Transform cameraTransform;
     private HomeRoomBoundary roomBoundary;
     private float physicalFootprintRadius;
+    private CatBodyGuard bodyGuard;
+    public bool HasBodyGuardProfile => bodyGuard != null && bodyGuard.HasProfile;
+    public bool IsBodyPoseClear(Vector3 position, Quaternion rotation) => HasBodyGuardProfile
+        ? bodyGuard.IsPoseClear(position, rotation)
+        : CatActivityMotion.IsControllerFloorClear(this, position);
+    public bool IsInteractionPoseClear(Vector3 position, Quaternion rotation) => HasBodyGuardProfile
+        ? bodyGuard.IsPoseClear(position, rotation) && bodyGuard.IsControllerClear(position, rotation)
+        : CatActivityMotion.IsControllerFloorClear(this, position);
+    // Refine only a freshly verified care mesh; keep controller and other obstacles.
+    public bool IsCarePoseClear(Vector3 position, Quaternion rotation, System.Func<Collider, bool> verifiedSkinClear) => HasBodyGuardProfile
+        ? bodyGuard.IsPoseClear(position, rotation, .015f, verifiedSkinClear) && bodyGuard.IsControllerClear(position, rotation)
+        : CatActivityMotion.IsControllerFloorClear(this, position);
+    public bool IsInteractionBodyClear(CatBodyGuardCatalog.Probe[] worldProbes, float tolerance = .015f) => bodyGuard != null &&
+        bodyGuard.IsWorldPoseClear(worldProbes, tolerance);
+    public bool IsInteractionBoxesClear(CatBodyGuardBox[] boxes,float tolerance=.015f,System.Func<int,Collider,bool> refine=null)=>bodyGuard!=null&&
+        bodyGuard.IsWorldBoxesClear(boxes,tolerance,refine);
+    public bool IsInteractionTriangleClear(Vector3 a,Vector3 b,Vector3 c,Collider solid,float tolerance=.002f,float shell=.001f)=>bodyGuard!=null&&
+        bodyGuard.IsWorldTriangleClear(a,b,c,solid,tolerance,3,shell);
+    private bool collisionLimitedTurn, backingFromCorner, usingReverseInputEscape;
+    private float escapeTurnSign, escapeSlideSeconds;
+    private Vector3 escapeTurnInput;
+    private int clearTurnFrames;
 
     private float verticalVelocity;
     private int speedParameterHash;
@@ -58,6 +79,8 @@ public class CatMovement : MonoBehaviour
     private bool hasLocomotionRate;
     private float currentGroundSpeed;
     private float requestedGroundSpeed;
+    private float turningRate, turnVelocity;
+    private CatNaturalTurnMotion naturalTurn;
     private CatHomeLocomotionCatalog.Entry locomotionProfile;
     private static readonly int LocomotionRateHash=Animator.StringToHash("LocomotionRate");
     public float GroundSpeed=>currentGroundSpeed;
@@ -119,6 +142,7 @@ public class CatMovement : MonoBehaviour
 
     private void Awake()
     {
+        CatPawReachCatalog.Preload(CatBreedService.SelectedBreedId);
         characterController = GetComponent<CharacterController>();
         // Keep sub-millimetre analog steps even at high frame rates.
         characterController.minMoveDistance = 0f;
@@ -127,6 +151,9 @@ public class CatMovement : MonoBehaviour
         ResolveSceneReferences();
         physicalFootprintRadius = ResolvePhysicalFootprintRadius();
         ResolveLocomotionRate();
+        bodyGuard = new CatBodyGuard(transform, characterController);
+        bodyGuard.Rebind(animator);
+        naturalTurn = CatNaturalTurnMotion.For(this);
     }
 
     public void RebindAnimator(Animator replacement)
@@ -134,10 +161,17 @@ public class CatMovement : MonoBehaviour
         if (replacement == null)
             return;
         animator = replacement;
+        var pawVisual=replacement.GetComponentInParent<CatBreedVisualTag>();
+        CatPawReachCatalog.Preload(pawVisual!=null?pawVisual.BreedId:CatBreedService.SelectedBreedId);
         speedParameterHash = Animator.StringToHash(speedParameterName);
         physicalFootprintRadius = ResolvePhysicalFootprintRadius();
         ResolveLocomotionRate();
+        bodyGuard?.Rebind(animator);
+        collisionLimitedTurn = backingFromCorner = usingReverseInputEscape = false; escapeTurnSign = escapeSlideSeconds = 0f;
+        clearTurnFrames = 0;
     }
+
+    private void OnDestroy() => bodyGuard?.Dispose();
 
     private void ResolveLocomotionRate()
     {
@@ -179,7 +213,8 @@ public class CatMovement : MonoBehaviour
         RemoveDestroyedMovementLockOwners();
         if (IsMovementLocked || characterController==null || !characterController.enabled)
         {
-            movementInputMagnitude = 0f;
+            collisionLimitedTurn = backingFromCorner = usingReverseInputEscape = false; escapeTurnSign = escapeSlideSeconds = 0f; clearTurnFrames = 0;
+            movementInputMagnitude = 0f; turningRate = turnVelocity = 0f;
             currentGroundSpeed=0f;running=false;
             UpdateAnimation(0f);
             return;
@@ -189,6 +224,8 @@ public class CatMovement : MonoBehaviour
         movementInputMagnitude = input.magnitude;
         Vector3 moveDirection = GetCameraRelativeDirection(input);
 
+        if (moveDirection.magnitude > .08f)
+            bodyGuard?.BeginStep(roomBoundary, roomEdgeClearance);
         RotateCat(moveDirection);
         Vector3 previous=transform.position;
         MoveCat(moveDirection);
@@ -197,7 +234,12 @@ public class CatMovement : MonoBehaviour
         // is not a walking step; never animate it as intentional locomotion.
         currentGroundSpeed=Mathf.Min(requestedGroundSpeed,
             distance.magnitude/Mathf.Max(Time.deltaTime,.0001f));
-        UpdateAnimation(currentGroundSpeed);
+        // Guarded sliding can alternate with tiny ordinary backward steps.
+        // Retain that progress while the same blocked reverse turn continues.
+        if (!collisionLimitedTurn || !backingFromCorner) escapeSlideSeconds = 0f;
+        else if (usingReverseInputEscape && currentGroundSpeed > .08f) escapeSlideSeconds += Time.deltaTime;
+        naturalTurn.Signal(turningRate);
+        UpdateAnimation(Mathf.Max(currentGroundSpeed, CatNaturalTurnMotion.GaitSpeed(turningRate)));
     }
 
     private Vector2 ReadInput()
@@ -278,7 +320,7 @@ public class CatMovement : MonoBehaviour
             // Legacy/custom controllers without a measured breed remain usable.
             // Shipped breeds are required to have a measured profile by validation.
             : movementAmount / Mathf.Lerp(.65f, 1.8f, runBlend);
-        if (hasLocomotionRate) animator.SetFloat(LocomotionRateHash, rate);
+        if (hasLocomotionRate) animator.SetFloat(LocomotionRateHash, backingFromCorner ? -rate : rate);
         // Damping Speed independently of cadence blends in Idle while the body
         // already travels at full speed. Both now describe the same frame.
         animator.SetFloat(speedParameterHash, Mathf.Lerp(.35f, 1f, runBlend));
@@ -286,22 +328,62 @@ public class CatMovement : MonoBehaviour
 
     private void RotateCat(Vector3 direction)
     {
+        turningRate = 0f;
         if (direction.magnitude <= .08f)
+        {
+            turnVelocity = 0f;
+            collisionLimitedTurn = backingFromCorner = usingReverseInputEscape = false; escapeTurnSign = escapeSlideSeconds = 0f; clearTurnFrames = 0;
             return;
+        }
 
         Quaternion targetRotation =
             Quaternion.LookRotation(direction, Vector3.up) *
             Quaternion.Euler(0f, modelForwardOffset, 0f);
 
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            TurnDegreesPerSecond(IsRunning) * Time.deltaTime
-        );
+        Quaternion from = transform.rotation;
+        float remaining = Quaternion.Angle(from, targetRotation);
+        float wantedRate = Mathf.Min(TurnDegreesPerSecond(IsRunning), remaining * 16f);
+        turnVelocity = Mathf.MoveTowards(turnVelocity, wantedRate, 3600f * Time.deltaTime);
+        float turnStep = Mathf.Min(remaining, turnVelocity * Time.deltaTime);
+        Vector3 requested = direction.normalized;
+        if (escapeTurnSign != 0f &&
+            (Vector3.Dot(requested, escapeTurnInput) < .75f || Quaternion.Angle(from, targetRotation) < 80f))
+            escapeTurnSign = 0f;
+        Quaternion nextRotation = escapeTurnSign == 0f
+            ? Quaternion.RotateTowards(from, targetRotation, turnStep)
+            : from * Quaternion.Euler(0f, escapeTurnSign * turnStep, 0f);
+        Quaternion acceptedRotation = bodyGuard != null
+            ? bodyGuard.ConstrainRotation(transform.position, from, nextRotation)
+            : nextRotation;
+        // First leave the narrow bowl pocket through the guarded reverse input.
+        // If its successful escape still cannot finish the shortest turn, the
+        // other guarded direction frees a long tail beside the wall. Hold that
+        // direction until facing the requested half-plane to prevent ping-pong.
+        if (escapeTurnSign == 0f && bodyGuard != null && escapeSlideSeconds >= .15f &&
+            Quaternion.Angle(acceptedRotation, nextRotation) > .05f && Quaternion.Angle(from, targetRotation) > 100f)
+        {
+            float sign = -Mathf.Sign(Vector3.SignedAngle(from * Vector3.forward, nextRotation * Vector3.forward, Vector3.up));
+            Quaternion other = from * Quaternion.Euler(0f, sign * turnStep, 0f);
+            Quaternion allowed = bodyGuard.ConstrainRotation(transform.position, from, other);
+            if (Quaternion.Angle(from, allowed) > Quaternion.Angle(from, acceptedRotation) + .5f)
+            {
+                nextRotation = other; acceptedRotation = allowed;
+                escapeTurnSign = sign; escapeTurnInput = requested;
+            }
+        }
+        collisionLimitedTurn = Quaternion.Angle(acceptedRotation, nextRotation) > .05f;
+        clearTurnFrames = collisionLimitedTurn ? 0 : clearTurnFrames + 1;
+        transform.rotation = acceptedRotation;
+        // Unity's controller has a forward-offset centre. Synchronize its
+        // rotated capsule before Move, otherwise Move preserves the old world
+        // centre and translates CatRoot sideways by that offset every turn.
+        if (Quaternion.Angle(from, acceptedRotation) > .001f) Physics.SyncTransforms();
+        turningRate = Vector3.SignedAngle(from * Vector3.forward, acceptedRotation * Vector3.forward, Vector3.up) / Mathf.Max(.0001f, Time.deltaTime);
     }
 
     private void MoveCat(Vector3 direction)
     {
+        usingReverseInputEscape = false;
         if (characterController.isGrounded && verticalVelocity < 0f)
             verticalVelocity = -2f;
 
@@ -314,15 +396,31 @@ public class CatMovement : MonoBehaviour
         Vector3 forward=Quaternion.Euler(0,-modelForwardOffset,0)*transform.forward;
         forward.y=0;forward.Normalize();
         // Pivot briefly for a reverse command, then walk a curved path with the body facing its travel.
-        bool aligned=direction.sqrMagnitude>.0001f && Vector3.Dot(forward,direction.normalized)>.5f;
+        float facingInput = direction.sqrMagnitude > .0001f ? Vector3.Dot(forward, direction.normalized) : 0f;
+        bool aligned = direction.sqrMagnitude > .0001f && facingInput > .5f;
+        // A head held between two walls cannot pivot until the body backs out.
+        // A sideways command also needs space for the shoulders to rotate.
+        // Back only while the requested turn is physically blocked and the
+        // cat is not yet facing its travel; open-floor turns stay unchanged.
+        backingFromCorner = facingInput < .95f &&
+            (collisionLimitedTurn || backingFromCorner && clearTurnFrames < 2);
         requestedGroundSpeed = aligned ? targetSpeed : 0f;
         Vector3 horizontalVelocity=aligned?forward*targetSpeed:Vector3.zero;
+        if (backingFromCorner)
+        {
+            running = false;
+            requestedGroundSpeed = Mathf.Min(NormalWalkSpeed, targetSpeed);
+            horizontalVelocity = -forward * requestedGroundSpeed;
+        }
 
         Vector3 velocity = horizontalVelocity;
         velocity.y = verticalVelocity;
 
         Vector3 movement = velocity * Time.deltaTime;
-        if (roomBoundary != null)
+        // Anatomical profiles constrain only this requested step. Applying the
+        // old absolute circle clamp first would shove an activity's valid exit
+        // sideways on its first input when that pose lies beyond the circle inset.
+        if (roomBoundary != null && strength > .08f && !HasBodyGuardProfile)
         {
             Vector3 target = roomBoundary.ClampPosition(
                 transform.position + new Vector3(movement.x, 0f, movement.z),
@@ -331,12 +429,32 @@ public class CatMovement : MonoBehaviour
             movement.z = target.z - transform.position.z;
         }
 
+        if (strength > .08f && bodyGuard != null)
+        {
+            Vector3 guarded = bodyGuard.ConstrainMove(transform.position, transform.rotation, movement);
+            // A backward step beside a bowl can snag sideways on the wall.
+            // If it is almost blocked, follow the held reverse joystick through
+            // the same guard instead of repeatedly pushing that blocked vector.
+            // The controller still checks the resulting step; no pose is snapped.
+            float requestedSquare = movement.x * movement.x + movement.z * movement.z;
+            float guardedSquare = guarded.x * guarded.x + guarded.z * guarded.z;
+            if (backingFromCorner && facingInput < 0f && guardedSquare < requestedSquare * .25f)
+            {
+                Vector3 requested = direction.normalized * requestedGroundSpeed * Time.deltaTime;
+                requested.y = movement.y;
+                Vector3 escape = bodyGuard.ConstrainMove(transform.position, transform.rotation, requested);
+                float escapeSquare = escape.x * escape.x + escape.z * escape.z;
+                if (escapeSquare > guardedSquare + .000001f) { guarded = escape; usingReverseInputEscape = true; }
+            }
+            movement = guarded;
+        }
+
         characterController.Move(movement);
     }
 
     public const float NormalWalkSpeed=.65f;
     public const float HomeRunSpeed=1.5f;
-    public static float TurnDegreesPerSecond(bool run)=>run?320f:220f;
+    public static float TurnDegreesPerSecond(bool run)=>run?480f:420f;
     public static float GroundSpeedForInput(float strength,bool run,float maximum=HomeRunSpeed)
     {
         strength=Mathf.Clamp01(strength);

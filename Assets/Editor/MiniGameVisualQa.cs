@@ -45,7 +45,7 @@ public static class MiniGameVisualQa
                     if(FollowObstacles)
                     {
                         var g=UiQaVisualTour.Find<CatRunnerGameController>();
-                        var hazard=Object.FindObjectsByType<CatRunnerTrackObject>(FindObjectsSortMode.None)
+                        var hazard=Object.FindObjectsByType<CatRunnerTrackObject>()
                             .Where(h=>h.IsHazard&&Mathf.Abs(h.transform.localPosition.x-p.LanePosition)<.6f&&h.transform.localPosition.z>0)
                             .OrderBy(h=>h.transform.localPosition.z).FirstOrDefault();
                         if(hazard!=null&&hazard.transform.localPosition.z<g.CurrentSpeed*.37f+.12f)
@@ -62,7 +62,7 @@ public static class MiniGameVisualQa
                 else
                 {
                     var p=UiQaVisualTour.Find<CatCatchPlayer>();
-                    var mouse=Object.FindObjectsByType<CatCatchMouse>(FindObjectsSortMode.None).Where(m=>m.IsCatchable).OrderBy(m=>Vector3.Distance(p.transform.position,m.transform.position)).FirstOrDefault();
+                    var mouse=Object.FindObjectsByType<CatCatchMouse>().Where(m=>m.IsCatchable).OrderBy(m=>Vector3.Distance(p.transform.position,m.transform.position)).FirstOrDefault();
                     if(mouse!=null&&!p.IsBusy&&p.Prey==null)p.ChasePrey(mouse);
                     catches=UiQaVisualTour.Find<CatCatchGameController>().Catches;
                 }
@@ -88,7 +88,7 @@ public static class MiniGameVisualQa
             {
                 if(!runner)
                 {
-                    var p=UiQaVisualTour.Find<CatCatchPlayer>();var prey=Object.FindObjectsByType<CatCatchMouse>(FindObjectsSortMode.None).Where(m=>m.IsCatchable).OrderBy(m=>Vector3.Distance(m.transform.position,p.Position)).FirstOrDefault();
+                    var p=UiQaVisualTour.Find<CatCatchPlayer>();var prey=Object.FindObjectsByType<CatCatchMouse>().Where(m=>m.IsCatchable).OrderBy(m=>Vector3.Distance(m.transform.position,p.Position)).FirstOrDefault();
                     if(prey!=null&&!p.IsBusy&&p.Prey==null)p.ChasePrey(prey);
                 }
                 Status=label+" finishing a real round";yield return null;

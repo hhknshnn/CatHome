@@ -81,16 +81,16 @@ public static class AudioRefinementReview
     }
     public static void Inspect(string file)
     {
-        Directory.CreateDirectory(Root);var mix=UnityEngine.Object.FindFirstObjectByType<GameSoundscape>();
+        Directory.CreateDirectory(Root);var mix=UnityEngine.Object.FindAnyObjectByType<GameSoundscape>();
         var state=new State{play=EditorApplication.isPlaying,qa=EditorQaSession.IsActive,copy=EditorQaSession.SaveDirectory,
             compiling=EditorApplication.isCompiling,focused=Application.isFocused,editorMuted=EditorUtility.audioMasterMute,
             title=TitleScreen.IsShowing.ToString(),selection=mix==null?"":mix.Selection,
             musicTarget=mix==null?0:mix.TargetMusicVolume,musicLevel=mix==null?0:mix.CurrentMusicVolume,
-            cats=UnityEngine.Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None).Length,
-            listeners=UnityEngine.Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Count(s=>s.isActiveAndEnabled),
-            audioSystems=UnityEngine.Object.FindObjectsByType<GameAudio>(FindObjectsSortMode.None).Length,
+            cats=UnityEngine.Object.FindObjectsByType<CatMovement>().Length,
+            listeners=UnityEngine.Object.FindObjectsByType<AudioListener>().Count(s=>s.isActiveAndEnabled),
+            audioSystems=UnityEngine.Object.FindObjectsByType<GameAudio>().Length,
             scenes=Enumerable.Range(0,SceneManager.sceneCount).Select(i=>SceneManager.GetSceneAt(i)).Select(s=>new SceneInfo{name=s.name,dirty=s.isDirty}).ToArray(),
-            sources=UnityEngine.Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None).Where(s=>s.clip!=null).Select(s=>new SourceInfo{name=s.name,clip=s.clip.name,playing=s.isPlaying,volume=s.volume,time=s.time}).ToArray()};
+            sources=UnityEngine.Object.FindObjectsByType<AudioSource>().Where(s=>s.clip!=null).Select(s=>new SourceInfo{name=s.name,clip=s.clip.name,playing=s.isPlaying,volume=s.volume,time=s.time}).ToArray()};
         File.WriteAllText(Path.Combine(Root,file),JsonUtility.ToJson(state,true));
     }
     static void VerifyPreferences()

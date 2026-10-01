@@ -374,7 +374,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         var sun = RenderSettings.sun;
         bool fog = RenderSettings.fog;
         maskedLights.Clear(); lightMasks.Clear();
-        foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+        foreach (var light in FindObjectsByType<Light>())
         {
             if (light.transform.IsChildOf(stage.transform) || (light.cullingMask & (1 << PreviewLayer)) == 0) continue;
             maskedLights.Add(light); lightMasks.Add(light.cullingMask);

@@ -343,8 +343,6 @@ public static class PetInteractionBuilder
         serialized.FindProperty("heartMesh").objectReferenceValue = mesh;
         serialized.FindProperty("heartMaterial").objectReferenceValue = material;
         serialized.FindProperty("headOffset").vector3Value = new Vector3(0f, 0.22f, 0f);
-        serialized.FindProperty("heartScaleMultiplier").floatValue = 1.7f;
-        serialized.FindProperty("heartScaleVariation").floatValue = 0.12f;
         serialized.ApplyModifiedProperties();
     }
 

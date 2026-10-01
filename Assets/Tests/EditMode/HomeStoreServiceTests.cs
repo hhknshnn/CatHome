@@ -25,7 +25,7 @@ public sealed class HomeStoreServiceTests
     {
         Assert.That(HomeStoreService.BallBasketPrice, Is.EqualTo(300));
         Assert.That(HomeStoreService.ScratchPostPrice, Is.EqualTo(400));
-        Assert.That(HomeStoreService.Products.Count, Is.EqualTo(114));
+        Assert.That(HomeStoreService.Products.Count, Is.EqualTo(113));
 
         Assert.That(
             HomeStoreService.TryGetProduct(
@@ -1030,7 +1030,6 @@ public sealed class HomeStoreServiceTests
         {
             HomeStoreService.BellCollarId,
             HomeStoreService.KibbleBagId,
-            HomeStoreService.NapPillowId,
             HomeStoreService.CatnipPlantId,
             HomeStoreService.CardboardHideoutId
         };
@@ -1077,7 +1076,7 @@ public sealed class HomeStoreServiceTests
                 product.Id);
         }
 
-        Assert.That(placeableCats, Is.GreaterThanOrEqualTo(17));
+        Assert.That(placeableCats, Is.GreaterThanOrEqualTo(16));
     }
 
     [Test]

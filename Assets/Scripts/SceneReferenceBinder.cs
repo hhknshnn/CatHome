@@ -36,7 +36,7 @@ public static class SceneReferenceBinder
         // A disabled legacy canvas can coexist with the shared UI during
         // bootstrap. Bind every menu instead of selecting that stale copy.
         foreach (MainPanelController mainPanel in Object.FindObjectsByType<MainPanelController>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+                     FindObjectsInactive.Include))
             mainPanel.ResolveSceneReferences();
 
         RoomSelectorPanel roomSelector =

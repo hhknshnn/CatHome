@@ -16,7 +16,6 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
     [SerializeField] private Transform[] trackSegments = Array.Empty<Transform>();
     [SerializeField] private float segmentLength = 8f;
     [SerializeField] private float laneWidth = 1.35f;
-    [SerializeField, Min(1f)] private float objectApproachSpeedMultiplier = 1.35f;
     [SerializeField, Min(0.5f)] private float firstCurtainObstacleInterval = 1.4f;
     [SerializeField, Min(0.5f)] private float minimumObstacleInterval = 0.8f;
     [SerializeField] private GameObject coinTemplate;
@@ -982,7 +981,6 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         obstacleTemplates = obstacles ?? Array.Empty<GameObject>();
         overheadObstacleTemplates = Array.Empty<GameObject>();
         platformTemplates = Array.Empty<GameObject>();
-        objectApproachSpeedMultiplier = 1.35f;
         firstCurtainObstacleInterval = 1.4f;
         minimumObstacleInterval = 0.8f;
     }

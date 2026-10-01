@@ -34,12 +34,12 @@ public sealed class CarePromptTests
     private IEnumerator Load(string room)
     {
         yield return RoomPlayModeSupport.LoadRoomAlone(room);
-        bowls = Object.FindFirstObjectByType<BowlInteraction>();
+        bowls = Object.FindAnyObjectByType<BowlInteraction>();
         Assert.That(bowls, Is.Not.Null, room);
         sleep = bowls.GetComponent<SleepInteraction>();
         needs = new GameObject("CareTestNeeds");
-        hunger = Object.FindFirstObjectByType<HungerSystem>() ?? needs.AddComponent<HungerSystem>();
-        thirst = Object.FindFirstObjectByType<ThirstSystem>() ?? needs.AddComponent<ThirstSystem>();
+        hunger = Object.FindAnyObjectByType<HungerSystem>() ?? needs.AddComponent<HungerSystem>();
+        thirst = Object.FindAnyObjectByType<ThirstSystem>() ?? needs.AddComponent<ThirstSystem>();
         hunger.ApplySavedValue(35f);
         thirst.ApplySavedValue(35f);
         buttonHost = new GameObject("ActionButton", typeof(RectTransform), typeof(Button));

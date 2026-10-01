@@ -1,0 +1,44 @@
+# Cat Home checkpoint — 23 Eylül 2026
+
+## Son teslim — telefon kap yakınlığı ve alt HUD
+
+Önce `CatHome/Docs/PHONE_BOWL_HUD_FIX_2026-09-23.md` oku. Kullanıcının “hepsini yap” isteğiyle dört düzeltme tamamlandı: kap yakınlığında kare başına ağır deri/gövde taraması kaldırıldı; 0,75 m yakınlıkla mama/su düğmesi görünür, tıklamada taze temas kontrolü ve yerinde açıklama korunur; Kedi komutları gerçek dock yuvasına bağlanır (Update dokunma yarışı dahil), joystick Y220+güvenli alanla alt şeritten ayrılır. Normal yürüyüş/klip/model aynı. Otomatik yaklaşma/ışınlanma yok; yanlış duruşta kaba dönüp yaklaşma mesajı çıkar.
+
+Son12/12benzersiz native; HUD848×392/1920×1080/2400×1080 üçer kontrol, gerçek raycast/asimetrik parent/modal/yeniden yükleme ve sekiz joystick yönü. İki ırk×iki gerçek bakım10sn tamamlandı; validator0/0. Yakınlık sorgusu editörde p95mama0,0357ms/su0,0300ms; telefon FPS ölçümü değildir. Esas `QA/PHONE_BOWL_HUD_FIX_2026-09-23/native-final-manifest.json`. Telefon bağlı değildi; yeni APK kullanıcı cihaz denemesi bekler, telefon sorunsuzluğu/onayı iddia edilmez.
+
+APK `Builds/Android/CatHome_Test_0.1.0_PhoneFix_20260923.apk`,301458043bayt,IL2CPP ReleaseARM64,LZ4/StrictMode,211,34sn,0hata/10mevcutuyarı;v2imza/manifest doğrulandı. Başlangıç19:14:26UTC,kapanış `closure.json`;sayaç sıfırlanmadı.6852başlangıçtan yalnız8C#değişti,2yeni test+2meta;3kayıt/87sahne/320prefab/396FBX/60anim/145WAV/27ProjectSettings aynı.16tercih geri geldi;2font yalnız bu turun başlangıçhashiyleeşleşen baytlarla geri getirildi. Play/QA/derleme kapalı,3temiz normal sahne,Unityaçık. Commit/push/yayın/cihaza kurulum yok;QA Git dışında. Yeni işte güncel başlangıç alınır; tarihsel kayıt geri yüklenmez. Yeni genel UI turu kendiliğinden başlamaz.
+
+
+Önceki teslim:
+
+Son sonuç: [Windows engeli çözüldü, APK hazır](BUILD_APP_CONTROL_2026-09-23.md). Kullanıcı açık onayıyla SAC Off; Defender/gerçek zamanlı koruma açık. Tam Android IL2CPP ARM64 APK0hata/1uyarıyla geçti; `Builds/Android/CatHome_Test_0.1.0_20260923.apk`,287,49MiB,imza/manifest doğrulandı. Telefona yükleme/yayın yok. Üç kayıt/25ProjectSettings aynı, üretim kodu değişmedi; Unity açık,Play/derleme ve görev yardımcıları kapalı. Aşağıdaki ilk tanı/onay bekleme bilgisi tarihseldir; son kanıt `QA/BUILD_APP_CONTROL_2026-09-23/final-build.json` ve `approved-retry-closure.json`.
+
+Güncel engel: [Windows uygulama denetimi](BUILD_APP_CONTROL_2026-09-23.md). Yeni APK denemesinde Smart App Control, Unity kurulumundaki PlayerBuildProgramLibrary.dll dosyasını engelledi (0x800711C7); Windows olaylarıyla doğrulandı. Dosya imzasız, Zone.Identifier yok. Kod/oyun/kayıt/kurulum/güvenlik ayarı değiştirilmedi, build/Play yeniden başlatılmadı. Hata açık; sistem genelindeki korumayı kapatma kararı kullanıcıya aittir. Önceki başarılı C# kontrolü tam APK kabulü değildir.
+
+Güncel düzeltme: [Android Player C# hatası](PLAYER_COMPILE_FIX_2026-09-23.md). CatPawSurfaceContact.cs içindeki editöre özel SurfaceQueryMeasurement kullanımına eksik UNITY_EDITOR koşulu eklendi; yalnız iki satır, temas hesabı aynı. Android release C# derlemesi 52 assembly / 0 hata / 9 engelleyici olmayan uyarı ile geçti. Tam APK paketleme ve cihaza yükleme yapılmadı. Üç gerçek kayıt/ProjectSettings aynı; üç temiz normal sahne, Play/derleme kapalı, Unity açık ve etkin hedef Android. Başlangıç16:34:44UTC; kapanış `QA/PLAYER_COMPILE_FIX_2026-09-23/closure.json`. Önceki UI teslimi aşağıdadır.
+
+Güncel teslim: [Yeni UI'ın diğer ekranlara uygulanması](UI_ROLLOUT_2026-09-23.md). 14 ekran grubu, her tur 30 dakika altında; en uzun tur 21,4 dakika. Mağaza, Odalar, Kedim, Oyunlar/sıralama, Ayarlar/gizlilik, Görevler, menü, Kedi komutları/rehber, konuşma/isim, Sen yokken, kutlamalar, günlük bildirim, mini oyun pencereleri ve ana menü alt pencereleri aynı indigo/krem/mint/mercan tasarımına geçti. Jetonlar onaylı CatHead kaynağını kullanır. Başlangıç 13:38:13 UTC, teknik kapanış 15:42:00 UTC; 123,8 dakika, üç saat sınırı içinde.
+
+Son 125 görünümde 567 hedef kontrolü geçti; 0 metin taşması, Console 0 hata/uyarı. 1920×1080, 2400×1080, 1280×720, 1440×1080; üç oran/dört çözünürlük, TR/EN. [Yerel Unity galerisi](QA/UI_ROLLOUT_2026-09-23/index.html); esas `QA/UI_ROLLOUT_2026-09-23/final-manifest.json`. Seviye ve mini oyun skor kutusu düzeltmelerinden sonraki kayıtlar esas; ara başarısız veya görünmez fixture'lar son kabul değildir. Telefon/çentik ve geniş oynanış taraması yapılmadı; mini oyun oynanış HUD'ı/dünya aynı. Reklam/pasif başlatma varyantları ayrıca denenmedi; ödül/satın alma/sıfırlama/giriş eylemi çalıştırılmadı. Görsel kullanıcı onayı henüz yok.
+
+5710 başlangıç kaynağından 22 C# ve bir UI asset referansı değişti; 15 yeni UI C# ve meta eklendi. Sahne/prefab/FBX/PNG/font/ses ve kedi hareketleri aynı. Üç gerçek kayıt ve 16 tercih korunuyor; editör ayarları geri geldi. Play/QA/derleme kapalı, üç temiz normal sahne, tek kedi/ana kamera/dinleyici; Unity açık. QA Git dışında. Commit/push/APK/video/yayın/kapatma yapılmadı. Yeni işte güncel başlangıç alınır; bu kapanış yeni geliştirme yetkisi değildir.
+
+Önceki teslim:
+
+Güncel teslim: [Bond XP yerleşimi ve telefon oranları](HUD_BOND_COMPACT_2026-09-23.md). Bond XP ikinci satırdan jetonun soluna taşındı; sayaçlar aynı 88 birim yükseklikte. Üstten ayrılan düşey alan %20,1 → %12,4; artı düğmeleri 48 referans birim olarak korundu. Yalnız StorybookHudLayout.cs değişti. Dört çözünürlükte 9/9 HUD düğmesi, sayaç hizası/çakışmama/içerik sınırları/bakiye/bildirim; yedi pencerede 52/52 dokunma ve bildirim akışı geçti. Console 0/0. Fiziksel telefon/çentik simülasyonu yapılmadı. Başlangıç 13:21:57 UTC, sınır 13:46:57 UTC; kapanış `QA/HUD_BOND_COMPACT_2026-09-23/closure-summary.json`. Başta açık olan normal kullanıcı Play oturumu durdurulurken güncel ilerleme kaydedildi; QA sonrası üç gerçek kayıt bu güncel başlangıçla aynı. 16 tercih geri geldi; Play/QA kapalı, üç temiz sahne, Unity açık. Diğer oyun kaynakları aynı; yeni görünüm henüz kullanıcı onayı almadı. Yeni talep olmadan başka iş başlamaz.
+
+Önceki teslim:
+
+Güncel teslim: [HUD sanat yönetimi düzenlemesi](HUD_ART_DIRECTION_2026-09-23.md). Kullanıcı mevcut UI'ı ileri geliştirmeyi istedi. Bilgi/taşıyıcı yüzeyler saten,eylem düğmeleri emaye;ayrı parlama şeridi yerine yüzeye yayılan ışık,azaltılmış kontur,tek turkuaz portre halkası,ince yuvarlak menü çizgileri ve optik ikon/yazı aralıkları. Panel88/portre100-görsel77/bildirim16 aynı. ÜçUI C#;sahne/prefab/font/görseller/kedi hareketi/oda/ana menü aynı. Son3oranda9/9HUD,7pencerede52/52dokunma/bildirim,3renk×4durum,5geometri ve tekrar etkinleştirme geçti;Console0/0.3gerçek kayıt/16tercih aynı,Play/QAkapalı,3temizsahne,Unityaçık. Başlangıç12:13:16UTC,sınır12:43:16UTC;son kanıt/kapanış QA/HUD_ART_DIRECTION_2026-09-23. Telefon/genişEditModeyok; yeni görünüm kullanıcı onayı almadı. Yeni talep olmadan başka iş başlamaz.
+
+Önceki teslim:
+
+Güncel teslim: [parlak HUD yüzeyleri](HUD_GLOSS_2026-09-23.md). Kullanıcı daha parlak/pro görünüm istedi. Üst ve alt HUD düğmeleri, joystick ve portre halkasında canlı renk geçişleri, yumuşak yansıma, ışıklı kenarlar; basılı/pasif durumlar korunur. Panel/portre ölçüleri ve bildirim aralığı aynı. Yalnız ikiUI C# dosyası değişti. Üç ekran oranında9/9HUD,yedi pencerede52/52dokunma/bildirim,üç renk×dört çizim durumu vealtısınır kontrolü geçti;Console0/0. Telefon/genişEditMode tekrar yok. Üç gerçek kayıt/16tercih aynı;Play/QAkapalı,üçtemizsahne,Unityaçık. Başlangıç11:38:57UTC,sınır12:03:57UTC;son kanıt/kapanış `QA/HUD_GLOSS_2026-09-23`. Kullanıcı yeni görünümü henüz onaylamadı. Yeni görev otomatik başlamaz.
+
+Önceki teslim:
+
+Son değişiklik [HUD panel ayrıntıları](HUD_REFERENCE_FINISH_2026-09-23.md): ince panel kenarları, üç bölüm ayırıcı, gömülü bar yuvaları, menü iç çerçevesi ve dairesel kırpılmış portre çevresinde katmanlı turkuaz halka. Yalnız üst HUD; kedi hareketi/oda/ana menü aynı. Çalışma sırasında portre çerçevesi 100, görsel 77; üst panel 88 birim ve bildirim aralığı 16 birim. Kullanıcı yeni görünümü henüz onaylamadı.
+
+Son üç ekran oranında 9/9 HUD düğmesi, yedi pencerede 52/52 dokunma ve bildirim gizle/dondur/sürdür, üç daire/UV kontrolü ve tekrar etkinleştirme geçti. Console 0 hata/uyarı. Telefon ölçülmedi; bu tur geniş EditMode tekrarlanmadı. Başlangıç 10:25:46 UTC, kesin sınır 10:50:46 UTC; kapanış ve kanıt `QA/HUD_REFERENCE_FINISH_2026-09-23/closure-summary.json`.
+
+Önceki [panel yüksekliği ve bildirim düzeltmesi](HUD_POPUP_FIX_2026-09-23.md) korunur. Üç gerçek kayıt/16 tercih aynı; Play/QA kapalı, üç temiz normal sahne, Unity açık. Yalnız iki mevcut C# dosyası ve iki yeni UI C# dosyası/meta bu son turda değişti. Sahne/prefab/font/görseller başlangıçla aynı. Kaynaklar yerelde; commit/push/APK/video/yayın yok. Yeni talep olmadan başka ekrana geçilmez. Genel tek tek ilerleme, işe başlarken plan/süre verme ve en fazla kullanıcı süresi/3 saat kuralı sürer.

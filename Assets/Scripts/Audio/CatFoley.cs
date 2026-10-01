@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class CatFoley : MonoBehaviour
 {
     private CatMovement cat;
-    private CatActivityAnimation animation;
+    private CatActivityAnimation activityAnimation;
     private CatActivity owner;
     private CatSurfaceTurnMotion turn;
     private CatLitterRoutineMotion litter;
@@ -41,7 +41,7 @@ public sealed class CatFoley : MonoBehaviour
         if(Time.unscaledTime>=nextBind)
         {
             nextBind=Time.unscaledTime+1;
-            if(animation==null)animation=GetComponent<CatActivityAnimation>();
+            if(activityAnimation==null)activityAnimation=GetComponent<CatActivityAnimation>();
             if(turn==null)turn=GetComponent<CatSurfaceTurnMotion>();
             if(litter==null)litter=GetComponent<CatLitterRoutineMotion>();
             if(knead==null)knead=GetComponent<CatGentleKneadMotion>();
@@ -52,7 +52,7 @@ public sealed class CatFoley : MonoBehaviour
         if(active!=owner)
         {
             owner=active;strokes=turnSteps=0;nextGesture=0;wasHiding=wasTreeScratch=false;leftPress=rightPress=false;
-            animation=GetComponent<CatActivityAnimation>();
+            activityAnimation=GetComponent<CatActivityAnimation>();
         }
         // Motion helpers can be created midway through the first routine.
         if(owner!=null)
@@ -63,10 +63,10 @@ public sealed class CatFoley : MonoBehaviour
         }
         if(!GameAudio.Allowed(AudioBus.World)||cat==null||!cat.isActiveAndEnabled)
         {water.Stop();water.volume=0;wasJump=false;return;}
-        bool jumping=animation!=null&&animation.IsNativeJump;
+        bool jumping=activityAnimation!=null&&activityAnimation.IsNativeJump;
         if(jumping)
         {
-            float phase=animation.NativeJumpPhase;
+            float phase=activityAnimation.NativeJumpPhase;
             if(!wasJump||phase<lastJumpPhase-.1f)lastJumpPhase=0;
             if(lastJumpPhase<CatJumpMotion.Takeoff&&phase>=CatJumpMotion.Takeoff)GameAudio.Play(AudioCue.Jump,.65f);
             if(lastJumpPhase<CatJumpMotion.Touchdown&&phase>=CatJumpMotion.Touchdown)
@@ -75,7 +75,7 @@ public sealed class CatFoley : MonoBehaviour
         }
         wasJump=jumping;
         bool walking=!jumping&&delta.sqrMagnitude>.000002f&&delta.sqrMagnitude<.16f&&
-            (animation==null||!animation.IsActive||animation.CurrentPose==CatActivityPose.Walk||animation.CurrentPose==CatActivityPose.Crawl||animation.CurrentPose==CatActivityPose.Stalk);
+            (activityAnimation==null||!activityAnimation.IsActive||activityAnimation.CurrentPose==CatActivityPose.Walk||activityAnimation.CurrentPose==CatActivityPose.Crawl||activityAnimation.CurrentPose==CatActivityPose.Stalk);
         Footsteps(walking,delta.y);
         if(owner==null||!owner.IsRunning){water.Stop();waterPhase=CatShowerWaterFx.Phase.Off;return;}
         PollContacts();PollGestures();PollWater();
@@ -90,7 +90,7 @@ public sealed class CatFoley : MonoBehaviour
             low[i]=Mathf.Min(y,low[i]+Time.deltaTime*.025f);
             if(y>low[i]+.018f)lifted[i]=true;
             if(lifted[i]&&y<low[i]+.012f&&y<=lastY[i])
-            {GameAudio.Play(animation!=null&&animation.ContactSurface!=null&&owner!=null&&owner.SupportsContinuousRest?
+            {GameAudio.Play(activityAnimation!=null&&activityAnimation.ContactSurface!=null&&owner!=null&&owner.SupportsContinuousRest?
                 AudioCue.PawFabric:StepCue(),cat.IsRunning?1.05f:.7f);lifted[i]=false;}
             lastY[i]=y;
         }
@@ -118,10 +118,10 @@ public sealed class CatFoley : MonoBehaviour
         else if(owner is LitterDigActivity&&litter!=null&&litter.IsActive)count=litter.ContactStrokes;
         // The sapling's irregular bark does not expose the post's planar
         // contact counter. Its authored downward strokes still have exact phases.
-        bool treeStroke=owner.Kind==CatActivityKind.TreeScratch&&animation!=null&&animation.IsActive&&animation.CurrentPose==CatActivityPose.Scratch;
+        bool treeStroke=owner.Kind==CatActivityKind.TreeScratch&&activityAnimation!=null&&activityAnimation.IsActive&&activityAnimation.CurrentPose==CatActivityPose.Scratch;
         if(treeStroke)
         {
-            float phase=animation.NativeJumpPhase;
+            float phase=activityAnimation.NativeJumpPhase;
             if(!wasTreeScratch||phase<lastScratchPhase)lastScratchPhase=0;
             if(lastScratchPhase<.4f&&phase>=.4f||lastScratchPhase<.9f&&phase>=.9f)GameAudio.Play(AudioCue.ScratchWood,.75f);
             lastScratchPhase=phase;
@@ -170,8 +170,8 @@ public sealed class CatFoley : MonoBehaviour
     }
     private void PollGestures()
     {
-        if(animation==null||!animation.IsActive)return;
-        var pose=animation.CurrentPose;
+        if(activityAnimation==null||!activityAnimation.IsActive)return;
+        var pose=activityAnimation.CurrentPose;
         if(pose!=lastPose){nextGesture=Time.time+.12f;lastPose=pose;}
         if(Time.time>=nextGesture)
         {
@@ -194,10 +194,10 @@ public sealed class CatFoley : MonoBehaviour
         waterPhase=phase;
         AudioClip wanted=null;float level=.16f;
         if(phase==CatShowerWaterFx.Phase.Rinsing)wanted=GameAudio.Clip(AudioCue.Shower);
-        else if(animation!=null&&animation.IsActive)
+        else if(activityAnimation!=null&&activityAnimation.IsActive)
         {
-            if(owner is SinkSipActivity&&animation.CurrentPose==CatActivityPose.Drink){wanted=GameAudio.Clip(AudioCue.Fountain);level=.075f;}
-            else if(owner.Kind==CatActivityKind.TelevisionWatch&&animation.CurrentPose==CatActivityPose.Sit){wanted=GameAudio.Clip(AudioCue.Television);level=.045f;}
+            if(owner is SinkSipActivity&&activityAnimation.CurrentPose==CatActivityPose.Drink){wanted=GameAudio.Clip(AudioCue.Fountain);level=.075f;}
+            else if(owner.Kind==CatActivityKind.TelevisionWatch&&activityAnimation.CurrentPose==CatActivityPose.Sit){wanted=GameAudio.Clip(AudioCue.Television);level=.045f;}
             else if((owner.Kind==CatActivityKind.OvenWarmth||owner.Kind==CatActivityKind.FirePitBask)&&owner.IsWaitingForRestStop)
             {wanted=GameAudio.Clip(AudioCue.FireCrackle);level=.06f;}
         }

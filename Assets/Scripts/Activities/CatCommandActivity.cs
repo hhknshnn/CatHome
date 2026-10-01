@@ -16,14 +16,20 @@ public sealed class CatCommandActivity : CatActivity
     public override bool SupportsContinuousRest=>command!=CatCompanionCommand.Meow;
     protected override bool RecordsQuestProgress=>false;
     protected override bool UsesFloorApproach=>false;
-    public override string DisplayName=>command==CatCompanionCommand.Loaf?GameContentCopy.Text("Loaf keyfi","Loaf time"):command==CatCompanionCommand.Sit?GameContentCopy.Text("Birlikte oturalım","Sit with me"):GameContentCopy.Text("Miyav!","Meow!");
+    protected override bool UsesPreparedStart=>true;
+    protected override bool TryPrepareStart(CatMovement actor,out CatActivityStart start)
+    {
+        start=default;
+        return actor!=null && CatActivityStartResolver.Current(actor,actor.transform.position,0f,out start);
+    }
+    public override string DisplayName=>command==CatCompanionCommand.Loaf?GameLanguageService.Text("companion.loaf_progress"):command==CatCompanionCommand.Sit?GameContentCopy.Text("Birlikte oturalım","Sit with me"):GameContentCopy.Text("Miyav!","Meow!");
     public override string ProgressLabel=>DisplayName;
     public override bool TryGetPromptDistance(CatMovement cat,out float distance){distance=float.PositiveInfinity;return false;}
     public bool Issue(CatCompanionCommand value)
     {
         var cat=GetComponent<CatMovement>();
         if(cat==null||cat.IsMovementLocked||cat.AreWorldActionsBlocked||CatActionState.IsBusy(cat))return false;
-        if(!CatActivityMotion.IsFloorClear(cat.transform.position,.28f))
+        if(!cat.IsBodyPoseClear(cat.transform.position,cat.transform.rotation))
         {GetComponent<CatSpeechBubble>()?.Show(GameContentCopy.Text("Biraz açık alana geçelim.","Let's find a little open space."));return false;}
         command=value;return TryStart(cat);
     }
@@ -31,21 +37,17 @@ public sealed class CatCommandActivity : CatActivity
     private IEnumerator Routine()
     {
         Cat.SetMovementLocked(this,true);
-        Quaternion presentation = CatActivityFacing.Resolve(Cat, Cat.transform.position, Cat.transform.rotation);
         if(command==CatCompanionCommand.Meow)
         {
-            yield return CatActivityFacing.Turn(Cat, presentation);
             var voice=CatVoice.EnsureOn(Cat);
             PlayCatPose(CatActivityPose.Meow);voice.Meow();
             yield return new WaitForSeconds(Mathf.Max(3f,voice.MeowDuration));
         }
         else
         {
-            // Turn during the existing entry window; only the held pose earns
-            // rest energy, with the same .7 s entry as before.
+            // The player's heading is already the accepted resting heading.
             float entryStarted = Time.time;
             PlayCatPose(CatActivityPose.SitDown);
-            yield return CatActivityFacing.Turn(Cat, presentation);
             while (Time.time - entryStarted < .7f) yield return null;
             PlayCatPose(command==CatCompanionCommand.Loaf?CatActivityPose.Loaf:CatActivityPose.Sit);
             while(KeepResting)yield return null;

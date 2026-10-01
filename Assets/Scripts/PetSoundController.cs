@@ -13,14 +13,12 @@ public sealed class PetSoundController : MonoBehaviour
     [SerializeField] private AudioSource meowAudioSource;
 
     [Header("Mix")]
-    [SerializeField, Range(0f, 1f)] private float purrVolume = 0.3f;
     [SerializeField, Range(0f, 1f)] private float meowVolume = 0.45f;
     [SerializeField] private Vector2 meowPitchRange = new Vector2(0.95f, 1.05f);
 
     [Header("Timing")]
     [SerializeField, Range(0f, 1f)] private float meowChance = 0.3f;
     [SerializeField, Min(8f)] private float meowCooldown = 8f;
-    [SerializeField, Min(0.01f)] private float fadeInDuration = 0.3f;
     [SerializeField, Min(0.01f)] private float fadeOutDuration = 0.35f;
 
     private Coroutine purrFade;

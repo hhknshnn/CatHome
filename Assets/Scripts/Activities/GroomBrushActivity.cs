@@ -15,6 +15,13 @@ public sealed class GroomBrushActivity : CatActivity
     private Vector3 originalScale;
 
     protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return RoutineEntryPoint != null && CatActivityStartResolver.Current(actor,
+            RoutineEntryPoint.position, PromptRadius, out start);
+    }
     public override string ProgressLabel => IsRunning ? "GROOMING..." : string.Empty;
     public bool IsGrooming { get; private set; }
     public bool IsRubbing => IsGrooming;
@@ -42,8 +49,6 @@ public sealed class GroomBrushActivity : CatActivity
         Cat.SetMovementLocked(this, true);
         if (controller != null) controller.enabled = false;
         SelectedRubStart = Cat.transform.position;
-        yield return CatActivityMotion.TurnForStep(Cat,
-            CatActivityFacing.Resolve(Cat, Cat.transform.position, Cat.transform.rotation));
         var animator = Cat.GetComponentInChildren<Animator>();
         PassDuration = 7f;
         if (animator != null && animator.runtimeAnimatorController != null)

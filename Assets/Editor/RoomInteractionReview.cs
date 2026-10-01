@@ -90,7 +90,7 @@ public sealed class RoomInteractionReview : EditorWindow
         var cat=Object.FindAnyObjectByType<CatMovement>();if(cat==null)throw new InvalidOperationException("Room not ready.");return cat;
     }
     static string Key(CatActivity a)=>string.IsNullOrEmpty(a.StoreProductId)?a.ActivityId:a.StoreProductId;
-    static CatActivity[] Products(CatMovement cat)=>Object.FindObjectsByType<CatActivity>(FindObjectsSortMode.None)
+    static CatActivity[] Products(CatMovement cat)=>Object.FindObjectsByType<CatActivity>()
         .Where(a=>a.gameObject.scene==cat.gameObject.scene&&!a.IsRetired&&(HomeStoreService.IsProductInRoomCollection(HomeRoomService.CurrentRoomId,a.StoreProductId)||a.Kind==CatActivityKind.DiningScatter||a.Kind==CatActivityKind.BirdWatch||a.Kind==CatActivityKind.SofaLounge||a.Kind==CatActivityKind.CoffeeTablePlay)).ToArray();
     public static CatActivity PrepareProduct(string id,int side=0)
     {

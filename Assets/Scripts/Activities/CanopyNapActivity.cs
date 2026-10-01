@@ -33,6 +33,16 @@ public sealed class CanopyNapActivity : CatActivity
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
     public override float EnergyCost => 0f;
     public override bool SupportsContinuousRest=>true;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        if (actor == null || doorPoint == null || nestPoint == null) return false;
+        return Mathf.Abs(nestPoint.position.y - actor.transform.position.y) > .12f
+            ? CatActivityStartResolver.GroundLaunch(this, actor, doorPoint.position, nestPoint.position, out start)
+            : CatActivityStartResolver.Facing(actor, doorPoint.position, .22f, nestPoint.position, 35f, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -61,22 +71,17 @@ public sealed class CanopyNapActivity : CatActivity
             characterController.enabled = false;
 
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, nestPoint);
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
+        Vector3 start = AcceptedStart.Position;
         Vector3 door = Flatten(doorPoint.position, start.y);
         Vector3 nest = nestPoint.position;
-
-        Quaternion toDoor = LookTowards(door - start, startRotation);
-        yield return Move(start, door, startRotation, toDoor, 0.34f);
-
-        Quaternion inward = LookTowards(nest - door, toDoor);
+        Quaternion inward = AcceptedStart.Rotation;
         Quaternion outward = LookTowards(door - nest, inward);
         var area = nestPoint.GetComponent<CatActivitySurface>();
         Quaternion axis = area != null && area.AlignAlongSurface ? nestPoint.rotation * Quaternion.Euler(0,90,0) : outward;
         Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest, axis);
         if (StoreProductId == HomeStoreService.BedroomStarCanopyId) restingFacing = outward;
         bool raised = Mathf.Abs(nest.y - door.y) > .12f;
-        yield return EnterNest(door, nest, toDoor, raised ? restingFacing : inward, 0.55f);
+        yield return EnterNest(start, nest, AcceptedStart.Rotation, raised ? restingFacing : inward, 0.55f, true);
         if (!raised) yield return Move(nest, nest, inward, restingFacing, 0.26f);
 
         yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, nest, restingFacing);
@@ -103,21 +108,21 @@ public sealed class CanopyNapActivity : CatActivity
         CompleteActivity("SWEET DREAMS!");
     }
 
-    private IEnumerator EnterNest(Vector3 from, Vector3 to, Quaternion start, Quaternion end, float duration)
+    private IEnumerator EnterNest(Vector3 from, Vector3 to, Quaternion start, Quaternion end, float duration, bool preparedEntry = false)
     {
         bool raised = Mathf.Abs(from.y - to.y) > .12f;
         if(raised){yield return supportedMotion.Jump(from,to,start,end);yield break;}
-        yield return CatActivityMotion.TurnForStep(Cat, end);
+        if (!preparedEntry) yield return CatActivityMotion.TurnForStep(Cat, end);
         PlayCatPose(CatActivityPose.Crawl);
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
             Cat.transform.position = raised ? CatActivityMotion.JumpPosition(from, to, t) :
                 Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, t));
             Cat.transform.rotation = end;
             yield return null;
+            elapsed += Time.deltaTime;
         }
         Cat.transform.position = to;
     }

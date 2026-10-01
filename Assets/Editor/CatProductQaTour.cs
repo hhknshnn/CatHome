@@ -16,10 +16,10 @@ public static class CatProductQaTour
     {
         if(!Application.isPlaying||!EditorQaSession.IsActive)throw new InvalidOperationException("Isolated Play required");
         UiQaVisualTour.Clear();var owned=new System.Collections.Generic.List<string>();
-        foreach(var d in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include,FindObjectsSortMode.None))owned.Add(d.ProductId);
+        foreach(var d in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include))owned.Add(d.ProductId);
         owned.Add(HomeStoreService.BallBasketId);owned.Add(HomeStoreService.ScratchPostId);
         var state=HomeStoreSaveState.CreateDefault();state.ownedProductIds=owned.ToArray();state.storedProductIds=owned.FindAll(CatCollectionPolicy.IsCatItem).ToArray();HomeStoreService.ApplySavedState(state);
-        cat=Object.FindAnyObjectByType<CatMovement>();products=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None).OrderBy(x=>x.name).ToArray();
+        cat=Object.FindAnyObjectByType<CatMovement>();products=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include).OrderBy(x=>x.name).ToArray();
         index=0;started=false;Time.timeScale=1;next=EditorApplication.timeSinceStartup+1;EditorApplication.update-=Tick;EditorApplication.update+=Tick;
     }
     static void Tick()

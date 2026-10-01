@@ -30,6 +30,7 @@ public sealed class GamesHubPanel : MonoBehaviour
     private void Awake()
     {
         activeInstance = this;
+        StorybookGamesPresentation.ApplyGames(transform);
         Bind(closeButton, Hide);
         Bind(GetComponent<Button>(), Hide);
         Bind(runnerButton, PlayRunner);

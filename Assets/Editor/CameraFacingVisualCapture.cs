@@ -118,18 +118,18 @@ public static class CameraFacingVisualCapture
         Quiet<CollectionCompleteCelebrationView>(); Quiet<HomeLevelUpCelebrationView>();
         Quiet<PetTutorialHint>(); Quiet<CatIdleBehavior>();
         Object.FindAnyObjectByType<CatCompanionPanel>()?.Close(); UiQaVisualTour.Clear();
-        foreach (var popup in Object.FindObjectsByType<WhileYouWereAwayPopup>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var popup in Object.FindObjectsByType<WhileYouWereAwayPopup>(FindObjectsInactive.Include))
         { popup.Close(); RememberAndDisable(popup); }
         yield return Wait(() => !HomeUiFlow.IsHomeControlBlocked && !TitleScreen.IsShowing && !cat.HasScopedInputBlock,
             "home modal close", 5);
-        var products = Object.FindObjectsByType<StoreProductDisplay>(FindObjectsSortMode.None)
+        var products = Object.FindObjectsByType<StoreProductDisplay>()
             .Where(p => p.gameObject.scene == cat.gameObject.scene && p.gameObject.activeInHierarchy &&
                 HomeStoreService.IsProductInRoomCollection(HomeRoomService.BathroomId, p.ProductId))
             .Select(p => p.ProductId).Distinct().OrderBy(id => id).ToArray();
         Require(products.Length == 10 && products.All(HomeStoreService.IsOwned),
             "The capture needs all ten current Bathroom products visible together.");
         File.WriteAllLines(Path.Combine(Screens, "Bathroom_CurrentProducts.txt"), products);
-        Require(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).Count(c => c.enabled && c.targetTexture == null) == 1,
+        Require(Object.FindObjectsByType<Camera>().Count(c => c.enabled && c.targetTexture == null) == 1,
             "The normal bathroom must have exactly one world camera.");
         Time.timeScale = 1f;
         if (hunger != null) hunger.ApplySavedValue(100);
@@ -327,7 +327,7 @@ public static class CameraFacingVisualCapture
     static void Require(bool pass, string message) { if (!pass) throw new InvalidOperationException(message); }
     static void OnCompleted(CatActivity completed) { if (completed == activity) completionCount++; }
     static void Quiet<T>() where T : Behaviour
-    { foreach (var item in Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None)) RememberAndDisable(item); }
+    { foreach (var item in Object.FindObjectsByType<T>(FindObjectsInactive.Include)) RememberAndDisable(item); }
     static void RememberAndDisable(Behaviour item) { if (!states.ContainsKey(item)) states[item] = item.enabled; item.enabled = false; }
 
     static void SaveSettings()
@@ -341,7 +341,7 @@ public static class CameraFacingVisualCapture
         previousSize = (int)gameView.GetType().GetProperty("selectedSizeIndex", Flags).GetValue(gameView);
         if (detailMode)
         {
-            var cameras = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).Where(c => c.enabled && c.targetTexture == null).ToArray();
+            var cameras = Object.FindObjectsByType<Camera>().Where(c => c.enabled && c.targetTexture == null).ToArray();
             Require(cameras.Length == 1, "Detail capture requires the existing single world camera.");
             detailCamera = cameras[0]; detailViewport = detailCamera.GetComponent<HomeWorldViewport>();
             cameraPosition = detailCamera.transform.position; cameraRotation = detailCamera.transform.rotation;

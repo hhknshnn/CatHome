@@ -36,13 +36,10 @@ public sealed class PremiumPresentationTests
         Assert.That(prefab, Is.Not.Null, TitlePrefab);
 
         bool foundHero = false;
-        bool foundLogo = false;
         foreach (RawImage image in prefab.GetComponentsInChildren<RawImage>(true))
         {
             if (image.texture == hero)
                 foundHero = true;
-            if (image.texture == logo)
-                foundLogo = true;
         }
         Assert.That(foundHero, Is.True,
             "The fallback must show the real game cats in the HD title set.");
@@ -59,9 +56,11 @@ public sealed class PremiumPresentationTests
         Assert.That(prefab.transform.Find("SafeArea/MainMenuShortcuts/RoomsShortcut"), Is.Not.Null);
         Assert.That(prefab.transform.Find("SafeArea/MainMenuShortcuts/GamesShortcut"), Is.Not.Null);
         Assert.That(prefab.transform.Find("SafeArea/MainMenuShortcuts/ShopShortcut")
-            .GetComponentInChildren<SelectedCatPortrait>(true), Is.Not.Null);
-        AssertCardUsesTexture(prefab, "RoomsShortcut", RoomsCard);
-        AssertCardUsesTexture(prefab, "GamesShortcut", GamesCard);
+            .GetComponentInChildren<SelectedCatPortrait>(true), Is.Null,
+            "The approved title uses a fixed UI cat symbol, not the selected breed portrait.");
+        AssertCardUsesTexture(prefab, "ShopShortcut", StorybookTitleBuilder.CatIconPath);
+        AssertCardUsesTexture(prefab, "RoomsShortcut", StorybookTitleBuilder.ActionIconPath);
+        AssertCardUsesTexture(prefab, "GamesShortcut", StorybookTitleBuilder.ActionIconPath);
         Assert.That(prefab.GetComponentInChildren<TitleCatPreview>(true), Is.Null,
             "The main menu must not reserve an empty live-cat portrait well.");
         Assert.That(prefab.GetComponentInChildren<TitleLogoNeonFx>(true),Is.Null,

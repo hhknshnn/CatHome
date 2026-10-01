@@ -39,6 +39,14 @@ public sealed class SwingRideActivity : CatActivity
     public float SwingAngle => Mathf.Clamp(swingAngle, 1f, 25f);
     public long BondReward => (long)Mathf.Max(0f, bondReward);
     public Transform SwingPivot => swingPivot;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return swingPivot != null && mountPoint != null && seatPoint != null &&
+            CatActivityStartResolver.GroundLaunch(this, actor, mountPoint.position, seatPoint.position, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -67,16 +75,13 @@ public sealed class SwingRideActivity : CatActivity
             characterController.enabled = false;
         swingPivot.localRotation = Quaternion.identity;
 
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 mount = Flatten(mountPoint.position, start.y);
-
-        Quaternion toMount = LookTowards(mount - start, startRotation);
-        yield return Move(start, mount, startRotation, toMount, 0.34f);
+        Vector3 start = AcceptedStart.Position;
+        Vector3 mount = start;
+        Quaternion toMount = AcceptedStart.Rotation;
 
         // Hop up onto the bench, facing back out of the swing.
         Quaternion facing = CatActivityFacing.AlongAxis(Cat, seatPoint.position,
-            seatPoint.rotation * Quaternion.Euler(0f, 90f, 0f));
+            CatActivityFacing.SupportedAxis(seatPoint));
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, seatPoint);
         yield return supportedMotion.Jump(mount, seatPoint.position, toMount, facing);
         var area = seatPoint.GetComponent<CatActivitySurface>();

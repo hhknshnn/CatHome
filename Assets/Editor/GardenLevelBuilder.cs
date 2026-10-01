@@ -637,23 +637,23 @@ public static class GardenLevelBuilder
             new Vector3(0f, .28f, 0f),
             new Vector3(length, .46f, .16f),
             materials["GrassDeep"], false);
-        CreateBlock("RailLow", run,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("RailLow", run,
             new Vector3(0f, railY - .18f, 0f),
             new Vector3(length, .07f, .08f),
-            materials["Wood"], false);
-        CreateBlock("RailHigh", run,
+            materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Rail);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("RailHigh", run,
             new Vector3(0f, railY + .18f, 0f),
             new Vector3(length, .07f, .08f),
-            materials["Wood"], false);
+            materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Rail);
 
         float start = -length * .5f;
         float step = posts <= 1 ? 0f : length / (posts - 1);
         for (int i = 0; i < posts; i++)
         {
-            CreateBlock("Post_" + (i + 1).ToString("00"), run,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Post_" + (i + 1).ToString("00"), run,
                 new Vector3(start + step * i, postHeight * .5f, 0f),
                 new Vector3(.1f, postHeight, .1f),
-                materials["Wood"], false);
+                materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
             CreateSphere("PostCap_" + (i + 1).ToString("00"), run,
                 new Vector3(start + step * i, postHeight + .04f, 0f),
                 Vector3.one * .12f,
@@ -666,12 +666,12 @@ public static class GardenLevelBuilder
     {
         Transform gate = CreateChild(parent, "Garden Gate");
         float z = HomeRoomShellMetrics.BackWallDecorZ(.28f);
-        CreateBlock("GateLeft", gate,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("GateLeft", gate,
             new Vector3(-.52f, .7f, z),
-            new Vector3(.12f, 1.4f, .12f), materials["Wood"], false);
-        CreateBlock("GateRight", gate,
+            new Vector3(.12f, 1.4f, .12f), materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("GateRight", gate,
             new Vector3(.52f, .7f, z),
-            new Vector3(.12f, 1.4f, .12f), materials["Wood"], false);
+            new Vector3(.12f, 1.4f, .12f), materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
         CreateBlock("GateArch", gate,
             new Vector3(0f, 1.42f, z),
             new Vector3(1.28f, .14f, .14f), materials["Gold"], false);

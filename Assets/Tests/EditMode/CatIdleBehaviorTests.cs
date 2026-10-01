@@ -1,8 +1,49 @@
+using System;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 public sealed class CatIdleBehaviorTests
 {
+    [TestCase(CatRunnerLauncher.RunnerSceneName)]
+    [TestCase(CatCatchLauncher.CatchSceneName)]
+    public void MiniGameGate_CoversLaunchReservationUntilItsOwnerCompletes(string sceneName)
+    {
+        RequireHomeOnly();
+        var launch = typeof(CatRunnerSessionContext).GetField("launchingScene", BindingFlags.Static | BindingFlags.NonPublic);
+        object previous = launch.GetValue(null);
+        try
+        {
+            launch.SetValue(null, null);
+            Assert.That(MiniGameGate(), Is.False);
+            launch.SetValue(null, sceneName);
+            Assert.That(MiniGameGate(), Is.True, "Idle must remain suppressed before the additive scene appears.");
+            string other = sceneName == CatRunnerLauncher.RunnerSceneName
+                ? CatCatchLauncher.CatchSceneName : CatRunnerLauncher.RunnerSceneName;
+            CatRunnerSessionContext.CompleteLaunch(other);
+            Assert.That(MiniGameGate(), Is.True, "A different launch cannot release this reservation.");
+            CatRunnerSessionContext.CompleteLaunch(sceneName);
+            Assert.That(MiniGameGate(), Is.False, "Cancelled or completed launch with no scene returns to normal home idle.");
+        }
+        finally { launch.SetValue(null, previous); }
+    }
+
+    private static bool MiniGameGate()
+    {
+        var method = typeof(CatIdleBehavior).GetMethod("MiniGameIsActive", BindingFlags.Static | BindingFlags.NonPublic);
+        return ((Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), method))();
+    }
+
+    private static void RequireHomeOnly()
+    {
+        Assert.That(SceneManager.GetSceneByName(CatRunnerLauncher.RunnerSceneName).isLoaded, Is.False,
+            "This isolated fixture must start without a running mini-game.");
+        Assert.That(SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).isLoaded, Is.False,
+            "This isolated fixture must start without a running mini-game.");
+    }
+
     [Test]
     public void Mood_UsesNeedFloorAndBondThreshold()
     {
@@ -40,16 +81,16 @@ public sealed class CatIdleBehaviorTests
     {
         Assert.That(
             CatIdlePersonality.AttentionLine(CatIdleMood.Needy, "Loki", 10f, 40f, 40f),
-            Is.EqualTo("I'M HUNGRY..."));
+            Is.EqualTo(GameLanguageService.Text("idle.hungry")));
         Assert.That(
             CatIdlePersonality.AttentionLine(CatIdleMood.Needy, "Loki", 40f, 10f, 40f),
-            Is.EqualTo("I NEED A DRINK..."));
+            Is.EqualTo(GameLanguageService.Text("idle.thirsty")));
         Assert.That(
             CatIdlePersonality.AttentionLine(CatIdleMood.Sleepy, "Loki", 80f, 80f, 20f),
-            Is.EqualTo("SLEEPY..."));
+            Is.EqualTo(GameLanguageService.Text("idle.sleepy")));
         Assert.That(
             CatIdlePersonality.AttentionLine(CatIdleMood.Happy, "loki", 90f, 90f, 90f),
-            Is.EqualTo("LOKI WANTS A PET!"));
+            Is.EqualTo(GameLanguageService.Format("idle.pet", "loki")));
     }
 
     [Test]

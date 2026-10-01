@@ -238,21 +238,21 @@ public static class KitchenLevelBuilder
         CreateBlock("BackWall_Cream", walls,
             HomeRoomShellMetrics.BackWallPosition, HomeRoomShellMetrics.BackWallScale,
             materials["Cream"], true);
-        CreateBlock("BackWall_AquaBacksplash", walls,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("BackWall_AquaBacksplash", walls,
             HomeRoomShellMetrics.BackWainscotPosition,
-            HomeRoomShellMetrics.BackWainscotScale, materials["Aqua"], false);
+            HomeRoomShellMetrics.BackWainscotScale, materials["Aqua"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
         CreateBlock("LeftWall_Cream", walls,
             HomeRoomShellMetrics.LeftWallPosition, HomeRoomShellMetrics.SideWallScale,
             materials["Cream"], true);
-        CreateBlock("LeftWall_MintWainscot", walls,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("LeftWall_MintWainscot", walls,
             HomeRoomShellMetrics.LeftWainscotPosition,
-            HomeRoomShellMetrics.SideWainscotScale, materials["Mint"], false);
+            HomeRoomShellMetrics.SideWainscotScale, materials["Mint"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
         CreateBlock("RightWall_Cream", walls,
             HomeRoomShellMetrics.RightWallPosition, HomeRoomShellMetrics.SideWallScale,
             materials["Cream"], true);
-        CreateBlock("RightWall_CoralWainscot", walls,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("RightWall_CoralWainscot", walls,
             HomeRoomShellMetrics.RightWainscotPosition,
-            HomeRoomShellMetrics.SideWainscotScale, materials["Peach"], false);
+            HomeRoomShellMetrics.SideWainscotScale, materials["Peach"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
 
         CreateBlock("BackBaseboard", walls,
             HomeRoomShellMetrics.BackBaseboardPosition,

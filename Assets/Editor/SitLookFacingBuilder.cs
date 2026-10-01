@@ -11,6 +11,7 @@ public static class SitLookFacingBuilder
     struct Triangle
     {
         public Vector3 a, b, c, normal;
+        public string material;
     }
 
     public static void Configure(GameObject root, StoreCatalogAsset definition)
@@ -40,6 +41,12 @@ public static class SitLookFacingBuilder
         foreach (var activity in activities)
         {
             if (activity.LookPoint == null) continue;
+            if (activity.StoreProductId == HomeStoreService.BalconyRailingFlowersId &&
+                activity.ReactionKind != SitLookReaction.Sit)
+            {
+                ConfigureFlowerLeaves(root, activity, triangles);
+                continue;
+            }
             bool contact = activity.ReactionKind != SitLookReaction.Sit;
             float authoredY = root.InverseTransformPoint(activity.LookPoint.position).y;
             float desiredY = contact ? authoredY : Mathf.Lerp(bounds.min.y, bounds.max.y, .58f);
@@ -112,6 +119,63 @@ public static class SitLookFacingBuilder
         }
     }
 
+    /// <summary>Refresh only this product's measured contact points; no product or room rebuild.</summary>
+    public static int ConfigureFlowerContacts(SitLookActivity activity)
+    {
+        if (activity == null || activity.StoreProductId != HomeStoreService.BalconyRailingFlowersId)
+            throw new ArgumentException("The railing flower activity is required.");
+        var triangles = ReadTriangles(activity.transform, out _);
+        return ConfigureFlowerLeaves(activity.transform, activity, triangles);
+    }
+
+    static int ConfigureFlowerLeaves(Transform root, SitLookActivity activity, List<Triangle> triangles)
+    {
+        // In this measured source the oak box ends at .48 m, the separate mint
+        // leaf blades occupy .494-.556 m, and the flowers start at .704 m.
+        // Mint ornaments down at .15 m are part of the box, never paw targets.
+        float boxTop = float.NegativeInfinity;
+        foreach (var triangle in triangles)
+            if (triangle.material != null && triangle.material.Contains("CH_Cream_Oak"))
+                boxTop = Mathf.Max(boxTop, triangle.a.y, triangle.b.y, triangle.c.y);
+        if (float.IsNegativeInfinity(boxTop)) throw new InvalidOperationException("Railing flower box role was not found.");
+        var cells = new Dictionary<Vector3Int, Vector3>();
+        foreach (var triangle in triangles)
+        {
+            if (triangle.material == null || !triangle.material.Contains("CH_MintBright") || triangle.normal.z <= .05f) continue;
+            float low = Mathf.Min(triangle.a.y, triangle.b.y, triangle.c.y);
+            float high = Mathf.Max(triangle.a.y, triangle.b.y, triangle.c.y);
+            // Whole triangles in the low leaf band exclude the tall stem
+            // triangles and stay on rendered leaf geometry at every sample.
+            if (low <= boxTop + .005f || high >= boxTop + .10f) continue;
+            foreach (var point in new[] { triangle.a, triangle.b, triangle.c, (triangle.a + triangle.b + triangle.c) / 3f })
+            {
+                var cell = new Vector3Int(Mathf.FloorToInt(point.x / .04f),
+                    Mathf.FloorToInt(point.y / .04f), Mathf.FloorToInt(point.z / .04f));
+                if (!cells.TryGetValue(cell, out var old) || point.z > old.z) cells[cell] = point;
+            }
+        }
+        var candidates = new List<Vector3>(cells.Values);
+        candidates.Sort((a, b) => { int x = a.x.CompareTo(b.x); return x != 0 ? x : b.z.CompareTo(a.z); });
+        var selected = new List<Vector3>();
+        while (candidates.Count > 0 && selected.Count < MaximumTargets)
+        {
+            int best = 0; float farthest = -1;
+            if (selected.Count > 0)
+                for (int i = 0; i < candidates.Count; i++)
+                {
+                    float nearest = float.PositiveInfinity;
+                    foreach (var old in selected) nearest = Mathf.Min(nearest, (old - candidates[i]).sqrMagnitude);
+                    if (nearest > farthest) { farthest = nearest; best = i; }
+                }
+            selected.Add(activity.transform.InverseTransformPoint(root.TransformPoint(candidates[best])));
+            candidates.RemoveAt(best);
+        }
+        if (selected.Count == 0) throw new InvalidOperationException("No measured railing leaf contact surfaces found.");
+        activity.EditorConfigureVisibleLookTargets(selected.ToArray());
+        EditorUtility.SetDirty(activity);
+        return selected.Count;
+    }
+
     static void Add(Vector3 point, float desiredY, Dictionary<Vector3Int, Vector3> cells)
     {
         var key = new Vector3Int(Mathf.FloorToInt(point.x / Grid), Mathf.FloorToInt(point.y / Grid), Mathf.FloorToInt(point.z / Grid));
@@ -151,17 +215,23 @@ public static class SitLookFacingBuilder
             for (Transform t = filter.transform; t != null && t != root; t = t.parent)
                 active &= t.gameObject.activeSelf || ownershipGates.Contains(t);
             if (!active) continue;
-            Vector3[] vertices = filter.sharedMesh.vertices; int[] indices = filter.sharedMesh.triangles;
+            Vector3[] vertices = filter.sharedMesh.vertices;
             Matrix4x4 matrix = root.worldToLocalMatrix * filter.transform.localToWorldMatrix;
+            var materials = renderer.sharedMaterials;
+            for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+            {
+            int[] indices = filter.sharedMesh.GetTriangles(submesh);
             for (int i = 0; i < indices.Length; i += 3)
             {
                 Vector3 a = matrix.MultiplyPoint3x4(vertices[indices[i]]), b = matrix.MultiplyPoint3x4(vertices[indices[i + 1]]),
                     c = matrix.MultiplyPoint3x4(vertices[indices[i + 2]]);
                 Vector3 normal = Vector3.Cross(b - a, c - a);
                 if (normal.sqrMagnitude < 1e-12f) continue;
-                result.Add(new Triangle { a = a, b = b, c = c, normal = normal.normalized });
+                result.Add(new Triangle { a = a, b = b, c = c, normal = normal.normalized,
+                    material = submesh < materials.Length && materials[submesh] != null ? materials[submesh].name : string.Empty });
                 if (first) { bounds = new Bounds(a, Vector3.zero); first = false; }
                 bounds.Encapsulate(a); bounds.Encapsulate(b); bounds.Encapsulate(c);
+            }
             }
         }
         return result;

@@ -14,6 +14,13 @@ public sealed class TunnelPlayActivity : CatActivity
     private Vector3 originalScale;
 
     public override string ProgressLabel => IsRunning ? "ZOOMING THROUGH!" : string.Empty;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return entrancePoint != null && exitPoint != null && CatActivityStartResolver.Facing(actor,
+            entrancePoint.position, .18f, exitPoint.position, 20f, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -42,27 +49,16 @@ public sealed class TunnelPlayActivity : CatActivity
         Cat.SetMovementLocked(this, true);
         Vector3 startPosition = Cat.transform.position;
         Quaternion startRotation = Cat.transform.rotation;
-        Vector3 enter = Flatten(entrancePoint.position, startPosition.y);
+        Vector3 enter = startPosition;
         Vector3 exit = Flatten(exitPoint.position, startPosition.y);
         Vector3 through = exit - enter;
         through.y = 0f;
-        Quaternion crawlRotation = through.sqrMagnitude > 0.001f
-            ? Quaternion.LookRotation(through.normalized, Vector3.up)
-            : startRotation;
+        Quaternion crawlRotation = AcceptedStart.Rotation;
 
         if (characterController != null)
             characterController.enabled = false;
 
-        const float approachDuration = 0.32f;
         float elapsed = 0f;
-        while (elapsed < approachDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / approachDuration);
-            Cat.transform.position = Vector3.Lerp(startPosition, enter, t);
-            Cat.transform.rotation = Quaternion.Slerp(startRotation, crawlRotation, t);
-            yield return null;
-        }
 
         reaction.PlayTunnelReaction(crawlDuration);
         elapsed = 0f;

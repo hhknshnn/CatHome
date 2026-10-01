@@ -40,6 +40,7 @@ internal static class RoomPlayModeSupport
     internal static IEnumerator LoadRoomAlone(string sceneName)
     {
         DirectLevelPlayBootstrap.RedirectSuppressed = true;
+        yield return WaitForPendingContactData();
 
         AsyncOperation load = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         Assert.That(load, Is.Not.Null, sceneName + " must be in Build Settings.");
@@ -49,6 +50,19 @@ internal static class RoomPlayModeSupport
 
         ProvisionNeeds();
         yield return null;
+    }
+
+    internal static IEnumerator WaitForPendingContactData()
+    {
+        // A preceding fixture may have restored its breed asynchronously.
+        // Observe completion before replacing the entire scene; do not warm
+        // resources or perform a selection on behalf of the test under study.
+        float dataDeadline = Time.realtimeSinceStartup + 15f;
+        while (CatPawReachCatalog.HasPendingLoads && Time.realtimeSinceStartup < dataDeadline)
+            yield return null;
+        Assert.That(CatPawReachCatalog.HasPendingLoads, Is.False, "Previous contact-data load must settle before scene replacement.");
+        yield return null;
+
     }
 
     internal static void ReleaseRoom()
@@ -80,13 +94,13 @@ internal static class RoomPlayModeSupport
 
         ThirstSystem thirst =
             Object.FindAnyObjectByType<ThirstSystem>(FindObjectsInactive.Include);
-        if (thirst != null)
-            thirst.ApplySavedValue(SipReadyThirst);
+        if (thirst == null) thirst = EnsureNeedsHost().AddComponent<ThirstSystem>();
+        thirst.ApplySavedValue(SipReadyThirst);
 
         HungerSystem hunger =
             Object.FindAnyObjectByType<HungerSystem>(FindObjectsInactive.Include);
-        if (hunger != null)
-            hunger.ApplySavedValue(MealReadyHunger);
+        if (hunger == null) hunger = EnsureNeedsHost().AddComponent<HungerSystem>();
+        hunger.ApplySavedValue(MealReadyHunger);
 
         return energy;
     }

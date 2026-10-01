@@ -53,7 +53,7 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
         PremiumMomentArt.Caption(panel,"İlk günümüz,\nilk güzel anımız.","Our first day,\nour first happy moment.",-326,-174,286,94,26);
         PremiumMomentArt.Caption(panel,"ARTIK BİRBİRİMİZİ TANIYORUZ","NOW WE KNOW EACH OTHER",176,240,574,40,19);
         PremiumMomentArt.RewardTray(panel,176,-42,574,96);
-        PremiumMomentArt.Caption(panel,"Birlikte düğmesinde komutlar ve oyun rehberi seni bekliyor.","Find commands and the play guide in Together.",176,-134,574,62,22);
+        PremiumMomentArt.Caption(panel,"Kedi komutları düğmesinden komutları ve Oyun rehberi sekmesini açabilirsin.","Open Cat commands for commands and the Play guide tab.",176,-134,574,62,22);
         burst=CreateRect(panel,"SunBurst",new Vector2(360f,270f),new Vector2(-326f,62f));burst.gameObject.AddComponent<CanvasRenderer>();
         burst.gameObject.AddComponent<OnboardingCelebrationGraphic>().Configure(OnboardingCelebrationGraphic.ShapeKind.Burst,new Color32(255,215,147,55));
         catPortrait=CreateRect(panel,"HappyCat",new Vector2(268f,244f),new Vector2(-326f,62f));
@@ -154,8 +154,8 @@ public sealed class OnboardingCelebrationView : MonoBehaviour
         if(target!=null){target.raycastTarget=true;playButton.targetGraphic=target;}
         // Existing room-authored celebrations bypass Build at runtime.
         // Resolve their action role whenever the view is prepared as well.
-        ModernUiArt.Action(playButton);
         playButton.transform.SetAsLastSibling();
+        StorybookMilestonePresentation.Apply(panel);
     }
     private void ReleaseInput(){if(catMovement!=null)catMovement.ReleaseInputBlock(this);if(!isOpen)IsAnyOpen=false;}
     private void ApplySafeArea(){lastSafeArea=Screen.safeArea;if(safeRoot==null||Screen.width<=0||Screen.height<=0)return;safeRoot.anchorMin=new Vector2(lastSafeArea.xMin/Screen.width,lastSafeArea.yMin/Screen.height);safeRoot.anchorMax=new Vector2(lastSafeArea.xMax/Screen.width,lastSafeArea.yMax/Screen.height);safeRoot.offsetMin=safeRoot.offsetMax=Vector2.zero;Canvas.ForceUpdateCanvases();float width=safeRoot.rect.width-48;float height=safeRoot.rect.height-48;layoutScale=Mathf.Min(1,width/1060f,height/620f);panel.sizeDelta=new Vector2(1060f,620f);panel.localScale=Vector3.one*layoutScale;}

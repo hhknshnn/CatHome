@@ -70,6 +70,7 @@ public sealed class CatJournalPanel : MonoBehaviour
             return;
         }
         activeInstance = this;
+        PremiumTypography.ApplyNameInput(nameInput);
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();
         BindListeners();

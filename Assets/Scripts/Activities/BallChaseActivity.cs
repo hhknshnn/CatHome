@@ -27,6 +27,15 @@ public sealed class BallChaseActivity : CatActivity
     public Transform Ball=>ball;
     protected override bool UsesFloorApproach=>true;
     protected override bool UsesNearbyRoutineEntry=>true;
+    protected override bool UsesPreparedStart=>true;
+    protected override bool TryPrepareStart(CatMovement actor,out CatActivityStart start)
+    {
+        start=default;
+        if(ball==null || RoutineEntryPoint==null || !CatActivityStartResolver.Current(actor,
+            RoutineEntryPoint.position,PromptRadius,out start))return false;
+        start.ActionTarget=start.Position+start.Rotation*Vector3.forward*(RollLength+.65f);
+        return CatActivityMotion.ClearSegment(start.Position,start.ActionTarget);
+    }
     public override string ProgressLabel=>IsRunning?(GameLanguageService.Current==GameLanguage.Turkish?
         $"Pati ve takip · {catches}/{CatchGoal}":$"Bat and chase · {catches}/{CatchGoal}"):string.Empty;
     protected override void Awake(){base.Awake();if(ball!=null)ball.gameObject.SetActive(false);}
@@ -37,8 +46,8 @@ public sealed class BallChaseActivity : CatActivity
         ballCollision?.Dispose();ballCollision=new CatToyBallCollision(gameObject.scene,ball);
         try
         {
-            Vector3 entry=RoutineFloorPosition;entry.y=0;
-            Vector3 outward=entry-transform.position;outward.y=0;
+            Vector3 entry=AcceptedStart.Position;entry.y=0;
+            Vector3 outward=AcceptedStart.Rotation*Vector3.forward;outward.y=0;
             // Reserve the full sequence, including room beyond the last ball.
             // A clear first roll alone can strand the game after two catches.
             if(!ChooseDirection(entry,outward.normalized,RollLength+.65f,out playDirection))return false;
@@ -65,11 +74,10 @@ public sealed class BallChaseActivity : CatActivity
     {
         var plan=new Vector3[CatchGoal];int visited=0;
         plannedDirections=null;
-        for(int side=0;side<24;side++)
+        for(int side=0;side<1;side++)
         {
             float angle=(side+1)/2*(side%2==0?-15f:15f);
             direction=Quaternion.Euler(0,angle,0)*(preferred.sqrMagnitude>.01f?preferred:Vector3.forward);
-            if(CatActivityFacing.FacingDot(direction,origin,CatActivityFacing.CameraPosition(Cat))<.30f)continue;
             if(CatActivityMotion.ClearSegment(origin,origin+direction*distance)&&
                ballCollision.ClearRoll(origin+direction*.30f,origin+direction*distance))
             {
@@ -102,7 +110,6 @@ public sealed class BallChaseActivity : CatActivity
     }
     IEnumerator PlayRoutine()
     {
-        yield return Face(playDirection);
         ball.position=ballCollision.OnFloor(Cat.transform.position+playDirection*.30f);
         ball.gameObject.SetActive(true);
         PlayCatPose(CatActivityPose.Sniff);yield return new WaitForSeconds(.45f);
@@ -113,12 +120,12 @@ public sealed class BallChaseActivity : CatActivity
             Vector3 direction=preferred;
             Vector3 stand=floor-direction*.30f;
             bool found=false;
-            for(int side=0;side<24;side++)
+            for(int side=0;side<(beat==0?1:24);side++)
             {
                 float angle=(side+1)/2*(side%2==0?-15f:15f);
                 direction=Quaternion.Euler(0,angle,0)*preferred;
                 stand=floor-direction*.30f;
-                if(CatActivityFacing.FacingDot(direction,stand,CatActivityFacing.CameraPosition(Cat))<.30f)continue;
+                if(beat>0 && CatActivityFacing.FacingDot(direction,stand,CatActivityFacing.CameraPosition(Cat))<.30f)continue;
                 // Leave room BEYOND the stopping point. Otherwise a ball at the
                 // wall cannot be approached from its other side for the next bat.
                 if(CatActivityMotion.ClearSegment(stand,floor+direction*RollClearance) && ballCollision.ClearRoll(floor,floor+direction*RollClearance) &&

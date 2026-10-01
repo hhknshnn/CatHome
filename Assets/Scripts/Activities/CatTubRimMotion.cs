@@ -12,25 +12,31 @@ public sealed class CatTubRimMotion : MonoBehaviour
         public Quaternion upperPose, lowerPose, footPose, worldFoot;
         public Vector3 target;
         public float sole, lift;
+        public int[] pawVertices;
+        public Vector3 solePoint;
     }
     readonly Leg[] legs = { new Leg(), new Leg(), new Leg(), new Leg() };
     readonly List<Vector3> surface = new List<Vector3>();
     readonly List<Vector3> vertices = new List<Vector3>();
     TubEdgeWalkActivity owner;
+    CatActivityAnimation activityAnimation;
     Transform hips, head, tail;
     Quaternion hipsPose, headPose, tailPose;
     SkinnedMeshRenderer skin;
     Mesh sample;
+    CatMeshContactSurface.TargetSet measuredSurface;
     bool adjusted;
     float referenceHeight;
     public float BalanceSeconds { get; set; }
     public float MaximumContactError { get; private set; }
-    public bool IsActive => owner != null && owner.IsRimWalking;
+    public bool IsActive => owner != null && owner.IsRimWalking &&
+        activityAnimation != null && !activityAnimation.IsNativeJump;
     public int SurfaceSampleCount => surface.Count;
 
     public void Prepare(TubEdgeWalkActivity activity, MeshCollider mesh, Vector3 first, Vector3 last)
     {
         Clear(); owner = activity; referenceHeight = first.y;
+        activityAnimation = GetComponent<CatActivityAnimation>();
         Vector3 axis = (last - first).normalized, across = Vector3.Cross(Vector3.up, axis);
         float length = Vector3.Distance(first, last);
         if (mesh != null)
@@ -64,6 +70,17 @@ public sealed class CatTubRimMotion : MonoBehaviour
             if (bone.name == "DEF-tail.001") tail = bone;
         }
         skin = GetComponentInChildren<SkinnedMeshRenderer>();
+        var tag=GetComponentInChildren<CatBreedVisualTag>();
+        var profile=CatBreedCatalog.Load()?.Find(tag!=null?tag.BreedId:CatBreedCatalog.DefaultBreedId);
+        for(int i=0;i<4;i++)
+        {
+            var indices=profile?.SupportPawVertices(i);
+            legs[i].pawVertices=new int[indices!=null?indices.Count:0];
+            for(int j=0;j<legs[i].pawVertices.Length;j++)legs[i].pawVertices[j]=indices[j];
+        }
+        measuredSurface=mesh!=null?new CatMeshContactSurface.TargetSet(mesh.transform):null;
+        var measured = GetComponent<CatMeasuredSupportMotion>() ?? gameObject.AddComponent<CatMeasuredSupportMotion>();
+        measured.Bind(activity, null);
     }
 
     public Vector3 ClosestSurface(Vector3 point)
@@ -81,26 +98,28 @@ public sealed class CatTubRimMotion : MonoBehaviour
     }
     public float HeightAt(Vector3 point) => ClosestSurface(point).y;
 
-    void Update() { Restore(); }
+    void Update()
+    {
+        // Undo the later common correction before undoing this earlier layer.
+        // Restoring in application order can leave last frame's rim pose behind.
+        GetComponent<CatMeasuredSupportMotion>()?.Restore();
+        Restore();
+    }
     void LateUpdate()
     {
         if (!IsActive || hips == null || skin == null || surface.Count == 0) return;
         foreach (var leg in legs) if (leg.upper == null || leg.lower == null || leg.foot == null) return;
         if (sample == null) sample = new Mesh { name = "Tub paw contact sample" };
         skin.BakeMesh(sample, true); sample.GetVertices(vertices);
-        foreach (var leg in legs) leg.sole = leg.foot.position.y;
+        foreach (var leg in legs) { leg.sole = leg.foot.position.y;leg.solePoint=leg.foot.position; }
         // Read the real paw soles after the native animation and common support.
         // This preserves lifted swing paws instead of pinning all four to the rim.
-        foreach (var vertex in vertices)
+        foreach (var leg in legs)
+        foreach (int index in leg.pawVertices)
         {
-            Vector3 p = skin.transform.TransformPoint(vertex);
-            Leg nearest = null; float best = .085f * .085f;
-            foreach (var leg in legs)
-            {
-                float distance = (p - leg.foot.position).sqrMagnitude;
-                if (distance < best) { best = distance; nearest = leg; }
-            }
-            if (nearest != null) nearest.sole = Mathf.Min(nearest.sole, p.y);
+            if(index<0||index>=vertices.Count)continue;
+            Vector3 p=skin.transform.TransformPoint(vertices[index]);
+            if(p.y<leg.sole){leg.sole=p.y;leg.solePoint=p;}
         }
         float lowest = float.PositiveInfinity;
         foreach (var leg in legs) lowest = Mathf.Min(lowest, leg.sole);
@@ -112,8 +131,26 @@ public sealed class CatTubRimMotion : MonoBehaviour
             leg.upperPose = leg.upper.localRotation; leg.lowerPose = leg.lower.localRotation;
             leg.footPose = leg.foot.localRotation; leg.worldFoot = leg.foot.rotation;
             leg.lift = Mathf.Max(0f, leg.sole - lowest);
-            float soleOffset = Mathf.Max(.008f, leg.foot.position.y - leg.sole);
-            leg.target = ClosestSurface(leg.foot.position) + Vector3.up * (soleOffset + leg.lift + .005f);
+            leg.target = ClosestSurface(leg.solePoint) + leg.foot.position-leg.solePoint + Vector3.up * (leg.lift + .008f);
+            // A paw can already touch the curved rim even when another paw is
+            // lower. Preserve that measured source contact instead of treating
+            // the difference between their heights as a lifted swing.
+            float gap=.015f;
+            bool sourceContact=false;
+            if(measuredSurface!=null&&leg.pawVertices!=null)
+            foreach(int index in leg.pawVertices)
+            {
+                if(index<0||index>=vertices.Count)continue;
+                Vector3 point=skin.transform.TransformPoint(vertices[index]);
+                if(!measuredSurface.TryClosest(point,out var hit)||hit.Normal.y<.5f)continue;
+                float distance=Vector3.Distance(point,hit.Point);
+                if(distance>gap)continue;
+                gap=distance;sourceContact=true;
+            }
+            if(sourceContact)
+            {
+                leg.target=ClosestSurface(leg.solePoint)+leg.foot.position-leg.solePoint+Vector3.up*.008f;
+            }
         }
         float envelope = Mathf.SmoothStep(0f, 1f, Mathf.Min(BalanceSeconds / .25f, (owner.WalkDuration - BalanceSeconds) / .25f));
         float roll = Mathf.Sin(BalanceSeconds * 4.6f) * 3f * envelope;
@@ -157,9 +194,10 @@ public sealed class CatTubRimMotion : MonoBehaviour
     }
     public void Clear()
     {
+        GetComponent<CatMeasuredSupportMotion>()?.Clear(owner);
         Restore(); owner = null; surface.Clear(); BalanceSeconds = 0f;
         foreach (var leg in legs) leg.upper = leg.lower = leg.foot = null;
-        hips = head = tail = null; skin = null;
+        hips = head = tail = null; skin = null; activityAnimation = null;measuredSurface=null;
     }
     void OnDisable() { Clear(); }
     void OnDestroy() { if (sample != null) Destroy(sample); }

@@ -29,10 +29,10 @@ public sealed class PlayfulInteractionTests
     [UnityTest] public IEnumerator RetiredActionsAreAbsent_AndTelevisionUsesShortName()
     {
         yield return Prepare();
-        Assert.That(Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None).Any(a=>a.IsRetired),Is.False);
-        Assert.That(Object.FindObjectsByType<HomeProductPlacement>(FindObjectsSortMode.None).Any(p=>p.ProductId==HomeStoreService.GameConsoleId),Is.True);
-        Assert.That(Object.FindObjectsByType<HomeProductPlacement>(FindObjectsSortMode.None).Any(p=>p.ProductId==HomeStoreService.StereoId),Is.True);
-        Assert.That(Object.FindObjectsByType<HomeProductPlacement>(FindObjectsSortMode.None).Any(p=>p.ProductId==HomeStoreService.TvUnitId),Is.True);
+        Assert.That(Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include).Any(a=>a.IsRetired),Is.False);
+        Assert.That(Object.FindObjectsByType<HomeProductPlacement>().Any(p=>p.ProductId==HomeStoreService.GameConsoleId),Is.True);
+        Assert.That(Object.FindObjectsByType<HomeProductPlacement>().Any(p=>p.ProductId==HomeStoreService.StereoId),Is.True);
+        Assert.That(Object.FindObjectsByType<HomeProductPlacement>().Any(p=>p.ProductId==HomeStoreService.TvUnitId),Is.True);
         Assert.That(CatActivity.Registered.Any(a=>a.StoreProductId==HomeStoreService.TvUnitId),Is.False,"TV unit is decoration only");
         Assert.That(CatActivity.Registered.Any(a=>a.StoreProductId==HomeStoreService.ModernTelevisionId&&a.Kind==CatActivityKind.TelevisionWatch),Is.True,"The television still has Watch");
         Assert.That(GameProductCopy.Title(HomeStoreService.ModernTelevisionId,"TV"),Is.EqualTo("TV"));
@@ -72,7 +72,7 @@ public sealed class PlayfulInteractionTests
     [UnityTest] public IEnumerator SofaRest_AllBreeds_ClearBothCushions()
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var sofa=CatActivity.Registered.OfType<LivingFurnitureActivity>().First(a=>a.Kind==CatActivityKind.SofaLounge);
-        var pillows=Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None).Where(r=>r.name=="MintCushion"||r.name=="LilacCushion").ToArray();
+        var pillows=Object.FindObjectsByType<Renderer>().Where(r=>r.name=="MintCushion"||r.name=="LilacCushion").ToArray();
         Assert.That(pillows.Length,Is.EqualTo(2));var breeds=CatBreedCatalog.Load();var mesh=new Mesh();var vertices=new List<Vector3>();var rows=new List<string>{"breed,poseSamples,pillowPenetrations"};
         try
         {

@@ -99,14 +99,14 @@ public sealed class GameAudio : MonoBehaviour
         if(Time.unscaledTime<nextBind)return;
         nextBind=Time.unscaledTime+.35f;
         GameAudioButton.BindVisibleControls();
-        foreach(var cat in FindObjectsByType<CatMovement>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+        foreach(var cat in FindObjectsByType<CatMovement>(FindObjectsInactive.Exclude))
         {
             if(cat.GetComponent<CatFoley>()==null)cat.gameObject.AddComponent<CatFoley>();
             CatVoice.EnsureOn(cat);
         }
-        foreach(var runner in FindObjectsByType<CatRunnerPlayer>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+        foreach(var runner in FindObjectsByType<CatRunnerPlayer>(FindObjectsInactive.Exclude))
             if(runner.GetComponent<MiniGameFoley>()==null)runner.gameObject.AddComponent<MiniGameFoley>();
-        foreach(var hunter in FindObjectsByType<CatCatchPlayer>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+        foreach(var hunter in FindObjectsByType<CatCatchPlayer>(FindObjectsInactive.Exclude))
             if(hunter.GetComponent<MiniGameFoley>()==null)hunter.gameObject.AddComponent<MiniGameFoley>();
     }
     private void ApplyPreferences()

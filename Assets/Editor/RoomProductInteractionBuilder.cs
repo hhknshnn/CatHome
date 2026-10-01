@@ -215,7 +215,7 @@ public static class RoomProductInteractionBuilder
                 SetPoint(root, "floorPoint", new Vector3(0f, 0f, -1.25f));
                 root.GetComponent<PantryClimbActivity>().EditorConfigureDirectClimb(true);
                 break;
-            case "BalconyHangingChair": SetPoint(root, "nestPoint", new Vector3(0f, .59f, -.18f)); break;
+            case "BalconyHangingChair": SetPoint(root, "nestPoint", new Vector3(0f, .59f, -.53f)); break;
             case "PatioDiningSet": SetPoint(root, "perchPoint", new Vector3(-.44f, .440f, -.08f)); break;
             case "PatioPergolaArch":
                 SetPoint(root, "upperShelfPoint", new Vector3(0f, 1.79f, .11f));

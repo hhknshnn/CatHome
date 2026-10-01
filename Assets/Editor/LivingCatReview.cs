@@ -143,7 +143,7 @@ public sealed class LivingCatReview : EditorWindow
         Object.FindAnyObjectByType<EnergySystem>()?.ApplySavedValue(70);
         Object.FindAnyObjectByType<HungerSystem>()?.ApplySavedValue(35);
         Object.FindAnyObjectByType<ThirstSystem>()?.ApplySavedValue(35);
-        var a = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        var a = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include)
             .Single(x => x.StoreProductId == id && !x.IsRetired);
         var cc = cat.GetComponent<CharacterController>();
         Vector3 previous = cat.transform.position;

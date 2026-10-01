@@ -35,7 +35,14 @@ public sealed class SurfaceScatterActivity : CatActivity
     public float MinimumPawDistance{get;private set;}
     public float LastPawDistance{get;private set;}
     public Vector3 CurrentContact{get;private set;}
-    protected override bool UsesFloorApproach=>true;
+    protected override bool UsesFloorApproach=>false;
+    protected override bool UsesPreparedStart=>true;
+    protected override bool TryPrepareStart(CatMovement actor,out CatActivityStart start)
+    {
+        start=default;
+        return perchPoint!=null && RoutineEntryPoint!=null &&
+            CatActivityStartResolver.GroundLaunch(this,actor,RoutineEntryPoint.position,perchPoint.position,out start);
+    }
     public override string DisplayName=>string.IsNullOrEmpty(StoreProductId)?GameContentCopy.Text("Yemek masası","Dining table"):base.DisplayName;
     public override string ProgressLabel=>IsRunning?GameContentCopy.Text(IsScattering?"Ortalığı dağıtıyor":"Yaramazlık peşinde",IsScattering?"Making a mess":"Up to mischief"):string.Empty;
     protected override bool CanBeginActivity(out string reason)
@@ -46,8 +53,7 @@ public sealed class SurfaceScatterActivity : CatActivity
     }
     protected override bool BeginActivity()
     {
-        controller=Cat.GetComponent<CharacterController>();floor=RoutineFloorPosition;floor.y=Cat.transform.position.y;
-        if(!CatActivityMotion.IsControllerFloorClear(Cat,floor))return false;
+        controller=Cat.GetComponent<CharacterController>();floor=RoutineFloorPosition;floor.y=AcceptedStart.Position.y;
         saved.Clear();saved.Add(new SavedPart(propPivot));foreach(var part in looseParts)if(part!=null)saved.Add(new SavedPart(part));
         ContactStrokes=0;ScatteredParts=0;MinimumPawDistance=float.PositiveInfinity;StartCoroutine(Routine());return true;
     }
@@ -57,10 +63,9 @@ public sealed class SurfaceScatterActivity : CatActivity
         Vector3 perch=perchPoint.position;
         Vector3 toward=(basket?transform.TransformPoint(contactLocal):looseParts[0].position)-perch;toward.y=0;
         facing=Quaternion.LookRotation(toward.normalized);
-        Vector3 travel=perch-floor;travel.y=0;Quaternion launch=Quaternion.LookRotation(travel.normalized);
-        yield return CatActivityMotion.WalkAuthoredStep(Cat,floor,launch,.2f);
+        Quaternion launch=AcceptedStart.Rotation;
         support=new CatSupportedFurnitureMotion(this,Cat,perchPoint);
-        yield return support.Jump(floor,perch,launch,facing);IsPerched=true;
+        yield return support.Jump(AcceptedStart.Position,perch,launch,facing);IsPerched=true;
         paw=Cat.GetComponent<CatToyContactMotion>()??Cat.gameObject.AddComponent<CatToyContactMotion>();
         if(basket)
         {
@@ -174,7 +179,7 @@ public sealed class SurfaceScatterActivity : CatActivity
     {
         if(paw!=null)paw.Clear();if(support!=null){support.End();support=null;}
         foreach(var part in saved)part.Restore();saved.Clear();
-        if(Cat!=null){if(IsPerched){Cat.transform.position=floor;}if(controller!=null)controller.enabled=true;Cat.SetMovementLocked(this,false);}
+        if(Cat!=null){if(controller!=null)controller.enabled=true;Cat.SetMovementLocked(this,false);}
         IsPerched=IsPawing=IsScattering=false;
     }
     protected override void CancelActivity(){if(!IsRunning)return;StopAllCoroutines();Restore();base.CancelActivity();}

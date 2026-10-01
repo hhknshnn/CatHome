@@ -303,21 +303,21 @@ public static class PatioLevelBuilder
         run.localPosition = center;
         run.localRotation = Quaternion.Euler(0f, yaw, 0f);
 
-        CreateBlock("WallBody", run,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("WallBody", run,
             new Vector3(0f, .28f, 0f),
-            new Vector3(length, .56f, .18f), materials["Cream"], false);
-        CreateBlock("WallCap", run,
+            new Vector3(length, .56f, .18f), materials["Cream"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("WallCap", run,
             new Vector3(0f, .58f, 0f),
-            new Vector3(length, .07f, .24f), materials["StoneLight"], false);
+            new Vector3(length, .07f, .24f), materials["StoneLight"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
 
         int urns = Mathf.Max(2, Mathf.RoundToInt(length / 1.6f));
         float step = urns <= 1 ? 0f : length / (urns - 1);
         for (int i = 0; i < urns; i++)
         {
             float x = -length * .5f + step * i;
-            CreateBlock("Pilaster_" + (i + 1), run,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Pilaster_" + (i + 1), run,
                 new Vector3(x, .32f, 0f),
-                new Vector3(.18f, .64f, .26f), materials["StoneLight"], false);
+                new Vector3(.18f, .64f, .26f), materials["StoneLight"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
             CreateSphere("Urn_" + (i + 1), run,
                 new Vector3(x, .72f, 0f), Vector3.one * .18f, materials["Gold"], false);
         }
@@ -448,9 +448,9 @@ public static class PatioLevelBuilder
         {
             Transform pot = CreateChild(planters, "CornerPot_" + (i + 1));
             pot.localPosition = spots[i];
-            CreateBlock("Pot", pot,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Pot", pot,
                 new Vector3(0f, .24f, 0f), new Vector3(.46f, .48f, .46f),
-                materials["StoneLight"], false);
+                materials["StoneLight"], HomeEnvironmentCollisionBuilder.SolidRole.FixedPlanter);
             CreateSphere("Bush", pot,
                 new Vector3(0f, .66f, 0f), new Vector3(.6f, .6f, .6f),
                 materials["Mint"], false);

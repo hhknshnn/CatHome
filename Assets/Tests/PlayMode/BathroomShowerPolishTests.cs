@@ -208,7 +208,7 @@ public sealed class BathroomShowerPolishTests
         Assert.That(mesh == null, Is.True, "The runtime mesh must be disposed on unload.");
         Assert.That(bodySample == null, Is.True, "The reused skinned-surface sample must also be disposed on unload.");
         Assert.That(material == null, Is.True, "The runtime material must be disposed on unload.");
-        Assert.That(Object.FindObjectsByType<CatShowerWaterFx>(FindObjectsInactive.Include, FindObjectsSortMode.None), Is.Empty,
+        Assert.That(Object.FindObjectsByType<CatShowerWaterFx>(FindObjectsInactive.Include), Is.Empty,
             "A bathroom effect must not follow the cat into another room.");
     }
 

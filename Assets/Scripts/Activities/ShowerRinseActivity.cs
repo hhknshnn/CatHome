@@ -31,6 +31,13 @@ public sealed class ShowerRinseActivity : CatActivity
     public float RinseDuration => Mathf.Max(0.5f, rinseDuration);
     public float ShakeDuration => Mathf.Max(0.2f, shakeDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return doorPoint != null && standPoint != null && CatActivityStartResolver.Facing(actor,
+            doorPoint.position, .18f, standPoint.position, 20f, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -67,11 +74,8 @@ public sealed class ShowerRinseActivity : CatActivity
         // whole reason the cat cannot do this by itself.
         Vector3 stand = standPoint.position;
 
-        Quaternion toDoor = LookTowards(door - start, startRotation);
-        yield return Move(start, door, startRotation, toDoor, 0.32f);
-
-        Quaternion inward = LookTowards(stand - door, toDoor);
-        yield return Move(door, stand, toDoor, inward, 0.46f);
+        Quaternion inward = AcceptedStart.Rotation;
+        yield return Move(start, stand, inward, inward, 0.46f);
 
         // Turn back towards the open front so the rinse plays to the camera.
         Quaternion outward = LookTowards(door - stand, inward);

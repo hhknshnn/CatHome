@@ -940,7 +940,14 @@ PlayerSettings:
   platformRequiresReadableAssets: 0
   virtualTexturingSupportEnabled: 0
   insecureHttpOption: 0
-  androidVulkanDenyFilterList: []
+  androidVulkanDenyFilterList:
+  - vendorName: 
+    deviceName: ^Adreno \(TM\) 618$
+    brandName: 
+    productName: ^joyeuse_eea$
+    androidOsVersionString: 
+    vulkanApiVersionString: 
+    driverVersionString: 
   androidVulkanAllowFilterList: []
   androidVulkanDeviceFilterListAsset: {fileID: 0}
   d3d12DeviceFilterListAsset: {fileID: 0}

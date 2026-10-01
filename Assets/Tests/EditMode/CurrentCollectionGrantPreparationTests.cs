@@ -36,7 +36,7 @@ public sealed class CurrentCollectionGrantPreparationTests
         var after = CurrentCollectionGrantPreparation.TransformStore(before);
         Assert.That(JsonUtility.ToJson(before), Is.EqualTo(original), "Pure transform must not mutate its input.");
         Assert.That(CurrentCollectionGrantPreparation.CurrentRoomProductIds(), Has.Length.EqualTo(80));
-        Assert.That(Cats, Has.Length.EqualTo(17));
+        Assert.That(Cats, Has.Length.EqualTo(16));
         var allCurrent = CurrentCollectionGrantPreparation.CurrentRoomProductIds().Concat(Cats).ToArray();
         Assert.That(allCurrent.All(after.ownedProductIds.Contains), Is.True);
         Assert.That(CurrentCollectionGrantPreparation.RoomAccessProductIds().All(after.ownedProductIds.Contains), Is.True);
@@ -141,7 +141,7 @@ public sealed class CurrentCollectionGrantPreparationTests
             var manifest = JsonUtility.FromJson<ManifestProbe>(File.ReadAllText(package.manifestPath));
             Assert.That(manifest.realSaveWritten, Is.False);
             Assert.That(manifest.currentRoomProductCount, Is.EqualTo(80));
-            Assert.That(manifest.currentCatProductCount, Is.EqualTo(17));
+            Assert.That(manifest.currentCatProductCount, Is.EqualTo(16));
             Assert.That(manifest.roomAccessProductCount, Is.EqualTo(7));
             Assert.That(Directory.GetFiles(output).Length, Is.EqualTo(2));
         }

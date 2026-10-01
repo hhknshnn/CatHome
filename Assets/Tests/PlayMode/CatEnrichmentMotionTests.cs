@@ -42,7 +42,7 @@ public sealed class CatEnrichmentMotionTests
         var cat = Object.FindAnyObjectByType<CatMovement>();
         var idle = cat.GetComponent<CatIdleBehavior>(); if (idle != null) idle.enabled = false;
         var cc = cat.GetComponent<CharacterController>();
-        var products = Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        var products = Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include);
         Assert.That(products.Length, Is.EqualTo(15));
         var failures = new List<string>();
         int events = 0; CatActivity tracked = null;
@@ -101,7 +101,7 @@ public sealed class CatEnrichmentMotionTests
         state.storedProductIds = state.ownedProductIds.Where(CatCollectionPolicy.IsCatItem).ToArray();
         HomeStoreService.ApplySavedState(state);
         foreach (string id in new[] { HomeStoreService.BallBasketId, HomeStoreService.ScratchPostId,
-            HomeStoreService.PlayTunnelId, HomeStoreService.BellCollarId, HomeStoreService.NapPillowId })
+            HomeStoreService.PlayTunnelId, HomeStoreService.BellCollarId, HomeStoreService.FeatherToyId })
             Assert.That(HomeStoreService.TrySetStored(id, false), Is.True, id);
         yield return null; yield return null;
         var cat = Object.FindAnyObjectByType<CatMovement>();
@@ -158,7 +158,7 @@ public sealed class CatEnrichmentMotionTests
         var cat = Object.FindAnyObjectByType<CatMovement>();
         var idle = cat.GetComponent<CatIdleBehavior>(); if (idle != null) idle.enabled = false;
         var cc = cat.GetComponent<CharacterController>();
-        var beds = Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        var beds = Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include)
             .Where(a => a.Mode == CatEnrichmentMode.Nap).ToArray();
         Assert.That(beds.Length, Is.EqualTo(4));
         var mesh = new Mesh();

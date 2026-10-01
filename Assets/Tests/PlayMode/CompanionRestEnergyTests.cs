@@ -36,9 +36,9 @@ public sealed class CompanionRestEnergyTests
     public IEnumerator SitAndLoaf_RecoverGraduallyOnlyDuringTheHeldPose()
     {
         yield return Prepare();
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         var command = cat.GetComponent<CatCommandActivity>();
-        var energy = Object.FindFirstObjectByType<EnergySystem>();
+        var energy = Object.FindAnyObjectByType<EnergySystem>();
         long bond = ProgressionService.BondXp, coins = ProgressionService.Coins;
         string quests = string.Join("|", ProgressionService.CaptureQuestProgress().Select(JsonUtility.ToJson));
 
@@ -78,9 +78,9 @@ public sealed class CompanionRestEnergyTests
     public IEnumerator MeowNeverRecoversEnergy_AndRestCapsAtOneHundred()
     {
         yield return Prepare();
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         var command = cat.GetComponent<CatCommandActivity>();
-        var energy = Object.FindFirstObjectByType<EnergySystem>();
+        var energy = Object.FindAnyObjectByType<EnergySystem>();
         energy.ApplySavedValue(40f);
         Assert.That(command.Issue(CatCompanionCommand.Meow), Is.True);
         yield return new WaitForSeconds(4.6f);
@@ -104,7 +104,7 @@ public sealed class CompanionRestEnergyTests
         state.ownedProductIds = HomeStoreService.Products.Where(p => HomeStoreService.IsLivingRoomCollectionProduct(p.Id)).Select(p => p.Id).ToArray();
         HomeStoreService.ApplySavedState(state);
         yield return null;
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         yield return RoomPlayModeSupport.WaitForMovementRelease(cat);
         var controller = cat.GetComponent<CharacterController>();
         controller.enabled = false;

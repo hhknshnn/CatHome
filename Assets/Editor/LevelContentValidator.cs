@@ -927,11 +927,11 @@ public static class LevelContentValidator
                 if (cameras.Length == 1)
                 {
                     var view = cameras[0];
-                    Require(Vector3.Distance(view.transform.position, HomeRoomCameraProfile.Position) < .001f &&
-                        Quaternion.Angle(view.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.Angles)) < .05f &&
-                        Mathf.Abs(view.fieldOfView - HomeRoomCameraProfile.FieldOfView) < .001f && !view.orthographic &&
+                    Require(Vector3.Distance(view.transform.position, HomeRoomCameraProfile.PositionFor(room.ScenePath)) < .001f &&
+                        Quaternion.Angle(view.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.AnglesFor(room.ScenePath))) < .05f &&
+                        Mathf.Abs(view.fieldOfView - HomeRoomCameraProfile.FieldOfViewFor(room.ScenePath)) < .001f && !view.orthographic &&
                         view.GetComponent<HomeWorldViewport>() != null,
-                        $"Home room '{room.ScenePath}' must use the shared front-centred camera profile and HUD viewport.", report);
+                        $"Home room '{room.ScenePath}' must use its approved camera profile and HUD viewport.", report);
                 }
                 Require(listeners.Length == 1 && enabledListeners == 1,
                     $"Home room '{room.ScenePath}' must author exactly one enabled AudioListener.",
@@ -1012,10 +1012,22 @@ public static class LevelContentValidator
         Scene scene, string objectName, LevelValidationReport report)
     {
         GameObject furniture = FindNamedInScene(scene, objectName);
-        BoxCollider collider = furniture != null ? furniture.GetComponent<BoxCollider>() : null;
-        Require(collider != null && collider.enabled && !collider.isTrigger,
-            $"Living Room fixed furniture '{objectName}' needs an enabled solid BoxCollider.",
-            report);
+        Require(furniture != null, $"Living Room fixed furniture '{objectName}' is missing.", report);
+        if (furniture == null) return;
+        var filters = furniture.GetComponentsInChildren<MeshFilter>(true)
+            .Where(filter => filter.GetComponent<MeshRenderer>() != null).ToArray();
+        Require(filters.Length > 0, $"Living Room fixed furniture '{objectName}' needs its authored mesh.", report);
+        foreach (var filter in filters)
+        {
+            var collider = filter.GetComponent<MeshCollider>();
+            Require(filter.sharedMesh != null && collider != null && collider.enabled &&
+                    !collider.isTrigger && !collider.convex && collider.sharedMesh == filter.sharedMesh,
+                $"Living Room fixed furniture '{objectName}/{filter.name}' needs its enabled exact-mesh solid.", report);
+        }
+        Require(furniture.GetComponentsInChildren<BoxCollider>(true).All(box => box.isTrigger),
+            $"Living Room fixed furniture '{objectName}' reservation boxes must remain picking triggers.", report);
+        Require(furniture.GetComponentsInChildren<Rigidbody>(true).Length == 0,
+            $"Living Room fixed furniture '{objectName}' must remain static for its nonconvex solids.", report);
     }
 
     private static void ValidateBathroomRoom(Scene scene, LevelValidationReport report)

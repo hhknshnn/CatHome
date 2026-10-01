@@ -27,7 +27,7 @@ public sealed class CatCollectionPolicyTests
         HomeStoreService.ApplySavedState(HomeStoreService.CaptureState());
         Assert.That(HomeStoreService.TrySetStored(HomeStoreService.CozyPodBedId,false),Is.False);
         HomeStoreService.TrySetStored(HomeStoreService.CloudBedId,true);
-        Assert.That(HomeStoreService.TrySetStored(HomeStoreService.NapPillowId,false),Is.True);
+        Assert.That(HomeStoreService.TrySetStored(HomeStoreService.CanopyBedId,false),Is.True);
     }
     [Test] public void OldSave_MigratesWithoutLosingOwnedProductsOrCoordinates()
     {
@@ -38,6 +38,21 @@ public sealed class CatCollectionPolicyTests
         Assert.That(Cats.All(HomeStoreService.IsOwned),Is.True);
         var first=HomeStoreService.CaptureState();HomeStoreService.ApplySavedState(first);
         Assert.That(HomeStoreService.CaptureState().storedProductIds,Is.EqualTo(first.storedProductIds));
+    }
+    [Test] public void RetiredPillow_PreservesOldOwnershipAndXpButCannotBeBoughtOrDisplayed()
+    {
+        var s=HomeStoreSaveState.CreateDefault();s.ownedProductIds=new[]{HomeStoreService.NapPillowId,HomeStoreService.BallBasketId};
+        HomeStoreService.ApplySavedState(s);
+        Assert.That(HomeStoreService.IsOwned(HomeStoreService.NapPillowId),Is.True);
+        Assert.That(HomeStoreService.IsStored(HomeStoreService.NapPillowId),Is.True);
+        Assert.That(HomeStoreService.TrySetStored(HomeStoreService.NapPillowId,false),Is.False);
+        Assert.That(HomeStoreService.Products.Any(p=>p.Id==HomeStoreService.NapPillowId),Is.False);
+        Assert.That(CatCollectionPolicy.IsCatItem(HomeStoreService.NapPillowId),Is.False);
+        var saved=HomeStoreService.CaptureState();HomeStoreService.ApplySavedState(saved);
+        Assert.That(HomeStoreService.IsOwned(HomeStoreService.NapPillowId),Is.True);
+        Assert.That(HomeStoreService.SumOwnedHomeXp(),Is.GreaterThanOrEqualTo(400));
+        Assert.That(HomeStoreService.TryAcquireForTesting(HomeStoreService.NapPillowId).Succeeded,Is.False);
+        Assert.That(HomeStoreService.TryPurchase(HomeStoreService.NapPillowId).Succeeded,Is.False);
     }
     [Test] public void HiddenFurnitureAndTriggerToys_ReserveFootprints()
     {

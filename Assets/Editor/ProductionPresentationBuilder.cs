@@ -8,7 +8,7 @@ public static class ProductionPresentationBuilder
         const string path="Assets/Resources/PremiumMomentArt.asset";
         var art=AssetDatabase.LoadAssetAtPath<PremiumMomentArtSet>(path);
         if(art==null){art=ScriptableObject.CreateInstance<PremiumMomentArtSet>();AssetDatabase.CreateAsset(art,path);}
-        art.Coin=AssetDatabase.LoadAssetAtPath<Texture2D>(PremiumUiFactory.CoinIconPath);
+        art.Coin=AssetDatabase.LoadAssetAtPath<Texture2D>(StorybookTitleBuilder.CatIconPath);
         EditorUtility.SetDirty(art);AssetDatabase.SaveAssets();
         TitleScreenBuilder.BuildSilently();
         foreach(var view in Object.FindObjectsByType<CatDialogueView>(FindObjectsInactive.Include))

@@ -25,7 +25,20 @@ public sealed class LivingFurnitureActivity : CatActivity
     public Transform Perch=>perch;
     public Transform Toy=>toy;
     public float ContactDistance {get;private set;}
-    protected override bool UsesFloorApproach=>true;
+    protected override bool UsesFloorApproach=>false;
+    protected override bool UsesPreparedStart=>true;
+    protected override string ApproachHint => table ? base.ApproachHint : GameContentCopy.Text(
+        "Koltuğun önüne yaklaşıp ona dönelim.", "Move to the front of the sofa and face it.");
+    public override bool TryGetPromptDistance(CatMovement actor,out float distance)
+    {
+        return base.TryGetPromptDistance(actor,out distance);
+    }
+    protected override bool TryPrepareStart(CatMovement actor,out CatActivityStart start)
+    {
+        start=default;
+        return perch!=null && RoutineEntryPoint!=null && actor!=null &&
+            CatActivityStartResolver.GroundLaunch(this,actor,RoutineEntryPoint.position,LandingPosition(actor,out _),out start);
+    }
     public override bool SupportsContinuousRest=>!table;
     public override float EnergyCost=>table?base.EnergyCost:0f;
     public override string ProgressLabel=>!IsRunning?string.Empty:GameLanguageService.Current==GameLanguage.Turkish?
@@ -44,24 +57,12 @@ public sealed class LivingFurnitureActivity : CatActivity
     }
     IEnumerator Routine()
     {
-        Vector3 floor=RoutineEntryPoint.position;floor.y=Cat.transform.position.y;
+        Vector3 floor=RoutineEntryPoint.position;floor.y=AcceptedStart.Position.y;
         // The table's authored heading places the paw at the loose toy. Only
         // the free rest chooses a viewing direction before the held pose.
-        Quaternion held = perch.rotation;
-        if(!table)
-        {
-            held=HeldFacing(perch.rotation);
-        }
-        Vector3 seat=perch.position;
-        if(!table)
-        {
-            // One fixed seat centre gives the original jump room in front
-            // of the backrest and keeps the haunches clear of the armrest.
-            seat+=Vector3.ProjectOnPlane(floor-seat,Vector3.up).normalized*.10f;
-            seat+=held*Vector3.forward*.08f;
-        }
+        Vector3 seat=LandingPosition(Cat,out Quaternion held);
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, perch);
-        yield return supportedMotion.Jump(floor, seat, Cat.transform.rotation, held);
+        yield return supportedMotion.Jump(AcceptedStart.Position, seat, AcceptedStart.Rotation, held);
         if(table && toy!=null)
         {
             PlayCatPose(CatActivityPose.Sniff,perch);yield return new WaitForSeconds(.5f);
@@ -130,12 +131,25 @@ public sealed class LivingFurnitureActivity : CatActivity
         while(t<.4f){if(Time.timeScale<=0f){yield return null;continue;}t+=Time.deltaTime;toy.position=landing+Vector3.up*(Mathf.Abs(Mathf.Sin(t/.4f*Mathf.PI*2))*.05f*(1-t/.4f));yield return null;}
         toy.position=landing;
     }
-    Quaternion HeldFacing(Quaternion preferred)
+    Vector3 LandingPosition(CatMovement actor,out Quaternion held)
+    {
+        held=table?perch.rotation:HeldFacing(actor,perch.rotation);
+        Vector3 seat=perch.position;
+        if(!table)
+        {
+            // The seat remains authored independently of the accepted launch
+            // stance, preserving the backrest and armrest clearance.
+            seat+=Vector3.ProjectOnPlane(RoutineEntryPoint.position-seat,Vector3.up).normalized*.10f;
+            seat+=held*Vector3.forward*.08f;
+        }
+        return seat;
+    }
+    Quaternion HeldFacing(CatMovement actor,Quaternion preferred)
     {
         var surface=perch.GetComponent<CatActivitySurface>();
         return surface!=null && surface.AlignAlongSurface?
-            CatActivityFacing.AlongAxis(Cat,perch.position,perch.rotation * Quaternion.Euler(0,90,0)):
-            CatActivityFacing.Resolve(Cat,perch.position,preferred);
+            CatActivityFacing.AlongAxis(actor,perch.position,perch.rotation * Quaternion.Euler(0,90,0)):
+            CatActivityFacing.Resolve(actor,perch.position,preferred);
     }
     IEnumerator Hop(Vector3 from,Vector3 to)
     {

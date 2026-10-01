@@ -21,7 +21,7 @@ public sealed class HomeWorldViewport : MonoBehaviour
         if(roomCamera==null)roomCamera=GetComponent<Camera>();
         SetWorldHidden(Application.isPlaying && MobilePresentation.IsMobile && TitleScreen.IsShowing && roomCamera.targetTexture==null);
         if(roomCamera.targetTexture!=null){roomCamera.rect=new Rect(0,0,1,1);return;}
-        if(homeCanvas==null)foreach(var canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        if(homeCanvas==null)foreach(var canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include))
             if(canvas.name=="Canvas" && canvas.isRootCanvas){homeCanvas=canvas;break;}
         float scale=homeCanvas!=null?homeCanvas.scaleFactor:Screen.height/1080f;
         float y=Mathf.Clamp((Screen.safeArea.yMin+StripHeight*scale)/Mathf.Max(1,Screen.height),0,.22f);

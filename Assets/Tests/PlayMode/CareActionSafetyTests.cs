@@ -60,13 +60,13 @@ public sealed class CareActionSafetyTests
             HomeStoreService.IsLivingRoomCollectionProduct(p.Id)).Select(p => p.Id).ToArray();
         HomeStoreService.ApplySavedState(state);
         yield return null; yield return null;
-        cat = Object.FindFirstObjectByType<CatMovement>();
+        cat = Object.FindAnyObjectByType<CatMovement>();
         bowls = cat.GetComponent<BowlInteraction>();
         sleep = cat.GetComponent<SleepInteraction>();
         armchair = CatActivity.Registered.First(a => a.Kind == CatActivityKind.ArmchairNap);
         needsHost = new GameObject("Care safety needs");
-        hunger = Object.FindFirstObjectByType<HungerSystem>() ?? needsHost.AddComponent<HungerSystem>();
-        thirst = Object.FindFirstObjectByType<ThirstSystem>() ?? needsHost.AddComponent<ThirstSystem>();
+        hunger = Object.FindAnyObjectByType<HungerSystem>() ?? needsHost.AddComponent<HungerSystem>();
+        thirst = Object.FindAnyObjectByType<ThirstSystem>() ?? needsHost.AddComponent<ThirstSystem>();
         energy = RoomPlayModeSupport.ProvisionNeeds();
         hunger.ApplySavedValue(35f); thirst.ApplySavedValue(35f);
         Set(bowls, "hungerSystem", hunger); Set(bowls, "thirstSystem", thirst);

@@ -17,7 +17,7 @@ using UnityEngine;
 /// </summary>
 public static class CurrentCollectionGrantPreparation
 {
-    public const int ExpectedRoomProducts = 80, ExpectedCatProducts = 17;
+    public const int ExpectedRoomProducts = 80, ExpectedCatProducts = 16;
     public static readonly string[] AllowedJsonPaths = {
         "homeStore.ownedProductIds", "homeStore.storedProductIds"
     };
@@ -176,7 +176,7 @@ public static class CurrentCollectionGrantPreparation
     static void RequireCurrentCatalog(string[] rooms, string[] cats, string[] access)
     {
         if (rooms.Length != ExpectedRoomProducts || cats.Length != ExpectedCatProducts || access.Length != 7)
-            throw new InvalidOperationException("The current catalog changed; review the 80 ROOM / 17 CAT / 7 room-access grant scope.");
+            throw new InvalidOperationException("The current catalog changed; review the 80 ROOM / 16 CAT / 7 room-access grant scope.");
         var granted = new HashSet<string>(rooms.Concat(cats).Concat(access), StringComparer.Ordinal);
         foreach (string id in granted)
         {

@@ -14,11 +14,11 @@ public sealed class ProductionCareTests
     {
         yield return RoomPlayModeSupport.LoadRoomAlone("LivingRoom_Level01");
         var state=HomeStoreSaveState.CreateDefault();state.ownedProductIds=HomeStoreService.Products.Where(p=>HomeStoreService.IsLivingRoomCollectionProduct(p.Id)).Select(p=>p.Id).ToArray();HomeStoreService.ApplySavedState(state);yield return null;
-        yield return RoomPlayModeSupport.WaitForMovementRelease(Object.FindFirstObjectByType<CatMovement>());
+        yield return RoomPlayModeSupport.WaitForMovementRelease(Object.FindAnyObjectByType<CatMovement>());
     }
     [UnityTest]public IEnumerator PairedCareTray_BlocksNarrowPocketsAndRestoresOldSaves()
     {
-        yield return Prepare();var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();var station=Object.FindFirstObjectByType<CatCareStationObstacle>();Assert.That(station,Is.Not.Null);
+        yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();var station=Object.FindAnyObjectByType<CatCareStationObstacle>();Assert.That(station,Is.Not.Null);
         cat.enabled=false;
         Vector3 open=station.FrontExit.position-station.Body.bounds.center;open.y=0;open.Normalize();
         foreach(float x in new[]{-.34f,-.12f,.12f,.34f})foreach(float yaw in new[]{0f,90f,180f,270f})
@@ -92,7 +92,7 @@ public sealed class ProductionCareTests
     }
     [UnityTest]public IEnumerator CompanionCommands_AllBreeds_HoldUntilStoppedAndKeepGroundContact()
     {
-        yield return Prepare();var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();var command=cat.GetComponent<CatCommandActivity>();var mesh=new Mesh();
+        yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();var command=cat.GetComponent<CatCommandActivity>();var mesh=new Mesh();
         Time.timeScale=4;
         foreach(var entry in CatBreedCatalog.Load().Entries)
         {
@@ -117,7 +117,7 @@ public sealed class ProductionCareTests
     }
     [UnityTest]public IEnumerator CatVoice_UsesAuthoredAssetsAndHonoursMuteAndCancel()
     {
-        yield return Prepare();var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();cc.enabled=false;cat.transform.position=new Vector3(-.5f,.05f,-1.4f);cc.enabled=true;
+        yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();cc.enabled=false;cat.transform.position=new Vector3(-.5f,.05f,-1.4f);cc.enabled=true;
         var voice=CatVoice.EnsureOn(cat);var command=cat.GetComponent<CatCommandActivity>();HomeAudioService.SoundEnabled=true;
         Assert.That(command.Kind,Is.EqualTo(CatActivityKind.CompanionCommand),"A runtime command must not inherit a toy's default activity identity");
         foreach(var cue in new[]{AudioCue.Meow,AudioCue.Purr,AudioCue.Eat,AudioCue.Drink})Assert.That(GameAudio.Clip(cue).length,Is.GreaterThan(.3f));

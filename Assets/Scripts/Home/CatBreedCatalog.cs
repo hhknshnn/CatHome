@@ -24,6 +24,14 @@ public sealed class CatBreedCatalog : ScriptableObject
         public GameObject SourcePrefab => sourcePrefab;
         public Sprite Portrait => portrait;
         public IReadOnlyList<int> ContactVertexIndices => contactVertexIndices;
+        [SerializeField] private int[] leftForeSupport = Array.Empty<int>(), rightForeSupport = Array.Empty<int>(),
+            leftRearSupport = Array.Empty<int>(), rightRearSupport = Array.Empty<int>();
+        [SerializeField] private int[] leftForeLimb = Array.Empty<int>(), rightForeLimb = Array.Empty<int>(),
+            leftRearLimb = Array.Empty<int>(), rightRearLimb = Array.Empty<int>();
+        public IReadOnlyList<int> SupportLimbVertices(int limb) => limb == 0 ? leftForeLimb : limb == 1 ? rightForeLimb :
+            limb == 2 ? leftRearLimb : rightRearLimb;
+        public IReadOnlyList<int> SupportPawVertices(int foot) => foot == 0 ? leftForeSupport : foot == 1 ? rightForeSupport :
+            foot == 2 ? leftRearSupport : rightRearSupport;
 
 #if UNITY_EDITOR
         internal Entry(string id, string displayName, GameObject sourcePrefab, Sprite portrait)
@@ -33,6 +41,47 @@ public sealed class CatBreedCatalog : ScriptableObject
             this.sourcePrefab = sourcePrefab;
             this.portrait = portrait;
             contactVertexIndices = BakeContactVertices(sourcePrefab);
+            EditorBakeSupportPaws();
+        }
+
+        public void EditorBakeSupportPaws()
+        {
+            var skin = sourcePrefab.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            var bones = skin.bones; var weights = skin.sharedMesh.boneWeights;
+            var groups = new List<int>[] { new List<int>(), new List<int>(), new List<int>(), new List<int>() };
+            for (int foot = 0; foot < 4; foot++)
+            {
+                string name = (foot < 2 ? "DEF-hand." : "DEF-foot.") + ((foot & 1) == 0 ? "L" : "R");
+                Transform joint = Array.Find(bones, b => b != null && b.name == name);
+                if (joint == null) throw new InvalidOperationException(id + " missing " + name);
+                for (int i = 0; i < weights.Length; i++)
+                {
+                    var w = weights[i];
+                    float sum = Weight(w.boneIndex0,w.weight0) + Weight(w.boneIndex1,w.weight1) +
+                        Weight(w.boneIndex2,w.weight2) + Weight(w.boneIndex3,w.weight3);
+                    if (sum >= .5f) groups[foot].Add(i);
+                }
+                float Weight(int index,float value) => value > 0f && (bones[index] == joint || bones[index].IsChildOf(joint)) ? value : 0f;
+                if (groups[foot].Count < 10) throw new InvalidOperationException(id + " empty distal skin " + name);
+            }
+            var limbGroups = new List<int>[] { new List<int>(), new List<int>(), new List<int>(), new List<int>() };
+            for(int limb=0;limb<4;limb++)
+            {
+                string name=(limb<2?"DEF-upper_arm.":"DEF-thigh.")+((limb&1)==0?"L":"R");
+                var joint=Array.Find(bones,b=>b!=null&&b.name==name);
+                if(joint==null)throw new InvalidOperationException(id+" missing "+name);
+                for(int i=0;i<weights.Length;i++)
+                {
+                    var w=weights[i];float sum=Weight(w.boneIndex0,w.weight0)+Weight(w.boneIndex1,w.weight1)+Weight(w.boneIndex2,w.weight2)+Weight(w.boneIndex3,w.weight3);
+                    if(sum>=.5f)limbGroups[limb].Add(i);
+                }
+                float Weight(int index,float value)=>value>0&&(bones[index]==joint||bones[index].IsChildOf(joint))?value:0;
+                if(limbGroups[limb].Count<groups[limb].Count)throw new InvalidOperationException(id+" invalid limb mask "+name);
+            }
+            leftForeLimb=limbGroups[0].ToArray();rightForeLimb=limbGroups[1].ToArray();
+            leftRearLimb=limbGroups[2].ToArray();rightRearLimb=limbGroups[3].ToArray();
+            leftForeSupport = groups[0].ToArray(); rightForeSupport = groups[1].ToArray();
+            leftRearSupport = groups[2].ToArray(); rightRearSupport = groups[3].ToArray();
         }
 
         private static int[] BakeContactVertices(GameObject source)

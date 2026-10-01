@@ -11,7 +11,7 @@ public sealed class CatLitterWasteFx : MonoBehaviour
     GameObject visual;
     Mesh mesh;
     Material material;
-    MeshRenderer renderer;
+    MeshRenderer wasteRenderer;
     Vector3[] vertices;
     readonly Vector3[] origins = new Vector3[Count];
     Vector3 hole;
@@ -30,15 +30,15 @@ public sealed class CatLitterWasteFx : MonoBehaviour
         sampledTime = cover = 0f; Emitted = VisibleCount = 0;
         visual = new GameObject("Litter temporary waste") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
         visual.transform.SetParent(transform, false);
-        renderer = visual.AddComponent<MeshRenderer>();
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        wasteRenderer = visual.AddComponent<MeshRenderer>();
+        wasteRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         material = new Material(shader) { name = "Litter temporary waste", hideFlags = HideFlags.DontSave };
         Color color = solid ? new Color(.29f, .105f, .038f) : new Color(.49f, .36f, .10f);
         material.color = color;
         if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
         if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", .16f);
-        renderer.sharedMaterial = material; renderer.enabled = false;
+        wasteRenderer.sharedMaterial = material; wasteRenderer.enabled = false;
         mesh = new Mesh { name = "Litter temporary waste", hideFlags = HideFlags.DontSave }; mesh.MarkDynamic();
         vertices = new Vector3[PerPiece * Count];
         var triangles = new int[Count * Rings * Segments * 6]; int index = 0;
@@ -105,17 +105,17 @@ public sealed class CatLitterWasteFx : MonoBehaviour
             }
         }
         mesh.vertices = vertices; mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        renderer.enabled = VisibleCount > 0;
+        wasteRenderer.enabled = VisibleCount > 0;
     }
 
     public void Stop(LitterDigActivity activity)
     {
         if (owner != null && owner != activity) return;
-        if (renderer != null) renderer.enabled = false;
+        if (wasteRenderer != null) wasteRenderer.enabled = false;
         if (visual != null) Destroy(visual);
         if (mesh != null) Destroy(mesh);
         if (material != null) Destroy(material);
-        owner = null; sand = null; visual = null; mesh = null; material = null; renderer = null;
+        owner = null; sand = null; visual = null; mesh = null; material = null; wasteRenderer = null;
         vertices = null; VisibleCount = 0;
     }
 

@@ -154,6 +154,33 @@ public abstract class CatActivity : MonoBehaviour
     protected EnergySystem Energy { get; private set; }
     protected virtual bool UsesFloorApproach => HomeStoreService.IsFixedRoomProduct(storeProductId);
     protected virtual bool RecordsQuestProgress => true;
+    protected virtual bool UsesPreparedStart => false;
+    protected virtual string ApproachHint => "LET'S GET A LITTLE CLOSER!";
+    protected CatActivityStart AcceptedStart { get; private set; }
+    private bool consumedPreparedLaunch;
+    public bool HasPreparedStart => UsesPreparedStart;
+    protected virtual bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return false;
+    }
+    public bool TryGetStartPose(CatMovement actor, out CatActivityStart start) => TryPrepareStart(actor, out start);
+    public bool TryConsumeGroundLaunch(CatMovement actor, out CatActivityStart start)
+    {
+        start = AcceptedStart;
+        if (!UsesPreparedStart || !IsRunning || actor != Cat || consumedPreparedLaunch ||
+            start.Kind != CatActivityStartKind.GroundLaunch) return false;
+        consumedPreparedLaunch = true;
+        return true;
+    }
+
+    // Read-only access for shared landing/recovery classification. A different
+    // actor or an unstarted activity must never supply another cat's floor.
+    public bool TryGetPreparedStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = AcceptedStart;
+        return UsesPreparedStart && IsRunning && actor == Cat;
+    }
 
     public static event System.Action<CatActivity> Completed;
     public static IReadOnlyList<CatActivity> Registered => registered;
@@ -162,7 +189,7 @@ public abstract class CatActivity : MonoBehaviour
     public string ActivityId => activityId;
     public virtual string DisplayName => HomeStoreService.TryGetProduct(storeProductId, out var product) ? product.Title :
         Kind == CatActivityKind.SofaLounge ? GameContentCopy.Text("Koltuk", "Sofa") :
-        Kind == CatActivityKind.CoffeeTablePlay ? GameContentCopy.Text("Sehpa", "Coffee table") : displayName;
+        Kind == CatActivityKind.CoffeeTablePlay ? GameContentCopy.Text("Sehpa", "Coffee table") : GameInteractionCopy.ActivityTitle(displayName);
     public virtual CatActivityKind Kind => kind;
     public QuestType QuestType => questType;
     public long RequiredBondXp => requiredBondXp < 0 ? 0 : requiredBondXp;
@@ -200,7 +227,10 @@ public abstract class CatActivity : MonoBehaviour
         ProgressionService.BondXp >= RequiredBondXp &&
         (!RequiresStoreOwnership || (HomeStoreService.IsOwned(storeProductId)&&!HomeStoreService.IsStored(storeProductId))) &&
         (storeProductId!=HomeStoreService.KitchenFruitBasketId||HomeStoreService.IsProductDependencyMet(storeProductId));
-    public virtual string ProgressLabel => IsRunning ? DisplayName : string.Empty;
+    public virtual CatCareNeed RequiredCareNeed => CatCareNeed.None;
+    public bool IsCareSatisfied => CatCareEligibility.IsSatisfied(Cat, RequiredCareNeed);
+    public bool IsCareSatisfiedFor(CatMovement actor) => CatCareEligibility.IsSatisfied(actor, RequiredCareNeed);
+    public virtual string ProgressLabel => IsRunning ? GameLanguageService.Text("interaction.status_fallback") : string.Empty;
 
     protected virtual void Awake()
     {
@@ -230,9 +260,18 @@ public abstract class CatActivity : MonoBehaviour
 
     // Fixed openings retain their doorway check; open products use their visible perimeter.
     public const float PromptRadius = .46f;
+    private bool collectingPromptStart;
+    private CatActivityStart? promptStart;
     public virtual bool TryGetPromptDistance(CatMovement cat, out float distance)
     {
         if (IsRetired) { distance = float.PositiveInfinity; return false; }
+        if (UsesPreparedStart)
+        {
+            bool ready = TryPrepareStart(cat, out var start);
+            distance = start.PromptDistance;
+            if (collectingPromptStart && ready) promptStart = start;
+            return ready;
+        }
         if (AllowsPerimeterApproach && nearbyApproach.HasGeometry(this))
             return nearbyApproach.TryResolve(this, cat, out _, out distance);
         return TryPromptAt(cat, RoutineEntryPoint, out distance);
@@ -265,55 +304,106 @@ public abstract class CatActivity : MonoBehaviour
     public string GetLockLabel()
     {
         if (RequiresStoreOwnership && !HomeStoreService.IsOwned(storeProductId))
-            return "AVAILABLE IN STORE";
+            return GameLanguageService.Text("interaction.store_required");
         if (ProgressionService.BondXp < RequiredBondXp)
-            return $"NEEDS {RequiredBondXp} BOND";
+            return GameLanguageService.Format("interaction.bond_required", RequiredBondXp);
         return string.Empty;
     }
 
-    public bool TryStart(CatMovement cat)
+    // Query the same admission checks as TryStart without spending energy,
+    // moving the actor, taking ownership, or displaying refusal speech.
+    public bool CanStartFromPrompt(CatMovement actor, out float distance)
+    {
+        distance = float.PositiveInfinity;
+        if (actor == null || Active != null || IsRunning || IsRetired || !isActiveAndEnabled ||
+            !actor.isActiveAndEnabled || actor.gameObject.scene != gameObject.scene || !IsUnlocked ||
+            CatActionState.IsBusy(actor) || actor.AreWorldActionsBlocked || HomeUiFlow.IsHomeControlBlocked ||
+            !CatCareEligibility.CanAccept(actor, RequiredCareNeed)) return false;
+        ResolveReferences();
+        if (Energy == null || !Energy.CanSpendEnergy(EnergyCost)) return false;
+        Cat = actor;
+        Physics.SyncTransforms();
+        promptStart = null;
+        collectingPromptStart = true;
+        try
+        {
+            if (!TryGetPromptDistance(actor, out distance)) return false;
+        }
+        finally { collectingPromptStart = false; }
+        // Reuse only the result just measured in this synchronous query.
+        // Repeating a cooperative surface solve could exhaust its frame budget
+        // after it had already accepted the stance. Clicks always measure anew.
+        return TryPrepareAdmission(out _, out _, promptStart);
+    }
+
+    private bool TryPrepareAdmission(out List<Vector3> approach, out string reason, CatActivityStart? measuredStart = null)
+    {
+        approach = null;
+        reason = ApproachHint;
+        if (UsesPreparedStart)
+        {
+            CatActivityStart start;
+            if (measuredStart.HasValue) start = measuredStart.Value;
+            else if (!TryPrepareStart(Cat, out start)) return false;
+            AcceptedStart = start;
+            consumedPreparedLaunch = false;
+        }
+        hasNearbyApproach = !UsesPreparedStart && AllowsPerimeterApproach && UsesNearbyRoutineEntry &&
+            nearbyApproach.TryResolve(this, Cat, out nearbyFloor, out _);
+        if (!CanBeginActivity(out reason)) return false;
+        var floor = UsesPreparedStart ? AcceptedStart.Position : RoutineFloorPosition;
+        floor.y = Cat.transform.position.y;
+        if (!UsesPreparedStart && UsesFloorApproach &&
+            !CatActivityMotion.TryFloorPath(Cat.transform.position, floor, out approach))
+        { reason = ApproachHint; return false; }
+        return true;
+    }
+
+    public bool TryStart(CatMovement cat) => TryStart(cat, false);
+    public bool TryStartFromPrompt(CatMovement cat) => TryStart(cat, true);
+    private bool TryStart(CatMovement cat, bool fromPrompt)
     {
         if (Active != null || IsRunning || IsRetired || !isActiveAndEnabled)
             return false;
         ResolveReferences();
         var actor = cat != null ? cat : Cat;
         if (actor == null || !actor.isActiveAndEnabled || actor.gameObject.scene != gameObject.scene ||
-            CatActionState.IsBusy(actor) || actor.AreWorldActionsBlocked || HomeUiFlow.IsMiniGameVisible)
+            CatActionState.IsBusy(actor) || actor.AreWorldActionsBlocked || HomeUiFlow.IsMiniGameVisible ||
+            fromPrompt && HomeUiFlow.IsHomeControlBlocked)
             return false;
         Cat = actor;
 
         if (!IsUnlocked)
         {
-            ShowSpeech(GetLockLabel());
+            if (!fromPrompt) CatSpeechBubble.EnsureOn(Cat)?.ShowLocalized(GetLockLabel());
             return false;
         }
 
-        hasNearbyApproach = AllowsPerimeterApproach && UsesNearbyRoutineEntry &&
-            nearbyApproach.TryResolve(this, Cat, out nearbyFloor, out _);
-        if (!CanBeginActivity(out string failureReason))
+        if (fromPrompt ? !CatCareEligibility.CanAccept(Cat, RequiredCareNeed) :
+            !CatCareEligibility.TryAccept(Cat, RequiredCareNeed)) return false;
+        if (fromPrompt && !UsesPreparedStart && !TryGetPromptDistance(Cat, out _)) return false;
+
+        // Revalidate a click against moving props from this frame, before
+        // accepting a pose or spending energy.
+        Physics.SyncTransforms();
+
+        if (!TryPrepareAdmission(out var approach, out string failureReason))
         {
-            ShowSpeech(failureReason);
+            if (!fromPrompt) ShowSpeech(failureReason);
             return false;
         }
 
-        List<Vector3> approach = null;
         Physics.SyncTransforms();
         originalCatPosition = Cat.transform.position;
-        entryFloor = RoutineFloorPosition;
+        entryFloor = UsesPreparedStart ? AcceptedStart.Position : RoutineFloorPosition;
         entryFloor.y = originalCatPosition.y;
-        if (UsesFloorApproach &&
-            !CatActivityMotion.TryFloorPath(originalCatPosition, entryFloor, out approach))
-        {
-            ShowSpeech("LET'S GET A LITTLE CLOSER!");
-            return false;
-        }
-
         if (Energy == null || !Energy.TrySpendEnergy(EnergyCost))
         {
-            ShowSpeech("I NEED A NAP FIRST!");
+            if (!fromPrompt) ShowSpeech("I NEED A NAP FIRST!");
             return false;
         }
 
+        CatSpeechBubble.EnsureOn(Cat)?.DismissOwned(this);
         Active = this;
         IsRunning = true;
         HasBegunActivity = false;
@@ -440,6 +530,22 @@ public abstract class CatActivity : MonoBehaviour
 
     private void RestoreSafeFloor(bool cancelled = false)
     {
+        if (Cat != null && UsesPreparedStart)
+        {
+            Physics.SyncTransforms();
+            if (CatActivityStartResolver.TryRecovery(Cat, AcceptedStart, cancelled, out var recovery) &&
+                (Cat.transform.position != recovery.Position || Cat.transform.rotation != recovery.Rotation))
+            {
+                var controller = Cat.GetComponent<CharacterController>();
+                bool enabled = controller != null && controller.enabled;
+                if (controller != null) controller.enabled = false;
+                Cat.transform.SetPositionAndRotation(recovery.Position, recovery.Rotation);
+                if (controller != null) controller.enabled = enabled;
+                Physics.SyncTransforms();
+            }
+            Cat.SetMovementLocked(this, false);
+            return;
+        }
         if (Cat == null || !UsesFloorApproach) return;
         Physics.SyncTransforms();
         if (cancelled || Cat.transform.position.y > .12f || !CatActivityMotion.IsFloorClear(Cat.transform.position) ||
@@ -465,9 +571,7 @@ public abstract class CatActivity : MonoBehaviour
     {
         if (Cat == null)
             return;
-        CatSpeechBubble bubble = Cat.GetComponent<CatSpeechBubble>();
-        if (bubble != null)
-            bubble.Show(message);
+        CatSpeechBubble.EnsureOn(Cat)?.ShowOwned(this, message);
     }
 
     private void ResolveReferences()

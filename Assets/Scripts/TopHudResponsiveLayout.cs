@@ -96,6 +96,7 @@ public sealed class TopHudResponsiveLayout : MonoBehaviour
 
     private void ApplyLayout(bool force)
     {
+        if (GetComponentInParent<StorybookHudLayout>() != null) return;
         if (hunger == null || thirst == null || energy == null || canvas == null)
             return;
 

@@ -19,7 +19,7 @@ public sealed class CatToyBallCollision : IDisposable
         physics=scene.GetPhysicsScene();root=new GameObject("Ball query geometry");
         root.hideFlags=HideFlags.HideAndDontSave;SceneManager.MoveGameObjectToScene(root,scene);
         // Visual FBXs include rugs and low toys deliberately walkable by the cat.
-        foreach(var placement in UnityEngine.Object.FindObjectsByType<HomeProductPlacement>(FindObjectsSortMode.None))
+        foreach(var placement in UnityEngine.Object.FindObjectsByType<HomeProductPlacement>())
         {
             if(placement.gameObject.scene!=room)continue;
             foreach(var filter in placement.GetComponentsInChildren<MeshFilter>())
@@ -29,7 +29,7 @@ public sealed class CatToyBallCollision : IDisposable
                 var copy=CopyTransform(filter.transform);copy.AddComponent<MeshCollider>().sharedMesh=filter.sharedMesh;
             }
         }
-        foreach(var collider in UnityEngine.Object.FindObjectsByType<Collider>(FindObjectsSortMode.None))
+        foreach(var collider in UnityEngine.Object.FindObjectsByType<Collider>())
         {
             if(collider.gameObject.scene!=room||!collider.enabled||collider.isTrigger||collider is CharacterController||
                collider.GetComponentInParent<CatMovement>()!=null||collider.GetComponentInParent<HomeProductPlacement>()!=null||

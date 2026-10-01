@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,10 +10,12 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public sealed class CatDialogueView : MonoBehaviour
 {
+    private static readonly CultureInfo NameCulture = CultureInfo.GetCultureInfo("tr-TR");
     private const float PanelBottomPadding = 32f;
     private const float PanelHeight = 172f;
     private const float NamePanelHeight = 300f;
-    private const float PanelSlideDistance = 28f;
+    // Keep the whole entrance/exit above the 16-unit footer gutter as well.
+    private const float PanelSlideDistance = 12f;
     internal static readonly Rect CatFaceUv = new Rect(0f, 0f, 1f, 1f);
 
     public event Action Continued;
@@ -39,6 +42,9 @@ public sealed class CatDialogueView : MonoBehaviour
     private int lastScreenWidth = -1;
     private int lastScreenHeight = -1;
     private bool refreshingLayout;
+    private PremiumHomeDockLayout footerLayout;
+    private readonly Vector3[] footerCorners=new Vector3[4];
+    private float lastFooterClearance=-1f;
 
     public bool IsVisible => canvasGroup != null && canvasGroup.alpha > .001f;
     private static CatDialogueView visibleInstance;
@@ -48,7 +54,8 @@ public sealed class CatDialogueView : MonoBehaviour
 
     private void Update()
     {
-        if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight || Screen.safeArea != lastSafeArea)
+        if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight || Screen.safeArea != lastSafeArea ||
+            Mathf.Abs(FooterClearance()-lastFooterClearance)>.1f)
             RefreshLayout(false);
     }
 
@@ -114,6 +121,8 @@ public sealed class CatDialogueView : MonoBehaviour
         RectTransform speechInner=Rect("SpeechInner",speech,Vector2.zero,Vector2.one,new Vector2(5f,5f),new Vector2(-5f,-5f));
 
         nameLabel=Text("Name",panel,font,22f,FontStyles.Bold,TextAlignmentOptions.Left,PremiumUiStyle.Teal,new Vector2(0f,1f),new Vector2(1f,1f),new Vector2(280f,-54f),new Vector2(-360f,-18f));
+        nameLabel.richText=false; nameLabel.parseCtrlCharacters=false;
+        PremiumTypography.Apply(nameLabel,false);
         nameLabel.enableAutoSizing=true; nameLabel.fontSizeMin=18f; nameLabel.fontSizeMax=24f; nameLabel.overflowMode=TextOverflowModes.Truncate;
         messageLabel=Text("Message",panel,font,28f,FontStyles.Normal,TextAlignmentOptions.MidlineLeft,PremiumUiStyle.Ink,Vector2.zero,Vector2.one,new Vector2(286f,82f),new Vector2(-64f,-78f));
         messageLabel.textWrappingMode=TextWrappingModes.Normal; messageLabel.richText=false; messageLabel.enableAutoSizing=true; messageLabel.fontSizeMin=24f; messageLabel.fontSizeMax=31f; messageLabel.overflowMode=TextOverflowModes.Truncate;
@@ -139,6 +148,7 @@ public sealed class CatDialogueView : MonoBehaviour
         lessonLabel=Text("LessonProgress",panel,PremiumTypography.Body,18f,FontStyles.Normal,TextAlignmentOptions.Right,PremiumUiStyle.Muted,
             new Vector2(1,1),new Vector2(1,1),new Vector2(-390,-52),new Vector2(-40,-22));
         lessonLabel.text=string.Empty;
+        StorybookDialoguePresentation.Apply(panel);
         RefreshLayout(true);
         SetVisibleImmediate(false);
     }
@@ -204,8 +214,20 @@ public sealed class CatDialogueView : MonoBehaviour
     public static string NormalizeName(string value)
     {
         if (string.IsNullOrWhiteSpace(value)) return string.Empty;
-        string trimmed=value.Trim(); var info=new StringInfo(trimmed); int count=Math.Min(14,info.LengthInTextElements);
-        return count<=0 ? string.Empty : info.SubstringByTextElements(0,count);
+        // Compose keyboard combining marks before selecting glyphs or counting
+        // letters. Keep the rest of the player's spelling and case unchanged.
+        string trimmed=value.Trim().Normalize(NormalizationForm.FormC);
+        var info=new StringInfo(trimmed); int count=Math.Min(CatIdentityService.MaxNameLength,info.LengthInTextElements);
+        string name=count<=0 ? string.Empty : info.SubstringByTextElements(0,count);
+        var elements=StringInfo.GetTextElementEnumerator(name);
+        while(elements.MoveNext())
+        {
+            int index=elements.ElementIndex;
+            if(!char.IsLetter(name,index))continue;
+            string letter=elements.GetTextElement();
+            return name.Substring(0,index)+letter.ToUpper(NameCulture)+name.Substring(index+letter.Length);
+        }
+        return name;
     }
     private void BuildNameInput(TMP_FontAsset font)
     {
@@ -215,6 +237,7 @@ public sealed class CatDialogueView : MonoBehaviour
         TMP_Text text=Text("Text",field,font,25f,FontStyles.Normal,TextAlignmentOptions.MidlineLeft,PremiumUiStyle.Ink,Vector2.zero,Vector2.one,new Vector2(18f,4f),new Vector2(-18f,-4f)); text.richText=false;
         TMP_Text placeholder=Text("Placeholder",field,font,21f,FontStyles.Normal,TextAlignmentOptions.MidlineLeft,PremiumUiStyle.Muted,Vector2.zero,Vector2.one,new Vector2(18f,4f),new Vector2(-18f,-4f)); placeholder.text=GameContentCopy.Text("Bana bir isim ver…","Give me a name…");
         input.textComponent=text; input.placeholder=placeholder; input.onValueChanged.AddListener(ValidateName); input.onSubmit.AddListener(_=>ConfirmName());
+        PremiumTypography.ApplyNameInput(input);
         RectTransform button=Rect("Confirm",panel,new Vector2(.74f,.16f),new Vector2(.91f,.48f),Vector2.zero,Vector2.zero);
         var buttonFace=Panel(button,"ButtonFace",Vector2.zero,ModernUiArt.Azure,16f,2f); buttonFace.raycastTarget=true;
         confirm=button.gameObject.AddComponent<Button>(); confirm.targetGraphic=buttonFace; confirm.onClick.AddListener(ConfirmName);
@@ -276,8 +299,10 @@ public sealed class CatDialogueView : MonoBehaviour
             panel.anchorMin = new Vector2(.06f, 0f);
             panel.anchorMax = new Vector2(.94f, 0f);
             panel.pivot = new Vector2(.5f, 0f);
-            panel.offsetMin = new Vector2(0f, PanelBottomPadding);
-            panel.offsetMax = new Vector2(0f, PanelBottomPadding + (nameMode ? NamePanelHeight : PanelHeight));
+            float bottom=FooterClearance();
+            panel.offsetMin = new Vector2(0f, bottom);
+            panel.offsetMax = new Vector2(0f, bottom + (nameMode ? NamePanelHeight : PanelHeight));
+            lastFooterClearance=bottom;
             ApplyContentLayout();
             if (forceCanvasUpdate) Canvas.ForceUpdateCanvases();
             visiblePanelPosition = panel.anchoredPosition;
@@ -289,6 +314,21 @@ public sealed class CatDialogueView : MonoBehaviour
             lastScreenHeight = Screen.height;
         }
         finally { refreshingLayout = false; }
+    }
+    private float FooterClearance()
+    {
+        var root=transform as RectTransform;
+        if(root==null)return PanelBottomPadding;
+        if(footerLayout==null)footerLayout=FindAnyObjectByType<PremiumHomeDockLayout>();
+        if(footerLayout==null||!footerLayout.isActiveAndEnabled)return PanelBottomPadding;
+        var footer=footerLayout.transform.Find("DockEnamelTray") as RectTransform;
+        if(footer==null)footer=footerLayout.transform as RectTransform;
+        footer.GetWorldCorners(footerCorners);
+        float top=float.NegativeInfinity;
+        foreach(var corner in footerCorners)top=Mathf.Max(top,root.InverseTransformPoint(corner).y);
+        // Reserve the actual rendered strip, including its safe-area padding
+        // and independent canvas/dock scales. The name field shares this rule.
+        return Mathf.Max(PanelBottomPadding,top-root.rect.yMin+16f);
     }
     private void ApplyContentLayout()
     {
@@ -302,7 +342,7 @@ public sealed class CatDialogueView : MonoBehaviour
         {
             nameLabel.rectTransform.offsetMin=new Vector2(nameMode?258:182,-52);
             nameLabel.rectTransform.offsetMax=new Vector2(-300,-16);
-            nameLabel.color=ModernUiArt.Ink;
+            nameLabel.color=StorybookQuestPresentation.PositiveText;
         }
         if(messageLabel!=null)
         {

@@ -13,6 +13,8 @@ public sealed class CatToyContactMotion : MonoBehaviour
         public float weight;
         public int iterations=8;
         public float distance=float.PositiveInfinity;
+        public CatPawSurfacePlan surface;
+        public CatPawSurfaceBinding skin;
     }
     readonly Limb[] limbs={new Limb(),new Limb()};
     public Vector3 LastContactPosition {get;private set;}
@@ -25,9 +27,26 @@ public sealed class CatToyContactMotion : MonoBehaviour
     }
     public void ReachBoth(Vector3 left,Vector3 right,float weight=1f,int iterations=8)
     {Set(0,left,weight,iterations);Set(1,right,weight,iterations);}
+    public void ReachWeighted(Vector3 point,bool left,float weight)
+    {Set(left?0:1,point,weight);}
+    // Opt-in actual-skin endpoint. Existing Reach/ReachBoth remain wrist-pivot APIs.
+    public void ReachSurface(CatPawSurfacePlan surface,float weight)
+    {
+        if(surface==null||!surface.IsValid)return;
+        int index=surface.Left?0:1;var limb=limbs[index];
+        bool bind=limb.surface!=surface||limb.skin==null;
+        Set(index,surface.Point,weight,CatPawSurfaceCcd.Iterations);
+        limb.surface=surface;
+        if(bind)
+        {
+            var animator=GetComponentInChildren<Animator>();
+            limb.skin=new CatPawSurfaceBinding(surface,animator!=null?animator.transform:null);
+        }
+        if(limb.skin==null||!limb.skin.IsValid)limb.requested=false;
+    }
     void Set(int index,Vector3 point,float weight,int iterations=8)
     {
-        var limb=limbs[index];string side=index==0?"L":"R";
+        var limb=limbs[index];limb.surface=null;string side=index==0?"L":"R";
         if(limb.arm==null)
             foreach(var t in GetComponentsInChildren<Transform>())
             {
@@ -44,6 +63,20 @@ public sealed class CatToyContactMotion : MonoBehaviour
         {
             if(!limb.requested || limb.arm==null || limb.fore==null || limb.hand==null)continue;
             limb.requested=false;limb.armPose=limb.arm.localRotation;limb.forePose=limb.fore.localRotation;limb.adjusted=true;
+            if(limb.surface!=null)
+            {
+                if(!limb.surface.IsValid||limb.skin==null||!limb.skin.IsValid){limb.distance=float.PositiveInfinity;Distance=limb.distance;continue;}
+                limb.target=limb.surface.Point;
+                Vector3 skinGoal=CatPawSurfaceCcd.Goal(limb.skin.Point(),limb.target,limb.weight,
+                    limb.surface.ApproachNormal,limb.surface.ApproachLift,limb.surface.LimitLiftToRemainingRise);
+                for(int i=0;i<CatPawSurfaceCcd.Iterations;i++)
+                {
+                    limb.fore.rotation=CatPawSurfaceCcd.Delta(limb.fore.position,limb.skin.Point(),skinGoal)*limb.fore.rotation;
+                    limb.arm.rotation=CatPawSurfaceCcd.Delta(limb.arm.position,limb.skin.Point(),skinGoal)*limb.arm.rotation;
+                }
+                LastContactPosition=limb.skin.Point();limb.distance=Vector3.Distance(LastContactPosition,limb.target);Distance=limb.distance;
+                continue;
+            }
             Vector3 goal=Vector3.Lerp(limb.hand.position,limb.target,limb.weight);
             for(int i=0;i<limb.iterations;i++){Aim(limb.fore,limb.hand,goal);Aim(limb.arm,limb.hand,goal);}
             limb.distance=Vector3.Distance(limb.hand.position,limb.target);Distance=limb.distance;LastContactPosition=limb.hand.position;
@@ -66,7 +99,7 @@ public sealed class CatToyContactMotion : MonoBehaviour
     }
     public void Clear()
     {
-        Restore();foreach(var limb in limbs){limb.requested=false;limb.arm=null;limb.fore=null;limb.hand=null;limb.distance=float.PositiveInfinity;}
+        Restore();foreach(var limb in limbs){limb.requested=false;limb.arm=null;limb.fore=null;limb.hand=null;limb.surface=null;limb.skin=null;limb.distance=float.PositiveInfinity;}
         Distance=float.PositiveInfinity;
     }
     void OnDisable(){Clear();}

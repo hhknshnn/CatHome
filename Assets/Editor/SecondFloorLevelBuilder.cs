@@ -267,9 +267,9 @@ public static class SecondFloorLevelBuilder
         CreateBlock("BaseboardBack", walls,
             new Vector3(0f, .1f, backZ), new Vector3(HomeRoomShellMetrics.FloorWidth - .2f, .2f, .06f),
             materials["Cream"], false);
-        CreateBlock("WainscotBack", walls,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("WainscotBack", walls,
             new Vector3(0f, .7f, backZ), new Vector3(HomeRoomShellMetrics.FloorWidth - .2f, .06f, .05f),
-            materials["Gold"], false);
+            materials["Gold"], HomeEnvironmentCollisionBuilder.SolidRole.Wall);
         float leftX = HomeRoomShellMetrics.InteriorMinX + .04f;
         float rightX = HomeRoomShellMetrics.InteriorMaxX - .04f;
         CreateBlock("BaseboardLeft", walls,
@@ -369,17 +369,17 @@ public static class SecondFloorLevelBuilder
         float x = HomeRoomShellMetrics.InteriorMaxX - .5f;
         float z = HomeRoomShellMetrics.InteriorMinZ + .5f;
 
-        CreateBlock("Newel", landing,
-            new Vector3(x, .5f, z), new Vector3(.14f, 1.0f, .14f), materials["Wood"], false);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("Newel", landing,
+            new Vector3(x, .5f, z), new Vector3(.14f, 1.0f, .14f), materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
         CreateSphere("NewelCap", landing,
             new Vector3(x, 1.04f, z), Vector3.one * .16f, materials["Gold"], false);
-        CreateBlock("HandRail", landing,
-            new Vector3(x - .8f, .9f, z), new Vector3(1.6f, .08f, .08f), materials["Wood"], false);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("HandRail", landing,
+            new Vector3(x - .8f, .9f, z), new Vector3(1.6f, .08f, .08f), materials["Wood"], HomeEnvironmentCollisionBuilder.SolidRole.Rail);
         for (int i = 0; i < 5; i++)
         {
-            CreateBlock("Baluster_" + (i + 1), landing,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Baluster_" + (i + 1), landing,
                 new Vector3(x - .2f - i * .34f, .55f, z),
-                new Vector3(.05f, .7f, .05f), materials["Cream"], false);
+                new Vector3(.05f, .7f, .05f), materials["Cream"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
         }
         // A low potted plant on the landing post.
         CreateSphere("LandingPlant", landing,

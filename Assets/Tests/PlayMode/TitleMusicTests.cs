@@ -38,7 +38,7 @@ public sealed class TitleMusicTests
         AudioListener listener = null;
         while (listener == null && Time.realtimeSinceStartup < listenerDeadline)
         {
-            foreach (var candidate in Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            foreach (var candidate in Object.FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude))
                 if (candidate.isActiveAndEnabled) listener = candidate;
             yield return null;
         }

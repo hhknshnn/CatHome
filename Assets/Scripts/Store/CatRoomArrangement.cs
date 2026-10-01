@@ -26,7 +26,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     readonly List<Vector3> care=new List<Vector3>();
     readonly List<Vector3> protectedPoints=new List<Vector3>();
     readonly bool[] roomGrid=new bool[31*27];
-    bool pending=true, cached, applying, preferSaved;
+    bool pending=true, cached, applying, preferSaved, compactCentre, referenceDisplay;
     int visits;
     public string LastFailure { get; private set; }
     public int DisplayedCount { get; private set; }
@@ -66,7 +66,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     {
         if(cached)return;
         items.Clear();furniture.Clear();care.Clear();protectedPoints.Clear();
-        foreach(var p in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var p in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include))
         {
             if(p.gameObject.scene!=gameObject.scene)continue;
             if(CatCollectionPolicy.IsCatItem(p.ProductId))items[p.ProductId]=new Item{product=p};
@@ -77,7 +77,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
                 if(a!=null && a.RoutineEntryPoint!=null)protectedPoints.Add(a.RoutineEntryPoint.position);
             }
         }
-        foreach(var t in FindObjectsByType<Transform>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var t in FindObjectsByType<Transform>(FindObjectsInactive.Include))
         {
             if(t.gameObject.scene!=gameObject.scene)continue;
             if(t.name=="FoodInteractionPoint" || t.name=="WaterInteractionPoint" ||
@@ -98,6 +98,11 @@ public sealed class CatRoomArrangement : MonoBehaviour
     public bool TryPlan(IReadOnlyList<string> ids,out Dictionary<string,Pose> plan)
     {
         CacheRoom();plan=new Dictionary<string,Pose>();
+        bool reference=ids.Count==4;
+        foreach(var id in ids)reference &= id==HomeStoreService.BallBasketId||id==HomeStoreService.FeatherToyId||id==HomeStoreService.ToyMouseId||id==HomeStoreService.BellCollarId;
+        if(reference!=referenceDisplay){referenceDisplay=reference;foreach(var item in items.Values)item.poses.Clear();}
+        bool largeBed=false;foreach(string id in ids)largeBed|=CatCollectionPolicy.IsBed(id)&&id!=HomeStoreService.NapPillowId;
+        if(compactCentre!=largeBed){compactCentre=largeBed;foreach(var item in items.Values)item.poses.Clear();}
         int displayed=0;foreach(var product in HomeStoreService.Products)
             if(CatCollectionPolicy.IsCatItem(product.Id)&&HomeStoreService.IsOwned(product.Id)&&!HomeStoreService.IsStored(product.Id))displayed++;
         bool currentDisplay=displayed==ids.Count;foreach(string id in ids)currentDisplay&=HomeStoreService.IsOwned(id)&&!HomeStoreService.IsStored(id);
@@ -118,7 +123,18 @@ public sealed class CatRoomArrangement : MonoBehaviour
             return area!=0?area:StringComparer.Ordinal.Compare(a.product.ProductId,b.product.ProductId);
         });
         var chosen=new Pose[selected.Count];visits=0;
-        if(!Search(selected,chosen,0))return false;
+        if(!Search(selected,chosen,0))
+        {
+            // Preserve capacity for unusually wide collections. Peripheral
+            // bays remain first, then the original connected floor layout can
+            // use the centre fringe. Never relax clearance or standing paths.
+            if(compactCentre)return false;
+            compactCentre=true;
+            foreach(var item in items.Values)item.poses.Clear();
+            foreach(var item in selected)EnsureCandidates(item);
+            visits=0;
+            if(!Search(selected,chosen,0))return false;
+        }
         for(int i=0;i<selected.Count;i++)plan.Add(selected[i].product.ProductId,chosen[i]);
         return true;
     }
@@ -156,16 +172,28 @@ public sealed class CatRoomArrangement : MonoBehaviour
         var tunnel=activity as CatEnrichmentActivity;
         bool hasExit=tunnel!=null && tunnel.Mode==CatEnrichmentMode.Tunnel && tunnel.ExitPoint!=null;
         Vector3 localExit=hasExit?p.MovableRoot.InverseTransformPoint(tunnel.ExitPoint.position):Vector3.zero;
-        // Five preferred display bays; a compact grid supplies alternatives for wider products.
-        var points=new List<Vector3>{new Vector3(-1.8f,0,.85f),new Vector3(-1.8f,0,.55f),new Vector3(-1.85f,0,-1.8f),
+        // Group displays along the front and left edges, keeping the central
+        // floor readable. Every preferred pose still passes normal clearance,
+        // interaction, reachability and ball-lane checks below.
+        var points=new List<Vector3>{new Vector3(-1.95f,0,-1.90f),new Vector3(.25f,0,-2.05f),
+            new Vector3(1.55f,0,-1.85f),new Vector3(2.65f,0,-2.05f),new Vector3(-1.60f,0,-.35f),new Vector3(-1.85f,0,.35f)};
+        if(compactCentre)points=new List<Vector3>{new Vector3(-1.8f,0,.85f),new Vector3(-1.8f,0,.55f),new Vector3(-1.85f,0,-1.8f),
             new Vector3(-.35f,0,-1.5f),new Vector3(1.5f,0,-1.85f),new Vector3(-1.8f,0,-.4f),new Vector3(.10f,0,.35f)};
         // Enclosed beds keep the rear care aisle open from their front-left bay.
         if(CatCollectionPolicy.IsBed(p.ProductId)&&p.ProductId!=HomeStoreService.NapPillowId)points.Insert(0,new Vector3(-1.85f,0,-1.8f));
-        if(p.ProductId==HomeStoreService.NapPillowId)points.Insert(0,RearWallNapPillowPosition);
-        if(p.ProductId==HomeStoreService.BallBasketId)points.Insert(0,new Vector3(-1.65f,0,-1.75f));
-        for(int z=0;z<8;z++)for(int x=0;x<16;x++)points.Add(new Vector3(-2.35f+x*.35f,0,.6f-z*.35f));
+        if(p.ProductId==HomeStoreService.NapPillowId)points.Insert(0,new Vector3(-1.95f,0,-1.90f));
+        if(p.ProductId==HomeStoreService.BallBasketId)points.Insert(0,compactCentre?new Vector3(-1.65f,0,-1.75f):new Vector3(.25f,0,-2.05f));
+        if(!compactCentre&&p.ProductId==HomeStoreService.FeatherToyId)points.Insert(0,new Vector3(1.55f,0,-1.85f));
+        if(!compactCentre&&p.ProductId==HomeStoreService.BellCollarId)points.Insert(0,new Vector3(2.65f,0,-2.05f));
+        if(!compactCentre&&p.ProductId==HomeStoreService.ToyMouseId)points.Insert(0,new Vector3(-1.60f,0,-.35f));
+        if(referenceDisplay&&!compactCentre){
+            if(p.ProductId==HomeStoreService.BallBasketId)points.Insert(0,new Vector3(-.70f,0,-2.05f));
+            if(p.ProductId==HomeStoreService.ToyMouseId)points.Insert(0,new Vector3(.40f,0,-2f));
+            if(p.ProductId==HomeStoreService.FeatherToyId)points.Insert(0,new Vector3(-1.25f,0,-.95f));
+        }
+        for(int z=0;z<10;z++)for(int x=0;x<16;x++)points.Add(new Vector3(-2.35f+x*.35f,0,.6f-z*.35f));
         // The basket is used from its room-facing side, clear of the joystick.
-        var yaws=p.ProductId==HomeStoreService.BallBasketId?new[]{180f,0f,90f,270f}:new[]{0f,180f,90f,270f};
+        var yaws=(p.ProductId==HomeStoreService.BallBasketId||(referenceDisplay&&p.ProductId==HomeStoreService.ToyMouseId))?new[]{180f,0f,90f,270f}:new[]{0f,180f,90f,270f};
         // Relocating the pad must not shuffle the user's other four displays.
         // A saved pose is preferred only when all normal clearance tests pass.
         if(preferSaved && p.ProductId!=HomeStoreService.NapPillowId && HomeStoreService.TryGetWorldPlacement(p.ProductId,out var savedPosition,out float savedYaw))
@@ -176,6 +204,8 @@ public sealed class CatRoomArrangement : MonoBehaviour
         }
         foreach(var point in points)foreach(float yaw in yaws)
         {
+            if(!compactCentre&&HomeProductPlacement.FootprintsOverlap(point,p.Footprint,yaw,
+                new Vector3(0f,0f,-.05f),new Vector2(1.50f,1.75f),0f,.08f))continue;
             // From the approved front camera this rear/right pocket is hidden
             // by the permanent coffee table even when its floor is clear.
             if(point.x>.45f && point.z>-.70f)continue;

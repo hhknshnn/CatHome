@@ -56,16 +56,25 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
     private bool warningLogged;
     private bool hasPendingSummary;
     private CatHomeSaveSystem.OfflineReturnSummary pendingSummary;
+    private static readonly System.Collections.Generic.List<WhileYouWereAwayPopup> liveInstances =
+        new System.Collections.Generic.List<WhileYouWereAwayPopup>();
 
     public bool IsOpen => isOpen;
     public static bool IsAnyOpen
     {
         get
         {
-            WhileYouWereAwayPopup[] popups =
-                Resources.FindObjectsOfTypeAll<WhileYouWereAwayPopup>();
-            for (int i = 0; i < popups.Length; i++)
-                if (popups[i] != null && popups[i].isOpen)
+            // Many HUD/input owners read this in the same frame. Scanning all
+            // loaded Unity objects here made an idle home spend milliseconds
+            // on every read. Lifecycle registration keeps current-frame state.
+            if (!Application.isPlaying)
+            {
+                foreach (var popup in Resources.FindObjectsOfTypeAll<WhileYouWereAwayPopup>())
+                    if (popup != null && popup.isOpen) return true;
+                return false;
+            }
+            for (int i = 0; i < liveInstances.Count; i++)
+                if (liveInstances[i] != null && liveInstances[i].isOpen)
                     return true;
             return false;
         }
@@ -85,10 +94,12 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
 
         SetStaticCopy();
         SetHiddenImmediately();
+        StorybookReturnPresentation.Apply(transform);
     }
 
     private void OnEnable()
     {
+        if (!liveInstances.Contains(this)) liveInstances.Add(this);
         CatHomeSaveSystem.OfflineSummaryReady -= HandleOfflineSummary;
         CatHomeSaveSystem.OfflineSummaryReady += HandleOfflineSummary;
 
@@ -104,6 +115,7 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
 
     private void OnDestroy()
     {
+        liveInstances.Remove(this);
         CatHomeSaveSystem.OfflineSummaryReady -= HandleOfflineSummary;
         if (welcomeBackButton != null)
             welcomeBackButton.onClick.RemoveListener(Close);
@@ -189,6 +201,7 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
 
     private void Show()
     {
+        SetStaticCopy();
         if (catMovement == null)
         {
             catMovement = FindAnyObjectByType<CatMovement>(

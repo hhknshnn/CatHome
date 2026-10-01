@@ -44,7 +44,7 @@ public static class CatActivityMotion
     {
         Vector3 flat = to - from; flat.y = 0f;
         Quaternion launch = flat.sqrMagnitude > .001f ? Quaternion.LookRotation(flat) : startRotation;
-        yield return CatJumpMotion.Play(cat, from, to, launch, endRotation, centerOnLanding && to.y > .12f, clearance);
+        yield return CatJumpMotion.Play(cat, from, to, launch, endRotation, centerOnLanding && CatActivityStartResolver.LandsOnSupport(cat, to), clearance);
     }
     private const float Step = .2f;
     private const int Width = 38, Depth = 32;
@@ -75,7 +75,7 @@ public static class CatActivityMotion
     {
         if (!Application.isPlaying || CatActivity.Active != null) return;
         Physics.SyncTransforms();
-        foreach (var cat in Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None))
+        foreach (var cat in Object.FindObjectsByType<CatMovement>())
         {
             if (cat.gameObject.scene != scene || cat.IsMovementPhysicallyLocked || IsFloorClear(cat.transform.position, .25f)) continue;
             var floor = ReachableFloor(cat.transform.position);

@@ -27,7 +27,7 @@ public sealed partial class GameAudioTests
         runnerState=CatRunnerProgressService.CaptureState(DateTime.UtcNow);catchState=CatchLivesService.CaptureState(DateTime.UtcNow);
         energyState=RunnerEnergyService.CaptureState(DateTime.UtcNow);
         Time.timeScale=1;HomeAudioService.SoundEnabled=true;HomeAudioService.MusicEnabled=true;
-        GameAudio.Clip(AudioCue.UIClick);audio=Object.FindFirstObjectByType<GameAudio>();Assert.That(audio,Is.Not.Null);
+        GameAudio.Clip(AudioCue.UIClick);audio=Object.FindAnyObjectByType<GameAudio>();Assert.That(audio,Is.Not.Null);
         audio.SendMessage("OnApplicationFocus",true);audio.SendMessage("OnApplicationPause",false);
         UnityEditor.EditorUtility.audioMasterMute=false;
         heard.Clear();GameAudio.Played+=Heard;yield return new WaitForSecondsRealtime(.15f);
@@ -50,7 +50,7 @@ public sealed partial class GameAudioTests
         DirectLevelPlayBootstrap.RedirectSuppressed=false;
         yield return SceneManager.LoadSceneAsync("GameScene",LoadSceneMode.Single);
         float until=Time.realtimeSinceStartup+20;
-        while((Object.FindFirstObjectByType<CatMovement>()==null||!Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Any(a=>a.isActiveAndEnabled))&&Time.realtimeSinceStartup<until)yield return null;
+        while((Object.FindAnyObjectByType<CatMovement>()==null||!Object.FindObjectsByType<AudioListener>().Any(a=>a.isActiveAndEnabled))&&Time.realtimeSinceStartup<until)yield return null;
         var title=Object.FindAnyObjectByType<TitleScreen>(FindObjectsInactive.Include);Assert.That(title,Is.Not.Null);title.RequestShow();
         title.GetComponent<TitleMusicController>().SendMessage("OnApplicationFocus",true);
         audio.SendMessage("OnApplicationFocus",true);yield return new WaitForSecondsRealtime(.7f);
@@ -87,7 +87,7 @@ public sealed partial class GameAudioTests
 
     [UnityTest] public IEnumerator FirstLaunch_TitleButtonAndHomeMusicUseOneSystem()
     {
-        yield return NormalHome();var soundscape=Object.FindFirstObjectByType<GameSoundscape>();
+        yield return NormalHome();var soundscape=Object.FindAnyObjectByType<GameSoundscape>();
         Assert.That(soundscape.PlayingMusicSources,Is.Zero,"Title owns its accepted theme.");
         Assert.That(GameAudio.Play(AudioCue.PawWood),Is.False,"World sounds must stay behind the title.");
         var title=Object.FindAnyObjectByType<TitleScreen>(FindObjectsInactive.Include);
@@ -96,8 +96,8 @@ public sealed partial class GameAudioTests
         heard.Clear();yield return EnterHome();
         Assert.That(heard.Contains(AudioCue.UIClick),Is.True,"Actual Continue button produces feedback.");
         Assert.That(soundscape.Selection,Is.EqualTo("Home"));Assert.That(soundscape.PlayingMusicSources,Is.EqualTo(1));
-        Assert.That(Object.FindObjectsByType<GameAudio>(FindObjectsSortMode.None).Length,Is.EqualTo(1));
-        Assert.That(Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Count(l=>l.isActiveAndEnabled),Is.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<GameAudio>().Length,Is.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<AudioListener>().Count(l=>l.isActiveAndEnabled),Is.EqualTo(1));
     }
 
     [UnityTest] public IEnumerator PreferencesFocusAndPauseSilenceTheCorrectBuses()
@@ -107,18 +107,18 @@ public sealed partial class GameAudioTests
         Assert.That(GameAudio.UI(),Is.False);Assert.That(GameAudio.Play(AudioCue.Jump),Is.False);
         Assert.That(GameAudio.PlayingVoiceCount,Is.Zero);
         yield return new WaitForSecondsRealtime(.2f);
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.EqualTo(1));
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.EqualTo(1));
         HomeAudioService.SoundEnabled=true;HomeAudioService.MusicEnabled=false;yield return null;
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
         Assert.That(GameAudio.UI(AudioCue.PowerUp),Is.True);
         audio.SendMessage("OnApplicationFocus",false);yield return null;
         Assert.That(GameAudio.PlayingVoiceCount,Is.Zero);Assert.That(GameAudio.UI(),Is.False);
         HomeAudioService.MusicEnabled=true;yield return null;
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
         audio.SendMessage("OnApplicationFocus",true);yield return new WaitForSecondsRealtime(.3f);
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.EqualTo(1));
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.EqualTo(1));
         audio.SendMessage("OnApplicationPause",true);yield return null;
-        Assert.That(GameAudio.UI(),Is.False);Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
+        Assert.That(GameAudio.UI(),Is.False);Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
         audio.SendMessage("OnApplicationPause",false);Time.timeScale=0;
         Assert.That(GameAudio.Play(AudioCue.BallTap),Is.False);Assert.That(GameAudio.Play(AudioCue.Hit,1,AudioBus.MiniGame),Is.False);
         Assert.That(GameAudio.UI(),Is.True,"Pause menus remain audible.");
@@ -158,10 +158,10 @@ public sealed partial class GameAudioTests
     [UnityTest] public IEnumerator BasicCareButtonsAndPettingAudioShareOneVoice()
     {
         yield return NormalHome();yield return EnterHome();
-        var loader=Object.FindFirstObjectByType<LevelLoader>();Assert.That(loader.LoadRoom(HomeRoomService.LivingRoomId),Is.True);
+        var loader=Object.FindAnyObjectByType<LevelLoader>();Assert.That(loader.LoadRoom(HomeRoomService.LivingRoomId),Is.True);
         float roomDeadline=Time.realtimeSinceStartup+15;
-        while((!loader.IsReady||Object.FindFirstObjectByType<CatMovement>()==null||
-            Object.FindFirstObjectByType<CatMovement>().gameObject.scene.name!="LivingRoom_Level01")&&Time.realtimeSinceStartup<roomDeadline)yield return null;
+        while((!loader.IsReady||Object.FindAnyObjectByType<CatMovement>()==null||
+            Object.FindAnyObjectByType<CatMovement>().gameObject.scene.name!="LivingRoom_Level01")&&Time.realtimeSinceStartup<roomDeadline)yield return null;
         yield return new WaitForSecondsRealtime(.5f);
         var returning=Object.FindAnyObjectByType<WhileYouWereAwayPopup>(FindObjectsInactive.Include);
         Assert.That(returning,Is.Not.Null);
@@ -173,13 +173,13 @@ public sealed partial class GameAudioTests
         Assert.That(welcome.isActiveAndEnabled,Is.True);heard.Clear();welcome.onClick.Invoke();
         yield return new WaitForSecondsRealtime(.6f);Assert.That(WhileYouWereAwayPopup.IsAnyOpen,Is.False);
         Assert.That(heard.Any(c=>c==AudioCue.UIClose||c==AudioCue.UIClick),Is.True,"Actual return popup button sound");
-        var cat=Object.FindFirstObjectByType<CatMovement>();var idle=cat.GetComponent<CatIdleBehavior>();if(idle!=null)idle.enabled=false;
+        var cat=Object.FindAnyObjectByType<CatMovement>();var idle=cat.GetComponent<CatIdleBehavior>();if(idle!=null)idle.enabled=false;
         var bowls=cat.GetComponent<BowlInteraction>();var voice=cat.GetComponent<CatVoice>();var cc=cat.GetComponent<CharacterController>();
         foreach(string trial in new[]{"food","water","water-complete"})
         {
             string kind=trial=="food"?"food":"water";
             if(trial=="water-complete")typeof(BowlInteraction).GetField("drinkingDuration",Private).SetValue(bowls,2.5f);
-            Object.FindFirstObjectByType<HungerSystem>().ApplySavedValue(30);Object.FindFirstObjectByType<ThirstSystem>().ApplySavedValue(30);
+            Object.FindAnyObjectByType<HungerSystem>().ApplySavedValue(30);Object.FindAnyObjectByType<ThirstSystem>().ApplySavedValue(30);
             var setup=(BowlInteraction.BowlSetup)typeof(BowlInteraction).GetField(kind,Private).GetValue(bowls);setup.Fill();
             cc.enabled=false;cat.transform.SetPositionAndRotation(setup.InteractionPoint.position+new Vector3(.12f,.05f,-.12f),Quaternion.identity);cc.enabled=true;Physics.SyncTransforms();
             yield return new WaitForSecondsRealtime(.5f);
@@ -195,7 +195,7 @@ public sealed partial class GameAudioTests
             {Assert.That(voice.PlayingLoop,Is.Empty,"No chewing or lapping while approaching");yield return null;}
             Assert.That(bowls.ActiveCareSound,Is.Not.Null);yield return new WaitForSecondsRealtime(1f);
             Assert.That(voice.PlayingLoop,Is.EqualTo(kind=="food"?"Eat_1":"Drink_1"));
-            var mix=Object.FindFirstObjectByType<GameSoundscape>();
+            var mix=Object.FindAnyObjectByType<GameSoundscape>();
             Assert.That(mix.TargetMusicVolume,Is.EqualTo(.025f).Within(.001f),kind+" music duck");
             Assert.That(mix.CurrentMusicVolume,Is.InRange(.015f,.04f),kind+" audible care foreground");
             Assert.That(cat.GetComponents<AudioSource>().Count(s=>s.loop&&s.isPlaying),Is.EqualTo(1));
@@ -204,7 +204,7 @@ public sealed partial class GameAudioTests
                 float completedBy=Time.realtimeSinceStartup+6;
                 while(bowls.ActiveCareSound!=null&&Time.realtimeSinceStartup<completedBy)yield return null;
                 Assert.That(bowls.ActiveCareSound,Is.Null,"Lapping ends before the natural exit");
-                Assert.That(Object.FindFirstObjectByType<ThirstSystem>().CurrentThirst,Is.GreaterThanOrEqualTo(99f),"Actual need recovery completed");
+                Assert.That(Object.FindAnyObjectByType<ThirstSystem>().CurrentThirst,Is.GreaterThanOrEqualTo(99f),"Actual need recovery completed");
                 while(bowls.IsInteracting&&Time.realtimeSinceStartup<completedBy)yield return null;
                 Assert.That(bowls.IsInteracting,Is.False,"Natural exit completed");
             }
@@ -229,8 +229,8 @@ public sealed partial class GameAudioTests
         RunnerEnergyService.ApplySavedState(new RunnerEnergySaveState{energy=5,regenerationAnchorUtc=DateTime.UtcNow.ToString("O"),unlimitedUntilUtc="",rewardedAdsDayUtc=DateTime.UtcNow.ToString("yyyy-MM-dd")},DateTime.UtcNow);
         yield return SceneManager.LoadSceneAsync(CatRunnerLauncher.RunnerSceneName,LoadSceneMode.Additive);
         yield return new WaitForSecondsRealtime(.6f);
-        var game=Object.FindFirstObjectByType<CatRunnerGameController>();var player=Object.FindFirstObjectByType<CatRunnerPlayer>();
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().Selection,Is.EqualTo("Runner"));
+        var game=Object.FindAnyObjectByType<CatRunnerGameController>();var player=Object.FindAnyObjectByType<CatRunnerPlayer>();
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().Selection,Is.EqualTo("Runner"));
         heard.Clear();game.StartFromWelcome();yield return new WaitForSecondsRealtime(2.7f);
         Assert.That(game.IsGameplayActive,Is.True);Assert.That(heard.Contains(AudioCue.Countdown)&&heard.Contains(AudioCue.Start),Is.True);
         game.RegisterCoin();Assert.That(heard.Contains(AudioCue.Coin),Is.True);
@@ -240,10 +240,10 @@ public sealed partial class GameAudioTests
         game.PauseRun();yield return null;Assert.That(GameAudio.Play(AudioCue.Jump,1,AudioBus.MiniGame),Is.False);
         game.ResumeRun();CatRunnerProgressService.SetSoundEnabled(false);yield return null;
         Assert.That(GameAudio.Play(AudioCue.Coin,1,AudioBus.MiniGame),Is.False);
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.Zero);
         CatRunnerProgressService.SetSoundEnabled(true);HomeAudioService.SoundEnabled=false;yield return null;
         Assert.That(GameAudio.Play(AudioCue.Coin,1,AudioBus.MiniGame),Is.False,"Home Sound is the master effect switch.");
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().PlayingMusicSources,Is.GreaterThan(0));
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().PlayingMusicSources,Is.GreaterThan(0));
     }
 
     [UnityTest] public IEnumerator Catch_RealHuntProducesPounceLandingAndCatchAudio()
@@ -252,14 +252,14 @@ public sealed partial class GameAudioTests
         CatchLivesService.ApplySavedState(null,DateTime.UtcNow);CatchLivesService.CompleteTutorial();
         yield return SceneManager.LoadSceneAsync(CatCatchLauncher.CatchSceneName,LoadSceneMode.Additive);
         yield return new WaitForSecondsRealtime(.6f);
-        var game=Object.FindFirstObjectByType<CatCatchGameController>();var player=Object.FindFirstObjectByType<CatCatchPlayer>();
-        Assert.That(Object.FindFirstObjectByType<GameSoundscape>().Selection,Is.EqualTo("Catch"));
+        var game=Object.FindAnyObjectByType<CatCatchGameController>();var player=Object.FindAnyObjectByType<CatCatchPlayer>();
+        Assert.That(Object.FindAnyObjectByType<GameSoundscape>().Selection,Is.EqualTo("Catch"));
         heard.Clear();game.StartHunt();float until=Time.realtimeSinceStartup+15;
         while(game.Catches<1&&Time.realtimeSinceStartup<until)
         {
             if(!player.IsBusy&&player.Prey==null)
             {
-                var prey=Object.FindObjectsByType<CatCatchMouse>(FindObjectsSortMode.None).Where(m=>m.IsCatchable).OrderBy(m=>(m.transform.position-player.Position).sqrMagnitude).FirstOrDefault();
+                var prey=Object.FindObjectsByType<CatCatchMouse>().Where(m=>m.IsCatchable).OrderBy(m=>(m.transform.position-player.Position).sqrMagnitude).FirstOrDefault();
                 if(prey!=null)player.ChasePrey(prey);
             }
             yield return null;

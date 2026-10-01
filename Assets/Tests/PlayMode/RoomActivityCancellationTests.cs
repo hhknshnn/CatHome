@@ -175,13 +175,13 @@ public sealed class RoomActivityCancellationTests
         foreach (var room in Rooms)
         {
             yield return Prepare(room);
-            var cat = Object.FindFirstObjectByType<CatMovement>();
+            var cat = Object.FindAnyObjectByType<CatMovement>();
             // Spontaneous bird/idle turns are independent gameplay. Their yaw
             // swings the capsule's .12 local Z offset and can legitimately move
             // its root during collision recovery. This fixture tests cancellation
             // lifetime and resumed idle gravity with a deterministic facing.
-            foreach (var idle in Object.FindObjectsByType<CatIdleBehavior>(FindObjectsSortMode.None)) idle.enabled = false;
-            foreach (var attention in Object.FindObjectsByType<GardenBirdAttention>(FindObjectsSortMode.None)) attention.enabled = false;
+            foreach (var idle in Object.FindObjectsByType<CatIdleBehavior>()) idle.enabled = false;
+            foreach (var attention in Object.FindObjectsByType<GardenBirdAttention>()) attention.enabled = false;
             var controller = cat.GetComponent<CharacterController>();
             var activities = CatActivity.Registered.Where(a => a.gameObject.scene == cat.gameObject.scene &&
                 !a.IsRetired && (HomeStoreService.IsFixedRoomProduct(a.StoreProductId) || a is LivingFurnitureActivity)).ToArray();
@@ -301,9 +301,9 @@ public sealed class RoomActivityCancellationTests
     public IEnumerator StoredToy_StopsImmediately_WithoutLateMotionOrContact()
     {
         yield return Prepare("LivingRoom_Level01");
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         var toyIds = HomeStoreService.Products.Where(p => CatCollectionPolicy.IsCatItem(p.Id)).Select(p => p.Id).ToArray();
-        Assert.That(toyIds.Length, Is.EqualTo(17));
+        Assert.That(toyIds.Length, Is.EqualTo(16));
         foreach (var id in toyIds)
         {
             Assert.That(HomeStoreService.TrySetStored(id, false), Is.True, id);
@@ -337,7 +337,7 @@ public sealed class RoomActivityCancellationTests
     public IEnumerator BookSetCancellation_DistinguishesIdleControllerSettling()
     {
         yield return Prepare("LivingRoom_Level01");
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         var books = CatActivity.Registered.First(a => a.Kind == CatActivityKind.BookSetSniff);
         RoomPlayModeSupport.ProvisionNeeds();
         Move(cat, books.RoutineEntryPoint.position);
@@ -392,7 +392,7 @@ public sealed class RoomActivityCancellationTests
         foreach (float rate in new[] { 1f, 4f })
         {
             yield return Prepare("Garden_Level01");
-            var cat = Object.FindFirstObjectByType<CatMovement>();
+            var cat = Object.FindAnyObjectByType<CatMovement>();
             var activity = CatActivity.Registered.First(a => a.Kind == CatActivityKind.DaisyRoll);
             var controller = cat.GetComponent<CharacterController>();
             RoomPlayModeSupport.ProvisionNeeds();
@@ -449,7 +449,7 @@ public sealed class RoomActivityCancellationTests
         yield return Prepare("LivingRoom_Level01");
         Assert.That(HomeStoreService.TrySetStored(HomeStoreService.BallBasketId, false), Is.True);
         yield return null; yield return null;
-        var cat = Object.FindFirstObjectByType<CatMovement>();
+        var cat = Object.FindAnyObjectByType<CatMovement>();
         var ballGame = CatActivity.Registered.OfType<BallChaseActivity>().First(a => a.StoreProductId == HomeStoreService.BallBasketId);
         Move(cat, ballGame.RoutineEntryPoint.position);
         Object.FindAnyObjectByType<EnergySystem>().ApplySavedValue(0f);
@@ -464,7 +464,7 @@ public sealed class RoomActivityCancellationTests
         Assert.That(ballGame.IsRunning, Is.False);
         Assert.That(CatActivity.Active, Is.Null);
         Assert.That(SceneManager.sceneCount, Is.EqualTo(countBefore), "Refused starts leaked additive physics-query scenes.");
-        Assert.That(Object.FindObjectsByType<Transform>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<Transform>(FindObjectsInactive.Include)
             .Count(t => t.name == "Ball query geometry"), Is.Zero);
     }
 }

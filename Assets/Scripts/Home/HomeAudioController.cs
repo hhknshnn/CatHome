@@ -56,7 +56,7 @@ public sealed class HomeAudioController : MonoBehaviour
             change.Source==EconomySource.Debug||change.Source==EconomySource.PurchaseRestore)return;
         GameAudio.UI(change.Currency==CurrencyType.Diamond?AudioCue.Diamond:AudioCue.Coin);
     }
-    public static void PlayPurr(){var cat=FindFirstObjectByType<CatVoice>();if(cat!=null)cat.PurrBriefly();}
+    public static void PlayPurr(){var cat=FindAnyObjectByType<CatVoice>();if(cat!=null)cat.PurrBriefly();}
     public static void PlayCelebration()=>GameAudio.UI(AudioCue.LevelUp);
     public static void PlayCare() { /* Eating follows the actual pose in CatVoice. */ }
     public static void PlayDrink() { /* Drinking follows the actual pose in CatVoice. */ }

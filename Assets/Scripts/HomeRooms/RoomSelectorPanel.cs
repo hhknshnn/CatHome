@@ -81,6 +81,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         }
 
         activeInstance = this;
+        StorybookRoomsPresentation.Apply(transform);
         PremiumScrollInput.Ensure(roomScroll);
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();
@@ -186,7 +187,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
 
         if (!HomeRoomService.TryGetRoom(roomId, out HomeRoomDefinition room))
         {
-            SetFeedback("THIS ROOM IS NOT AVAILABLE YET.");
+            SetFeedback(GameLanguageService.Text("rooms.unavailable"));
             return;
         }
 
@@ -202,20 +203,20 @@ public sealed class RoomSelectorPanel : MonoBehaviour
 
         if (!unlocked)
         {
-            SetFeedback("UNLOCK " + room.DisplayName + " IN SHOP  •  HOME");
+            SetFeedback(GameLanguageService.Format("rooms.unlock_room_hint", room.DisplayName));
             OpenHomeStore();
             return;
         }
 
         if (string.Equals(HomeRoomService.CurrentRoomId, room.Id, StringComparison.Ordinal))
         {
-            SetFeedback("YOU ARE ALREADY IN " + room.DisplayName + ".");
+            SetFeedback(GameLanguageService.Format("rooms.already_here", room.DisplayName));
             return;
         }
 
         if (!levelLoader.LoadRoom(room.Id))
         {
-            SetFeedback("ROOM COULD NOT BE OPENED. TRY AGAIN.");
+            SetFeedback(GameLanguageService.Text("rooms.open_failed"));
             return;
         }
 
@@ -223,7 +224,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         SetCardsInteractive(false);
         if (closeButton != null)
             closeButton.interactable = false;
-        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  •  •");
+        SetFeedback(GameLanguageService.Format("rooms.travelling", room.DisplayName));
     }
 
     private void OpenHomeStore()
@@ -245,7 +246,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         SetCardsInteractive(false);
         if (closeButton != null)
             closeButton.interactable = false;
-        SetFeedback("TRAVELLING TO " + room.DisplayName + "  •  •  •");
+        SetFeedback(GameLanguageService.Format("rooms.travelling", room.DisplayName));
     }
 
     private void HandleRoomLoaded(HomeRoomDefinition room)
@@ -254,7 +255,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         // so the newly active cat receives a balanced input block lifecycle.
         RebindInputBlockToActiveCat();
         RefreshCards();
-        SetFeedback(room.DisplayName + " IS READY!");
+        SetFeedback(GameLanguageService.Format("rooms.arrived", room.DisplayName));
         if (isActiveAndEnabled)
             StartCoroutine(CloseAfterArrival());
         else
@@ -280,7 +281,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
         SetCardsInteractive(true);
         if (closeButton != null)
             closeButton.interactable = true;
-        SetFeedback(string.IsNullOrWhiteSpace(reason) ? "ROOM COULD NOT BE OPENED." : reason);
+        SetFeedback(GameLanguageService.Text("rooms.open_failed"));
         RefreshCards();
     }
 
@@ -322,13 +323,7 @@ public sealed class RoomSelectorPanel : MonoBehaviour
                 card.lockBadge.SetActive(!unlocked);
             if (card.currentBadge != null)
                 card.currentBadge.SetActive(current);
-            if (card.face != null)
-            {
-                Color color = current
-                    ? JoyfulUiArt.SkyPaper
-                    : JoyfulUiArt.Paper;
-                JoyfulUiArt.Surface(card.face, color, 22f);
-            }
+            StorybookRoomsPresentation.ApplyCard(card.button, current, unlocked);
             SetCardInteractive(card, state == PanelState.Open);
         }
 

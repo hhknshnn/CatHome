@@ -16,7 +16,7 @@ public sealed class CatSleepContactAlignment:MonoBehaviour
     void LateUpdate()
     {
         if(sleep==null)sleep=GetComponent<SleepInteraction>();
-        if(sleep==null || !sleep.IsSleeping || sleep.SleepSurface==null || sleep.SleepSurface.GetComponent<CatActivitySurface>()==null)return;
+        if(sleep==null || !sleep.IsSettledOnBed || sleep.SleepSurface==null || sleep.SleepSurface.GetComponent<CatActivitySurface>()==null)return;
         var animator=GetComponentInChildren<Animator>();if(animator==null)return;
         if(visual!=animator.transform){Restore();visual=animator.transform;skin=visual.GetComponentInChildren<SkinnedMeshRenderer>();original=visual.localPosition;}
         if(skin==null)return;visual.localPosition=original;

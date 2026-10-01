@@ -47,6 +47,16 @@ public sealed class LitterDigActivity : CatActivity
     public int ScrapeCount => Mathf.Max(1, scrapeCount);
     public bool UsesGentleScraping => Kind == CatActivityKind.LitterDig &&
         StoreProductId == HomeStoreService.BathroomLitterBoxId;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        if (mouthPoint == null || digPoint == null) return false;
+        return UsesRaisedPlanter
+            ? CatActivityStartResolver.GroundLaunch(this, actor, mouthPoint.position, digPoint.position, out start)
+            : CatActivityStartResolver.Facing(actor, mouthPoint.position, .22f, digPoint.position, 35f, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -73,9 +83,9 @@ public sealed class LitterDigActivity : CatActivity
     private IEnumerator RaisedPlanterRoutine()
     {
         Cat.SetMovementLocked(this,true);if(characterController!=null)characterController.enabled=false;
-        planterFloor=Flatten(mouthPoint.position,Cat.transform.position.y);
+        planterFloor=Flatten(mouthPoint.position,AcceptedStart.Position.y);
         Vector3 dig=digPoint.position;
-        Quaternion launch=LookTowards(dig-planterFloor,Cat.transform.rotation);
+        Quaternion launch=AcceptedStart.Rotation;
         // Landing, planted turn and digging must agree on the same long
         // surface axis. These three measured soil bays use local X; their
         // surface does not opt into the nap-only visual alignment flag.
@@ -102,9 +112,8 @@ public sealed class LitterDigActivity : CatActivity
             if(!found){CancelForTransition();yield break;}
         }
         Phase=CatLitterPhase.Entering;
-        yield return CatActivityMotion.WalkAuthoredStep(Cat,planterFloor,launch,.25f);
         planterMotion=new CatSupportedFurnitureMotion(this,Cat,digPoint);
-        yield return planterMotion.Jump(planterFloor,dig,launch,facing);
+        yield return planterMotion.Jump(AcceptedStart.Position,dig,launch,facing);
         yield return planterMotion.Pose(CatActivityPose.GentleKnead,.20f,dig,facing);
         Phase=CatLitterPhase.Digging;
         planterPaws=Cat.GetComponent<CatGentleKneadMotion>()??Cat.gameObject.AddComponent<CatGentleKneadMotion>();
@@ -131,20 +140,13 @@ public sealed class LitterDigActivity : CatActivity
             characterController.enabled = false;
 
         Phase = CatLitterPhase.Entering;
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
+        Vector3 start = AcceptedStart.Position;
         Vector3 mouth = Flatten(mouthPoint.position, start.y);
         Vector3 dig = digPoint.position;
-
-        Quaternion toMouth = LookTowards(mouth - start, startRotation);
-        yield return Move(start, mouth, startRotation, toMouth, 0.30f);
-
-        Quaternion inward = LookTowards(
-            new Vector3(dig.x - mouth.x, 0f, dig.z - mouth.z), toMouth);
-        yield return Move(mouth, mouth, toMouth, inward, 0.16f);
+        Quaternion inward = AcceptedStart.Rotation;
         // Step over the sill rather than hop: the litter surface is only 0.18
         // up, so an arc would read as the cat vaulting a kerb.
-        yield return Move(mouth, dig, inward, inward, 0.40f);
+        yield return EnterTray(start, dig, inward, .40f);
 
         if (UsesGentleScraping)
         {
@@ -237,6 +239,23 @@ public sealed class LitterDigActivity : CatActivity
         CompleteActivity("ALL COVERED UP!");
     }
 
+    private IEnumerator EnterTray(Vector3 from, Vector3 to, Quaternion facing, float minimumSeconds)
+    {
+        // Crossing the real sill is the activity itself. Start that motion at
+        // the accepted stance without a separate walk-to-mouth or body turn.
+        float distance = Vector3.ProjectOnPlane(to - from, Vector3.up).magnitude;
+        float duration = Mathf.Max(minimumSeconds, distance / 1.5f), elapsed = 0f;
+        var animation = Cat.GetComponent<CatActivityAnimation>();
+        if (animation != null) animation.SetWalkSpeed(distance / duration, null);
+        while (elapsed < duration)
+        {
+            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, Mathf.Clamp01(elapsed / duration)), facing);
+            yield return null;
+            elapsed += Time.deltaTime;
+        }
+        Cat.transform.SetPositionAndRotation(to, facing);
+    }
+
     private IEnumerator SandPhase(CatLitterPhase phase, Vector3 position, Quaternion rotation, float duration)
     {
         Phase = phase;
@@ -326,10 +345,8 @@ public sealed class LitterDigActivity : CatActivity
         if(planterMotion!=null)
         {
             planterMotion.End();planterMotion=null;
-            // Keep a completed, clear landing. Only an interrupted elevated
-            // pose needs the original safe floor; never snap back after a hop.
-            if(Cat!=null&&(Cat.transform.position.y>.12f||!CatActivityMotion.IsControllerFloorClear(Cat,Cat.transform.position)))
-                Cat.transform.position=planterFloor;
+            // Shared prepared recovery owns interrupted floor restoration.
+            // A completed landing must not be classified by absolute world Y.
         }
         if (litterMotion != null) litterMotion.Clear();
         if (waste != null) waste.Stop(this);

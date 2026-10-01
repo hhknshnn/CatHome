@@ -103,6 +103,11 @@ public static class PremiumUiFactory
         ModernScreenBuilder.Polish(root);
         PlayfulScreenBuilder.Polish(root);
         MiniGameNavigationBuilder.Apply(root);
+        if (root.GetComponent<TitleScreen>() != null)
+            StorybookTitleBuilder.Apply(root);
+        if (root.GetComponent<CurrencyHudController>() != null || root.GetComponent<MainPanelController>() != null ||
+            (root.name == "Canvas" && root.Find("FoodBar") != null))
+            StorybookHudBuilder.Apply(root);
 
         foreach (RectTransform rect in root.GetComponentsInChildren<RectTransform>(true))
         {

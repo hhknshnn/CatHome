@@ -691,7 +691,7 @@ public static class CatHomeSaveSystem
 
         SaveNow();
         suspended = true;
-        suspendedWhileSleeping = sleepInteraction != null && sleepInteraction.IsSleeping;
+        suspendedWhileSleeping = sleepInteraction != null && sleepInteraction.IsSettledOnBed;
         suspensionSaveUtc = lastSuccessfulSaveUtc == default
             ? DateTime.UtcNow
             : lastSuccessfulSaveUtc;
@@ -801,17 +801,25 @@ public static class CatHomeSaveSystem
     private static CatHomeSaveData CaptureData(DateTime savedAtUtc)
     {
         Transform catTransform = catMovement.transform;
+        Vector3 savedPosition = catTransform.position;
+        Quaternion savedRotation = catTransform.rotation;
+        if (sleepInteraction != null &&
+            sleepInteraction.TryGetTransitionSavePose(out Vector3 floorPosition, out Quaternion floorRotation))
+        {
+            savedPosition = floorPosition;
+            savedRotation = floorRotation;
+        }
         return new CatHomeSaveData
         {
             version = CurrentSaveVersion,
             hunger = hungerSystem.CurrentHunger,
             thirst = thirstSystem.CurrentThirst,
             energy = energySystem.CurrentEnergy,
-            wasSleeping = sleepInteraction != null && sleepInteraction.IsSleeping,
+            wasSleeping = sleepInteraction != null && sleepInteraction.IsSettledOnBed,
             lastSaveUtc = savedAtUtc.ToString("O", CultureInfo.InvariantCulture),
             hasCatPose = true,
-            catWorldPosition = catTransform.position,
-            catWorldRotation = catTransform.rotation,
+            catWorldPosition = savedPosition,
+            catWorldRotation = savedRotation,
             // Legacy mirror of the two currencies that existed before the
             // economy section; the section below is the authority on load.
             coins = EconomyService.GetBalance(CurrencyType.Coin),

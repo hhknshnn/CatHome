@@ -19,12 +19,30 @@ public sealed class CatSpeechBubble : MonoBehaviour
     private Transform head;
     private Camera gameplayCamera;
     private Coroutine routine;
+    private Object messageOwner;
     private WhileYouWereAwayPopup offlinePopup;
     private float animationYOffset;
     [SerializeField, HideInInspector] private int visualVersion;
     private readonly RectTransform[] tails = new RectTransform[3];
 
-    public void Show(string message)
+    public static CatSpeechBubble EnsureOn(CatMovement actor)
+    {
+        if (actor == null) return null;
+        var result = actor.GetComponent<CatSpeechBubble>() ?? actor.gameObject.AddComponent<CatSpeechBubble>();
+        result.enabled = true;
+        return result;
+    }
+
+    public void ShowKey(string key) => ShowLocalized(GameLanguageService.Text(key));
+
+    public void Show(string message) => ShowLocalized(GameContentCopy.CatReaction(message));
+
+    // Already localized format output can contain a player's cat name verbatim.
+    public bool IsOwnedBy(Object owner) => owner != null && messageOwner == owner && routine != null;
+    public void ShowOwned(Object owner, string message) => ShowInternal(owner, GameContentCopy.CatReaction(message));
+    public void ShowLocalized(string message) => ShowInternal(null, message);
+
+    private void ShowInternal(Object owner, string message)
     {
         if (string.IsNullOrWhiteSpace(message))
             return;
@@ -33,11 +51,20 @@ public sealed class CatSpeechBubble : MonoBehaviour
         if (!IsVisualHierarchyReady() || IsModalBlocking())
             return;
 
-        label.text = GameContentCopy.CatReaction(message);
+        messageOwner = owner;
+        label.text = message;
         ResizeToMessage();
         if (routine != null)
             StopCoroutine(routine);
         routine = StartCoroutine(ShowRoutine());
+    }
+
+    public void DismissOwned(Object owner)
+    {
+        if (owner == null || messageOwner != owner) return;
+        messageOwner = null;
+        if (routine != null) { StopCoroutine(routine); routine = null; }
+        if (group != null) group.alpha = 0f;
     }
 
     private bool IsModalBlocking()
@@ -355,6 +382,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
         yield return Animate(.14f, 1f, 0f, 1f, .98f, 0f, 4f, 0f, 0f);
         group.alpha = 0f;
         routine = null;
+        messageOwner = null;
     }
 
     private IEnumerator Animate(
@@ -465,6 +493,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
 
     private void OnDisable()
     {
+        messageOwner = null;
         if (routine != null)
         {
             StopCoroutine(routine);

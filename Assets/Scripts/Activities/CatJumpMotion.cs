@@ -18,7 +18,18 @@ public static class CatJumpMotion
             to.y < from.y - .01f ? CatActivityPose.TowelJumpDown : CatActivityPose.Hop;
         bool ascending = to.y > from.y + .01f;
         var owner = CatActivity.Active;
-        if (owner != null && ascending && from.y < .12f)
+        bool preparedLaunch = owner != null && ascending &&
+            owner.TryConsumeGroundLaunch(cat, out _);
+        if (preparedLaunch)
+        {
+            // Prompt and action accepted this exact stance. No hidden approach,
+            // offset walk or pre-jump pivot is permitted after the click.
+            from = cat.transform.position;
+            launch = cat.transform.rotation;
+            preserveLaunchHeading = true;
+            if (owner.StoreProductId == "balcony.hanging-chair") clearance = .15f;
+        }
+        if (!preparedLaunch && owner != null && ascending && from.y < .12f)
         {
             Vector3 offset = owner.transform.TransformVector(CatFurnitureJumpClearance.LaunchOffset(owner.StoreProductId));
             if (owner is SinkSipActivity fountain && owner.StoreProductId == HomeStoreService.PatioWaterFountainId && fountain.SipTarget != null)
@@ -43,17 +54,31 @@ public static class CatJumpMotion
                 }
                 from = candidate;
             }
-            if (owner.StoreProductId == "balcony.hanging-chair") clearance = .30f;
+            if (owner.StoreProductId == "balcony.hanging-chair") clearance = .15f;
         }
-        if (owner != null && !ascending && to.y < .12f && owner.StoreProductId == "balcony.hanging-chair")
+        if (owner != null && !ascending && !landOnSupport && owner.StoreProductId == "balcony.hanging-chair")
             clearance = .15f;
+        if (owner != null && owner.HasPreparedStart && !ascending && !landOnSupport)
+        {
+            Vector3 landing; Quaternion facing;
+            Vector3 measuredHeading = owner.transform.TransformDirection(CatFurnitureJumpClearance.DownHeading(owner.StoreProductId));
+            if (!CatActivityStartResolver.GroundLanding(cat, from, to, out landing, out facing, measuredHeading))
+            { owner.CancelForTransition(); yield break; }
+            to = landing; launch = arrival = facing;
+        }
         Vector3 direction = to - from; direction.y = 0f;
         if (!preserveLaunchHeading && direction.sqrMagnitude > .001f) launch = Quaternion.LookRotation(direction);
         // Finish facing the actual route before jumping. A descent carries
         // this heading through touchdown rather than turning in mid-air.
         if (!ascending) arrival = launch;
-        yield return TurnDirectly(cat, from, launch);
-        animation.BeginNativeJump(landOnSupport);
+        if (!preparedLaunch) yield return TurnDirectly(cat, from, launch);
+        // Recheck against the actual supported visual offset AFTER the allowed
+        // direct pivot. Source curves, jump timing and flight equations stay
+        // unchanged. An unexpected obstacle cannot inherit a cached approval.
+        if (owner != null && owner.HasPreparedStart &&
+            !CatJumpClearanceResolver.EndsClear(cat, from, to, launch, landOnSupport, preparedLaunch, out _))
+        { owner.CancelForTransition(); yield break; }
+        animation.BeginNativeJump(landOnSupport,CatActivityStartResolver.LandsOnSupport(cat,to));
         float seconds = Takeoff * ClipSeconds, elapsed = 0f;
         stage?.Invoke(0, 0f);
         while (elapsed < seconds)
@@ -64,7 +89,8 @@ public static class CatJumpMotion
         }
 
         const float gravity = 9.81f;
-        float apex = Mathf.Max(from.y, to.y) + Mathf.Max(.15f, clearance);
+        float apex = Mathf.Max(from.y, to.y) + (ascending ? CatFurnitureJumpClearance.AscentRise(owner!=null?owner.StoreProductId:null,clearance) :
+            CatFurnitureJumpClearance.DescentRise(owner != null ? owner.StoreProductId : null,clearance));
         float rise = Mathf.Sqrt(2f * (apex - from.y) / gravity);
         float fall = Mathf.Sqrt(2f * (apex - to.y) / gravity);
         seconds = rise + fall; elapsed = 0f;
@@ -74,7 +100,10 @@ public static class CatJumpMotion
             // A launch carries horizontal momentum immediately. The old t²
             // easing climbed almost vertically, then accelerated in mid-air.
             // Keep the accepted downward trajectory and landing timing.
-            float horizontal = ascending ? t : 1f - Mathf.Pow(1f - t, 2.2f);
+            // Clear the hanging chair's opening before rising into its rim.
+            // The source clip, launch/landing poses and vertical arc stay fixed.
+            float travelPower = CatFurnitureJumpClearance.DescentTravelPower(owner != null ? owner.StoreProductId : null);
+            float horizontal = ascending ? t : 1f - Mathf.Pow(1f - t, travelPower);
             Vector3 position = Vector3.Lerp(from, to, horizontal);
             position.y = from.y + gravity * rise * elapsed - .5f * gravity * elapsed * elapsed;
             float turn = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.15f, .85f, t));
@@ -100,32 +129,39 @@ public static class CatJumpMotion
         if (ascending && Quaternion.Angle(launch, arrival) > .5f)
             yield return TurnDirectly(cat, to, arrival);
     }
-    // Preserve the supported standing pose and its original joint angles.
-    // A single short yaw replaces repeated paw lifts and the outward/back arc.
+    // One short body pivot using the same existing gait/contact overlay as
+    // ground turns. Flight, touchdown, root centre and route stay authored.
     private static IEnumerator TurnDirectly(CatMovement cat, Vector3 centre, Quaternion target)
     {
         Quaternion first = cat.transform.rotation;
         float angle = Quaternion.Angle(first, target);
         if (angle < .5f) yield break;
         var animation = cat.GetComponent<CatActivityAnimation>();
-        if (!animation.IsNativeJump)
+        var contact = new GameObject("Natural pivot support") { hideFlags = HideFlags.DontSave };
+        contact.transform.position = centre;
+        var natural = CatNaturalTurnMotion.For(cat);
+        animation.BeginSupportedPivot(contact.transform);
+        float duration = Mathf.Clamp(angle / 300f, .18f, .50f), elapsed = 0f;
+        try
         {
-            // A rim walk or looping care pose must not keep cycling its paws
-            // while the body changes direction on the spot.
-            var animator = cat.GetComponentInChildren<Animator>();
-            float phase = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            animation.SetTimedPose(animation.CurrentPose, Mathf.Clamp01(phase), animation.ContactSurface);
+            while (elapsed < duration)
+            {
+                if (Time.timeScale <= 0f) { yield return null; continue; }
+                Quaternion before = cat.transform.rotation;
+                elapsed = Mathf.Min(duration, elapsed + Time.deltaTime);
+                cat.transform.SetPositionAndRotation(centre,
+                    Quaternion.Slerp(first, target, Mathf.SmoothStep(0f, 1f, elapsed / duration)));
+                float rate = Vector3.SignedAngle(before * Vector3.forward, cat.transform.forward, Vector3.up) / Mathf.Max(.0001f, Time.deltaTime);
+                animation.SetSupportedPivotSpeed(CatNaturalTurnMotion.GaitSpeed(rate));
+                natural.Signal(rate);
+                yield return null;
+            }
         }
-        float duration = Mathf.Clamp(angle / 240f, .18f, .50f), elapsed = 0f;
-        while (elapsed < duration)
+        finally
         {
-            // Observe a pause before advancing; a coroutine resumed on the
-            // pause frame must not apply the preceding frame's delta time.
-            if (Time.timeScale <= 0f) { yield return null; continue; }
-            elapsed = Mathf.Min(duration, elapsed + Time.deltaTime);
-            cat.transform.SetPositionAndRotation(centre,
-                Quaternion.Slerp(first, target, Mathf.SmoothStep(0f, 1f, elapsed / duration)));
-            yield return null;
+            natural.Signal(0f);
+            if (contact != null) UnityEngine.Object.Destroy(contact);
         }
     }
 }
+

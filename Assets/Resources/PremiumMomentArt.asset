@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34e392e56c258164eb4d1d582081c6da, type: 3}
   m_Name: PremiumMomentArt
   m_EditorClassIdentifier: CatHome.Runtime::PremiumMomentArtSet
-  Coin: {fileID: 2800000, guid: c0355cac6aa975f4bbe6a56794ff877f, type: 3}
+  Coin: {fileID: 2800000, guid: 074949c82b815a64092e50e5b4562e27, type: 3}

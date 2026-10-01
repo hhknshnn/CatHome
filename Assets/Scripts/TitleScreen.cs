@@ -75,6 +75,7 @@ public sealed class TitleScreen : MonoBehaviour
         if (GetComponent<TitleMusicController>() == null)
             gameObject.AddComponent<TitleMusicController>();
         BindListeners();
+        StorybookTitleSubwindowPresentation.Apply(transform);
     }
 
     private void OnEnable()

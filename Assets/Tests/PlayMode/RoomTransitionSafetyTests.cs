@@ -80,7 +80,7 @@ public sealed class RoomTransitionSafetyTests
             CatMovement previousCat = Object.FindAnyObjectByType<CatMovement>();
             Assert.That(previousCat, Is.Not.Null, roomId);
             CatActionState.CancelForTransition(previousCat);
-            LevelSpawnPoint spawn = Object.FindObjectsByType<LevelSpawnPoint>(FindObjectsSortMode.None)
+            LevelSpawnPoint spawn = Object.FindObjectsByType<LevelSpawnPoint>()
                 .First(p => p.gameObject.scene == previousCat.gameObject.scene &&
                             p.SpawnPointId == loader.CurrentRoom.SpawnPointId);
             CharacterController controller = previousCat.GetComponent<CharacterController>();
@@ -144,7 +144,7 @@ public sealed class RoomTransitionSafetyTests
                 Assert.That(loader.CurrentRoom.Id, Is.EqualTo(roomId));
                 Assert.That(arrivalObserved, Is.True);
                 Assert.That(previousCat == null, Is.True, "Old room cat must be unloaded.");
-                Assert.That(Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None), Has.Length.EqualTo(1));
+                Assert.That(Object.FindObjectsByType<CatMovement>(), Has.Length.EqualTo(1));
                 Assert.That(CatActivity.Active, Is.Null);
                 Assert.That(CatActionState.IsBusy(arrivedCat), Is.False);
                 Assert.That(arrivedCat.AreWorldActionsBlocked, Is.True,

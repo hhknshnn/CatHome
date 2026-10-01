@@ -16,7 +16,7 @@ public sealed class TitleCatShowcase : MonoBehaviour
     [SerializeField] private CatBreedCatalog catalog;
     private RawImage image;
     private GameObject stage;
-    private Camera camera;
+    private Camera showcaseCamera;
     private RenderTexture texture;
     private readonly List<Actor> actors = new List<Actor>();
     private Light[] lights;
@@ -68,8 +68,8 @@ public sealed class TitleCatShowcase : MonoBehaviour
         stage.transform.position = new Vector3(2000f, 0f, 2000f);
         if (Application.isPlaying) DontDestroyOnLoad(stage);
         SetLayer(stage.transform);
-        camera = stage.GetComponentInChildren<Camera>(true);
-        camera.enabled = false; // Only explicit render requests; never a second gameplay camera.
+        showcaseCamera = stage.GetComponentInChildren<Camera>(true);
+        showcaseCamera.enabled = false; // Only explicit render requests; never a second gameplay camera.
         lights = stage.GetComponentsInChildren<Light>(true);
         foreach (var light in lights) light.enabled = false;
         RebuildActors();
@@ -145,7 +145,7 @@ public sealed class TitleCatShowcase : MonoBehaviour
         // Keep the HD poster until the first normal frame populates the render scene.
         image.texture = Application.isPlaying && !renderedFirstFrame ? fallbackPoster : texture;
         image.uvRect = new Rect(0f, 0f, 1f, 1f);
-        camera.aspect = size.x / (float)size.y;
+        showcaseCamera.aspect = size.x / (float)size.y;
         request.destination = texture;
     }
 
@@ -204,15 +204,15 @@ public sealed class TitleCatShowcase : MonoBehaviour
 
     private void RenderFrame()
     {
-        if (camera == null || texture == null) return;
+        if (showcaseCamera == null || texture == null) return;
         // A room's clock-driven sun must not add another key light to the title.
         // Render requests are synchronous; restore the exact room state before its camera draws.
         var sun = RenderSettings.sun;
         bool fog = RenderSettings.fog;
-        var previousTarget = camera.targetTexture;
+        var previousTarget = showcaseCamera.targetTexture;
         var previousActive = RenderTexture.active;
         maskedLights.Clear(); lightMasks.Clear();
-        foreach (var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+        foreach (var light in FindObjectsByType<Light>())
         {
             if (light.transform.IsChildOf(stage.transform) || (light.cullingMask & (1 << StageLayer)) == 0) continue;
             maskedLights.Add(light); lightMasks.Add(light.cullingMask);
@@ -232,20 +232,20 @@ public sealed class TitleCatShowcase : MonoBehaviour
                 if (!Application.isPlaying)
                 {
                     posterRequest.destination = texture;
-                    RenderPipeline.SubmitRenderRequest(camera, posterRequest);
+                    RenderPipeline.SubmitRenderRequest(showcaseCamera, posterRequest);
                 }
                 else
 #endif
-                    RenderPipeline.SubmitRenderRequest(camera, request);
+                    RenderPipeline.SubmitRenderRequest(showcaseCamera, request);
             }
-            else { camera.targetTexture = texture; camera.Render(); camera.targetTexture = null; }
+            else { showcaseCamera.targetTexture = texture; showcaseCamera.Render(); showcaseCamera.targetTexture = null; }
         }
         finally
         {
             foreach (var light in lights) if (light != null) light.enabled = false;
             for (int i = 0; i < maskedLights.Count; i++) if (maskedLights[i] != null) maskedLights[i].cullingMask = lightMasks[i];
             RenderSettings.sun = sun; RenderSettings.fog = fog;
-            camera.targetTexture = previousTarget;
+            showcaseCamera.targetTexture = previousTarget;
             RenderTexture.active = previousActive;
         }
     }
@@ -272,7 +272,7 @@ public sealed class TitleCatShowcase : MonoBehaviour
         foreach (var actor in actors) DestroyOwned(actor.mesh);
         actors.Clear();
         if (stage != null) { stage.SetActive(false); DestroyOwned(stage); }
-        stage = null; camera = null;
+        stage = null; showcaseCamera = null;
         renderedFirstFrame = false;
         ReleaseTexture();
         if (image != null) image.texture = fallbackPoster;

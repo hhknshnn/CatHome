@@ -218,6 +218,7 @@ public static class PremiumWorldVisualBuilder
         CreateBackWainscot(wainscot, softPeach, softMint, softLilac, cream, gold);
         CreateSideWainscot(wainscot, -1f, softMint, softLilac, cream, gold);
         CreateSideWainscot(wainscot, 1f, softLilac, softPeach, cream, gold);
+        HomeEnvironmentCollisionBuilder.EnsureLivingWallCladding(wainscot);
 
         Transform crown = CreateGroup(architecture.transform, "PolishedCrownTrim");
         CreateBox(crown, "Back_Cream", new Vector3(0f, 2.82f, 2.69f),

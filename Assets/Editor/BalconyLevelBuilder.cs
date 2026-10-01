@@ -435,21 +435,21 @@ public static class BalconyLevelBuilder
         run.localPosition = center;
         run.localRotation = Quaternion.Euler(0f, yaw, 0f);
 
-        CreateBlock("TopRail", run,
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("TopRail", run,
             new Vector3(0f, topRailY, 0f),
-            new Vector3(length, .08f, .1f), materials["Rail"], false);
-        CreateBlock("MidRail", run,
+            new Vector3(length, .08f, .1f), materials["Rail"], HomeEnvironmentCollisionBuilder.SolidRole.Rail);
+        HomeEnvironmentCollisionBuilder.CreateSolidBlock("MidRail", run,
             new Vector3(0f, topRailY - .34f, 0f),
-            new Vector3(length, .05f, .07f), materials["Rail"], false);
+            new Vector3(length, .05f, .07f), materials["Rail"], HomeEnvironmentCollisionBuilder.SolidRole.Rail);
 
         float start = -length * .5f;
         float step = posts <= 1 ? 0f : length / (posts - 1);
         for (int i = 0; i < posts; i++)
         {
-            CreateBlock("Post_" + (i + 1).ToString("00"), run,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Post_" + (i + 1).ToString("00"), run,
                 new Vector3(start + step * i, postHeight * .5f, 0f),
                 new Vector3(.07f, postHeight, .07f),
-                materials["Rail"], false);
+                materials["Rail"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
         }
 
         // Slim baluster infill between the posts keeps the railing safe-looking.
@@ -457,10 +457,10 @@ public static class BalconyLevelBuilder
         float bstep = length / balusters;
         for (int i = 0; i < balusters; i++)
         {
-            CreateBlock("Baluster_" + (i + 1).ToString("00"), run,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Baluster_" + (i + 1).ToString("00"), run,
                 new Vector3(-length * .5f + bstep * (i + .5f), postHeight * .5f - .18f, 0f),
                 new Vector3(.03f, postHeight - .36f, .03f),
-                materials["Rail"], false);
+                materials["Rail"], HomeEnvironmentCollisionBuilder.SolidRole.Post);
         }
     }
 
@@ -478,9 +478,9 @@ public static class BalconyLevelBuilder
         {
             Transform pot = CreateChild(greens, "PlanterPot_" + (i + 1));
             pot.localPosition = spots[i];
-            CreateBlock("Pot", pot,
+            HomeEnvironmentCollisionBuilder.CreateSolidBlock("Pot", pot,
                 new Vector3(0f, .2f, 0f), new Vector3(.4f, .4f, .4f),
-                materials["Peach"], false);
+                materials["Peach"], HomeEnvironmentCollisionBuilder.SolidRole.FixedPlanter);
             CreateSphere("Foliage", pot,
                 new Vector3(0f, .62f, 0f), new Vector3(.62f, .72f, .62f),
                 leaf[i % leaf.Length], false);

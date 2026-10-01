@@ -32,6 +32,17 @@ public sealed class PantryClimbActivity : CatActivity
 
     public float SniffDuration => Mathf.Max(0.5f, sniffDuration);
     public bool UsesIntermediatePerch => !directClimb;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return floorPoint != null && lowerShelfPoint != null && upperShelfPoint != null &&
+            CatActivityStartResolver.GroundLaunch(this, actor, floorPoint.position,
+                directClimb ? UpperLandingPosition : lowerShelfPoint.position, out start);
+    }
+    private Vector3 UpperLandingPosition => upperShelfPoint.position + (StoreProductId == "loft.tall-bookcase"
+        ? transform.TransformDirection(Vector3.forward) * .08f : Vector3.zero);
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -57,9 +68,8 @@ public sealed class PantryClimbActivity : CatActivity
     {
         Cat.SetMovementLocked(this, true);
         if (characterController != null) characterController.enabled = false;
-        Vector3 floor = Flatten(floorPoint.position, Cat.transform.position.y), upper = upperShelfPoint.position;
+        Vector3 floor = Flatten(floorPoint.position, AcceptedStart.Position.y), upper = UpperLandingPosition;
         bool bookcase=StoreProductId=="loft.tall-bookcase";
-        if(bookcase)upper+=transform.TransformDirection(Vector3.forward)*.08f;
         Vector3 exit=floor;
         Vector3 exitDirection=StoreProductId==HomeStoreService.BalconyHerbShelfId?new Vector3(.94f,0,.342f):
             bookcase?new Vector3(-.7071f,0,.7071f):Vector3.zero;
@@ -78,18 +88,17 @@ public sealed class PantryClimbActivity : CatActivity
             }
             if(!found){CancelForTransition();yield break;}
         }
-        Quaternion inward = LookTowards(upper - floor, Cat.transform.rotation);
-        yield return CatActivityMotion.WalkAuthoredStep(Cat, floor, inward, .28f);
+        Quaternion inward = LookTowards(upper - floor, AcceptedStart.Rotation);
         Quaternion facing = CatActivityFacing.AlongAxis(Cat, upper, upperShelfPoint.rotation * Quaternion.Euler(0, 90, 0));
         bool herbShelf=StoreProductId==HomeStoreService.BalconyHerbShelfId;
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, upperShelfPoint);
         if (!directClimb)
         {
             Vector3 lower = lowerShelfPoint.position;
-            yield return supportedMotion.Jump(floor, lower, inward, inward);
+            yield return supportedMotion.Jump(AcceptedStart.Position, lower, AcceptedStart.Rotation, inward);
             yield return supportedMotion.Jump(lower, upper, inward, facing);
         }
-        else yield return supportedMotion.Jump(floor, upper, inward, facing);
+        else yield return supportedMotion.Jump(AcceptedStart.Position, upper, AcceptedStart.Rotation, facing);
         var area = upperShelfPoint.GetComponent<CatActivitySurface>();
         bool sleeping = area != null && area.ResolvePose(CatActivityPose.Sit) == CatActivityPose.Sleep;
         yield return supportedMotion.Pose(herbShelf?CatActivityPose.GentleKnead:CatActivityPose.SitDown, .55f, upper, facing);

@@ -140,8 +140,7 @@ public static class HomeRoomShellVisualPolishBuilder
             new Vector3(7.38f, .09f, .14f), materials["Pearl"]);
         CreateBox(threshold, "GoldInset", new Vector3(0f, .12f, -2.70f),
             new Vector3(7.12f, .025f, .035f), materials["Gold"]);
-        CreateBox(threshold, "CandyCenter", new Vector3(0f, .125f, -2.68f),
-            new Vector3(1.15f, .03f, .04f), accent);
+        // The floating colored center strip is retired; keep the pearl/gold threshold.
     }
 
     private static void BuildCornerJewels(

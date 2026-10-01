@@ -36,7 +36,7 @@ public sealed class CompanionComfortLayoutTests
             // A pending collection from another fixture may legitimately show
             // between the two resolutions. Keep that unrelated presentation
             // quiet while separately asserting its real companion modal gate.
-            foreach(var celebration in Object.FindObjectsByType<CollectionCompleteCelebrationView>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+            foreach(var celebration in Object.FindObjectsByType<CollectionCompleteCelebrationView>(FindObjectsInactive.Include))
             {
                 collectionStates[celebration]=celebration.enabled;
                 celebration.enabled=false;
@@ -129,7 +129,7 @@ public sealed class CompanionComfortLayoutTests
         var menu=Field<MainPanelController>(panel,"menu");
         var modal=Field<GameObject>(panel,"modal");
         return phase+": panel="+Identity(panel)+"; singleton="+Identity(singleton)+
-            "; panelCount="+Object.FindObjectsByType<CatCompanionPanel>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length+
+            "; panelCount="+Object.FindObjectsByType<CatCompanionPanel>(FindObjectsInactive.Include).Length+
             "; cachedCat="+Identity(cached)+"; liveCat="+Identity(liveCat)+"; sameCat="+(cached==liveCat)+
             "; modal="+(modal!=null && modal.activeSelf)+"; singletonOpen="+CatCompanionPanel.IsAnyOpen+
             "; menu="+Identity(menu)+"/"+(menu!=null && menu.IsOpen)+
@@ -145,6 +145,6 @@ public sealed class CompanionComfortLayoutTests
             "; collection="+CollectionCompleteCelebrationView.IsAnyOpen+"; level="+HomeLevelUpCelebrationView.IsAnyOpen;
     }
     static string Identity(Component component)=>component==null?"null/destroyed":
-        component.GetType().Name+"#"+component.GetInstanceID()+"@"+component.gameObject.scene.name+
+        component.GetType().Name+"#"+component.GetEntityId()+"@"+component.gameObject.scene.name+
         "/active="+component.gameObject.activeInHierarchy;
 }

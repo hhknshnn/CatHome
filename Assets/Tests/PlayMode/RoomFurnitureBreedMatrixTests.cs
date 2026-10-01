@@ -60,7 +60,7 @@ public sealed class RoomFurnitureBreedMatrixTests
         HomeStoreService.ApplySavedState(state);
         var cat = Object.FindAnyObjectByType<CatMovement>();
         SwingRideActivity ride = null;
-        foreach (var candidate in Object.FindObjectsByType<SwingRideActivity>(FindObjectsSortMode.None))
+        foreach (var candidate in Object.FindObjectsByType<SwingRideActivity>())
             if (candidate.Kind == CatActivityKind.HammockSway) ride = candidate;
         Assert.That(ride, Is.Not.Null);
         Assert.That(ride.TryStart(cat), Is.True);
@@ -90,7 +90,7 @@ public sealed class RoomFurnitureBreedMatrixTests
             System.Reflection.BindingFlags.NonPublic).SetValue(null, false);
         var products = new List<CatActivity>();
         var owned = new List<string>();
-        foreach (var display in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var display in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include))
         {
             if (!HomeStoreService.IsProductInRoomCollection(roomId, display.ProductId)) continue;
             owned.Add(display.ProductId);
@@ -255,7 +255,7 @@ public sealed class RoomFurnitureBreedMatrixTests
         // Keep the actual room's lighting/materials, but remove foreground
         // occlusion from adjacent products and the shell for contact inspection.
         var hidden = new List<Renderer>();
-        foreach (var renderer in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+        foreach (var renderer in Object.FindObjectsByType<Renderer>())
         {
             if (renderer.transform.IsChildOf(activity.transform) || renderer.transform.IsChildOf(cat.transform) ||
                 renderer.bounds.max.y < .04f || renderer.forceRenderingOff) continue;

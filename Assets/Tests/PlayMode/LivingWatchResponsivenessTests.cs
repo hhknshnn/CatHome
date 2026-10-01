@@ -51,7 +51,7 @@ public sealed class LivingWatchResponsivenessTests
         // Provisioning the isolated collection can create a persistent level-up
         // overlay. Dismiss that fixture-only celebration before testing buttons;
         // the production modal gate must remain effective.
-        foreach (var celebration in Object.FindObjectsByType<HomeLevelUpCelebrationView>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var celebration in Object.FindObjectsByType<HomeLevelUpCelebrationView>(FindObjectsInactive.Include))
             Object.DestroyImmediate(celebration.gameObject);
         cat = Object.FindAnyObjectByType<CatMovement>();
         var idle = cat.GetComponent<CatIdleBehavior>(); if (idle != null) idle.enabled = false;
@@ -60,12 +60,12 @@ public sealed class LivingWatchResponsivenessTests
         buttonObject.transform.SetParent(ui.transform, false);
         button = buttonObject.GetComponent<Button>(); prompt = ui.AddComponent<ActivityPromptController>();
         Set(prompt, "actionButton", button); ui.SetActive(true);
-        Assert.That(Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include)
             .Any(a => a.Kind == CatActivityKind.WindowWatch), Is.False);
         Assert.That(BondMilestoneService.Milestones.Any(m => m.ActivityKind == CatActivityKind.WindowWatch), Is.False);
         yield return null;
     }
-    SitLookActivity Find(string id) => Object.FindObjectsByType<SitLookActivity>(FindObjectsSortMode.None).Single(a => a.StoreProductId == id);
+    SitLookActivity Find(string id) => Object.FindObjectsByType<SitLookActivity>().Single(a => a.StoreProductId == id);
     IEnumerator Place(SitLookActivity activity, Vector3 position)
     {
         CatActionState.CancelForTransition(cat); yield return RoomPlayModeSupport.WaitForMovementRelease(cat);

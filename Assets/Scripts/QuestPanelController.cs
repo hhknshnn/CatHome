@@ -112,10 +112,10 @@ public sealed class QuestPanelController : MonoBehaviour
 
     // Runtime rows use the shared palette; old serialized row colours must not
     // restore the previous cream / brown treatment when the snapshot refreshes.
-    private static readonly Color activeTextColor = ModernUiArt.Ink;
-    private static readonly Color mutedTextColor = ModernUiArt.Muted;
-    private static readonly Color readyTextColor = ModernUiArt.Azure;
-    private static readonly Color claimedTextColor = ModernUiArt.Azure;
+    private static readonly Color activeTextColor = StorybookScreenStyle.Ink;
+    private static readonly Color mutedTextColor = StorybookScreenStyle.Muted;
+    private static readonly Color readyTextColor = StorybookQuestPresentation.PositiveText;
+    private static readonly Color claimedTextColor = StorybookQuestPresentation.PositiveText;
 
     // Player-facing state strings. Kept in one place so the presentation of the
     // authoritative QuestState never drifts between rows.
@@ -172,6 +172,7 @@ public sealed class QuestPanelController : MonoBehaviour
 
     private void Awake()
     {
+        StorybookQuestPresentation.Apply(transform);
         PremiumScrollInput.Ensure(scrollRect);
         ResolveSceneReferences();
 
@@ -348,7 +349,7 @@ public sealed class QuestPanelController : MonoBehaviour
     private void SelectDaily(bool value) { showDaily=value; Refresh(); ResetScrollToTop(); }
     private static void PaintTab(Button button,bool selected)
     {
-        ModernUiArt.Action(button, !selected);
+        StorybookScreenStyle.Action(button, !selected, selected);
     }
 
     private static string FormatChapterHeading(int chapterNumber, string chapterName)
@@ -439,9 +440,9 @@ public sealed class QuestPanelController : MonoBehaviour
             // existing scenes and newly built rows receive the same finish.
             Transform face = row.root.transform.Find("Face");
             if (face != null)
-                ModernUiArt.Surface(face.GetComponent<LowPolyPanelGraphic>(), ModernUiArt.Paper, 16f);
+                StorybookScreenStyle.Card(face.GetComponent<LowPolyPanelGraphic>(), 22f);
         }
-        ModernUiArt.Action(row.claimButton);
+        StorybookScreenStyle.Action(row.claimButton);
 
         // A quest authored without a title falls back to its description, never to
         // the raw quest id: ids are data, not player-facing copy.
@@ -488,6 +489,8 @@ public sealed class QuestPanelController : MonoBehaviour
                 SetClaimVisible(row, false, false);
                 break;
         }
+        StorybookQuestPresentation.ApplyRow(row.root == null ? null : row.root.transform,
+            snapshot, row.progress, row.title, row.description, row.rewards);
     }
 
     private string BuildRewardText(QuestSnapshot snapshot)

@@ -18,7 +18,7 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
     readonly Leg[] legs = {new Leg(), new Leg(), new Leg(), new Leg()};
     readonly List<Vector3> supportPoints = new List<Vector3>();
     CatActivity owner;
-    CatActivityAnimation animation;
+    CatActivityAnimation activityAnimation;
     Transform support;
     Transform visual;
     Transform head;
@@ -38,7 +38,7 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
     {
         Clear();
         if (activity == null || !activity.IsRunning) yield break;
-        owner = activity; animation = GetComponent<CatActivityAnimation>();
+        owner = activity; activityAnimation = GetComponent<CatActivityAnimation>();
         var anchor = new GameObject("Planted turn support") {hideFlags = HideFlags.DontSave};
         support = anchor.transform; support.SetParent(activity.transform, true);
         support.SetPositionAndRotation(centre, Quaternion.identity);
@@ -101,8 +101,8 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
             for (float t = 0; t < .20f; t += Time.deltaTime)
             {
                 lowering = Mathf.SmoothStep(0, standingLowering, t / .20f);
-                if (lowDoor) animation.SetPose(turningPose, support);
-                else animation.SetTimedPose(turningPose, 0, support);
+                if (lowDoor) activityAnimation.SetPose(turningPose, support);
+                else activityAnimation.SetTimedPose(turningPose, 0, support);
                 yield return null;
             }
             lowering = standingLowering;
@@ -136,7 +136,7 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
                     Vector3 turnCentre = centre + turnOutward * OpeningBlend(total, lowDoor);
                     support.position = turnCentre;
                     transform.SetPositionAndRotation(turnCentre, Quaternion.Slerp(first, arrival, total));
-                    animation.SetTimedPose(turningPose, Mathf.Repeat(elapsed / pace * .16f, 1f), support);
+                    activityAnimation.SetTimedPose(turningPose, Mathf.Repeat(elapsed / pace * .16f, 1f), support);
                     weightShift = Vector3.Lerp(weightShift, desiredShift, 1f - Mathf.Exp(-Time.deltaTime * 12f / pace));
                     headLead = direction * Mathf.Min(9f, angle * .16f) * Mathf.Sin(Mathf.PI * total);
                     for (int i = 0; i < 4; i++)
@@ -158,7 +158,7 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
             if (openingStep > 0f)
                 for (float settle = 0f; settle < .18f; settle += Time.deltaTime)
                 {
-                    animation.SetTimedPose(turningPose, Mathf.Repeat(elapsed / pace * .16f, 1f), support);
+                    activityAnimation.SetTimedPose(turningPose, Mathf.Repeat(elapsed / pace * .16f, 1f), support);
                     yield return null;
                 }
         }
@@ -239,7 +239,7 @@ public sealed class CatSurfaceTurnMotion : MonoBehaviour
     void Update() { Restore(); }
     void LateUpdate()
     {
-        if (owner == null || !owner.IsRunning || animation.IsNativeJump) { if (owner != null) Clear(); return; }
+        if (owner == null || !owner.IsRunning || activityAnimation.IsNativeJump) { if (owner != null) Clear(); return; }
         if (releaseElapsed >= 0)
         {
             releaseElapsed += Time.deltaTime;

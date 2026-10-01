@@ -110,7 +110,7 @@ public static class ComfortVisualTour
         {
             yield return ChangeRoom(room.Id);
             AssertHome(false);
-            string[] items = Object.FindObjectsByType<StoreProductDisplay>(FindObjectsSortMode.None)
+            string[] items = Object.FindObjectsByType<StoreProductDisplay>()
                 .Where(p => p.gameObject.activeInHierarchy && p.gameObject.scene.name == room.SceneName)
                 .Select(p => p.ProductId).Where(id => !string.IsNullOrEmpty(id)).Distinct().OrderBy(id => id).ToArray();
             File.WriteAllLines(Path.Combine(OutputDirectory, "Room_" + room.SceneName + ".products.txt"), items);
@@ -228,7 +228,7 @@ public static class ComfortVisualTour
         Require(host.LoadRoom(roomId), "Cannot load " + roomId + "; provision the isolated QA collection first.");
         yield return Wait(() => host.IsReady && !host.IsTransitioning && host.CurrentRoom.Id == roomId, roomId, 30);
         var cat = Need<CatMovement>();
-        var spawn = Object.FindObjectsByType<LevelSpawnPoint>(FindObjectsSortMode.None)
+        var spawn = Object.FindObjectsByType<LevelSpawnPoint>()
             .FirstOrDefault(p => p.gameObject.scene == cat.gameObject.scene && p.SpawnPointId == host.CurrentRoom.SpawnPointId);
         Require(spawn != null, "Missing room spawn for " + roomId);
         cat.ApplySavedWorldPose(spawn.transform.position, spawn.transform.rotation);
@@ -263,8 +263,8 @@ public static class ComfortVisualTour
     {
         var cat = Need<CatMovement>();
         Require(cat.IsMovementLocked == blocked && cat.AreWorldActionsBlocked == blocked, "Unexpected home input owner.");
-        Require(Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None).Length == 1, "Expected one home cat.");
-        Require(Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).Count(c => c.enabled && c.targetTexture == null) == 1,
+        Require(Object.FindObjectsByType<CatMovement>().Length == 1, "Expected one home cat.");
+        Require(Object.FindObjectsByType<Camera>().Count(c => c.enabled && c.targetTexture == null) == 1,
             "Expected one rendering world camera.");
     }
     static void ClearPanels() { Object.FindAnyObjectByType<CatCompanionPanel>()?.Close(); UiQaVisualTour.Clear(); }
@@ -275,7 +275,7 @@ public static class ComfortVisualTour
     static void Require(bool pass, string message) { if (!pass) throw new InvalidOperationException(message); }
     static void Quiet<T>() where T : Behaviour
     {
-        foreach (var component in Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var component in Object.FindObjectsByType<T>(FindObjectsInactive.Include))
         { enabledStates[component] = component.enabled; component.enabled = false; }
     }
 

@@ -86,9 +86,9 @@ public sealed class HomeRoomShellTests
                 AssertVector(cat.position,catPosition.Value,$"'{path}' cat position");
                 AssertVector(cat.lossyScale,catScale.Value,$"'{path}' cat scale");
                 Assert.That(camera.GetComponent<HomeWorldViewport>(),Is.Not.Null,"Every home camera reserves the navigation strip.");
-                AssertVector(camera.transform.position,HomeRoomCameraProfile.Position,$"'{path}' front-centred camera");
-                Assert.That(Quaternion.Angle(camera.transform.rotation,Quaternion.Euler(HomeRoomCameraProfile.Angles)),Is.LessThan(.05f),path);
-                Assert.That(camera.fieldOfView,Is.EqualTo(HomeRoomCameraProfile.FieldOfView).Within(Tolerance),path);
+                AssertVector(camera.transform.position,HomeRoomCameraProfile.PositionFor(path),$"'{path}' approved camera");
+                Assert.That(Quaternion.Angle(camera.transform.rotation,Quaternion.Euler(HomeRoomCameraProfile.AnglesFor(path))),Is.LessThan(.05f),path);
+                Assert.That(camera.fieldOfView,Is.EqualTo(HomeRoomCameraProfile.FieldOfViewFor(path)).Within(Tolerance),path);
             });
         }
     }

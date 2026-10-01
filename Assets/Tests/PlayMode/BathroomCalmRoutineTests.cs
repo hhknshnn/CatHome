@@ -32,7 +32,7 @@ public sealed class BathroomCalmRoutineTests
         Assert.That(cat, Is.Not.Null);
         CatActionState.CancelForTransition(cat);
         tub = Object.FindAnyObjectByType<TubEdgeWalkActivity>(FindObjectsInactive.Include);
-        mirror = Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        mirror = Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include)
             .SingleOrDefault(a => a.Kind == CatActivityKind.MirrorGaze);
         Assert.That(tub, Is.Not.Null);
         var state = HomeStoreSaveState.CreateDefault(); state.currentRoomId = HomeRoomService.BathroomId;
@@ -121,7 +121,7 @@ public sealed class BathroomCalmRoutineTests
     public IEnumerator Mirror_RemainsVisibleDecorationWithoutAnAction()
     {
         Assert.That(mirror, Is.Null);
-        var product = Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        var product = Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include)
             .Single(p => p.ProductId == HomeStoreService.BathroomMirrorId);
         Assert.That(product.GetComponentsInChildren<Renderer>(true).Any(r => r.enabled && r.gameObject.activeInHierarchy), Is.True);
         Assert.That(product.GetComponentInChildren<CatActivity>(true), Is.Null);

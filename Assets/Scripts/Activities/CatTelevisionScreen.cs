@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Video;
 
-/// <summary>A baked HD broadcast of our cats, with no extra runtime scene camera.</summary>
+/// <summary>A baked cartoon broadcast, with no extra runtime scene camera.</summary>
 [RequireComponent(typeof(MeshRenderer),typeof(VideoPlayer))]
 public sealed class CatTelevisionScreen : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public sealed class CatTelevisionScreen : MonoBehaviour
         screenRenderer.sharedMaterial=screenMaterial;
         screenMaterial.SetTexture("_BaseMap",poster);
         if(clip==null || CatRunnerProgressService.ReducedMotion)return;
-        output=new RenderTexture(1920,1080,0,RenderTextureFormat.ARGB32){name="Cat TV HD",filterMode=FilterMode.Bilinear};output.Create();
+        output=new RenderTexture(1280,720,0,RenderTextureFormat.ARGB32){name="Cat TV Cartoon",filterMode=FilterMode.Bilinear};output.Create();
         player.clip=clip;player.isLooping=true;player.playOnAwake=false;player.audioOutputMode=VideoAudioOutputMode.None;
         player.renderMode=VideoRenderMode.RenderTexture;player.targetTexture=output;player.waitForFirstFrame=true;
         player.prepareCompleted+=Prepared;player.Prepare();

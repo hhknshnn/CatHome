@@ -34,6 +34,14 @@ public sealed class HamperDiveActivity : CatActivity
     public float HideDuration => Mathf.Max(0.5f, hideDuration);
     public float EnergyRestore => Mathf.Max(0f, energyRestore);
     public bool IsHiding { get; private set; }
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return floorPoint != null && pilePoint != null &&
+            CatActivityStartResolver.GroundLaunch(this, actor, floorPoint.position, pilePoint.position, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -61,17 +69,9 @@ public sealed class HamperDiveActivity : CatActivity
         if (characterController != null)
             characterController.enabled = false;
 
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 floor = Flatten(floorPoint.position, start.y);
+        Vector3 floor = Flatten(floorPoint.position, AcceptedStart.Position.y);
         Vector3 pile = pilePoint.position;
-
-        Quaternion toFloor = LookTowards(floor - start, startRotation);
-        yield return Move(start, floor, startRotation, toFloor, 0.30f);
-
-        Quaternion inward = LookTowards(
-            new Vector3(pile.x - floor.x, 0f, pile.z - floor.z), toFloor);
-        yield return Move(floor, floor, toFloor, inward, 0.18f);
+        Quaternion inward = LookTowards(pile - floor, AcceptedStart.Rotation);
 
         // Jump already supplies the real skeletal crouch. The old root-scale
         // squash was restored by CatActivityAnimation each frame and left a
@@ -81,7 +81,7 @@ public sealed class HamperDiveActivity : CatActivity
             CatActivityFacing.AlongAxis(Cat, pile, pilePoint.rotation * Quaternion.Euler(0,90,0)) :
             CatActivityFacing.Resolve(Cat, pile, inward);
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, pilePoint);
-        yield return supportedMotion.Jump(floor, pile, Cat.transform.rotation, inward);
+        yield return supportedMotion.Jump(AcceptedStart.Position, pile, AcceptedStart.Rotation, inward);
         yield return supportedMotion.Pose(CatActivityPose.SitDown, .55f, pile, inward);
         yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .85f, pile, inward);
 

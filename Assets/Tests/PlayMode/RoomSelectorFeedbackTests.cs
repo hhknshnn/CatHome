@@ -43,10 +43,10 @@ public sealed class RoomSelectorFeedbackTests
         unlocked.ownedProductIds = unlocked.ownedProductIds.Concat(HomeRoomService.Rooms
             .Select(r => r.RequiredOwnershipId).Where(id => !string.IsNullOrEmpty(id))).Distinct().ToArray();
         HomeStoreService.ApplySavedState(unlocked);
-        foreach (var celebration in Object.FindObjectsByType<CollectionCompleteCelebrationView>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var celebration in Object.FindObjectsByType<CollectionCompleteCelebrationView>(FindObjectsInactive.Include))
             celebration.enabled = false;
         visualQa.GetMethod("Clear").Invoke(null, null);
-        foreach (var tutorial in Object.FindObjectsByType<PetTutorialHint>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var tutorial in Object.FindObjectsByType<PetTutorialHint>(FindObjectsInactive.Include))
             tutorial.enabled = false;
         yield return new WaitForSecondsRealtime(.5f);
         panel = Object.FindAnyObjectByType<RoomSelectorPanel>();

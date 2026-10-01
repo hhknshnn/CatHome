@@ -20,7 +20,7 @@ public static class UiQaVisualTour
     public static string Status {get;private set;}="Idle";
     public const string DirectoryPath="Docs/QA/UIUX_2026-09-06/screens";
     public static string OutputDirectory {get;set;}=DirectoryPath;
-    public static T Find<T>() where T:Component => Object.FindObjectsByType<T>(FindObjectsInactive.Include,FindObjectsSortMode.None).OrderByDescending(x=>x.gameObject.activeInHierarchy).FirstOrDefault();
+    public static T Find<T>() where T:Component => Object.FindObjectsByType<T>(FindObjectsInactive.Include).OrderByDescending(x=>x.gameObject.activeInHierarchy).FirstOrDefault();
     public static object Call(object target,string method,params object[] args)
     {if(target==null)throw new Exception("Missing target for "+method);return target.GetType().GetMethod(method,Flags).Invoke(target,args);}
     public static void Set(object target,string field,object value)=>target.GetType().GetField(field,Flags).SetValue(target,value);
@@ -119,7 +119,7 @@ public static class UiQaVisualTour
     {
         var rows=new List<Tuple<Button,Rect>>();var output=new System.Text.StringBuilder();
         output.AppendLine($"Screen {Screen.width}x{Screen.height}; SafeArea {Screen.safeArea}");
-        foreach(var button in Object.FindObjectsByType<Button>(FindObjectsSortMode.None))
+        foreach(var button in Object.FindObjectsByType<Button>())
         {
             if(!button.IsActive()||!button.IsInteractable()||button.targetGraphic==null||!button.targetGraphic.enabled||button.targetGraphic.color.a<.03f)continue;
             if(button.GetComponentsInParent<Canvas>().Any(c=>!c.isActiveAndEnabled))continue;

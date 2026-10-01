@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -19,7 +18,6 @@ public sealed class BirdFeederShakeActivity : CatActivity
     [SerializeField, Min(.5f)] private float poleStandDistance = .66f;
 
     private CharacterController characterController;
-    private List<Vector3> contactPath;
     public Vector3 ContactStand { get; private set; }
     public bool ContactStandBlocked { get; private set; }
     private Vector3 feederHome;
@@ -27,6 +25,7 @@ public sealed class BirdFeederShakeActivity : CatActivity
     private Vector3 seedHome;
     private bool homeCaptured;
     private CatToyContactMotion pawContact;
+    private CatPawReachMotion pawReach;
     public int ContactStrokes { get; private set; }
     public float MinimumPawDistance { get; private set; }
     public bool IsTapping { get; private set; }
@@ -38,6 +37,38 @@ public sealed class BirdFeederShakeActivity : CatActivity
     public int BatCount => Mathf.Max(1, batCount);
     public float SwingAngle => Mathf.Clamp(swingAngle, 2f, 30f);
 
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        if (actor == null || reachPoint == null || feederPivot == null) return false;
+        Vector3 stand = actor.transform.position;
+        float distance = Vector3.ProjectOnPlane(transform.position - stand, Vector3.up).magnitude;
+        // The pole must stay ahead of the chest; the old feeder-centred stand
+        // allowed its shaft through the torso. Readiness never moves the cat.
+        if (distance < poleStandDistance - .025f || distance > poleStandDistance + .025f ||
+            !TryPoleContact(stand, out Vector3 contact)) return false;
+        if (!CatActivityStartResolver.Facing(actor, transform.position, poleStandDistance + .025f,
+            contact, 18f, out start) || !CatPawReachResolver.TryResolve(actor,contact,false,CatActivityPose.Paw,out var plan,0)) return false;
+        start.PawPlan=plan; start.HasPawPlan=true; return true;
+    }
+
+    private bool TryPoleContact(Vector3 stand, out Vector3 contact)
+    {
+        contact = transform.position; contact.y = stand.y + .38f;
+        Vector3 from = stand + Vector3.up * .38f;
+        var hits = Physics.RaycastAll(from, (contact - from).normalized, .9f, ~0, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (var hit in hits)
+        {
+            if (hit.collider.GetComponentInParent<CatMovement>() != null) continue;
+            if (!hit.transform.IsChildOf(transform)) return false;
+            contact = hit.point + hit.normal * .008f;
+            return true;
+        }
+        return false;
+    }
+
     protected override bool CanBeginActivity(out string failureReason)
     {
         if (reachPoint == null || feederPivot == null)
@@ -46,19 +77,15 @@ public sealed class BirdFeederShakeActivity : CatActivity
             return false;
         }
 
-        Vector3 origin = RoutineFloorPosition; origin.y = Cat.transform.position.y;
-        ContactStandBlocked = !FindPoleStand(origin, out Vector3 stand);
-        ContactStand = stand;
-        failureReason = ContactStandBlocked ? "LET'S MAKE SOME ROOM." : string.Empty;
-        return !ContactStandBlocked;
+        failureReason = string.Empty;
+        return true;
     }
 
     protected override bool BeginActivity()
     {
         ContactStrokes=0;MinimumPawDistance=float.PositiveInfinity;
-        ContactStandBlocked = !FindPoleStand(Cat.transform.position, out Vector3 stand);
-        ContactStand = stand;
-        if (ContactStandBlocked) return false;
+        ContactStand = AcceptedStart.Position;
+        ContactStandBlocked = false;
         characterController = Cat.GetComponent<CharacterController>();
         if (!homeCaptured)
         {
@@ -72,59 +99,19 @@ public sealed class BirdFeederShakeActivity : CatActivity
         return true;
     }
 
-    private bool FindPoleStand(Vector3 origin, out Vector3 stand)
-    {
-        Vector3 pole = transform.position; pole.y = Cat.transform.position.y;
-        Vector3 offset = reachPoint.position - pole; offset.y = 0f;
-        if (offset.sqrMagnitude < .0001f) offset = -transform.forward;
-        // The old radius was measured from the hanging feeder: only .184 m.
-        // That put the pole through the torso and sent a paw behind its shoulder.
-        Vector3 authored = pole + offset.normalized * poleStandDistance;
-        return CatActivityFacing.TryFindContactStand(Cat, pole, authored, origin,
-            out stand, out contactPath, null, true);
-    }
-
     private IEnumerator ShakeRoutine()
     {
         Cat.SetMovementLocked(this, true);
         if (characterController != null)
             characterController.enabled = false;
 
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 reach = Flatten(ContactStand, start.y);
-
-        Quaternion toReach = startRotation;
-        foreach (Vector3 waypoint in contactPath)
-        {
-            Vector3 destination = Flatten(waypoint, start.y);
-            Vector3 from = Cat.transform.position;
-            toReach = LookTowards(destination - from, Cat.transform.rotation);
-            yield return Move(from, destination, Cat.transform.rotation, toReach,
-                Mathf.Max(.18f, Vector3.Distance(from, destination) / 1.1f));
-        }
-
-        Vector3 up = (transform.position - reach);
-        up.y = 0f;
-        Vector3 push = up.sqrMagnitude > 0.0001f ? up.normalized : Cat.transform.forward;
-        // A slight diagonal leaves the head beside the pole while the nearer
-        // right foreleg taps it. Reaching straight through the head looked clipped.
-        Quaternion facing = LookTowards(push, toReach) * Quaternion.Euler(0f, -5f, 0f);
-        PlayCatPose(CatActivityPose.GentleKnead);
-        yield return CatActivityFacing.Turn(Cat, facing, .2f);
-
-        // Tap the reachable pole. The suspended feeder responds to that
-        // contact; the cat's root and supporting feet stay on the deck.
-        Vector3 contact=transform.position;contact.y=reach.y+.38f;
-        Vector3 rayFrom=reach+Vector3.up*.38f;
-        var hits=Physics.RaycastAll(rayFrom,(contact-rayFrom).normalized,1.5f,~0,QueryTriggerInteraction.Ignore);
-        System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
-        bool found=false;
-        foreach(var hit in hits)if(hit.transform.IsChildOf(transform))
-        {contact=hit.point+hit.normal*.008f;found=true;break;}
-        if(!found){CancelForTransition();yield break;}
+        Vector3 reach = AcceptedStart.Position;
+        Quaternion facing = AcceptedStart.Rotation;
+        Vector3 contact = AcceptedStart.ActionTarget;
         pawContact=Cat.GetComponent<CatToyContactMotion>()??Cat.gameObject.AddComponent<CatToyContactMotion>();
-        var animation=Cat.GetComponent<CatActivityAnimation>();
+        pawReach=Cat.GetComponent<CatPawReachMotion>()??Cat.gameObject.AddComponent<CatPawReachMotion>();
+        var hand=CatBreedVisualFactory.FindDescendant(Cat.transform,"DEF-hand.R");
+        if(hand==null){CancelForTransition();yield break;}
         for (int index = 0; index < BatCount; index++)
         {
             float bat = 0f;
@@ -132,14 +119,17 @@ public sealed class BirdFeederShakeActivity : CatActivity
             bool touched=false;IsTapping=true;
             while (bat < .80f)
             {
+                if(Time.timeScale<=0f){yield return null;continue;}
                 float t = Mathf.Clamp01(bat / .80f);
                 Cat.transform.SetPositionAndRotation(reach,facing);
-                animation.SetTimedPose(CatActivityPose.Paw,t);
-                pawContact.Reach(contact,false,t);
-                if(t>.28f&&t<.7f)
+                pawReach.Sample(this,AcceptedStart.PawPlan,t);
+                yield return new WaitForEndOfFrame();
+                if(!IsRunning)yield break;
+                if(Time.timeScale>0f&&t>.28f&&t<.7f)
                 {
-                    MinimumPawDistance=Mathf.Min(MinimumPawDistance,pawContact.Distance);
-                    if(!touched&&pawContact.Distance<.025f){touched=true;GameAudio.Play(AudioCue.Feeder,.8f);}
+                    float distance=Vector3.Distance(hand.position,AcceptedStart.PawPlan.Target);
+                    MinimumPawDistance=Mathf.Min(MinimumPawDistance,distance);
+                    if(!touched&&distance<.025f){touched=true;GameAudio.Play(AudioCue.Feeder,.8f);}
                 }
 
                 float swing = Mathf.Sin(t * Mathf.PI * 2.2f) * (1f - t * 0.35f)
@@ -155,7 +145,7 @@ public sealed class BirdFeederShakeActivity : CatActivity
 
                 yield return null;bat+=Time.deltaTime;
             }
-            IsTapping=false;pawContact.Clear();
+            IsTapping=false;pawReach.Clear();pawContact.Clear();
             if(!touched){CancelForTransition();yield break;}
             ContactStrokes++;
             Cat.transform.position = reach;
@@ -180,9 +170,6 @@ public sealed class BirdFeederShakeActivity : CatActivity
             yield return null;
         }
 
-        Quaternion away = CatActivityFacing.Resolve(Cat, reach, LookTowards(start - reach, facing));
-        yield return Move(reach, reach, facing, away, 0.22f);
-
         RestoreRig();
         CompleteActivity("SEED RAIN!");
     }
@@ -197,44 +184,9 @@ public sealed class BirdFeederShakeActivity : CatActivity
         }
     }
 
-    private IEnumerator Move(
-        Vector3 from, Vector3 to, Quaternion fromRotation, Quaternion toRotation,
-        float duration)
-    {
-        Vector3 direction = to - from; direction.y = 0f;
-        if (direction.sqrMagnitude < .000001f)
-        {
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, duration);
-            yield break;
-        }
-
-        // Turn on the spot first. Interpolating a travel position while still
-        // facing the previous action made the return leg slide backwards.
-        Quaternion travel = Quaternion.LookRotation(direction, Vector3.up);
-        PlayCatPose(CatActivityPose.GentleKnead);
-        yield return CatActivityFacing.Turn(Cat, travel, .16f);
-        PlayCatPose(CatActivityPose.Walk);
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            Cat.transform.SetPositionAndRotation(Vector3.Lerp(from, to, t), travel);
-            yield return null;
-        }
-
-        Cat.transform.SetPositionAndRotation(to, travel);
-        if (Quaternion.Angle(travel, toRotation) > .1f)
-        {
-            PlayCatPose(CatActivityPose.GentleKnead);
-            yield return CatActivityFacing.Turn(Cat, toRotation, .16f);
-        }
-    }
-
     private void RestoreRig()
     {
-        IsTapping=false;pawContact?.Clear();
+        IsTapping=false;pawReach?.Clear();pawContact?.Clear();
         // The feeder goes back to rest. A product left mid-swing would still be
         // swinging the next time the cat walked past it.
         if (homeCaptured)
@@ -264,20 +216,6 @@ public sealed class BirdFeederShakeActivity : CatActivity
         if (!HasBegunActivity) { base.CancelActivity(); return; }
         RestoreRig();
         base.CancelActivity();
-    }
-
-    private static Vector3 Flatten(Vector3 point, float y)
-    {
-        point.y = y;
-        return point;
-    }
-
-    private static Quaternion LookTowards(Vector3 direction, Quaternion fallback)
-    {
-        direction.y = 0f;
-        return direction.sqrMagnitude > 0.0001f
-            ? Quaternion.LookRotation(direction.normalized, Vector3.up)
-            : fallback;
     }
 
 #if UNITY_EDITOR

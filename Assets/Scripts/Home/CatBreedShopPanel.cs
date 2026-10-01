@@ -73,6 +73,8 @@ public sealed class CatBreedShopPanel : MonoBehaviour
         }
 
         activeInstance = this;
+        StorybookCatPresentation.Apply(transform);
+        PremiumTypography.ApplyNameInput(nameInput);
         PremiumScrollInput.Ensure(GetComponentInChildren<ScrollRect>(true));
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();

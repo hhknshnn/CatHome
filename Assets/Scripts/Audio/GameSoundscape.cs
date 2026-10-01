@@ -42,12 +42,12 @@ public sealed class GameSoundscape : MonoBehaviour
         if(Time.unscaledTime>=nextResolve)
         {
             nextResolve=Time.unscaledTime+.2f;
-            if(cat==null)cat=FindFirstObjectByType<CatMovement>();
+            if(cat==null)cat=FindAnyObjectByType<CatMovement>();
             if(sleep==null&&cat!=null)sleep=cat.GetComponent<SleepInteraction>();
             if(bowls==null&&cat!=null)bowls=cat.GetComponent<BowlInteraction>();
             if(activity==null&&cat!=null)activity=cat.GetComponent<CatActivityAnimation>();
-            if(runner==null)runner=FindFirstObjectByType<CatRunnerGameController>();
-            if(hunt==null)hunt=FindFirstObjectByType<CatCatchGameController>();
+            if(runner==null)runner=FindAnyObjectByType<CatRunnerGameController>();
+            if(hunt==null)hunt=FindAnyObjectByType<CatCatchGameController>();
             string room=HomeRoomService.CurrentRoomId;
             outdoor=room==HomeRoomService.GardenId||room==HomeRoomService.BalconyId||room==HomeRoomService.PatioId;
             mini=HomeUiFlow.IsMiniGameVisible;
@@ -73,6 +73,9 @@ public sealed class GameSoundscape : MonoBehaviour
         if(paused)level*=.35f;
         if(runner!=null&&!runner.IsRunning||hunt!=null&&!hunt.IsHunting)level*=.62f;
         if(CatActivity.Active!=null&&CatActivity.Active.IsRunning&&selection!="Rest"&&!care)level*=.72f;
+        // The scene record takes the music slot while its switch is ON.
+        // Its own source shares music preference, focus and pause ownership.
+        if (home && RecordPlayerMusic.HasActiveRecord) level = 0;
         TargetMusicVolume=musicAllowed&&selection!=""?level:0;
         for(int i=0;i<2;i++)
         {

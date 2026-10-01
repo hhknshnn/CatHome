@@ -47,7 +47,7 @@ public sealed class HomeContactFacingTests
         HomeStoreService.ApplySavedState(state); yield return null; yield return null;
         cat = Object.FindAnyObjectByType<CatMovement>(); bowls = cat.GetComponent<BowlInteraction>(); sleep = cat.GetComponent<SleepInteraction>();
         var idle = cat.GetComponent<CatIdleBehavior>(); if (idle != null) idle.enabled = false;
-        foreach (var hint in Object.FindObjectsByType<PetTutorialHint>(FindObjectsInactive.Include, FindObjectsSortMode.None)) hint.enabled = false;
+        foreach (var hint in Object.FindObjectsByType<PetTutorialHint>(FindObjectsInactive.Include)) hint.enabled = false;
         needsHost = new GameObject("Contact facing QA needs");
         hunger = Object.FindAnyObjectByType<HungerSystem>() ?? needsHost.AddComponent<HungerSystem>();
         thirst = Object.FindAnyObjectByType<ThirstSystem>() ?? needsHost.AddComponent<ThirstSystem>();

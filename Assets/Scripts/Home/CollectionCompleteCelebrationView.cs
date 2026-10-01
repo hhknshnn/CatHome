@@ -74,7 +74,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         !ShopPanelController.IsAnyOpen && !CatBreedShopPanel.IsAnyOpen && !RoomSelectorPanel.IsAnyOpen &&
         !QuestPanelController.IsAnyOpen && !SettingsPanel.IsAnyOpen && !PrivacyDataPanel.IsAnyOpen &&
         !GamesHubPanel.IsAnyOpen && !LeaderboardPanel.IsAnyOpen && !CatCompanionPanel.IsAnyOpen && CatActivity.Active==null &&
-        !(FindFirstObjectByType<MainPanelController>() is MainPanelController menu && menu.IsOpen);
+        !(FindAnyObjectByType<MainPanelController>() is MainPanelController menu && menu.IsOpen);
 
     private void Update()
     {
@@ -88,6 +88,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
 
     private void Show(CollectionMilestone milestone)
     {
+        StorybookScreenStyle.CurrencyIcons(panel);
         current = milestone;
         claimed = false;
         isOpen = true;
@@ -205,6 +206,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
         collectButton.onClick.AddListener(OnCollect);
         JoyfulUiArt.ActionStyle(collectButton,JoyfulUiArt.Coral);
         JoyfulUiArt.Surface(face,JoyfulUiArt.Paper,32);
+        StorybookMilestonePresentation.Apply(panel);
     }
 
     private static void Stretch(RectTransform rect)
@@ -260,7 +262,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
 
     private static TMP_FontAsset FindFont()
     {
-        TMP_Text[] texts = FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        TMP_Text[] texts = FindObjectsByType<TMP_Text>(FindObjectsInactive.Include);
         for (int i = 0; i < texts.Length; i++)
             if (texts[i] != null && texts[i].font != null)
                 return texts[i].font;

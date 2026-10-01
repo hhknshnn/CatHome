@@ -23,6 +23,8 @@ public sealed class ActivityPromptController : MonoBehaviour
     private CatActivity candidate;
     private CatActivity selected;
     private ActivitySelectionGraphic selectionGraphic;
+    private readonly System.Collections.Generic.Dictionary<CatActivity, (bool ready, float distance)> promptChecks =
+        new System.Collections.Generic.Dictionary<CatActivity, (bool, float)>();
 
     public static void NotifyActivityChanged()
     {
@@ -80,6 +82,7 @@ public sealed class ActivityPromptController : MonoBehaviour
 
     private void RefreshImmediate()
     {
+        promptChecks.Clear();
         if(HomeUiFlow.IsHomeControlBlocked || TitleScreen.IsShowing || GamesHubPanel.IsAnyOpen || LeaderboardPanel.IsAnyOpen ||
            ShopPanelController.IsAnyOpen || QuestPanelController.IsAnyOpen || CatBreedShopPanel.IsAnyOpen ||
            RoomSelectorPanel.IsAnyOpen || SettingsPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen ||
@@ -93,9 +96,7 @@ public sealed class ActivityPromptController : MonoBehaviour
             if(active.IsWaitingForRestStop)
             {
                 HideProgress();
-                string restTitle=HomeStoreService.TryGetProduct(active.StoreProductId,out var restingProduct)?restingProduct.Title:GameInteractionCopy.Text(active.DisplayName);
-                if(string.IsNullOrWhiteSpace(restTitle))restTitle=PetTutorialHint.CatName;
-                SetActionText(restTitle+"\n"+GameContentCopy.Text("Kalk","Get up"));
+                SetActionText(GameContentCopy.Text("Kalk","Get up"));
                 SetGroup(actionGroup,true);
                 if(actionButton!=null){actionButton.gameObject.SetActive(true);actionButton.interactable=true;}
             }
@@ -115,8 +116,8 @@ public sealed class ActivityPromptController : MonoBehaviour
         }
 
         string title=HomeStoreService.TryGetProduct(candidate.StoreProductId,out var product)?product.Title:GameInteractionCopy.Text(candidate.DisplayName);
-        string action=BuildActionText(candidate, energySystem);
-        bool needsEnergy=candidate.EnergyCost>0 && (energySystem==null || !energySystem.CanSpendEnergy(candidate.EnergyCost));
+        string action=BuildActionText(candidate, energySystem, cat);
+        bool needsEnergy=!candidate.IsCareSatisfiedFor(cat) && candidate.EnergyCost>0 && (energySystem==null || !energySystem.CanSpendEnergy(candidate.EnergyCost));
         SetActionText(GameInteractionCopy.ProductAction(candidate.StoreProductId, title, action, needsEnergy));
         SetGroup(actionGroup, true);
         if (actionButton != null)
@@ -141,10 +142,8 @@ public sealed class ActivityPromptController : MonoBehaviour
         for (int i = 0; i < activities.Count; i++)
         {
             CatActivity activity = activities[i];
-            if (!IsNearby(activity))
+            if (!IsEligible(activity) || !QueryPrompt(activity, out float distance))
                 continue;
-
-            activity.TryGetPromptDistance(cat, out float distance);
             if (distance <= activity.InteractionRadius && distance < nearestDistance)
             {
                 nearest = activity;
@@ -153,13 +152,23 @@ public sealed class ActivityPromptController : MonoBehaviour
         }
 
         // A small hysteresis keeps adjacent media actions from flickering as the cat idles.
-        if(IsNearby(candidate) && candidate.TryGetPromptDistance(cat,out float previousDistance) && previousDistance<=nearestDistance+.06f)return candidate;
+        if(IsEligible(candidate) && QueryPrompt(candidate,out float previousDistance) && previousDistance<=nearestDistance+.06f)return candidate;
         return nearest;
     }
 
-    private bool IsNearby(CatActivity activity) => cat!=null && activity!=null &&
+    private bool IsEligible(CatActivity activity) => cat!=null && activity!=null &&
         activity.isActiveAndEnabled && activity.IsUnlocked && activity.gameObject.scene==cat.gameObject.scene &&
-        activity.TryGetPromptDistance(cat,out _);
+        !activity.IsRetired;
+    private bool IsNearby(CatActivity activity) => IsEligible(activity) && QueryPrompt(activity,out _);
+    private bool QueryPrompt(CatActivity activity,out float distance)
+    {
+        if(!promptChecks.TryGetValue(activity,out var check))
+        {
+            bool ready=activity.CanStartFromPrompt(cat,out float measured);
+            check=(ready,measured);promptChecks.Add(activity,check);
+        }
+        distance=check.distance;return check.ready;
+    }
 
     private void ReadWorldSelection()
     {
@@ -210,9 +219,11 @@ public sealed class ActivityPromptController : MonoBehaviour
             return;
         if(CatActivity.Active!=null && CatActivity.Active.BelongsTo(cat))
         {CatActivity.Active.RequestRestStop();return;}
-        // The cat can leave the radius between the rendered frame and a click.
-        if (IsNearby(candidate) && !CatActionState.IsBusy(cat) && !cat.AreWorldActionsBlocked && !HomeUiFlow.IsHomeControlBlocked)
-        { if (!candidate.TryStart(cat)) GameAudio.UI(AudioCue.UIError); }
+        // A prop/need may change between presentation and pointer delivery.
+        // Withdraw that stale action silently; never turn a button into advice.
+        bool canStart = IsEligible(candidate);
+        if (canStart && !CatActionState.IsBusy(cat) && !cat.AreWorldActionsBlocked && !HomeUiFlow.IsHomeControlBlocked)
+        { if (!candidate.TryStartFromPrompt(cat)) RefreshImmediate(); }
         else RefreshImmediate();
     }
 
@@ -238,7 +249,7 @@ public sealed class ActivityPromptController : MonoBehaviour
         if (progressGroup != null && !string.IsNullOrWhiteSpace(text))
             progressGroup.gameObject.SetActive(true);
         if (progressLabel != null)
-            progressLabel.text = GameInteractionCopy.Text(text);
+            progressLabel.text = GameInteractionCopy.Status(text);
         SetGroup(progressGroup, !string.IsNullOrWhiteSpace(text));
     }
 
@@ -262,18 +273,19 @@ public sealed class ActivityPromptController : MonoBehaviour
             actionShadowLabel.text = value;
     }
 
-    public static string BuildActionText(CatActivity activity, EnergySystem energy)
+    public static string BuildActionText(CatActivity activity, EnergySystem energy, CatMovement actor = null)
     {
         if (activity == null)
             return string.Empty;
 
-        if (activity.EnergyCost > 0f &&
+        if (!(actor != null ? activity.IsCareSatisfiedFor(actor) : activity.IsCareSatisfied) && activity.EnergyCost > 0f &&
             (energy == null || !energy.CanSpendEnergy(activity.EnergyCost)))
         {
             return GameContentCopy.Text($"{Mathf.CeilToInt(activity.EnergyCost)} enerji gerekli",$"Need {Mathf.CeilToInt(activity.EnergyCost)} energy");
         }
 
-        return GameInteractionCopy.Text(activity.ActionText);
+        return activity.Kind == CatActivityKind.FernWatch
+            ? GameLanguageService.Text("interaction.fern.action") : GameInteractionCopy.Action(activity.ActionText);
     }
 
     private static void SetGroup(CanvasGroup group, bool visible)

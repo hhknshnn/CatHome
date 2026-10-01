@@ -14,8 +14,9 @@ public sealed class AndroidPresentationTests
         Assert.That(size.y,Is.LessThanOrEqualTo(height));
         Assert.That(size.x/(float)size.y,Is.EqualTo(width/(float)height).Within(.003f));
     }
-    [TestCase(3072,30)] [TestCase(4096,30)] [TestCase(8192,60)]
-    public void FrameBudgetFollowsDeviceMemory(int memory,int expected)
+    [TestCase(-1,30)] [TestCase(0,30)] [TestCase(3072,30)] [TestCase(4096,30)]
+    [TestCase(6144,30)] [TestCase(8192,30)] [TestCase(16384,30)]
+    public void MobileFrameBudgetDoesNotTreatRamAsGpuCapability(int memory,int expected)
         => Assert.That(MobilePresentation.FrameRateForMemory(memory),Is.EqualTo(expected));
 
     [Test]

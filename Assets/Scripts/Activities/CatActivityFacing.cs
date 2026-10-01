@@ -16,7 +16,7 @@ public static class CatActivityFacing
         Camera camera = Camera.main;
         if (camera != null && camera.isActiveAndEnabled && (cat == null || camera.gameObject.scene == cat.gameObject.scene))
             return camera.transform.position;
-        foreach (Camera candidate in Object.FindObjectsByType<Camera>(FindObjectsSortMode.None))
+        foreach (Camera candidate in Object.FindObjectsByType<Camera>())
             if (candidate.isActiveAndEnabled && candidate.targetTexture == null &&
                 (cat == null || candidate.gameObject.scene == cat.gameObject.scene)) return candidate.transform.position;
         // The authoring camera profile is shared by current and future home rooms.
@@ -49,6 +49,17 @@ public static class CatActivityFacing
     public static Quaternion AlongAxis(CatMovement cat, Vector3 position, Quaternion preferred) =>
         AlongAxis(position, preferred, CameraPosition(cat));
 
+    public static Quaternion SupportedAxis(Transform surface)
+    {
+        if(surface==null)return Quaternion.identity;
+        var area=surface.GetComponent<CatActivitySurface>();
+        // Size is measured from the usable support, not the furniture bounds.
+        // A narrow X patch must not force every cat along X merely because
+        // that was the original shelf convention.
+        bool alongZ=area!=null&&area.AlignAlongSurface&&area.Size.y>area.Size.x;
+        return surface.rotation*(alongZ?Quaternion.identity:Quaternion.Euler(0f,90f,0f));
+    }
+
     public static Quaternion AlongAxis(Vector3 position, Quaternion preferred, Vector3 cameraPosition)
     {
         Quaternion opposite = preferred * Quaternion.Euler(0f, 180f, 0f);
@@ -59,14 +70,34 @@ public static class CatActivityFacing
     public static IEnumerator Turn(CatMovement cat, Quaternion target, float duration = .24f)
     {
         if (cat == null) yield break;
-        Quaternion start = cat.transform.rotation; float elapsed = 0f;
-        while (elapsed < duration && cat != null)
+        Quaternion start = cat.transform.rotation;
+        float angle = Quaternion.Angle(start,target);
+        if (angle < .1f) yield break;
+        duration = Mathf.Clamp(Mathf.Max(angle / 360f, Mathf.Min(duration,.3f)), .16f, .6f);
+        float elapsed = 0f;
+        var natural = CatNaturalTurnMotion.For(cat);
+        var animation = cat.GetComponent<CatActivityAnimation>();
+        bool ownsPose = animation != null && animation.IsActive && !animation.IsNativeJump && animation.ContactSurface == null &&
+            animation.CurrentPose != CatActivityPose.Crawl;
+        var previousPose = ownsPose ? animation.CurrentPose : CatActivityPose.Walk;
+        try
         {
-            elapsed += Time.deltaTime;
-            cat.transform.rotation = Quaternion.Slerp(start, target, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / Mathf.Max(.001f, duration))));
-            yield return null;
+            while (elapsed < duration && cat != null)
+            {
+                elapsed += Time.deltaTime;
+                Quaternion before = cat.transform.rotation;
+                cat.transform.rotation = Quaternion.Slerp(start,target,Mathf.SmoothStep(0f,1f,Mathf.Clamp01(elapsed/duration)));
+                float rate = Vector3.SignedAngle(before*Vector3.forward,cat.transform.forward,Vector3.up)/Mathf.Max(.0001f,Time.deltaTime);
+                natural.Signal(rate);
+                if (ownsPose) animation.SetWalkSpeed(CatNaturalTurnMotion.GaitSpeed(rate),null);
+                yield return null;
+            }
         }
-        if (cat != null) cat.transform.rotation = target;
+        finally
+        {
+            if (natural != null) natural.Signal(0f);
+            if (ownsPose && animation != null && animation.IsActive) animation.SetPose(previousPose);
+        }
     }
 
     /// <summary>Keep the authored muzzle/paw radius while finding a clear, camera-readable contact side.</summary>

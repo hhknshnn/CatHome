@@ -22,7 +22,6 @@ public sealed class SleepInteraction : MonoBehaviour
     [SerializeField] private float modelForwardOffset;
 
     [Header("Interaction")]
-    [SerializeField, Min(0f)] private float interactionDistance = 0.45f;
     [SerializeField] private string sleepButtonText = "SLEEP";
     [SerializeField] private string wakeUpButtonText = "WAKE UP";
 
@@ -39,6 +38,13 @@ public sealed class SleepInteraction : MonoBehaviour
     private Coroutine sleepCoroutine;
     private bool sleepSequenceActive;
     private bool ownsMovementLock;
+    private bool settledOnBed;
+    private bool waking;
+    private bool controllerHeld;
+    private bool controllerWasEnabled;
+    private bool hasAcceptedFloor;
+    private CatActivityStart acceptedFloor;
+    private CatActivityAnimation poseDriver;
     private int speedParameterHash;
     private float satisfiedActionThreshold = 90f;
     private CatSleepZzzEffect sleepEffect;
@@ -53,8 +59,36 @@ public sealed class SleepInteraction : MonoBehaviour
     public event Action SleepStarted;
 
     public bool IsSleeping => sleepSequenceActive;
+    public bool IsSettledOnBed => sleepSequenceActive && settledOnBed;
+    // Entry and wake animations keep action ownership, but are not sleep.
+    // Persist their last accepted floor pose instead of an airborne root.
+    public bool TryGetTransitionSavePose(out Vector3 position, out Quaternion rotation)
+    {
+        position = catTransform != null ? catTransform.position : transform.position;
+        rotation = catTransform != null ? catTransform.rotation : transform.rotation;
+        if (!sleepSequenceActive || settledOnBed) return false;
+        if (hasAcceptedFloor)
+        {
+            position = acceptedFloor.Position;
+            rotation = acceptedFloor.Rotation;
+            return true;
+        }
+        if (bedInteractionPoint == null) return false;
+        position = bedInteractionPoint.position;
+        rotation = bedInteractionPoint.rotation * Quaternion.Euler(0, modelForwardOffset, 0);
+        return true;
+    }
     public Transform SleepSurface=>sleepPoint;
-    public bool WantsActionButton => sleepSequenceActive || IsCatNearBed();
+    public bool WantsActionButton
+    {
+        get
+        {
+            if (sleepSequenceActive) return settledOnBed && !waking;
+            ResolveEnergySystem();
+            return energySystem != null && !IsSatisfiedEnergy(energySystem.CurrentEnergy, satisfiedActionThreshold) &&
+                animator != null && !CatActionState.IsBusy(catMovement) && IsCatNearBed();
+        }
+    }
     public string CurrentButtonText => sleepSequenceActive ? wakeUpButtonText : sleepButtonText;
     public Transform TutorialBedTarget =>
         sleepPoint != null && sleepPoint.parent != null ? sleepPoint.parent : bedInteractionPoint;
@@ -97,7 +131,7 @@ public sealed class SleepInteraction : MonoBehaviour
         if (catMovement != null && catMovement.AreWorldActionsBlocked)
             return false;
 
-        if (!IsCatNearBed())
+        if (!TryPrepareSleepStart(out CatActivityStart start))
             return false;
 
         if (CatActionState.IsBusy(catMovement))
@@ -121,7 +155,7 @@ public sealed class SleepInteraction : MonoBehaviour
             return false;
 
         LogDecisionOnce("BeginSleep");
-        BeginSleep();
+        BeginSleep(start);
         return true;
     }
 
@@ -146,8 +180,12 @@ public sealed class SleepInteraction : MonoBehaviour
             sleepSequenceActive = true;
             catMovement.SetMovementLocked(this, true);
             ownsMovementLock = true;
+            HoldController();
             animator.SetFloat(speedParameterHash, 0f);
             MoveCatToSleepPoint();
+            settledOnBed = true;
+            waking = false;
+            hasAcceptedFloor = false;
 
             int sleepStateHash =
                 Animator.StringToHash(BaseLayerPrefix + sleepState);
@@ -164,20 +202,23 @@ public sealed class SleepInteraction : MonoBehaviour
         }
     }
 
-    private void BeginSleep()
+    private void BeginSleep(CatActivityStart start)
     {
+        acceptedFloor = start;
+        hasAcceptedFloor = true;
         sleepSequenceActive = true;
+        settledOnBed = false;
+        waking = false;
         catMovement.SetMovementLocked(this, true);
         ownsMovementLock = true;
+        HoldController();
         animator.SetFloat(speedParameterHash, 0f);
-        MoveCatToSleepPoint();
-
-        animator.CrossFadeInFixedTime(
-            BaseLayerPrefix + lieDownState,
-            animationTransitionTime,
-            0
-        );
-
+        poseDriver = GetComponent<CatActivityAnimation>() ?? gameObject.AddComponent<CatActivityAnimation>();
+        if (!poseDriver.BeginExternal(this))
+        {
+            CancelForTransition();
+            return;
+        }
         sleepCoroutine = StartCoroutine(EnterSleepAfterLieDown());
 
         try
@@ -192,6 +233,12 @@ public sealed class SleepInteraction : MonoBehaviour
 
     private IEnumerator EnterSleepAfterLieDown()
     {
+        Quaternion resting = RestingRotation();
+        yield return CatJumpMotion.Play(catMovement, acceptedFloor.Position, sleepPoint.position,
+            acceptedFloor.Rotation, resting, true, preserveLaunchHeading: true);
+        poseDriver.EndExternal(this);
+        settledOnBed = true;
+        animator.CrossFadeInFixedTime(BaseLayerPrefix + lieDownState, animationTransitionTime, 0);
         yield return new WaitForSeconds(lieDownDuration);
 
         if (!sleepSequenceActive || animator == null)
@@ -213,26 +260,45 @@ public sealed class SleepInteraction : MonoBehaviour
 
     private void WakeUp()
     {
+        if (waking) return;
         if (sleepCoroutine != null)
         {
             StopCoroutine(sleepCoroutine);
             sleepCoroutine = null;
         }
 
-        sleepSequenceActive = false;
         sleepEffect?.Stop();
-
-        // Kediyi yatağın üzerinden, yatağın önündeki noktaya taşı.
-        MoveCatToBedInteractionPoint();
-
-        if (animator != null && HasAnimatorState(idleState))
+        if (!settledOnBed)
         {
-            animator.CrossFadeInFixedTime(
-                BaseLayerPrefix + idleState,
-                animationTransitionTime,
-                0
-            );
+            CancelForTransition();
+            return;
         }
+        waking = true;
+        settledOnBed = false;
+        poseDriver = GetComponent<CatActivityAnimation>() ?? gameObject.AddComponent<CatActivityAnimation>();
+        if (!poseDriver.BeginExternal(this)) { CancelForTransition(); return; }
+        sleepCoroutine = StartCoroutine(WakeAndLeaveBed());
+    }
+
+    private IEnumerator WakeAndLeaveBed()
+    {
+        // Keep the source sleep-to-sit and sit-to-stand motion on the mattress
+        // before the genuine downward jump releases the movement controller.
+        yield return WakePose(CatActivityPose.TowelWake, .85f, true);
+        yield return WakePose(CatActivityPose.StandUp, .60f, false);
+        Vector3 floor = hasAcceptedFloor ? acceptedFloor.Position : bedInteractionPoint.position;
+        Vector3 direction = floor - catTransform.position;
+        direction.y = 0f;
+        Quaternion outward = direction.sqrMagnitude > .0001f
+            ? Quaternion.LookRotation(direction) : catTransform.rotation;
+        yield return CatJumpMotion.Play(catMovement, catTransform.position, floor,
+            outward, outward, false);
+        poseDriver.EndExternal(this);
+        sleepCoroutine = null;
+        sleepSequenceActive = false;
+        waking = false;
+        hasAcceptedFloor = false;
+        ReleaseController();
 
         if (ownsMovementLock && catMovement != null)
             catMovement.SetMovementLocked(this, false);
@@ -240,20 +306,57 @@ public sealed class SleepInteraction : MonoBehaviour
         ownsMovementLock = false;
     }
 
+    private IEnumerator WakePose(CatActivityPose pose, float seconds, bool reverse)
+    {
+        float elapsed = 0f;
+        while (elapsed < seconds)
+        {
+            if (Time.timeScale <= 0f) { yield return null; continue; }
+            float phase = Mathf.Clamp01(elapsed / seconds);
+            poseDriver.SetTimedPose(pose, reverse ? 1f - phase : phase, sleepPoint);
+            yield return null;
+            elapsed += Time.deltaTime;
+        }
+        poseDriver.SetTimedPose(pose, reverse ? 0f : 1f, sleepPoint);
+    }
+
+    private void HoldController()
+    {
+        if (controllerHeld) return;
+        controllerHeld = true;
+        controllerWasEnabled = characterController != null && characterController.enabled;
+        if (controllerWasEnabled) characterController.enabled = false;
+    }
+
+    private void ReleaseController()
+    {
+        if (!controllerHeld) return;
+        controllerHeld = false;
+        if (characterController != null) characterController.enabled = controllerWasEnabled;
+    }
+
     public void ForceAwakeForNewGame()
     {
         ResolveCatReferences();
-        if (IsSleeping)
-            WakeUp();
-        else
-            EnsureAwakeFallback();
+        if (IsSleeping) CancelForTransition();
+        else EnsureAwakeFallback();
     }
 
     public void CancelForTransition()
     {
         // An idle bed must not reset a pose or controller owned by another action.
-        if (sleepSequenceActive || ownsMovementLock || sleepCoroutine != null)
-            WakeUp();
+        if (!sleepSequenceActive && !ownsMovementLock && sleepCoroutine == null) return;
+        if (sleepCoroutine != null) StopCoroutine(sleepCoroutine);
+        sleepCoroutine = null;
+        poseDriver?.EndExternal(this);
+        if (catTransform != null)
+        {
+            if (hasAcceptedFloor)
+                catTransform.SetPositionAndRotation(acceptedFloor.Position, acceptedFloor.Rotation);
+            else if (settledOnBed || waking)
+                MoveCatToBedInteractionPoint();
+        }
+        EnsureAwakeFallback();
     }
 
     private void MoveCatToBedInteractionPoint()
@@ -301,9 +404,7 @@ public sealed class SleepInteraction : MonoBehaviour
             forward.y = 0f;
             if (forward.sqrMagnitude > 0.0001f)
             {
-                Quaternion authored = Quaternion.LookRotation(forward.normalized, Vector3.up) *
-                    Quaternion.Euler(0f, modelForwardOffset, 0f);
-                catTransform.rotation = CatActivityFacing.AlongAxis(catMovement, catTransform.position, authored);
+                catTransform.rotation = RestingRotation();
             }
         }
         finally
@@ -313,13 +414,21 @@ public sealed class SleepInteraction : MonoBehaviour
         }
     }
 
-    private bool IsCatNearBed()
+    private Quaternion RestingRotation()
     {
+        Quaternion authored = sleepPoint.rotation * Quaternion.Euler(0f, modelForwardOffset, 0f);
+        return CatActivityFacing.AlongAxis(catMovement, sleepPoint.position, authored);
+    }
+
+    private bool IsCatNearBed() => TryPrepareSleepStart(out _);
+
+    private bool TryPrepareSleepStart(out CatActivityStart start)
+    {
+        start = default;
         if (!isActiveAndEnabled || !HasVisibleBed())
             return false;
-
-        return !float.IsPositiveInfinity(CareInteractionTarget.NearbyDistanceSquared(
-            bedInteractionPoint, catTransform, interactionDistance));
+        return CatActivityStartResolver.GroundLaunch(null, catMovement,
+            bedInteractionPoint.position, sleepPoint.position, out start);
     }
 
     private bool HasVisibleBed()
@@ -353,10 +462,11 @@ public sealed class SleepInteraction : MonoBehaviour
 
         if (!HasAnimatorState(lieDownState) ||
             !HasAnimatorState(sleepState) ||
-            !HasAnimatorState(idleState))
+            !HasAnimatorState(idleState) || !HasAnimatorState("NativeJump") ||
+            !HasAnimatorState("TowelWake") || !HasAnimatorState("CompanionStandUp"))
         {
             Debug.LogError(
-                $"SleepInteraction: Animator must contain '{lieDownState}', '{sleepState}' and '{idleState}' states on Base Layer.",
+                $"SleepInteraction: Animator needs '{lieDownState}', '{sleepState}', '{idleState}', NativeJump, TowelWake and CompanionStandUp on Base Layer.",
                 animator
             );
             return false;
@@ -435,8 +545,13 @@ public sealed class SleepInteraction : MonoBehaviour
         }
 
         sleepSequenceActive = false;
+        settledOnBed = false;
+        waking = false;
+        hasAcceptedFloor = false;
         sleepEffect?.Stop();
         ownsMovementLock = false;
+        poseDriver?.EndExternal(this);
+        ReleaseController();
 
         if (catMovement != null)
             catMovement.SetMovementLocked(this, false);

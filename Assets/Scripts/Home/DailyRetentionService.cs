@@ -286,7 +286,7 @@ public static class DailyRetentionService
         return new QuestSnapshot(
             quest.questId,
             GameQuestCopy.Title(type,TitleFor(type)),
-            GameQuestCopy.Description(type,quest.requiredCount,"Daily: " + TitleFor(type).ToLowerInvariant()),
+            GameQuestCopy.Description(type,quest.requiredCount,DescriptionFor(type,quest.requiredCount)),
             quest.count,
             Mathf.Max(1, quest.requiredCount),
             quest.rewardCoins,
@@ -306,6 +306,20 @@ public static class DailyRetentionService
             QuestType.PlayRunner => "Daily Dash",
             _ => "Daily Task"
         };
+    }
+
+    private static string DescriptionFor(QuestType type, int count)
+    {
+        string action = type switch
+        {
+            QuestType.Eat => "Feed your cat",
+            QuestType.Drink => "Give your cat fresh water",
+            QuestType.Pet => "Pet your cat",
+            QuestType.PlayBall => "Play with the ball",
+            QuestType.PlayRunner => "Play Cat Runner",
+            _ => "Complete today's goal"
+        };
+        return action + (count > 1 ? " " + count + " times" : string.Empty) + ".";
     }
 
     private static DailyQuestSaveEntry Find(string questId)

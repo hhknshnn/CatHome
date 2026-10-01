@@ -16,9 +16,9 @@ public sealed class RunnerPavingContactTests
         string previous=CatBreedService.SelectedBreedId;
         float previousTimeScale=Time.timeScale,previousCaptureDelta=Time.captureDeltaTime;
         yield return SceneManager.LoadSceneAsync("CatRunner",LoadSceneMode.Single);
-        var game=Object.FindFirstObjectByType<CatRunnerGameController>();game.enabled=false;
-        var track=Object.FindFirstObjectByType<CatRunnerTrackManager>();track.enabled=false;
-        var player=Object.FindFirstObjectByType<CatRunnerPlayer>();
+        var game=Object.FindAnyObjectByType<CatRunnerGameController>();game.enabled=false;
+        var track=Object.FindAnyObjectByType<CatRunnerTrackManager>();track.enabled=false;
+        var player=Object.FindAnyObjectByType<CatRunnerPlayer>();
         var items=(List<CatRunnerTrackObject>)typeof(CatRunnerTrackManager).GetField("activeObjects",Flags).GetValue(track);
         var template=player.transform.root.GetComponentsInChildren<CatRunnerTrackObject>(true).First(t=>t.Kind==CatRunnerTrackObjectKind.Platform);
         var ramp=Object.Instantiate(template,template.transform.parent);ramp.gameObject.SetActive(true);items.Add(ramp);
@@ -93,9 +93,9 @@ public sealed class RunnerPavingContactTests
     {
         string previous=CatBreedService.SelectedBreedId;
         yield return SceneManager.LoadSceneAsync("CatRunner",LoadSceneMode.Single);
-        var game=Object.FindFirstObjectByType<CatRunnerGameController>();game.enabled=false;
-        var track=Object.FindFirstObjectByType<CatRunnerTrackManager>();track.enabled=false;
-        var player=Object.FindFirstObjectByType<CatRunnerPlayer>();
+        var game=Object.FindAnyObjectByType<CatRunnerGameController>();game.enabled=false;
+        var track=Object.FindAnyObjectByType<CatRunnerTrackManager>();track.enabled=false;
+        var player=Object.FindAnyObjectByType<CatRunnerPlayer>();
         var items=(List<CatRunnerTrackObject>)typeof(CatRunnerTrackManager).GetField("activeObjects",Flags).GetValue(track);
         var template=player.transform.root.GetComponentsInChildren<CatRunnerTrackObject>(true).First(t=>t.Kind==CatRunnerTrackObjectKind.Platform);
         var ramp=Object.Instantiate(template,template.transform.parent);ramp.gameObject.SetActive(true);items.Add(ramp);

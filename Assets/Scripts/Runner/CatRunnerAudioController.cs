@@ -9,7 +9,7 @@ public sealed class CatRunnerAudioController : MonoBehaviour
     private float lastCoinSound=-10;
     private void Awake()
     {
-        if(player==null)player=FindFirstObjectByType<CatRunnerPlayer>();
+        if(player==null)player=FindAnyObjectByType<CatRunnerPlayer>();
         SilenceLegacySources();
     }
     private void OnEnable(){if(player!=null){player.JumpStarted+=PlayJump;player.SlideStarted+=PlaySlide;player.Landed+=PlayLanding;}}

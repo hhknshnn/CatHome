@@ -3,17 +3,26 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-[DisallowMultipleComponent]
+[DefaultExecutionOrder(11010), DisallowMultipleComponent]
 public sealed class TutorialSpotlight : MaskableGraphic
 {
-    [SerializeField] private Color dimColor = new Color(0.08f, 0.045f, 0.025f, 0.62f);
-    [SerializeField] private Color accentColor = new Color32(255, 190, 105, 230);
+    [SerializeField] private Color dimColor = new Color32(15, 25, 48, 155);
+    [SerializeField] private Color accentColor = new Color32(155, 236, 216, 240);
     private Transform[] targets;
     private Camera gameplayCamera;
     private Rect hole;
     private bool hasHole;
     private Vector4 padding = new Vector4(24f, 24f, 24f, 24f);
     private Coroutine hideRoutine;
+    private readonly Vector3[] corners = new Vector3[4];
+    private TargetVisuals[] visuals;
+
+    private sealed class TargetVisuals
+    {
+        public Transform target;
+        public Renderer[] renderers;
+        public Collider[] colliders;
+    }
 
     public void Show(Transform[] newTargets, Camera camera, float referencePadding = 24f)
     {
@@ -23,14 +32,26 @@ public sealed class TutorialSpotlight : MaskableGraphic
     public void Show(Transform[] newTargets, Camera camera, Vector4 directionalPadding)
     {
         bool changed = !SameTargets(targets, newTargets);
-        targets = newTargets;
+        if (changed)
+        {
+            targets = newTargets == null ? null : (Transform[])newTargets.Clone();
+            visuals = targets == null ? null : new TargetVisuals[targets.Length];
+            for (int i = 0; visuals != null && i < visuals.Length; i++)
+            {
+                Transform target = targets[i];
+                visuals[i] = new TargetVisuals { target = target };
+                if (target == null || target is RectTransform) continue;
+                visuals[i].renderers = target.GetComponentsInChildren<Renderer>(true);
+                visuals[i].colliders = target.GetComponentsInChildren<Collider>(true);
+            }
+        }
         gameplayCamera = camera;
         padding = directionalPadding;
         if (hideRoutine != null) { StopCoroutine(hideRoutine); hideRoutine = null; }
         canvasRenderer.SetAlpha(1f);
         raycastTarget = true;
         gameObject.SetActive(true);
-        RefreshHole(changed || !hasHole);
+        if (changed || !hasHole) RefreshHole(true);
     }
 
     public void Hide()
@@ -66,11 +87,10 @@ public sealed class TutorialSpotlight : MaskableGraphic
         for (int i=0;i<targets.Length;i++)
         {
             Transform target = targets[i];
-            if (target == null) continue;
+            if (target == null || !target.gameObject.activeInHierarchy) continue;
             Rect candidate;
             if (target is RectTransform rt && target.GetComponentInParent<Canvas>() != null)
             {
-                Vector3[] corners = new Vector3[4];
                 rt.GetWorldCorners(corners);
                 Vector2 a = RectTransformUtility.WorldToScreenPoint(GetTargetCamera(rt), corners[0]);
                 Vector2 b = RectTransformUtility.WorldToScreenPoint(GetTargetCamera(rt), corners[2]);
@@ -82,7 +102,7 @@ public sealed class TutorialSpotlight : MaskableGraphic
             {
                 Camera cam = gameplayCamera != null ? gameplayCamera : Camera.main;
                 if (cam == null) continue;
-                if (!TryGetWorldTargetRect(target, cam, canvasRect, ownCamera, out candidate)) continue;
+                if (!TryGetWorldTargetRect(visuals[i], cam, canvasRect, ownCamera, out candidate)) continue;
             }
             desired = found ? Union(desired, candidate) : candidate;
             found = true;
@@ -91,27 +111,29 @@ public sealed class TutorialSpotlight : MaskableGraphic
         {
             desired = Rect.MinMaxRect(
                 desired.xMin-padding.x,
-                desired.yMin-padding.w,
+                desired.yMin-padding.z,
                 desired.xMax+padding.y,
-                desired.yMax+padding.z);
+                desired.yMax+padding.w);
             Rect safeLocal = ScreenSafeAreaLocal(canvasRect, ownCamera);
             desired.xMin = Mathf.Max(desired.xMin, safeLocal.xMin);
             desired.xMax = Mathf.Min(desired.xMax, safeLocal.xMax);
             desired.yMin = Mathf.Max(desired.yMin, safeLocal.yMin);
             desired.yMax = Mathf.Min(desired.yMax, safeLocal.yMax);
-            float blend = immediate || !hasHole ? 1f : 1f-Mathf.Exp(-Time.unscaledDeltaTime/0.08f);
-            hole = Lerp(hole, desired, blend);
+            // Follow the final HUD/camera geometry exactly, including a same-frame
+            // resolution or safe-area change. A lagging hole points at old pixels.
+            hole = desired;
         }
         hasHole = found;
     }
 
-    private static bool TryGetWorldTargetRect(Transform target, Camera camera, RectTransform canvasRect, Camera canvasCamera, out Rect result)
+    private static bool TryGetWorldTargetRect(TargetVisuals visual, Camera camera, RectTransform canvasRect, Camera canvasCamera, out Rect result)
     {
         result = default;
-        Renderer[] renderers = target.GetComponentsInChildren<Renderer>(false);
+        Transform target = visual.target;
+        Renderer[] renderers = visual.renderers;
         bool hasBounds = false;
         Bounds bounds = default;
-        for (int i=0;i<renderers.Length;i++)
+        for (int i=0;renderers != null && i<renderers.Length;i++)
         {
             Renderer renderer = renderers[i];
             if (!IsVisualRenderer(renderer)) continue;
@@ -119,11 +141,11 @@ public sealed class TutorialSpotlight : MaskableGraphic
         }
         if (!hasBounds)
         {
-            Collider[] colliders=target.GetComponentsInChildren<Collider>(false);
-            for(int i=0;i<colliders.Length;i++)
+            Collider[] colliders=visual.colliders;
+            for(int i=0;colliders != null && i<colliders.Length;i++)
             {
                 Collider collider=colliders[i];
-                if(!collider.enabled||IsHelperName(collider.name)) continue;
+                if(collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy || IsHelperName(collider.name)) continue;
                 if(!hasBounds){bounds=collider.bounds;hasBounds=true;}else bounds.Encapsulate(collider.bounds);
             }
         }
@@ -136,11 +158,11 @@ public sealed class TutorialSpotlight : MaskableGraphic
             return true;
         }
         Vector3 min=bounds.min,max=bounds.max;
-        Vector3[] corners={new(min.x,min.y,min.z),new(min.x,min.y,max.z),new(min.x,max.y,min.z),new(min.x,max.y,max.z),new(max.x,min.y,min.z),new(max.x,min.y,max.z),new(max.x,max.y,min.z),new(max.x,max.y,max.z)};
         bool any=false; Vector2 localMin=default,localMax=default;
-        for(int i=0;i<corners.Length;i++)
+        for(int i=0;i<8;i++)
         {
-            Vector3 screen=camera.WorldToScreenPoint(corners[i]); if(screen.z<=0f)continue;
+            Vector3 corner = new Vector3((i&1)==0?min.x:max.x,(i&2)==0?min.y:max.y,(i&4)==0?min.z:max.z);
+            Vector3 screen=camera.WorldToScreenPoint(corner); if(screen.z<=0f)continue;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect,screen,canvasCamera,out Vector2 local);
             if(!any){localMin=localMax=local;any=true;}else{localMin=Vector2.Min(localMin,local);localMax=Vector2.Max(localMax,local);}
         }

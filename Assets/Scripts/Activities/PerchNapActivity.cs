@@ -38,6 +38,16 @@ public sealed class PerchNapActivity : CatActivity
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
     public override float EnergyCost => 0f;
     public override bool SupportsContinuousRest=>true;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return floorPoint != null && perchPoint != null &&
+            CatActivityStartResolver.GroundLaunch(this, actor, floorPoint.position, LandingPosition, out start);
+    }
+    private Vector3 LandingPosition => perchPoint.position + (StoreProductId == "room.armchair"
+        ? transform.TransformDirection(Vector3.back) * .26f : Vector3.zero);
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -63,19 +73,17 @@ public sealed class PerchNapActivity : CatActivity
     {
         Cat.SetMovementLocked(this, true);
         if (characterController != null) characterController.enabled = false;
-        Vector3 floor = Flatten(floorPoint.position, Cat.transform.position.y), perch = perchPoint.position;
+        Vector3 floor = Flatten(floorPoint.position, AcceptedStart.Position.y), perch = LandingPosition;
         bool directChair = StoreProductId == "room.armchair";
         // Keep one seat position throughout the chair routine. Its front half
         // leaves room for the original jump pose's head and the short yaw.
-        if (directChair) perch += transform.TransformDirection(Vector3.back) * .10f;
-        Quaternion inward = LookTowards(perch - floor, Cat.transform.rotation);
-        yield return CatActivityMotion.WalkAuthoredStep(Cat, floor, inward, .26f);
+        Quaternion inward = AcceptedStart.Rotation;
         var area = perchPoint.GetComponent<CatActivitySurface>();
         bool sitOnly = area != null && area.ResolvePose(CatActivityPose.Sleep) == CatActivityPose.Sit;
         Quaternion preferred = perchPoint.rotation * Quaternion.Euler(0, 90, 0);
         Quaternion facing = sitOnly ? CatActivityFacing.Resolve(Cat, perch, preferred) : CatActivityFacing.AlongAxis(Cat, perch, preferred);
         supportedMotion = new CatSupportedFurnitureMotion(this, Cat, perchPoint);
-        yield return supportedMotion.Jump(floor, perch, inward, facing);
+        yield return supportedMotion.Jump(AcceptedStart.Position, perch, inward, facing);
         yield return supportedMotion.Pose(CatActivityPose.SitDown, .60f, perch, facing);
         if (!sitOnly) yield return supportedMotion.Pose(CatActivityPose.TowelSettle, .95f, perch, facing);
         if (directChair) supportedMotion.Rest(sitOnly ? CatActivityPose.Sit : CatActivityPose.Sleep);

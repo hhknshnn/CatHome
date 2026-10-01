@@ -144,20 +144,18 @@ public static class CatIdlePersonality
         if (mood == CatIdleMood.Needy)
         {
             if (hunger <= thirst && hunger <= energy)
-                return "I'M HUNGRY...";
+                return GameLanguageService.Text("idle.hungry");
             if (thirst <= energy)
-                return "I NEED A DRINK...";
-            return "I NEED A NAP...";
+                return GameLanguageService.Text("idle.thirsty");
+            return GameLanguageService.Text("idle.tired");
         }
 
         if (mood == CatIdleMood.Sleepy)
-            return "SLEEPY...";
+            return GameLanguageService.Text("idle.sleepy");
         if (mood == CatIdleMood.Restless)
-            return "I'M BORED...";
+            return GameLanguageService.Text("idle.bored");
 
-        string name = string.IsNullOrWhiteSpace(catName) ? "MELO" : catName.Trim();
-        if (name.Length > 14)
-            name = name.Substring(0, 14);
-        return name.ToUpperInvariant() + " WANTS A PET!";
+        string name = string.IsNullOrWhiteSpace(catName) ? "Melo" : catName;
+        return GameLanguageService.Format("idle.pet", name);
     }
 }

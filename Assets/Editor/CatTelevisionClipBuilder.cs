@@ -14,7 +14,7 @@ public static class CatTelevisionClipBuilder
     public static void Begin()
     {
         if(EditorApplication.isPlaying)throw new InvalidOperationException("Bake in Edit Mode.");
-        showcase=UnityEngine.Object.FindFirstObjectByType<TitleCatShowcase>(FindObjectsInactive.Include);
+        showcase=UnityEngine.Object.FindAnyObjectByType<TitleCatShowcase>(FindObjectsInactive.Include);
         if(showcase==null)throw new InvalidOperationException("Title showcase missing from the home UI.");
         Directory.CreateDirectory("Library/CatTelevisionFrames");frame=0;
         typeof(TitleCatShowcase).GetMethod("CreateStage",Flags).Invoke(showcase,null);

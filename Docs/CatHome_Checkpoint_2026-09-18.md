@@ -1,0 +1,10 @@
+# Cat Home — checkpoint, 18 Eylül 2026
+
+Önce [son raporu](INTERACTION_RECOVERY_2026-09-18.md) oku. Kullanıcının beş saatlik oynanış/eksik temas/performans görevi 04:58:39 TR'de teknik kapanışa alındı; 285.5 dakika. Süre yeniden başlatılmadı; yeni talep olmadan kendiliğinden başka tur açılmaz.
+
+- Normal yürüyüş takılmasının iki kaynağı düzeltildi: tüm nesnelerde tekrar pencere araması ve ilk sorguda büyük sıçrama/kaynak geometri hazırlığı. Tam HUD + gerçek joystick: 1.127 kare, ortalama 7,117 ms, p95 10,376 ms, maksimum 14,488 ms. Soğuk ilk sorgu 19,414 ms; önceki ek 16 ms hedefi sağlanmadı, projedeki 50 ms kabulü korunur.
+- Altı yüzey gerçek deri en fazla 2,000 mm; pati ihlali 0; destek maksimum 43,369 ms. Asılı koltuk on ırk, sekiz odada 39/39 rutin. 44/44 seçili benzersiz PlayMode; 30/30 EditMode; validator/C# temiz. Esas `QA/INTERACTION_RECOVERY_5H_2026-09-18/native-final-manifest.json`; ara XML sonuçlarını son kabul sayma.
+- Yüzey desteği gerçek deri/ağırlık ve taze fizik kontrolü kullanır. Kaynak uç geometri 252 bölgede önceden hazırlanır; sahne çarpışma izni saklanmaz. Katalog 99 katı mesh; eski 30 kaydın özgün üçgen baytları aynı. Sıçrama uç kaynakları 630 örnek, 32.823 matris. Modeller/yerleşimler/klipler aynı.
+- Sınırlar: Editör DX11, telefon ölçülmedi. 39 genel rutin kabulü 25 mm; altı yüzey 5 mm. Fıskiye 9,008 mm/saksı 6,964 mm önceki davranış; bütün eşyalarda 5 mm iddiası yok. Minder uyanışında ardışık gövde noktası farkı yaklaşık 10,5 cm; özgün hareket de içerir, bütün görsel kareler kusursuz diye sunulmaz.
+- Üç gerçek kayıt aynı; 16 tercih ve editör sessizliği geri geldi. Üç temiz normal sahne; tek kedi/kamera/dinleyici. Play/QA/çekim/derleme kapalı; Unity/PC açık. Gerçek kayıt korumasını kaldırma, tarihsel hash geri yükleme. Yeni işte yeni başlangıç alınır.
+- Kaynaklar diskte kayıtlı; QA Git dışında. Commit/push/video/APK/yayın/arşiv/kapatma yok. Kullanıcıdan yeni görsel onay alındığı iddia edilmez. Plan/süre, tek tek doğrulama ve kapsam içinde kalma kuralı sürer.

@@ -19,8 +19,8 @@ public sealed class EditorHomePreviewState : MonoBehaviour
     TopHudResponsiveLayout topLayout;
     [SerializeField] HomeStoreSaveState originalStore;
     [SerializeField] bool restored;
-    RectTransform dock,safe;
-    public void ConfigureDock(RectTransform value,RectTransform safeArea){dock=value;safe=safeArea;}
+    RectTransform dock,safe,sourceDock;
+    public void ConfigureDock(RectTransform value,RectTransform safeArea,RectTransform source){dock=value;safe=safeArea;sourceDock=source;}
     public void ConfigureProjection(Camera camera,RectTransform food,RectTransform water,RectTransform rest)
     {
         previewCamera=camera;if(camera!=null){originalFov=camera.fieldOfView;shownFov=originalFov;}
@@ -46,8 +46,7 @@ public sealed class EditorHomePreviewState : MonoBehaviour
         if(Application.isPlaying){Restore();gameObject.SetActive(false);return;}
         RefreshProjection();
         if(dock==null||safe==null)return;
-        float scale=Mathf.Min(1f,(safe.rect.width-32f)/1080f);
-        dock.localScale=Vector3.one*scale;dock.anchoredPosition=new Vector2(135*scale,40);
+        PremiumHomeDockLayout.AlignShortcut(sourceDock,dock);
     }
     public void CaptureStore(){originalStore=HomeStoreService.CaptureState();}
     public void Show(GameObject target,bool visible)

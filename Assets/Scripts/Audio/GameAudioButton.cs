@@ -22,9 +22,9 @@ public sealed class GameAudioButton : MonoBehaviour
     private void Toggle(bool value)=>GameAudio.UI(AudioCue.UIToggle);
     public static void BindVisibleControls()
     {
-        foreach(var b in Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+        foreach(var b in Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude))
             if(b.GetComponent<GameAudioButton>()==null)b.gameObject.AddComponent<GameAudioButton>();
-        foreach(var t in Object.FindObjectsByType<Toggle>(FindObjectsInactive.Exclude,FindObjectsSortMode.None))
+        foreach(var t in Object.FindObjectsByType<Toggle>(FindObjectsInactive.Exclude))
             if(t.GetComponent<GameAudioButton>()==null)t.gameObject.AddComponent<GameAudioButton>();
     }
 }

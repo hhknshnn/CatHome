@@ -104,6 +104,11 @@ public sealed class CatBreedRuntimeController : MonoBehaviour
     private static CatBreedRuntimeController instance;
     private float nextScan;
     private bool missingCatalogReported;
+    private string contactDataBreed;
+    private float contactDataDeadline;
+    private int contactDataReadyFrame = -1;
+    private bool waitingForContactData, contactDataFailureReported;
+
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
@@ -142,7 +147,7 @@ public sealed class CatBreedRuntimeController : MonoBehaviour
 
     private void Update()
     {
-        if (Time.unscaledTime < nextScan)
+        if (!waitingForContactData && Time.unscaledTime < nextScan)
             return;
         nextScan = Time.unscaledTime + .25f;
         ApplyToAllPlayableCats();
@@ -169,18 +174,56 @@ public sealed class CatBreedRuntimeController : MonoBehaviour
         }
 
         missingCatalogReported = false;
+        if (!ContactDataReadyForReplacement(entry.Id)) return;
         foreach (CatMovement cat in FindObjectsByType<CatMovement>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+                     FindObjectsInactive.Include))
             ApplyToOwner(cat.transform, entry, catalog, animator => BindHome(cat, animator));
 
         foreach (CatRunnerPlayer runner in FindObjectsByType<CatRunnerPlayer>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+                     FindObjectsInactive.Include))
             ApplyToOwner(runner.transform, entry, catalog,
                 animator => runner.RebindBreedVisual(animator, FindVisualRoot(animator.transform, runner.transform)));
 
         foreach (CatCatchPlayer catcher in FindObjectsByType<CatCatchPlayer>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+                     FindObjectsInactive.Include))
             ApplyToOwner(catcher.transform, entry, catalog, catcher.RebindAnimator);
+    }
+
+    // Keep the existing rig alive while its replacement's measured data loads.
+    // Loading data during Animator replacement stalled the native frame loop;
+    // readiness must cover Changed, polling and newly loaded scenes alike.
+    private bool ContactDataReadyForReplacement(string breed)
+    {
+        if (!string.Equals(contactDataBreed, breed, StringComparison.Ordinal))
+        {
+            contactDataBreed = breed;
+            contactDataDeadline = Time.realtimeSinceStartup + 15f;
+            contactDataReadyFrame = -1;
+            contactDataFailureReported = false;
+            waitingForContactData = true;
+            CatPawReachCatalog.Preload(breed);
+        }
+        if (!CatPawReachCatalog.IsReadyFor(breed) || CatPawReachCatalog.HasPendingLoads)
+        {
+            contactDataReadyFrame = -1;
+            waitingForContactData = !contactDataFailureReported;
+            if (Time.realtimeSinceStartup >= contactDataDeadline && !contactDataFailureReported)
+            {
+                contactDataFailureReported = true;
+                waitingForContactData = false;
+                Debug.LogWarning("Cat contact data could not finish loading; keeping the current visual for " + breed, this);
+            }
+            return false;
+        }
+        if (contactDataReadyFrame < 0)
+        {
+            contactDataReadyFrame = Time.frameCount;
+            waitingForContactData = true;
+            return false;
+        }
+        if (Time.frameCount <= contactDataReadyFrame) return false;
+        waitingForContactData = false;
+        return true;
     }
 
     private static void ApplyToOwner(

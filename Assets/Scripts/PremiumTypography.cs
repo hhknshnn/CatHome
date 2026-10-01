@@ -9,6 +9,37 @@ public static class PremiumTypography
     public static TMP_FontAsset Body => body != null ? body : body = Resources.Load<TMP_FontAsset>("Typography/NunitoBody");
     public static TMP_FontAsset Emphasis => emphasis != null ? emphasis : emphasis = Resources.Load<TMP_FontAsset>("Typography/FredokaEmphasis");
 
+    /// <summary>Keep name editing on one pre-baked Turkish face and weight.</summary>
+    public static void ApplyNameInput(TMP_InputField input)
+    {
+        if(input==null||Body==null)return;
+        input.fontAsset=Body;
+        input.richText=false;
+        Apply(input.textComponent,false);
+        if(input.textComponent!=null)input.textComponent.richText=false;
+        if(input.placeholder is TMP_Text placeholder)Apply(placeholder,false);
+        input.onValueChanged.AddListener(value=>ComposeNameInput(input,value));
+    }
+
+    private static void ComposeNameInput(TMP_InputField input,string value)
+    {
+        if(string.IsNullOrEmpty(value))return;
+        // Mobile keyboards can send decomposed accents. Use the font's native
+        // composed glyph while preserving spaces, case and selection positions.
+        try
+        {
+            var form=System.Text.NormalizationForm.FormC;
+            string composed=value.Normalize(form);
+            if(composed==value)return;
+            int anchor=Mathf.Clamp(input.selectionStringAnchorPosition,0,value.Length);
+            int focus=Mathf.Clamp(input.selectionStringFocusPosition,0,value.Length);
+            input.SetTextWithoutNotify(composed);
+            input.selectionStringAnchorPosition=value.Substring(0,anchor).Normalize(form).Length;
+            input.selectionStringFocusPosition=value.Substring(0,focus).Normalize(form).Length;
+        }
+        catch(System.ArgumentException) { /* Wait for an incomplete keyboard Unicode sequence. */ }
+    }
+
     public static void Apply(TMP_Text label, bool? heading = null)
     {
         if (label == null) return;

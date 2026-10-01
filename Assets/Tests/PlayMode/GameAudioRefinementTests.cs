@@ -65,8 +65,8 @@ public sealed partial class GameAudioTests
     [UnityTest] public IEnumerator Sleep_MusicFallsBelowCareAndReturnsAfterWake()
     {
         yield return NormalHome();yield return EnterHome();yield return DismissReturnPopup();
-        var cat=Object.FindFirstObjectByType<CatMovement>();
-        var sleep=cat.GetComponent<SleepInteraction>();var mix=Object.FindFirstObjectByType<GameSoundscape>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();
+        var sleep=cat.GetComponent<SleepInteraction>();var mix=Object.FindAnyObjectByType<GameSoundscape>();
         Assert.That(sleep.TryRestoreSleepingState(out var failure),Is.True,failure);
         yield return new WaitForSecondsRealtime(2f);
         Assert.That(mix.Selection,Is.EqualTo("Rest"));Assert.That(mix.TargetMusicVolume,Is.EqualTo(.012f).Within(.001f));
@@ -86,9 +86,9 @@ public sealed partial class GameAudioTests
     [UnityTest] public IEnumerator Paws_ActualJoystickWalkAndRunHaveContactsAndStopQuietly()
     {
         yield return NormalHome();yield return EnterHome();yield return DismissReturnPopup();
-        var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
         var idle=cat.GetComponent<CatIdleBehavior>();if(idle!=null)idle.enabled=false;
-        Object.FindFirstObjectByType<HungerSystem>().ApplySavedValue(90);Object.FindFirstObjectByType<ThirstSystem>().ApplySavedValue(90);
+        Object.FindAnyObjectByType<HungerSystem>().ApplySavedValue(90);Object.FindAnyObjectByType<ThirstSystem>().ApplySavedValue(90);
         var joy=(MobileJoystick)typeof(CatMovement).GetField("mobileJoystick",Private).GetValue(cat);
         Assert.That(joy,Is.Not.Null);var rect=(RectTransform)joy.transform;
         var corners=new Vector3[4];rect.GetWorldCorners(corners);

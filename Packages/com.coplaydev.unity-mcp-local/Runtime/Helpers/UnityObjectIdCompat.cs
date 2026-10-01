@@ -29,7 +29,7 @@ namespace MCPForUnity.Runtime.Helpers
                 return 0;
             }
 
-#if UNITY_6000_5_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
             return (int)EntityId.ToULong(obj.GetEntityId());
 #else
             return obj.GetInstanceID();
@@ -64,6 +64,8 @@ namespace MCPForUnity.Runtime.Helpers
                 _instanceIdToObjectInitialized = true;
             }
             return _instanceIdToObject?.Invoke(null, new object[] { instanceId }) as Object;
+#elif UNITY_6000_4_OR_NEWER
+            return EditorUtility.EntityIdToObject(EntityId.FromULong(unchecked((ulong)(long)instanceId)));
 #elif UNITY_6000_3_OR_NEWER
             return EditorUtility.EntityIdToObject(instanceId);
 #else

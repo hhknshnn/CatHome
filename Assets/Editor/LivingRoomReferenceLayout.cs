@@ -5,18 +5,17 @@ using UnityEngine.SceneManagement;
 /// <summary>Approved front-centred camera and living-room composition.</summary>
 public static class LivingRoomReferenceLayout
 {
-    public static readonly Vector3 CameraPosition = HomeRoomCameraProfile.Position;
-    public static readonly Vector3 CameraAngles = HomeRoomCameraProfile.Angles;
-    public const float FieldOfView = HomeRoomCameraProfile.FieldOfView;
+    public static readonly Vector3 CameraPosition = HomeRoomCameraProfile.LivingRoomPosition;
+    public static readonly Vector3 CameraAngles = HomeRoomCameraProfile.LivingRoomAngles;
+    public const float FieldOfView = HomeRoomCameraProfile.LivingRoomFieldOfView;
     public const float SofaScale = .76f;
     public static readonly Vector3 SofaPosition = new Vector3(2.95f,0f,-.35f);
     public static readonly Vector3 TablePosition = new Vector3(1.30f,0f,-.60f);
-    public static readonly Vector3 BedPosition = new Vector3(1f,0f,2.40f);
-    public static readonly Vector3 BookshelfPosition = new Vector3(-.47f,0f,2.36f);
-    // Backplate follows the TV wall; the supported feeding poses face the
-    // open camera side without sending the head through a bowl rim.
-    public static readonly Vector3 CareStationPosition = new Vector3(-3.445f,0f,2.02f);
-    public static readonly Quaternion CareStationRotation = Quaternion.Euler(0,270,0);
+    public static readonly Vector3 BedPosition = new Vector3(2.30f,0f,2.33f);
+    public static readonly Vector3 BookshelfPosition = LivingProgressionComposition.ShelfPosition;
+    // Dedicated rear-wall care bay, beside the bed and clear of the media area.
+    public static readonly Vector3 CareStationPosition = new Vector3(.70f,0f,2.35f);
+    public static readonly Quaternion CareStationRotation = Quaternion.identity;
     public static Vector3 CarePoint(Vector3 local) => CareStationPosition + CareStationRotation * local;
     public static void ApplyCareLayout(Scene scene)
     {
@@ -26,10 +25,10 @@ public static class LivingRoomReferenceLayout
             Vector3 local;
             switch(t.name)
             {
-                case "FoodBowl": local=new Vector3(-.52f,.018f,-.12f);break;
-                case "WaterBowl": local=new Vector3(.26f,.018f,-.12f);break;
-                case "FoodInteractionPoint": local=new Vector3(-.4016669f,0f,-.7737662f);break;
-                case "WaterInteractionPoint": local=new Vector3(.3783331f,0f,-.7737662f);break;
+                case "FoodBowl": local=new Vector3(-.35f,.018f,-.12f);break;
+                case "WaterBowl": local=new Vector3(.35f,.018f,-.12f);break;
+                case "FoodInteractionPoint": local=new Vector3(-.2316669f,0f,-.7737662f);break;
+                case "WaterInteractionPoint": local=new Vector3(.4683331f,0f,-.7737662f);break;
                 default:continue;
             }
             t.SetPositionAndRotation(CarePoint(local),CareStationRotation);

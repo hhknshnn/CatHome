@@ -61,7 +61,7 @@ public static class CatIdentityService
         set
         {
             string clean = CatDialogueView.NormalizeName(value);
-            if (string.Equals(clean, CatName, StringComparison.Ordinal))
+            if (string.Equals(clean, PlayerPrefs.GetString(NameKey, string.Empty), StringComparison.Ordinal))
                 return;
             if (string.IsNullOrEmpty(clean))
                 PlayerPrefs.DeleteKey(NameKey);

@@ -46,7 +46,7 @@ public sealed class BalconyActivityTests
     private static CatActivity FindByKind(CatActivityKind kind)
     {
         foreach (CatActivity candidate in Object.FindObjectsByType<CatActivity>(
-                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+                     FindObjectsInactive.Include))
         {
             if (candidate.Kind == kind)
                 return candidate;

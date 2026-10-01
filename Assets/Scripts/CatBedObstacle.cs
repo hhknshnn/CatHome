@@ -16,7 +16,7 @@ public sealed class CatBedObstacle : MonoBehaviour
         var controller=cat.GetComponent<CharacterController>();
         float radius=controller!=null?controller.radius*Mathf.Max(Mathf.Abs(cat.transform.lossyScale.x),Mathf.Abs(cat.transform.lossyScale.z))+.06f:.31f;
         Physics.SyncTransforms();
-        foreach(var bed in FindObjectsByType<CatBedObstacle>(FindObjectsSortMode.None))
+        foreach(var bed in FindObjectsByType<CatBedObstacle>())
         {
             if(bed.gameObject.scene!=cat.gameObject.scene || bed.body==null || !bed.body.enabled || bed.frontExit==null)continue;
             var bounds=bed.body.bounds;bounds.Expand(new Vector3(radius*2,0,radius*2));

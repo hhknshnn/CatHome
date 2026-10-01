@@ -1442,7 +1442,10 @@ public static class HomeStoreService
             ProductsById[ProductsInternal[i].Id] = ProductsInternal[i];
     }
 
-    public static IReadOnlyList<HomeStoreProduct> Products => ProductsInternal;
+    // Retired products remain addressable only to preserve old ownership and XP.
+    private static readonly HomeStoreProduct[] ActiveProducts = Array.FindAll(ProductsInternal, p => !IsRetiredProduct(p.Id));
+    public static bool IsRetiredProduct(string id) => id == NapPillowId;
+    public static IReadOnlyList<HomeStoreProduct> Products => ActiveProducts;
     public static IReadOnlyList<string> LivingRoomCollection => LivingRoomCollectionInternal;
     public static IReadOnlyList<string> BathroomCollection => BathroomCollectionInternal;
     public static IReadOnlyList<string> KitchenCollection => KitchenCollectionInternal;
@@ -1496,7 +1499,7 @@ public static class HomeStoreService
     public static int SecondFloorOwnedCount => GetOwnedCount(SecondFloorCollectionInternal);
     public static bool IsSecondFloorComplete =>
         SecondFloorOwnedCount >= SecondFloorCollectionInternal.Length;
-    public static int CatalogCount => ProductsInternal.Length;
+    public static int CatalogCount => ActiveProducts.Length;
     public static int OwnedCatalogCount
     {
         get
@@ -1504,7 +1507,7 @@ public static class HomeStoreService
             int count = 0;
             for (int i = 0; i < ProductsInternal.Length; i++)
             {
-                if (IsOwned(ProductsInternal[i].Id))
+                if (!IsRetiredProduct(ProductsInternal[i].Id) && IsOwned(ProductsInternal[i].Id))
                     count++;
             }
             return count;
@@ -1532,6 +1535,7 @@ public static class HomeStoreService
 
     public static bool IsStored(string productId)
     {
+        if (IsRetiredProduct(productId)) return IsOwned(productId);
         if (IsFixedRoomProduct(productId)) return false;
         return IsOwned(productId) && StoredProductIds.Contains(productId);
     }
@@ -1542,6 +1546,7 @@ public static class HomeStoreService
     /// </summary>
     public static bool TrySetStored(string productId, bool stored)
     {
+        if (IsRetiredProduct(productId)) return stored && IsOwned(productId);
         if (IsFixedRoomProduct(productId)) return !stored && IsOwned(productId);
         if (!IsOwned(productId) ||
             !TryGetProduct(productId, out HomeStoreProduct product) ||
@@ -2243,7 +2248,7 @@ public static class HomeStoreService
         string productId,
         CurrencyType currency)
     {
-        if (!TryGetProduct(productId, out HomeStoreProduct product))
+        if (IsRetiredProduct(productId) || !TryGetProduct(productId, out HomeStoreProduct product))
             return new HomeStorePurchaseResult(HomeStorePurchaseStatus.UnknownProduct, default, 0L);
 
         if (IsOwned(productId))
@@ -2395,7 +2400,7 @@ public static class HomeStoreService
         string productId,
         bool recordQuest)
     {
-        if (!TryGetProduct(productId, out HomeStoreProduct product))
+        if (IsRetiredProduct(productId) || !TryGetProduct(productId, out HomeStoreProduct product))
             return new HomeStorePurchaseResult(HomeStorePurchaseStatus.UnknownProduct, default, 0L);
 
         if (IsOwned(productId))

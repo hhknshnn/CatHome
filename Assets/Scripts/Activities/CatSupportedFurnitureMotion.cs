@@ -17,6 +17,8 @@ public sealed class CatSupportedFurnitureMotion
         support = anchor.transform; support.SetParent(owner.transform, true);
         support.SetPositionAndRotation(surface.position, surface.rotation);
         anchor.AddComponent<CatActivitySurface>();
+        var measured = cat.GetComponent<CatMeasuredSupportMotion>() ?? cat.gameObject.AddComponent<CatMeasuredSupportMotion>();
+        measured.Bind(owner, surface);
     }
 
     public IEnumerator Pose(CatActivityPose pose, float seconds, Vector3 position, Quaternion rotation,
@@ -38,7 +40,7 @@ public sealed class CatSupportedFurnitureMotion
 
     public IEnumerator Jump(Vector3 from, Vector3 to, Quaternion launch, Quaternion arrival, bool preserveLaunchHeading = false)
     {
-        yield return CatJumpMotion.Play(cat, from, to, launch, arrival, to.y > .12f, .20f,
+        yield return CatJumpMotion.Play(cat, from, to, launch, arrival, CatActivityStartResolver.LandsOnSupport(cat, to), .20f,
             (stage, progress) => { InFlight = stage == 1; FlightProgress = progress; }, preserveLaunchHeading);
         InFlight = false; FlightProgress = 1f;
         support.position = to;
@@ -49,6 +51,7 @@ public sealed class CatSupportedFurnitureMotion
     public void End()
     {
         InFlight = false;
+        cat.GetComponent<CatMeasuredSupportMotion>()?.Clear();
         if (animation != null) animation.SetPose(CatActivityPose.GentleKnead);
         if (support != null) Object.Destroy(support.gameObject);
     }

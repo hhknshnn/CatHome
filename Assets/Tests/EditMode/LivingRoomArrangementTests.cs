@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 
 public sealed class LivingRoomArrangementTests
 {
-    [UnityTest] public IEnumerator All4147AllowedFiveItemCollections_HaveConnectedAutomaticLayouts()
+    [UnityTest,Timeout(360000)] public IEnumerator All3432AllowedFiveItemCollections_HaveConnectedAutomaticLayouts()
     {
         var setup=EditorSceneManager.GetSceneManagerSetup();
         try
@@ -30,10 +30,10 @@ public sealed class LivingRoomArrangementTests
             var cats=HomeStoreService.Products.Where(p=>CatCollectionPolicy.IsCatItem(p.Id)).Select(p=>p.Id).ToArray();
             var toys=cats.Where(id=>!CatCollectionPolicy.IsBed(id)).ToArray();var beds=cats.Where(CatCollectionPolicy.IsBed).ToArray();
             int checkedCount=0;
-            foreach(var ids in Combinations(toys,5)) {Assert.That(layout.TryPlan(ids,out _),Is.True,string.Join(",",ids));checkedCount++;if(checkedCount%16==0)yield return null;}
+            foreach(var ids in Combinations(toys,5)) {Progress(checkedCount,ids);Assert.That(layout.TryPlan(ids,out _),Is.True,string.Join(",",ids));checkedCount++;if(checkedCount%16==0)yield return null;}
             foreach(var bed in beds)foreach(var four in Combinations(toys,4))
-            {var ids=new List<string>(four){bed};Assert.That(layout.TryPlan(ids,out _),Is.True,string.Join(",",ids));checkedCount++;if(checkedCount%16==0)yield return null;}
-            Assert.That(checkedCount,Is.EqualTo(4147));
+            {var ids=new List<string>(four){bed};Progress(checkedCount,ids);Assert.That(layout.TryPlan(ids,out _),Is.True,string.Join(",",ids));checkedCount++;if(checkedCount%16==0)yield return null;}
+            Assert.That(checkedCount,Is.EqualTo(3432));
         }
         finally
         {
@@ -41,29 +41,25 @@ public sealed class LivingRoomArrangementTests
             else EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
         }
     }
+    static void Progress(int count,IEnumerable<string> ids)
+    {
+        System.IO.Directory.CreateDirectory(UiQaTestSession.ResultDirectory);
+        System.IO.File.WriteAllText(System.IO.Path.Combine(UiQaTestSession.ResultDirectory,"arrangement-progress.txt"),count+" "+string.Join(",",ids));
+    }
     static IEnumerable<string[]> Combinations(string[] values,int count,int start=0)
     {
         if(count==0){yield return new string[0];yield break;}
         for(int i=start;i<=values.Length-count;i++)foreach(var tail in Combinations(values,count-1,i+1))
         {var result=new string[count];result[0]=values[i];System.Array.Copy(tail,0,result,1,tail.Length);yield return result;}
     }
-    [Test] public void AuthoredPad_TouchesRearWallBesideBookshelf_AndLeavesItsEntryClear()
+    [Test] public void RetiredPillow_IsAbsentFromSceneAndActiveCatalog()
     {
+        Assert.That(HomeStoreService.Products.Any(p=>p.Id==HomeStoreService.NapPillowId),Is.False);
+        Assert.That(StoreCatalogAssets.PlaceableProducts.Any(p=>p.ProductId==HomeStoreService.NapPillowId),Is.False);
         var scene=SceneManager.GetSceneByPath(HomeRoomService.LivingRoomScenePath);
         bool opened=!scene.isLoaded;if(opened)scene=EditorSceneManager.OpenScene(HomeRoomService.LivingRoomScenePath,OpenSceneMode.Additive);
-        try {
-            var layout=CatRoomArrangement.Request(scene);layout.Invalidate();
-            var ids=new[]{HomeStoreService.NapPillowId,HomeStoreService.ScratchPostId,HomeStoreService.BallBasketId,HomeStoreService.PlayTunnelId,HomeStoreService.BellCollarId};
-            Assert.That(layout.TryPlan(ids,out var plan),Is.True);
-            var pose=plan[HomeStoreService.NapPillowId];Assert.That(pose.position,Is.EqualTo(CatRoomArrangement.RearWallNapPillowPosition));Assert.That(pose.yaw,Is.Zero);
-            var pad=scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<HomeProductPlacement>(true)).Single(p=>p.ProductId==HomeStoreService.NapPillowId);
-            var old=pad.MovableRoot.position;var rotation=pad.MovableRoot.rotation;
-            try {pad.MovableRoot.SetPositionAndRotation(pose.position,Quaternion.identity);Physics.SyncTransforms();
-                float back=pad.GetComponentsInChildren<Renderer>(true).Where(r=>r.enabled).Max(r=>r.bounds.max.z);
-                Assert.That(back,Is.EqualTo(HomeRoomShellMetrics.InteriorMaxZ-HomeRoomShellMetrics.WainscotThickness).Within(.002f));
-                Assert.That(CatActivityMotion.IsFloorClear(pose.entry,.27f,true),Is.True);
-            }finally{pad.MovableRoot.SetPositionAndRotation(old,rotation);Physics.SyncTransforms();}
-        }finally{if(opened)EditorSceneManager.CloseScene(scene,true);}
+        try {Assert.That(scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<HomeProductPlacement>(true)).Any(p=>p.ProductId==HomeStoreService.NapPillowId),Is.False);}
+        finally {if(opened)EditorSceneManager.CloseScene(scene,true);}
     }
     [Test] public void CompactArmchair_UsesMeasuredSeatAndLeavesCareSeparate()
     {

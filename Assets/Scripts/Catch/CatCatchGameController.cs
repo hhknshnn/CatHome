@@ -111,6 +111,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         Bind(pauseButton, PauseHunt);
         Bind(resumeButton, ResumeHunt);
         Bind(pauseExitButton, ExitFromPause);
+        StorybookMiniGamePresentation.Apply(huntCanvas != null ? huntCanvas.transform : null);
         ShowWelcome();
         ParkHomePresentation();
     }
@@ -827,7 +828,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         hiddenListeners.Clear();
         presentationCaptured = true;
 
-        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsInactive.Include);
         for (int i = 0; i < canvases.Length; i++)
         {
             Canvas canvas = canvases[i];
@@ -837,7 +838,7 @@ public sealed class CatCatchGameController : MonoBehaviour
             canvas.enabled = false;
         }
 
-        Camera[] cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Camera[] cameras = FindObjectsByType<Camera>(FindObjectsInactive.Include);
         for (int i = 0; i < cameras.Length; i++)
         {
             if (cameras[i] == null || cameras[i] == huntCamera || !cameras[i].enabled)
@@ -847,7 +848,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         }
 
         AudioListener[] listeners = FindObjectsByType<AudioListener>(
-            FindObjectsInactive.Include, FindObjectsSortMode.None);
+            FindObjectsInactive.Include);
         for (int i = 0; i < listeners.Length; i++)
         {
             if (listeners[i] == null || listeners[i] == huntListener || !listeners[i].enabled)

@@ -103,6 +103,7 @@ public static class StoreProductContentBuilder
         CatProductContentBuilder.BuildLegacyAssets(materials);
         RoomProductInteractionBuilder.UpgradePrefabs();
         ModernWorldArtBuilder.ApplyCatalogPrefabs();
+        LivingProgressionComposition.ApplyProductPrefabs();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -116,6 +117,7 @@ public static class StoreProductContentBuilder
         BuildPrefab(definition.WithoutRoomLayout(),materials);
         RoomProductInteractionBuilder.UpgradePrefab(definition,new System.Text.StringBuilder());
         ModernWorldArtBuilder.ApplyCatalogPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
+        LivingProgressionComposition.ApplyProductPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
         AssetDatabase.SaveAssets();
     }
 
@@ -3288,7 +3290,7 @@ public static class StoreProductContentBuilder
     private static void AttachEggChairNapActivity(GameObject root, GameObject visual)
     {
         Transform door = MakePoint(root, "NapDoorPoint", new Vector3(0f, 0f, -.56f));
-        Transform nest = MakePoint(root, "NapNestPoint", new Vector3(0f, .560f, -.04f));
+        Transform nest = MakePoint(root, "NapNestPoint", new Vector3(0f, .560f, -.53f));
         Transform anchor = MakePoint(root, "InteractionAnchor",
             new Vector3(0f, 0f, -.74f));
 

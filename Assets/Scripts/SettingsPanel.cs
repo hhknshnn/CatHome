@@ -42,9 +42,6 @@ public sealed class SettingsPanel : MonoBehaviour
     [SerializeField, Range(0.75f, 1f)] private float revealScale = 0.88f;
     [SerializeField] private bool reducedMotion;
 
-    private static readonly Color OnColor = PremiumUiStyle.Teal;
-    private static readonly Color OffColor = PremiumUiStyle.Mint;
-
     private static SettingsPanel activeInstance;
     private PanelState state = PanelState.Closed;
     private Coroutine animationRoutine;
@@ -65,6 +62,7 @@ public sealed class SettingsPanel : MonoBehaviour
             return;
         }
         activeInstance = this;
+        StorybookSettingsPresentation.ApplySettings(transform);
         panelAuthoredScale = panelVisual != null ? panelVisual.localScale : Vector3.one;
         ApplyResponsiveLayout();
         BindListeners();
@@ -129,7 +127,6 @@ public sealed class SettingsPanel : MonoBehaviour
             {
                 if (rows[i].stateText != null)
                 {
-                    rows[i].stateText.color = Color.white;
                     rows[i].stateText.enableAutoSizing = true;
                     rows[i].stateText.fontSizeMin = 14f;
                     rows[i].stateText.fontSizeMax = 20f;
@@ -139,8 +136,7 @@ public sealed class SettingsPanel : MonoBehaviour
                             ? "language.english"
                             : "language.turkish");
                 }
-                if (rows[i].face != null)
-                    rows[i].face.SetPremiumBaseColor(PremiumUiStyle.CandyAqua);
+                StorybookScreenStyle.Action(rows[i].button);
                 continue;
             }
             if (rows[i].key == "account")
@@ -157,25 +153,16 @@ public sealed class SettingsPanel : MonoBehaviour
                     if (accountStatus != null) accountStatus.text = GameLanguageService.Text(statusKey);
                     rows[i].stateText.text = GameLanguageService.Text(AccountIdentityService.IsGoogleConnected
                         ? "settings.connected" : "settings.connect");
-                    rows[i].stateText.color = PremiumUiStyle.Ink;
                     if (rows[i].button != null) rows[i].button.interactable = !AccountIdentityService.IsGoogleConnected && !AccountIdentityService.IsBusy;
                 }
-                if (rows[i].face != null)
-                {
-                    Color accountColor = AccountIdentityService.IsGoogleConnected
-                        ? PremiumUiStyle.Mint
-                        : PremiumUiStyle.WarmIvory;
-                    rows[i].face.SetPremiumBaseColor(accountColor);
-                }
+                StorybookScreenStyle.Action(rows[i].button);
                 continue;
             }
             bool on = GetPref(rows[i].key);
-            if(rows[i].stateText!=null) rows[i].stateText.color=on?Color.white:PremiumUiStyle.Ink;
             if (rows[i].stateText != null)
                 rows[i].stateText.text = GameLanguageService.Text(
                     on ? "settings.on" : "settings.off");
-            if (rows[i].face != null)
-                rows[i].face.SetPremiumBaseColor(on ? OnColor : OffColor);
+            StorybookSettingsPresentation.Toggle(rows[i].button, rows[i].stateText, on);
         }
     }
 

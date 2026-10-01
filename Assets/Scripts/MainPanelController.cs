@@ -153,6 +153,7 @@ public sealed class MainPanelController : MonoBehaviour
         ResolveSceneReferences();
 
         EnsureRoomsRowCompatibility();
+        StorybookMenuPresentation.Apply(transform);
         BindListeners();
 
         // Remember where the list rests before any animation offsets it.

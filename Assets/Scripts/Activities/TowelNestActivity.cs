@@ -31,6 +31,14 @@ public sealed class TowelNestActivity : CatActivity
     public float WideAwakeEnergy => Mathf.Clamp(wideAwakeEnergy, 0f, 100f);
     public override float EnergyCost => 0f;
     public override bool SupportsContinuousRest=>true;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return floorPoint != null && nestPoint != null &&
+            CatActivityStartResolver.GroundLaunch(this, actor, floorPoint.position, nestPoint.position, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -57,20 +65,18 @@ public sealed class TowelNestActivity : CatActivity
         Cat.SetMovementLocked(this, true);
         if (characterController != null) characterController.enabled = false;
         Phase = CatTowelPhase.Approach;
-        Vector3 start = Cat.transform.position;
-        Vector3 floor = Flatten(floorPoint.position, start.y), nest = nestPoint.position;
-        Quaternion toFloor = LookTowards(floor - start, Cat.transform.rotation);
-        yield return Move(start, floor, Cat.transform.rotation, toFloor, .32f);
-        Quaternion inward = LookTowards(nest - floor, toFloor);
-        yield return Move(floor, floor, Cat.transform.rotation, inward, .25f);
+        Vector3 floor = Flatten(floorPoint.position, AcceptedStart.Position.y), nest = nestPoint.position;
+        Quaternion inward = AcceptedStart.Rotation;
 
         var anchor = new GameObject("Towel jump support") { hideFlags = HideFlags.DontSave };
         jumpSupport = anchor.transform; jumpSupport.SetParent(transform, true);
-        jumpSupport.SetPositionAndRotation(floor, nestPoint.rotation);
+        jumpSupport.SetPositionAndRotation(AcceptedStart.Position, nestPoint.rotation);
         anchor.AddComponent<CatActivitySurface>();
+        var measured = Cat.GetComponent<CatMeasuredSupportMotion>() ?? Cat.gameObject.AddComponent<CatMeasuredSupportMotion>();
+        measured.Bind(this, nestPoint);
         Quaternion restingFacing = CatActivityFacing.AlongAxis(Cat, nest,
-            nestPoint.rotation * Quaternion.Euler(0f, 90f, 0f));
-        yield return Jump(floor, nest, inward, restingFacing, true);
+            CatActivityFacing.SupportedAxis(nestPoint));
+        yield return Jump(AcceptedStart.Position, nest, inward, restingFacing, true);
         yield return PoseSegment(CatTowelPhase.Settling, CatActivityPose.SitDown, 0f, 1f, .65f, nest, restingFacing);
         yield return PoseSegment(CatTowelPhase.Settling, CatActivityPose.TowelSettle, 0f, 1f, 1.1f, nest, restingFacing);
         PlayCatPose(CatActivityPose.Sleep, nestPoint);
@@ -134,6 +140,7 @@ public sealed class TowelNestActivity : CatActivity
     private void RestoreCat()
     {
         Phase = CatTowelPhase.None;
+        if (Cat != null) Cat.GetComponent<CatMeasuredSupportMotion>()?.Clear(this);
         if (jumpSupport != null)
         {
             if (Cat != null) Cat.GetComponent<CatActivityAnimation>()?.SetPose(CatActivityPose.GentleKnead);

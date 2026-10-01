@@ -174,7 +174,35 @@ public sealed class LevelLoader : MonoBehaviour
         bool authoringOverride)
     {
         IsReady = false;
+        CatPawReachCatalog.Preload(CatBreedService.SelectedBreedId);
         RoomLoadStarted?.Invoke(room);
+
+        // Finish measured-data integration before starting scene integration.
+        // A selection can supersede another request; both must settle, and the
+        // final selected breed must stay ready for a complete rendered frame.
+        float dataDeadline = Time.realtimeSinceStartup + 15f;
+        string dataBreed = null;
+        int dataReadyFrame = -1;
+        while (true)
+        {
+            string selected = CatBreedService.SelectedBreedId;
+            if (dataBreed != selected)
+            {
+                dataBreed = selected;
+                dataReadyFrame = -1;
+                CatPawReachCatalog.Preload(dataBreed);
+            }
+            bool ready = CatPawReachCatalog.IsReadyFor(dataBreed) && !CatPawReachCatalog.HasPendingLoads;
+            if (!ready) dataReadyFrame = -1;
+            else if (dataReadyFrame < 0) dataReadyFrame = Time.frameCount;
+            else if (Time.frameCount > dataReadyFrame) break;
+            if (Time.realtimeSinceStartup >= dataDeadline)
+            {
+                FailLoad(room, "Measured contact data loading timed out for " + dataBreed);
+                yield break;
+            }
+            yield return null;
+        }
 
         yield return LoadAdditiveIfNeeded(uiScenePath);
 
@@ -223,6 +251,19 @@ public sealed class LevelLoader : MonoBehaviour
             CatHomeSaveSystem.Initialize(cat);
             ProgressionService.Initialize(cat);
         }
+
+        // Bound asynchronous loading and fail through the existing release path
+        // before marking the room active. Missing data never means permission.
+        string pawBreed=CatBreedService.SelectedBreedId;
+        float pawDeadline=Time.realtimeSinceStartup+15f;
+        while(CatPawReachCatalog.IsLoadingFor(pawBreed))
+        {
+            if(Time.realtimeSinceStartup>=pawDeadline)
+            {FailLoad(room,"Measured contact data loading timed out for "+pawBreed);yield break;}
+            yield return null;
+        }
+        if(!CatPawReachCatalog.IsReadyFor(pawBreed))
+        {FailLoad(room,"Measured contact data is missing for "+pawBreed);yield break;}
 
         bool marked;
 #if UNITY_EDITOR

@@ -10,6 +10,8 @@ public class HungerSystem : MonoBehaviour
     [SerializeField] private Image hungerFill;
     [SerializeField] private Image hungerFrame;
     [SerializeField] private TMP_Text percentageText;
+    private int displayedPercentage = -1;
+    private string displayedPercentageText;
 
     [Header("Cat")]
     [SerializeField] private CatMovement catMovement;
@@ -31,9 +33,10 @@ public class HungerSystem : MonoBehaviour
     private readonly Color darkCriticalColor = new Color32(120, 20, 20, 255);
     private readonly Color textColor = new Color32(255, 244, 214, 255);
 
+    public CatMovement CatMovement => catMovement;
     public bool IsEating => isEating;
     public bool IsEatingFor(UnityEngine.Object owner) => isEating && ReferenceEquals(eatingOwner, owner);
-    public bool CanEat => !isEating && currentHunger < 99.9f;
+    public bool CanEat => !isEating && currentHunger < CatCareEligibility.SatisfiedThreshold;
     public float CurrentHunger => currentHunger;
 
     /// <summary>Raised when an eating interaction finishes. Not raised on load.</summary>
@@ -78,8 +81,10 @@ public class HungerSystem : MonoBehaviour
 
     public bool BeginEating(float duration, UnityEngine.Object owner, Action onCompleted = null)
     {
-        if (!isActiveAndEnabled || !CanEat)
-            return false;
+        if (!isActiveAndEnabled || isEating) return false;
+        ResolveSceneReferences();
+        if (!CatCareEligibility.TryAccept(catMovement, CatCareNeed.Food)) return false;
+        if (!CanEat) return false;
 
         if (eatingCoroutine != null)
         {
@@ -146,7 +151,7 @@ public class HungerSystem : MonoBehaviour
 
     public void Feed(float amount)
     {
-        if (!CanEat)
+        if (isEating || currentHunger >= 99.9f)
             return;
 
         currentHunger = Mathf.Clamp(currentHunger + amount, 0f, 100f);
@@ -172,8 +177,19 @@ public class HungerSystem : MonoBehaviour
 
         if (percentageText != null)
         {
-            percentageText.text = Mathf.CeilToInt(currentHunger) + "%";
-            percentageText.color = PremiumUiStyle.Ink;
+            int percentage = Mathf.CeilToInt(currentHunger);
+            if (displayedPercentage != percentage || displayedPercentageText == null)
+            {
+                displayedPercentage = percentage;
+                displayedPercentageText = percentage + "%";
+            }
+            if (percentageText.text != displayedPercentageText)
+                percentageText.text = displayedPercentageText;
+            Color legacyColor = isStarving
+                ? Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255),
+                    (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f)
+                : (Color)PremiumUiStyle.Ink;
+            percentageText.color = StorybookHudLayout.NeedPercentageColor(percentageText, percentage, legacyColor);
         }
 
         if (isStarving)
@@ -220,8 +236,6 @@ public class HungerSystem : MonoBehaviour
         if (hungerFrame != null)
             hungerFrame.color = flashingRed;
 
-        if (percentageText != null)
-            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     public void CancelEating(UnityEngine.Object owner)

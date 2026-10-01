@@ -8,6 +8,8 @@ public class EnergySystem : MonoBehaviour
     [SerializeField] private Image energyFill;
     [SerializeField] private Image energyFrame;
     [SerializeField] private TMP_Text percentageText;
+    private int displayedPercentage = -1;
+    private string displayedPercentageText;
 
     [Header("Cat")]
     [SerializeField] private CatMovement catMovement;
@@ -61,7 +63,7 @@ public class EnergySystem : MonoBehaviour
 
     private void Update()
     {
-        bool isSleeping = sleepInteraction != null && sleepInteraction.IsSleeping;
+        bool isSleeping = sleepInteraction != null && sleepInteraction.IsSettledOnBed;
         var companionRest = CatActivity.Active as CatCommandActivity;
         var rest = CatActivity.Active as CatEnrichmentActivity;
         var furnitureRest = CatActivity.Active as LivingFurnitureActivity;
@@ -93,7 +95,7 @@ public class EnergySystem : MonoBehaviour
 
     private void UpdateUI()
     {
-        bool isSleeping = sleepInteraction != null && sleepInteraction.IsSleeping;
+        bool isSleeping = sleepInteraction != null && sleepInteraction.IsSettledOnBed;
         UpdateUI(isSleeping);
     }
 
@@ -144,8 +146,19 @@ public class EnergySystem : MonoBehaviour
 
         if (percentageText != null)
         {
-            percentageText.text = Mathf.CeilToInt(currentEnergy) + "%";
-            percentageText.color = PremiumUiStyle.Ink;
+            int percentage = Mathf.CeilToInt(currentEnergy);
+            if (displayedPercentage != percentage || displayedPercentageText == null)
+            {
+                displayedPercentage = percentage;
+                displayedPercentageText = percentage + "%";
+            }
+            if (percentageText.text != displayedPercentageText)
+                percentageText.text = displayedPercentageText;
+            Color legacyColor = isExhausted
+                ? Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255),
+                    (Mathf.Sin(Time.unscaledTime * 6f) + 1f) * 0.5f)
+                : (Color)PremiumUiStyle.Ink;
+            percentageText.color = StorybookHudLayout.NeedPercentageColor(percentageText, percentage, legacyColor);
         }
 
         if (isExhausted)
@@ -192,8 +205,6 @@ public class EnergySystem : MonoBehaviour
         if (energyFrame != null)
             energyFrame.color = flashingRed;
 
-        if (percentageText != null)
-            percentageText.color = Color.Lerp(PremiumUiStyle.Ink, new Color32(152, 53, 43, 255), pulse);
     }
 
     private void OnDisable()

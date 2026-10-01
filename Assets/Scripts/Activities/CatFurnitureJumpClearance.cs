@@ -4,6 +4,9 @@ using UnityEngine;
 /// <summary>Measured approach offsets, in the furniture's local frame.</summary>
 public static class CatFurnitureJumpClearance
 {
+    public static float AscentRise(string id,float clearance) => id==HomeStoreService.GardenHammockId||id=="loft.floor-cushions"?Mathf.Max(.30f,clearance):Mathf.Max(.15f,clearance);
+    public static float DescentTravelPower(string id) => id == HomeStoreService.BalconyHangingChairId ? 9f : 2.2f;
+    public static float DescentRise(string id,float clearance) => id == HomeStoreService.BalconyHangingChairId ? 0f : Mathf.Max(.15f,clearance);
     // These change the launch path, never the placed furniture or its rest point.
     public static Vector3 LaunchOffset(string id)
     {

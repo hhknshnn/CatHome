@@ -1,0 +1,215 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a39e805996bc6064d81ef2217172d2d9, type: 3}
+  m_Name: CatBodyGuardCatalog
+  m_EditorClassIdentifier: CatHome.Runtime::CatBodyGuardCatalog
+  entries:
+  - breedId: domestic-shorthair
+    probes:
+    - region: pelvis
+      start: {x: 0.0022376627, y: 0.49284184, z: -0.20878299}
+      end: {x: 0.0022376627, y: 0.63955724, z: -0.20878299}
+      radius: 0.27626276
+    - region: chest
+      start: {x: 0.0023265332, y: 0.62951785, z: 0.09644218}
+      end: {x: 0.0023265332, y: 0.62951785, z: 0.340852}
+      radius: 0.23213322
+    - region: neck
+      start: {x: -0.0017233938, y: 0.5345877, z: 0.53410876}
+      end: {x: -0.0017233938, y: 0.60743105, z: 0.53410876}
+      radius: 0.24814253
+    - region: head
+      start: {x: -0.0055978894, y: 0.56231797, z: 0.68589747}
+      end: {x: -0.0055978894, y: 0.93404543, z: 0.68589747}
+      radius: 0.27395493
+    sampledPoses: 96
+    sampledVertices: 129408
+  - breedId: domestic-shorthair-orange
+    probes:
+    - region: pelvis
+      start: {x: 0.0022376627, y: 0.49284184, z: -0.20878299}
+      end: {x: 0.0022376627, y: 0.63955724, z: -0.20878299}
+      radius: 0.27626276
+    - region: chest
+      start: {x: 0.0023265332, y: 0.62951785, z: 0.09644218}
+      end: {x: 0.0023265332, y: 0.62951785, z: 0.340852}
+      radius: 0.23213322
+    - region: neck
+      start: {x: -0.0017233938, y: 0.5345877, z: 0.53410876}
+      end: {x: -0.0017233938, y: 0.60743105, z: 0.53410876}
+      radius: 0.24814253
+    - region: head
+      start: {x: -0.0055978894, y: 0.56231797, z: 0.68589747}
+      end: {x: -0.0055978894, y: 0.93404543, z: 0.68589747}
+      radius: 0.27395493
+    sampledPoses: 96
+    sampledVertices: 129408
+  - breedId: khao-manee
+    probes:
+    - region: pelvis
+      start: {x: 0.0022376627, y: 0.49284184, z: -0.20878299}
+      end: {x: 0.0022376627, y: 0.63955724, z: -0.20878299}
+      radius: 0.27626276
+    - region: chest
+      start: {x: 0.0023265332, y: 0.62951785, z: 0.09644218}
+      end: {x: 0.0023265332, y: 0.62951785, z: 0.340852}
+      radius: 0.23213322
+    - region: neck
+      start: {x: -0.0017233938, y: 0.5345877, z: 0.53410876}
+      end: {x: -0.0017233938, y: 0.60743105, z: 0.53410876}
+      radius: 0.24814253
+    - region: head
+      start: {x: -0.0055978894, y: 0.56231797, z: 0.68589747}
+      end: {x: -0.0055978894, y: 0.93404543, z: 0.68589747}
+      radius: 0.27395493
+    sampledPoses: 96
+    sampledVertices: 129408
+  - breedId: british-shorthair
+    probes:
+    - region: pelvis
+      start: {x: 0.0038298666, y: 0.49227482, z: -0.20702267}
+      end: {x: 0.0038298666, y: 0.63261485, z: -0.20702267}
+      radius: 0.29191917
+    - region: chest
+      start: {x: 0.0017024279, y: 0.6837172, z: -0.004603382}
+      end: {x: 0.0017024279, y: 0.6837172, z: 0.34389317}
+      radius: 0.2026641
+    - region: neck
+      start: {x: -0.00096833706, y: 0.49436975, z: 0.53944296}
+      end: {x: -0.00096833706, y: 0.6298791, z: 0.53944296}
+      radius: 0.24153107
+    - region: head
+      start: {x: -0.0023625493, y: 0.51676553, z: 0.6854656}
+      end: {x: -0.0023625493, y: 0.91442215, z: 0.6854656}
+      radius: 0.27487153
+    sampledPoses: 96
+    sampledVertices: 125760
+  - breedId: domestic-longhair
+    probes:
+    - region: pelvis
+      start: {x: 0.003689766, y: 0.48108134, z: -0.19864783}
+      end: {x: 0.003689766, y: 0.58101743, z: -0.19864783}
+      radius: 0.31869608
+    - region: chest
+      start: {x: 0.003160864, y: 0.5168208, z: 0.12819633}
+      end: {x: 0.003160864, y: 0.5168208, z: 0.4034226}
+      radius: 0.3005874
+    - region: neck
+      start: {x: -0.0010386854, y: 0.34729567, z: 0.5658258}
+      end: {x: -0.0010386854, y: 0.59782463, z: 0.5658258}
+      radius: 0.26851782
+    - region: head
+      start: {x: -0.0038173497, y: 0.56416637, z: 0.6770574}
+      end: {x: -0.0038173497, y: 0.8820976, z: 0.6770574}
+      radius: 0.27820608
+    sampledPoses: 96
+    sampledVertices: 136608
+  - breedId: maine-coon
+    probes:
+    - region: pelvis
+      start: {x: 0.0028422922, y: 0.39099234, z: -0.18262947}
+      end: {x: 0.0028422922, y: 0.58000493, z: -0.18262947}
+      radius: 0.36564714
+    - region: chest
+      start: {x: 0.002397135, y: 0.6784742, z: -0.043336138}
+      end: {x: 0.002397135, y: 0.6784742, z: 0.28203663}
+      radius: 0.30533305
+    - region: neck
+      start: {x: -0.0006184131, y: 0.39081374, z: 0.60766643}
+      end: {x: -0.0006184131, y: 0.6903759, z: 0.60766643}
+      radius: 0.2958666
+    - region: head
+      start: {x: -0.025710136, y: 0.5982717, z: 0.7184278}
+      end: {x: -0.025710136, y: 1.0578743, z: 0.7184278}
+      radius: 0.3681379
+    sampledPoses: 96
+    sampledVertices: 181920
+  - breedId: oriental-shorthair
+    probes:
+    - region: pelvis
+      start: {x: 0.0033890158, y: 0.6636239, z: -0.28626448}
+      end: {x: 0.0033890158, y: 0.6636239, z: -0.070206754}
+      radius: 0.19986196
+    - region: chest
+      start: {x: 0.0027718395, y: 0.6568978, z: 0.105435945}
+      end: {x: 0.0027718395, y: 0.6568978, z: 0.3558777}
+      radius: 0.22343977
+    - region: neck
+      start: {x: -0.0012231693, y: 0.5021393, z: 0.53989506}
+      end: {x: -0.0012231693, y: 0.64780134, z: 0.53989506}
+      radius: 0.22398138
+    - region: head
+      start: {x: -0.0063545406, y: 0.5822514, z: 0.6903875}
+      end: {x: -0.0063545406, y: 0.92562526, z: 0.6903875}
+      radius: 0.28933486
+    sampledPoses: 96
+    sampledVertices: 136608
+  - breedId: persian
+    probes:
+    - region: pelvis
+      start: {x: 0.0036829114, y: 0.38977987, z: -0.19581035}
+      end: {x: 0.0036829114, y: 0.65871346, z: -0.19581035}
+      radius: 0.28198576
+    - region: chest
+      start: {x: 0.0033108592, y: 0.6594632, z: -0.07318883}
+      end: {x: 0.0033108592, y: 0.6594632, z: 0.30647114}
+      radius: 0.23103207
+    - region: neck
+      start: {x: -0.00082300603, y: 0.52405965, z: 0.44663957}
+      end: {x: -0.00082300603, y: 0.52405965, z: 0.502501}
+      radius: 0.3103506
+    - region: head
+      start: {x: -0.000575155, y: 0.56567305, z: 0.66902506}
+      end: {x: -0.000575155, y: 0.7990784, z: 0.66902506}
+      radius: 0.2755493
+    sampledPoses: 96
+    sampledVertices: 170784
+  - breedId: russian-blue
+    probes:
+    - region: pelvis
+      start: {x: 0.0022376627, y: 0.49284184, z: -0.20878299}
+      end: {x: 0.0022376627, y: 0.63955724, z: -0.20878299}
+      radius: 0.27626276
+    - region: chest
+      start: {x: 0.0023265332, y: 0.62951785, z: 0.09644218}
+      end: {x: 0.0023265332, y: 0.62951785, z: 0.340852}
+      radius: 0.23213322
+    - region: neck
+      start: {x: -0.0017233938, y: 0.5345877, z: 0.53410876}
+      end: {x: -0.0017233938, y: 0.60743105, z: 0.53410876}
+      radius: 0.24814253
+    - region: head
+      start: {x: -0.0055978894, y: 0.56231797, z: 0.68589747}
+      end: {x: -0.0055978894, y: 0.93404543, z: 0.68589747}
+      radius: 0.27395493
+    sampledPoses: 96
+    sampledVertices: 129408
+  - breedId: sphynx
+    probes:
+    - region: pelvis
+      start: {x: 0.0013883114, y: 0.6532296, z: -0.26851135}
+      end: {x: 0.0013883114, y: 0.6532296, z: -0.11067692}
+      radius: 0.21138442
+    - region: chest
+      start: {x: 0.0027718693, y: 0.6555089, z: 0.10249292}
+      end: {x: 0.0027718693, y: 0.6555089, z: 0.3687001}
+      radius: 0.22245122
+    - region: neck
+      start: {x: -0.0023006126, y: 0.55223507, z: 0.5484731}
+      end: {x: -0.0023006126, y: 0.64522815, z: 0.5484731}
+      radius: 0.23623805
+    - region: head
+      start: {x: -0.007840395, y: 0.5785296, z: 0.6824063}
+      end: {x: -0.007840395, y: 0.890538, z: 0.6824063}
+      radius: 0.2831254
+    sampledPoses: 96
+    sampledVertices: 157824

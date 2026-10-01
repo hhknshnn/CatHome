@@ -31,7 +31,7 @@ public sealed class ActivityProximityTests
         foreach(string room in new[]{"LivingRoom_Level01","Bathroom_Level01","Kitchen_Level01","Bedroom_Level01","Garden_Level01","Balcony_Level01","Patio_Level01","SecondFloor_Level01"})
         {
             yield return RoomPlayModeSupport.LoadRoomAlone(room);OwnRoom();yield return null;yield return null;
-            var cat=Object.FindFirstObjectByType<CatMovement>();
+            var cat=Object.FindAnyObjectByType<CatMovement>();
             foreach(var a in CatActivity.Registered.Where(a=>a.gameObject.scene==cat.gameObject.scene && HomeStoreService.IsFixedRoomProduct(a.StoreProductId)).ToArray())
             {
                 count++;products.Add(a.StoreProductId);var entry=a.RoutineEntryPoint.position;
@@ -64,7 +64,7 @@ public sealed class ActivityProximityTests
     [UnityTest] public IEnumerator Toys_BothTunnelEnds_AndBedPaintingRemainDistinct()
     {
         yield return RoomPlayModeSupport.LoadRoomAlone("LivingRoom_Level01");OwnRoom();yield return null;
-        var cat=Object.FindFirstObjectByType<CatMovement>();var failures=new List<string>();int count=0;
+        var cat=Object.FindAnyObjectByType<CatMovement>();var failures=new List<string>();int count=0;
         foreach(string id in HomeStoreService.Products.Where(p=>CatCollectionPolicy.IsCatItem(p.Id)).Select(p=>p.Id))
         {
             Assert.That(HomeStoreService.TrySetStored(id,false),Is.True,id);yield return null;
@@ -80,7 +80,7 @@ public sealed class ActivityProximityTests
             Assert.That(HomeStoreService.TrySetStored(id,true),Is.True,id);yield return null;
         }
         var painting=CatActivity.Registered.First(a=>a.Kind==CatActivityKind.PaintingWatch);
-        var bed=Object.FindObjectsByType<Transform>(FindObjectsSortMode.None).First(t=>t.name=="BedInteractionPoint");
+        var bed=Object.FindObjectsByType<Transform>().First(t=>t.name=="BedInteractionPoint");
         Move(cat,bed.position);Assert.That(painting.TryGetPromptDistance(cat,out _),Is.False,"bed must never offer painting");
         var paintingRoot=painting.GetComponent<HomeProductPlacement>().MovableRoot;
         var paintingBounds=paintingRoot.GetComponentsInChildren<Renderer>().First(r=>r.enabled).bounds;
@@ -93,15 +93,15 @@ public sealed class ActivityProximityTests
             if(painting.TryGetPromptDistance(cat,out _))paintingNear=true;
         }
         Assert.That(paintingNear,Is.True,"Painting has a clear nearby viewing side.");
-        Assert.That(count,Is.EqualTo(17));Assert.That(failures,Is.Empty,string.Join("\n",failures));
+        Assert.That(count,Is.EqualTo(16));Assert.That(failures,Is.Empty,string.Join("\n",failures));
     }
     [UnityTest] public IEnumerator FullFiveToyRoom_BasketContactAndPathsWorkForEveryBreed()
     {
         yield return RoomPlayModeSupport.LoadRoomAlone("LivingRoom_Level01");OwnRoom();yield return null;
-        foreach(string id in new[]{HomeStoreService.NapPillowId,HomeStoreService.BellCollarId,HomeStoreService.PlayTunnelId,HomeStoreService.ScratchPostId,HomeStoreService.BallBasketId})
+        foreach(string id in new[]{HomeStoreService.FeatherToyId,HomeStoreService.BellCollarId,HomeStoreService.PlayTunnelId,HomeStoreService.ScratchPostId,HomeStoreService.BallBasketId})
             Assert.That(HomeStoreService.TrySetStored(id,false),Is.True,id);
-        yield return null;var cat=Object.FindFirstObjectByType<CatMovement>();var basket=Object.FindFirstObjectByType<BallChaseActivity>();
-        var displayed=Object.FindObjectsByType<HomeProductPlacement>(FindObjectsSortMode.None)
+        yield return null;var cat=Object.FindAnyObjectByType<CatMovement>();var basket=Object.FindAnyObjectByType<BallChaseActivity>();
+        var displayed=Object.FindObjectsByType<HomeProductPlacement>()
             .Where(p=>CatCollectionPolicy.IsCatItem(p.ProductId)&&!HomeStoreService.IsStored(p.ProductId)).ToArray();
         Assert.That(displayed.Length,Is.EqualTo(5));
         Assert.That(displayed.Max(p=>p.MovableRoot.position.x)-displayed.Min(p=>p.MovableRoot.position.x),Is.GreaterThan(3f),"Use the open foreground across the room");

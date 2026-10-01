@@ -13,7 +13,7 @@ public sealed class CatCareStationObstacle : MonoBehaviour
     {
         if(cat==null)return position;
         Physics.SyncTransforms();
-        foreach(var station in FindObjectsByType<CatCareStationObstacle>(FindObjectsSortMode.None))
+        foreach(var station in FindObjectsByType<CatCareStationObstacle>())
         {
             if(station.gameObject.scene!=cat.gameObject.scene||station.body==null||!station.body.enabled||station.frontExit==null)continue;
             var bounds=station.body.bounds;bounds.Expand(new Vector3(.66f,0,.66f));

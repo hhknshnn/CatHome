@@ -9,8 +9,8 @@ using UnityEngine.SceneManagement;
 /// <summary>Two physical viewing bays beside the living-room sofa; all product geometry stays together.</summary>
 public static class LivingRoomGazeLayoutBuilder
 {
-    public static readonly Vector3 TallPlantPosition = new Vector3(3.30f, 0f, 1.15f);
-    public static readonly Vector3 TallPlantEntryLocal = new Vector3(0f, 0f, .75f);
+    public static readonly Vector3 TallPlantPosition = LivingProgressionComposition.PlantPosition;
+    public static readonly Vector3 TallPlantEntryLocal = new Vector3(1.10f, 0f, -.97f);
     public static readonly Vector3 WindowEntry = new Vector3(2.45f, 0f, .85f);
 
     public static void ConfigureWindowEntry(SitLookActivity activity)

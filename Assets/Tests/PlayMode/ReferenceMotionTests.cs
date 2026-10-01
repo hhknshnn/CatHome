@@ -64,7 +64,7 @@ public sealed class ReferenceMotionTests
     {
         yield return Prepare(HomeStoreService.PlayTunnelId);
         var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
-        var tunnel=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsSortMode.None).First(a=>a.Mode==CatEnrichmentMode.Tunnel);
+        var tunnel=Object.FindObjectsByType<CatEnrichmentActivity>().First(a=>a.Mode==CatEnrichmentMode.Tunnel);
         foreach(bool reverse in new[]{false,true})
         {
             RoomPlayModeSupport.ProvisionNeeds();Vector3 start=reverse?tunnel.ExitPoint.position:tunnel.RoutineEntryPoint.position;
@@ -106,7 +106,7 @@ public sealed class ReferenceMotionTests
     }
     [UnityTest]public IEnumerator MainBed_AllBreeds_RestOnTheNewCushion()
     {
-        yield return Prepare(null);var cat=Object.FindFirstObjectByType<CatMovement>();
+        yield return Prepare(null);var cat=Object.FindAnyObjectByType<CatMovement>();
         var sleep=cat.GetComponent<SleepInteraction>();var cc=cat.GetComponent<CharacterController>();
         var entry=(Transform)typeof(SleepInteraction).GetField("bedInteractionPoint",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(sleep);
         var point=(Transform)typeof(SleepInteraction).GetField("sleepPoint",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(sleep);
@@ -140,7 +140,7 @@ public sealed class ReferenceMotionTests
     [UnityTest]public IEnumerator SavedBedCorner_RestoresToTheFrontAndCanWalkAway()
     {
         yield return Prepare(null);
-        var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
         var host=new GameObject("QA corner analog",typeof(RectTransform),typeof(MobileJoystick));var stick=host.GetComponent<MobileJoystick>();
         typeof(CatMovement).GetField("mobileJoystick",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(cat,stick);
         var direction=typeof(MobileJoystick).GetProperty("Direction");
@@ -162,49 +162,18 @@ public sealed class ReferenceMotionTests
         finally{Object.Destroy(host);}
     }
 
-    [UnityTest]public IEnumerator Bed_BlocksManualEntryAndRearPassage_AndRestoresSleepingSaves()
-    {
-        yield return Prepare(null);
-        var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
-        var bed=Object.FindFirstObjectByType<CatBedObstacle>();var sleep=cat.GetComponent<SleepInteraction>();
-        Assert.That(bed.Body.bounds.max.z,Is.EqualTo(2.80f).Within(.005f),"Bed must meet the back wall.");
-        Assert.That(bed.transform.Find("PremiumCareVisual").GetComponentInChildren<Renderer>().bounds.max.z,Is.EqualTo(2.72f).Within(.005f),"Visible upholstery must touch the panelling.");
-        var host=new GameObject("QA solid bed analog",typeof(RectTransform),typeof(MobileJoystick));var stick=host.GetComponent<MobileJoystick>();
-        typeof(CatMovement).GetField("mobileJoystick",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(cat,stick);
-        var direction=typeof(MobileJoystick).GetProperty("Direction");
-        try
-        {
-            // Both sides of the rear seam and the open-looking front resist manual walking.
-            foreach(int side in new[]{-1,0,1})
-            {
-                RoomPlayModeSupport.ProvisionNeeds();
-                var start=side==0?bed.FrontExit.position:new Vector3(bed.transform.position.x+side*.98f,.05f,2.48f);
-                var input=side==0?Vector2.up:Vector2.left*side;
-                cc.enabled=false;cat.transform.SetPositionAndRotation(start,Quaternion.LookRotation(new Vector3(input.x,0,input.y)));cc.enabled=true;
-                direction.SetValue(stick,input);yield return new WaitForSeconds(.85f);direction.SetValue(stick,Vector2.zero);
-                if(side==0)Assert.That(cat.transform.position.z,Is.LessThan(bed.Body.bounds.min.z-.18f));
-                else Assert.That((cat.transform.position.x-bed.transform.position.x)*side,Is.GreaterThan(.74f),"Cannot enter behind the bed from side "+side);
-            }
-            foreach(var old in new[]{bed.transform.position,bed.transform.position+Vector3.forward*.28f,new Vector3(-1.3f,.05f,2.47f)})
-            {cat.ApplySavedWorldPose(old,Quaternion.identity);Assert.That(Vector3.Distance(cat.transform.position,bed.FrontExit.position),Is.LessThan(.02f));}
-            var clear=new Vector3(0,0,-2);cat.ApplySavedWorldPose(clear,Quaternion.identity);
-            Assert.That(cat.transform.position,Is.EqualTo(clear),"Valid saved positions stay unchanged.");
-            // A legitimate sleeping save stays on its pad through collection refresh.
-            RoomPlayModeSupport.ProvisionNeeds();Assert.That(sleep.TryRestoreSleepingState(out var reason),Is.True,reason);
-            yield return null;var rest=cat.transform.position;
-            CatRoomArrangement.Request(cat.gameObject.scene).Invalidate();yield return null;yield return null;
-            Assert.That(sleep.IsSleeping,Is.True);Assert.That(cat.transform.position,Is.EqualTo(rest));
-            Assert.That(sleep.TryHandleActionButton(),Is.True);yield return null;
-            Assert.That(CatActivityMotion.IsFloorClear(cat.transform.position,.30f),Is.True);Assert.That(cat.IsMovementLocked,Is.False);
-        }
-        finally{if(sleep.IsSleeping)sleep.TryHandleActionButton();Object.Destroy(host);}
-    }
+    [UnityTest,Timeout(90000)]
+    public IEnumerator Bed_CurrentRoomFrontAndOccupiedLeft_WithIsolatedSides_AndSavedSleepWakes()
+        => MainBedCurrentRoomSafetyTests.VerifyCurrentRoomAndIsolatedSides(this);
 
     [UnityTest]public IEnumerator SelectedTelevision_RequiresProximityAndRechecksAtClickTime()
     {
         yield return Prepare(null);
-        var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
+        yield return QaBreedReadiness.WaitForSelected(cat);
         var tv=CatActivity.Registered.First(a=>a.Kind==CatActivityKind.TelevisionWatch);
+        var television=tv as SitLookActivity;
+        Assert.That(television,Is.Not.Null);Assert.That(television.ReactionKind,Is.EqualTo(SitLookReaction.Sit));
         var host=new GameObject("QA action prompt");var prompt=host.AddComponent<ActivityPromptController>();
         var flags=BindingFlags.Instance|BindingFlags.NonPublic;
         var selected=typeof(ActivityPromptController).GetField("selected",flags);
@@ -216,12 +185,27 @@ public sealed class ReferenceMotionTests
             Assert.That(tv.DistanceTo(cat),Is.GreaterThan(tv.InteractionRadius+1));
             selected.SetValue(prompt,tv);candidate.SetValue(prompt,tv);
             Assert.That(find.Invoke(prompt,null),Is.Not.SameAs(tv));Assert.That(selected.GetValue(prompt),Is.Null);
-            cc.enabled=false;cat.transform.position=tv.RoutineEntryPoint.position;cc.enabled=true;
+            // The prepared view retains the player's pose: approach on the
+            // floor and face the actual screen, rather than inheriting the
+            // previous distant pose's identity heading or the mounted TV's Y.
+            Vector3 near=tv.RoutineEntryPoint.position;near.y=.05f;
+            Vector3 toward=television.LookPoint.position-near;toward.y=0;
+            Assert.That(toward.sqrMagnitude,Is.GreaterThan(.0001f));
+            cc.enabled=false;cat.transform.SetPositionAndRotation(near,Quaternion.LookRotation(toward));cc.enabled=true;
+            Physics.SyncTransforms();
+            Assert.That(tv.TryGetPromptDistance(cat,out _),Is.True,
+                "Authored TV floor entry facing the screen must be a real usable stance; bodyClear="+
+                cat.IsInteractionPoseClear(cat.transform.position,cat.transform.rotation)+" root="+cat.transform.position+" look="+television.LookPoint.position);
             selected.SetValue(prompt,tv);Assert.That(find.Invoke(prompt,null),Is.SameAs(tv));
             candidate.SetValue(prompt,tv);var energy=RoomPlayModeSupport.ProvisionNeeds();float before=energy.CurrentEnergy;
             cat.ApplySavedWorldPose(new Vector3(1,0,-2),Quaternion.identity);
+            Assert.That(tv.DistanceTo(cat),Is.GreaterThan(tv.InteractionRadius));
+            Vector3 rejectedPosition=cat.transform.position;Quaternion rejectedRotation=cat.transform.rotation;
+            // No yield, prompt refresh, or preparation query after the move:
+            // this invokes the stale selection and requires click-time refusal.
             typeof(ActivityPromptController).GetMethod("HandleAction",flags).Invoke(prompt,null);
             Assert.That(tv.IsRunning,Is.False);Assert.That(energy.CurrentEnergy,Is.EqualTo(before));
+            Assert.That(cat.transform.position,Is.EqualTo(rejectedPosition));Assert.That(cat.transform.rotation,Is.EqualTo(rejectedRotation));
         }
         finally{Object.Destroy(host);}
     }
@@ -229,7 +213,7 @@ public sealed class ReferenceMotionTests
     [UnityTest]public IEnumerator Tunnel_StopsManualMovementAtBothSidesAndMouths_AndStaysSolidAfterCancel()
     {
         yield return Prepare(HomeStoreService.PlayTunnelId);
-        var cat=Object.FindFirstObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
         var tunnel=CatActivity.Registered.OfType<CatEnrichmentActivity>().First(a=>a.Mode==CatEnrichmentMode.Tunnel);
         tunnel.transform.SetPositionAndRotation(new Vector3(-1,0,-.7f),Quaternion.identity);Physics.SyncTransforms();
         var host=new GameObject("QA tunnel analog",typeof(RectTransform),typeof(MobileJoystick));var stick=host.GetComponent<MobileJoystick>();
@@ -261,7 +245,7 @@ public sealed class ReferenceMotionTests
     {
         yield return Prepare(HomeStoreService.PlayTunnelId);
         var camera=Camera.main;var tunnel=CatActivity.Registered.First(a=>a.Kind==CatActivityKind.TunnelPlay);
-        var cat=Object.FindFirstObjectByType<CatMovement>();cat.GetComponent<CharacterController>().enabled=false;
+        var cat=Object.FindAnyObjectByType<CatMovement>();cat.GetComponent<CharacterController>().enabled=false;
         cat.transform.position=new Vector3(0,0,-2.5f);Physics.SyncTransforms();
         var point=camera.WorldToScreenPoint(tunnel.transform.position+Vector3.up*.3f);
         Assert.That(ActivityPromptController.PickWorldActivity(camera,point),Is.SameAs(tunnel),"Invisible boundary must not block the tunnel.");
@@ -280,5 +264,70 @@ public sealed class ReferenceMotionTests
             Assert.That(ActivityPromptController.PickWorldActivity(camera,point),Is.Not.SameAs(tunnel),"Stored toys cannot be picked.");
         }
         finally{Object.Destroy(obstacle);}
+    }
+}
+
+// QA observation only. Never writes transforms, input, collisions, or save state.
+// The existing test's .85 s duration and all acceptance thresholds remain intact.
+[DefaultExecutionOrder(32000)]
+public sealed class BedWalkingQaWitness : MonoBehaviour
+{
+    public string Phase="unbound";
+    public int Side=-99;
+    CatMovement cat;CharacterController cc;CatBedObstacle bed;MobileJoystick stick;
+    CatRoomArrangement layout;
+    readonly List<string> rows=new List<string>();
+    readonly List<string> hits=new List<string>();
+    int hitFrame=-1;
+    Vector3 previous;
+    bool hasPrevious;
+    float maximumRootStep;
+    const BindingFlags Private=BindingFlags.Instance|BindingFlags.NonPublic;
+    static readonly FieldInfo pending=typeof(CatRoomArrangement).GetField("pending",Private);
+    static readonly FieldInfo applying=typeof(CatRoomArrangement).GetField("applying",Private);
+    static readonly FieldInfo cameraField=typeof(CatMovement).GetField("cameraTransform",Private);
+    static readonly FieldInfo vertical=typeof(CatMovement).GetField("verticalVelocity",Private);
+    static readonly FieldInfo initialized=typeof(CatHomeSaveSystem).GetField("initialized",BindingFlags.Static|BindingFlags.NonPublic);
+    static readonly FieldInfo savedCat=typeof(CatHomeSaveSystem).GetField("catMovement",BindingFlags.Static|BindingFlags.NonPublic);
+    static string N(float v)=>v.ToString("R",System.Globalization.CultureInfo.InvariantCulture);
+    static string V(Vector3 v)=>N(v.x)+";"+N(v.y)+";"+N(v.z);
+    static string Q(string s)=>"\""+(s??"").Replace("\"","\"\"")+"\"";
+    public void Bind(CatMovement actor,CharacterController controller,CatBedObstacle obstacle,MobileJoystick input)
+    {
+        cat=actor;cc=controller;bed=obstacle;stick=input;
+        layout=Object.FindAnyObjectByType<CatRoomArrangement>();
+        rows.Add("frame,time,phase,side,deltaTime,root,rootDelta,maxRootStep,yaw,input,worldInput,ccFlags,ccGrounded,ccEnabled,ccMin,ccMax,bedRoot,bedMin,bedMax,bodyCenter,bodySize,bodyEnabled,bodyTrigger,profile,selectedBreed,actualBreed,pendingLoads,layoutPending,layoutApplying,saveInitialized,saveBoundHere,verticalVelocity,physicalLock,controllerHits,broadSolidsOnLargeStep");
+    }
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if(hitFrame!=Time.frameCount){hits.Clear();hitFrame=Time.frameCount;}
+        if(hits.Count<20)hits.Add(hit.collider.name+"@"+V(hit.point)+" normal="+V(hit.normal)+" move="+N(hit.moveLength));
+    }
+    void LateUpdate(){if(cat!=null)Capture();}
+    public void Capture()
+    {
+        if(cat==null||cc==null||bed==null||bed.Body==null)return;
+        Vector3 root=cat.transform.position,delta=hasPrevious?root-previous:Vector3.zero;
+        bool large=hasPrevious&&delta.magnitude>.10f;
+        if(hasPrevious)maximumRootStep=Mathf.Max(maximumRootStep,delta.magnitude);
+        previous=root;hasPrevious=true;
+        var cam=cameraField.GetValue(cat) as Transform;
+        Vector3 right=cam!=null?cam.right:Vector3.right,forward=cam!=null?cam.forward:Vector3.forward;
+        right.y=forward.y=0;right.Normalize();forward.Normalize();
+        Vector2 input=stick!=null?stick.Direction:Vector2.zero;
+        Vector3 world=Vector3.ClampMagnitude(right*input.x+forward*input.y,1);
+        var tag=cat.GetComponentInChildren<CatBreedVisualTag>();
+        Bounds cb=cc.bounds,bb=bed.Body.bounds;
+        string nearby="";
+        if(large||Phase=="placed-zero-input")
+            nearby=string.Join(";",Physics.OverlapBox(cb.center,cb.extents,Quaternion.identity,~0,QueryTriggerInteraction.Ignore)
+                .Where(c=>!c.transform.IsChildOf(cat.transform)).Select(c=>c.name+" min="+V(c.bounds.min)+" max="+V(c.bounds.max)));
+        rows.Add(string.Join(",",new[]{Time.frameCount.ToString(),N(Time.time),Q(Phase),Side.ToString(),N(Time.deltaTime),Q(V(root)),Q(V(delta)),N(maximumRootStep),N(cat.transform.eulerAngles.y),Q(N(input.x)+";"+N(input.y)),Q(V(world)),Q(cc.collisionFlags.ToString()),cc.isGrounded.ToString(),cc.enabled.ToString(),Q(V(cb.min)),Q(V(cb.max)),Q(V(bed.transform.position)),Q(V(bb.min)),Q(V(bb.max)),Q(V(bed.Body.center)),Q(V(bed.Body.size)),bed.Body.enabled.ToString(),bed.Body.isTrigger.ToString(),cat.HasBodyGuardProfile.ToString(),Q(CatBreedService.SelectedBreedId),Q(tag!=null?tag.BreedId:"missing"),CatPawReachCatalog.HasPendingLoads.ToString(),(layout!=null&&pending!=null?pending.GetValue(layout):null)?.ToString()??"missing",(layout!=null&&applying!=null?applying.GetValue(layout):null)?.ToString()??"missing",initialized?.GetValue(null)?.ToString()??"missing",(savedCat!=null&&object.ReferenceEquals(savedCat.GetValue(null),cat)).ToString(),vertical!=null?N((float)vertical.GetValue(cat)):"missing",cat.IsMovementPhysicallyLocked.ToString(),Q(hitFrame==Time.frameCount?string.Join(";",hits):""),Q(nearby)}));
+    }
+    public void Write()
+    {
+        string directory=UnityEditor.SessionState.GetString("CatHome.QA.ResultDirectory","Docs/QA/INTERACTION_POLISH_110MIN_2026-09-17");
+        System.IO.Directory.CreateDirectory(directory);
+        System.IO.File.WriteAllLines(System.IO.Path.Combine(directory,"bed-walking-diagnostic.csv"),rows);
     }
 }

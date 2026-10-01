@@ -34,7 +34,7 @@ public sealed class CeramicBowlContactTests
             Assert.That(HomeStoreService.TrySetStored(id,false),Is.True,id);
         yield return null;yield return null;
         cat=Object.FindAnyObjectByType<CatMovement>();var idle=cat.GetComponent<CatIdleBehavior>();if(idle!=null)idle.enabled=false;
-        bowl=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsSortMode.None).Single(a=>a.StoreProductId==HomeStoreService.CeramicBowlId);
+        bowl=Object.FindObjectsByType<CatEnrichmentActivity>().Single(a=>a.StoreProductId==HomeStoreService.CeramicBowlId);
     }
     void Place()
     {

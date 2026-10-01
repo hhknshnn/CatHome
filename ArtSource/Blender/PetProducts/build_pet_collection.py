@@ -140,12 +140,13 @@ def build(name):
             pipe('SoftCatGrass',[(x,.26,z),(x*1.12,.37+(i%3)*.015,z*1.10),(x*1.15+.028*math.sin(i),.45+(i%4)*.025,z*1.18)],.009,'CH_MintBright' if i%2 else 'CH_AquaBright',True)
         badge(0,.14,-.296,.62)
     elif name=='ScratchPost':
-        cube('StablePlinth',(0,.047,0),(.65,.094,.65),'CH_White',.08)
-        P.append(k.cylinder('SisalCore',(0,.43,.06),.105,.68,C['CH_Cream'],vertices=32))
-        for i in range(34):ring('SisalCoil',(0,.115+i*.019,.06),.107,.009,'CH_Cream')
+        # Low visible plinth lets the unchanged cat controller reach the shaft.
+        cube('StablePlinth',(0,.014,0),(.65,.028,.65),'CH_White',.012)
+        P.append(k.cylinder('SisalCore',(0,.399,.06),.105,.742,C['CH_Cream'],vertices=32))
+        for i in range(38):ring('SisalCoil',(0,.043+i*.019,.06),.107,.009,'CH_Cream')
         P.append(k.cylinder('SoftTop',(0,.80,.06),.17,.065,C['CH_MintBright'],vertices=36))
         pipe('SideToyCord',[(.15,.77,.06),(.23,.51,.03)],.006,'CH_Gold',True)
-        ball(.23,.45,.03,.047,'CH_CoralBright',True);badge(0,.052,-.325,.65)
+        ball(.23,.45,.03,.047,'CH_CoralBright',True);badge(0,.020,-.325,.24)
     elif name=='BallBasket':
         P.append(k.revolve('WovenBasket',[(.23,.025),(.28,.13),(.29,.31)],C['CH_White'],segments=36,thickness=.025,close_bottom=True))
         for i in range(28):
@@ -161,6 +162,9 @@ def build(name):
     factor=min(SIZES[name][i]/(hi[i]-lo[i]) for i in range(3))*.97
     # Never enlarge undersized intentional details; fit only if footprint requires it.
     factor=min(1,factor);offset=Vector(((lo.x+hi.x)/2,lo.y,(lo.z+hi.z)/2))
+    if name=='ScratchPost':
+        # Keep the existing shaft/toy registration after lowering the plinth.
+        factor=.9994991635218016;offset=Vector((0,0,-.02437499165534973))
     for o in objects:
         for v in o.data.vertices:v.co=(v.co-offset)*factor
         o.data.update()

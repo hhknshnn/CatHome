@@ -209,8 +209,9 @@ public sealed class CatIdleBehavior : MonoBehaviour
 
     private static bool MiniGameIsActive()
     {
-        return FindAnyObjectByType<CatRunnerGameController>(FindObjectsInactive.Exclude) != null ||
-               FindAnyObjectByType<CatCatchGameController>(FindObjectsInactive.Exclude) != null;
+        // Share the transition gate already used by home controls. Repeated
+        // global controller scans made an otherwise idle cat expensive.
+        return HomeUiFlow.IsMiniGameVisible;
     }
 
     private bool TryChooseLookPoint(CatIdleBeat beat, out Vector3 point)
@@ -261,7 +262,7 @@ public sealed class CatIdleBehavior : MonoBehaviour
     {
         if (speech == null)
             return;
-        speech.Show(CatIdlePersonality.AttentionLine(
+        speech.ShowLocalized(CatIdlePersonality.AttentionLine(
             CurrentMood,
             CatIdentityService.DisplayName,
             Need(hunger != null ? hunger.CurrentHunger : 100f),

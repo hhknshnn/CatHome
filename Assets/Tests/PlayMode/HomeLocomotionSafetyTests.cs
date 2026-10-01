@@ -66,6 +66,7 @@ public sealed class HomeLocomotionSafetyTests
         joystick = joystickHost.AddComponent<MobileJoystick>();
         Set(cat, "mobileJoystick", joystick); Set(cat, "cameraTransform", null);
         yield return null;
+        yield return QaBreedReadiness.WaitForSelected(cat);
         Assert.That(cat.IsMovementLocked, Is.False, "Fixture must have no world/menu/activity input owner.");
     }
 
@@ -91,6 +92,7 @@ public sealed class HomeLocomotionSafetyTests
         {
             Assert.That(CatBreedService.Select(breed.Id), Is.True);
             yield return null; yield return null;
+            yield return QaBreedReadiness.WaitForSelected(cat, breed.Id);
             var animator = Animator;
             var profile = catalog.Find(breed.Id);
             foreach (string needs in new[] { "full", "hunger0-water34-energy99", "thirst0", "energy0" })
@@ -146,10 +148,10 @@ public sealed class HomeLocomotionSafetyTests
         Place(new Vector3(0f, .05f, -1.8f)); yield return null;
         var animator = Animator;
         Vector3 before = cat.transform.position;
-        Input(Vector2.down); yield return new WaitForEndOfFrame();
+        Input(Vector2.down); yield return null; yield return new WaitForEndOfFrame();
         Vector3 drift = cat.transform.position - before; drift.y = 0f;
         Assert.That(drift.magnitude, Is.LessThan(.005f), "A reverse input should pivot before taking a forward step.");
-        Assert.That(animator.GetFloat("Speed"), Is.Zero, "No feet cycling during the initial reverse pivot.");
+        Assert.That(animator.GetFloat("Speed"), Is.GreaterThan(0f), "The short reverse pivot must animate the existing gait instead of sliding in Idle.");
 
         Place(new Vector3(0f, .05f, -1.8f));
         wall = GameObject.CreatePrimitive(PrimitiveType.Cube); wall.name = "Locomotion test wall";

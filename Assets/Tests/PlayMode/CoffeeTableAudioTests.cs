@@ -54,7 +54,7 @@ public sealed partial class GameAudioTests
             if (cue != AudioCue.PropLand || current == null) return;
             current.events++; current.positionError = Vector3.Distance(coffee.Toy.position, coffeeLanding);
             current.afterPaw = coffee.DidPush;
-            current.clip = Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None)
+            current.clip = Object.FindObjectsByType<AudioSource>()
                 .Where(s => s.isPlaying && s.clip != null && s.clip.name.StartsWith("PropLand_"))
                 .OrderBy(s => s.time).FirstOrDefault()?.clip.name;
         };

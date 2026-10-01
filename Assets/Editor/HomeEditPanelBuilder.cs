@@ -207,7 +207,7 @@ public static class HomeEditPanelBuilder
         label.color = color;
         label.alignment = alignment;
         label.text = text;
-        label.enableWordWrapping = false;
+        label.textWrappingMode = TextWrappingModes.NoWrap;
         label.overflowMode = TextOverflowModes.Ellipsis;
         label.raycastTarget = false;
         return label;

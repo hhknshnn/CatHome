@@ -45,7 +45,7 @@ public sealed class HomeRoomBoundary : MonoBehaviour
     public static HomeRoomBoundary FindFor(Scene scene)
     {
         HomeRoomBoundary[] boundaries =
-            FindObjectsByType<HomeRoomBoundary>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            FindObjectsByType<HomeRoomBoundary>(FindObjectsInactive.Include);
         for (int i = 0; i < boundaries.Length; i++)
             if (boundaries[i] != null && boundaries[i].gameObject.scene == scene)
                 return boundaries[i];

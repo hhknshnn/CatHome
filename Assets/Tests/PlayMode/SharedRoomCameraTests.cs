@@ -9,22 +9,22 @@ public sealed class SharedRoomCameraTests
 {
     [TearDown] public void After() => RoomPlayModeSupport.ReleaseRoom();
 
-    [UnityTest] public IEnumerator AllRooms_KeepTheLivingRoomViewAndNavigationStripAfterLoading()
+    [UnityTest] public IEnumerator AllRooms_KeepTheirApprovedViewAndNavigationStripAfterLoading()
     {
         foreach (var room in HomeRoomService.Rooms)
         {
             yield return RoomPlayModeSupport.LoadRoomAlone(room.SceneName);
             yield return null;
-            var cameras = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).Where(c => c.enabled).ToArray();
+            var cameras = Object.FindObjectsByType<Camera>().Where(c => c.enabled).ToArray();
             Assert.That(cameras.Length, Is.EqualTo(1), room.Id);
             var camera = cameras[0];
-            Assert.That(Vector3.Distance(camera.transform.position, HomeRoomCameraProfile.Position), Is.LessThan(.001f), room.Id);
-            Assert.That(Quaternion.Angle(camera.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.Angles)), Is.LessThan(.01f), room.Id);
+            Assert.That(Vector3.Distance(camera.transform.position, HomeRoomCameraProfile.PositionFor(room.ScenePath)), Is.LessThan(.001f), room.Id);
+            Assert.That(Quaternion.Angle(camera.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.AnglesFor(room.ScenePath))), Is.LessThan(.01f), room.Id);
             Assert.That(camera.GetComponent<HomeWorldViewport>(), Is.Not.Null, room.Id);
             Assert.That(camera.rect.yMin, Is.GreaterThan(0), "The dock must not cover the room: " + room.Id);
             float aspect = Screen.width / (Screen.height * camera.rect.height);
-            Assert.That(camera.fieldOfView, Is.EqualTo(HomeWorldViewport.FitFieldOfView(HomeRoomCameraProfile.FieldOfView, aspect)).Within(.01f), room.Id);
-            Assert.That(Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Count(x => x.enabled), Is.EqualTo(1), room.Id);
+            Assert.That(camera.fieldOfView, Is.EqualTo(HomeWorldViewport.FitFieldOfView(HomeRoomCameraProfile.FieldOfViewFor(room.ScenePath), aspect)).Within(.01f), room.Id);
+            Assert.That(Object.FindObjectsByType<AudioListener>().Count(x => x.enabled), Is.EqualTo(1), room.Id);
         }
     }
 

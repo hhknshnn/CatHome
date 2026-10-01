@@ -432,7 +432,7 @@ MonoBehaviour:
     zone: 0
   - roomId: patio-01
     productId: patio.herb-trough
-    position: {x: -3.49, y: 0, z: -0.15}
+    position: {x: -3.29, y: 0, z: -0.15}
     yaw: 90
     modelScale: 1
     height: 0.5

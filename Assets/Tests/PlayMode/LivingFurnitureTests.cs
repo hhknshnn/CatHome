@@ -32,7 +32,7 @@ public sealed class LivingFurnitureTests
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
         var parent=cat.transform.parent;var scale=cat.transform.localScale;var breeds=CatBreedCatalog.Load();Time.timeScale=1;
-        var activities=Object.FindObjectsByType<LivingFurnitureActivity>(FindObjectsSortMode.None);
+        var activities=Object.FindObjectsByType<LivingFurnitureActivity>();
         Assert.That(activities.Length,Is.EqualTo(2));
         var report=new System.Text.StringBuilder("breed,activity,supportSamples,maxContactGap,pushed\n");
         var mesh=new Mesh();
@@ -89,10 +89,10 @@ public sealed class LivingFurnitureTests
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();
         HomeStoreService.TrySetPlacement(HomeStoreService.PlayTunnelId,new Vector3(0,0,2.22f),0);
         yield return null;yield return null;Physics.SyncTransforms();
-        foreach(var p in Object.FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var p in Object.FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include))
             if(CatCollectionPolicy.IsCatItem(p.ProductId)&&!HomeStoreService.IsStored(p.ProductId))
             {Assert.That(p.IsCurrentPositionValid(),Is.True,p.ProductId);Assert.That(p.BeginPreview(),Is.False);}
-        foreach(var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Include))
             if(t.name=="FoodInteractionPoint"||t.name=="WaterInteractionPoint"||t.name=="SofaJumpEntry"||t.name=="TableJumpEntry")
                 Assert.That(CatActivityMotion.TryFloorPath(cat.transform.position,t.position,out _),Is.True,t.name);
         Assert.That(CatCollectionPolicy.DisplayedCount,Is.EqualTo(5));

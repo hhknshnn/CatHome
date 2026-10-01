@@ -29,6 +29,8 @@ public static class GameStatusCopy
         if(string.IsNullOrEmpty(value))return string.Empty;
         bool tr=GameLanguageService.Current==GameLanguage.Turkish;
         if(Copy.TryGetValue(value,out var copy))return copy[tr?0:1];
+        foreach (var known in Copy.Values)
+            if (value == known[0] || value == known[1]) return known[tr ? 0 : 1];
         var items=Regex.Match(value,@"^(\d+) ITEMS LEFT$");
         if(items.Success)return tr?$"{items.Groups[1]} eşya kaldı":$"{items.Groups[1]} items left";
         var level=Regex.Match(value,@"^HOME LV\. (\d+) REQUIRED$");

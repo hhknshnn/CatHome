@@ -6,6 +6,8 @@ using U=PremiumUiElements;
 /// <summary>Compact home shortcut, native companion cards and a reusable illustrated guide.</summary>
 public sealed class CatCompanionPanel : MonoBehaviour
 {
+    private RectTransform homeDock;
+    public void BindHomeDock(RectTransform value) => homeDock=value;
     private static CatCompanionPanel instance;
     private RectTransform safe,card;
     private GameObject modal,commands,guide;
@@ -70,13 +72,13 @@ public sealed class CatCompanionPanel : MonoBehaviour
             var art=U.Rect("PosePhoto",photoFrame.transform);U.Fill(art);
             var image=art.gameObject.AddComponent<RawImage>();image.texture=Resources.Load<Texture2D>("Companion/"+(i==0?"Meow":i==1?"Sit":"Loaf"));image.raycastTarget=false;
             commandPhotos[i]=image;
-            string caption=i==0?GameContentCopy.Text("Miyavla","Meow"):i==1?GameContentCopy.Text("Otur","Sit"):"Loaf";
+            string caption=i==0?GameContentCopy.Text("Miyavla","Meow"):i==1?GameContentCopy.Text("Otur","Sit"):GameLanguageService.Text("companion.loaf_action");
             var hint=U.Label("CommandHint",tile.transform,PremiumTypography.Body,19,ModernUiArt.Muted,0,-51,286,32,TextAlignmentOptions.Center);
             hint.gameObject.AddComponent<BilingualCopyLabel>().Configure(i==0?"Küçük bir selam":i==1?"Sakin bir mola":"Rahatça kıvrıl",i==0?"A little hello":i==1?"A quiet moment":"Curl up and relax");
             var action=Button("CommandButton"+i,tile.transform,caption,PremiumUiStyle.Ivory,0,-115,286,62);
             commandButtons[i]=action;
             ModernUiArt.Action(action);
-            action.GetComponentInChildren<TMP_Text>().gameObject.AddComponent<BilingualCopyLabel>().Configure(i==0?"Miyavla":i==1?"Otur":"Loaf",i==0?"Meow":i==1?"Sit":"Loaf");
+            action.GetComponentInChildren<TMP_Text>().gameObject.AddComponent<BilingualCopyLabel>().Configure(i==0?"Miyavla":i==1?"Otur":"Patilerini topla",i==0?"Meow":i==1?"Sit":"Loaf");
             action.onClick.AddListener(()=>Issue((CatCompanionCommand)choice));
         }
         status=U.Label("CatStatus",commands.transform,PremiumTypography.Body,22,ModernUiArt.Muted,0,-247,1038,48,TextAlignmentOptions.Center);
@@ -108,6 +110,7 @@ public sealed class CatCompanionPanel : MonoBehaviour
         previous=Button("Previous",guide.transform,GameContentCopy.Text("Geri","Back"),PremiumUiStyle.Mint,-350,-314,260,64);previous.onClick.AddListener(()=>{page=Mathf.Max(0,page-1);RefreshGuide();});
         previous.GetComponentInChildren<TMP_Text>().gameObject.AddComponent<BilingualCopyLabel>().Configure("Geri","Back");
         next=Button("Next",guide.transform,GameContentCopy.Text("Devam","Next"),PremiumUiStyle.Coral,350,-314,260,64);next.onClick.AddListener(()=>{if(page==HomeGuideContent.Count-1)Close();else{page++;RefreshGuide();}});
+        StorybookCompanionPresentation.Apply(transform);
         modal.SetActive(false);
     }
     private static Button Button(string name,Transform parent,string text,Color color,float x,float y,float w,float h)
@@ -115,13 +118,17 @@ public sealed class CatCompanionPanel : MonoBehaviour
     private bool AnotherPanel=>TitleScreen.IsShowing||HomeUiFlow.IsMiniGameVisible||CatDialogueView.IsAnyVisible||SettingsPanel.IsAnyOpen||ShopPanelController.IsAnyOpen||QuestPanelController.IsAnyOpen||RoomSelectorPanel.IsAnyOpen||CatBreedShopPanel.IsAnyOpen||GamesHubPanel.IsAnyOpen||LeaderboardPanel.IsAnyOpen||PrivacyDataPanel.IsAnyOpen||WhileYouWereAwayPopup.IsAnyOpen||OnboardingCelebrationView.IsAnyOpen||CollectionCompleteCelebrationView.IsAnyOpen||HomeLevelUpCelebrationView.IsAnyOpen;
     private void Update()
     {
-        if(cat==null)cat=FindFirstObjectByType<CatMovement>();
-        if(menu==null)menu=FindFirstObjectByType<MainPanelController>();
+        if(cat==null)cat=FindAnyObjectByType<CatMovement>();
+        if(menu==null)menu=FindAnyObjectByType<MainPanelController>();
         bool available=cat!=null&&PetTutorialHint.IsOnboardingCompleted&&!AnotherPanel&&(menu==null||!menu.IsOpen);
         dock.gameObject.SetActive(available&&!modal.activeSelf);
-        float dockScale=Mathf.Min(1f,(safe.rect.width-32f)/1080f);
-        dock.transform.localScale=Vector3.one*dockScale;
-        ((RectTransform)dock.transform).anchoredPosition=new Vector2(135*dockScale,40);
+        if(homeDock!=null) PremiumHomeDockLayout.AlignShortcut(homeDock,(RectTransform)dock.transform);
+        else
+        {
+            float dockScale=Mathf.Min(1f,(safe.rect.width-32f)/1080f);
+            dock.transform.localScale=Vector3.one*dockScale;
+            ((RectTransform)dock.transform).anchoredPosition=new Vector2(135*dockScale,40);
+        }
         dockLabel.text=GameContentCopy.Text("Kedi komutları","Cat commands");
         if(modal.activeSelf&&(!available||cat==null)){Close();return;}
         if(modal.activeSelf)
@@ -133,21 +140,21 @@ public sealed class CatCompanionPanel : MonoBehaviour
             needsRow.SetActive(!resting);
             if(!resting)
             {
-                if(hunger==null)hunger=FindFirstObjectByType<HungerSystem>();
-                if(thirst==null)thirst=FindFirstObjectByType<ThirstSystem>();
-                if(energy==null)energy=FindFirstObjectByType<EnergySystem>();
+                if(hunger==null)hunger=FindAnyObjectByType<HungerSystem>();
+                if(thirst==null)thirst=FindAnyObjectByType<ThirstSystem>();
+                if(energy==null)energy=FindAnyObjectByType<EnergySystem>();
                 needsLabels[0].text=GameContentCopy.Text("Tokluk","Fullness")+" · "+(hunger!=null?Mathf.RoundToInt(hunger.CurrentHunger).ToString():"—")+"%";
                 needsLabels[1].text=GameContentCopy.Text("Su","Water")+" · "+(thirst!=null?Mathf.RoundToInt(thirst.CurrentThirst).ToString():"—")+"%";
                 needsLabels[2].text=GameContentCopy.Text("Enerji","Energy")+" · "+(energy!=null?Mathf.RoundToInt(energy.CurrentEnergy).ToString():"—")+"%";
             }
             stop.gameObject.SetActive(resting);stopLabel.text=GameContentCopy.Text("Kalk · Dinlenmeyi bitir","Get up · Finish resting");
-            status.text=resting?GameContentCopy.Text("Acele yok. Dinlenirken enerjim yavaşça doluyor.","No hurry. My energy gently recovers as I rest."):busy?GameContentCopy.Text("Bu hareketi bitirince yeni bir komut seçebilirsin.","Choose another command when this action finishes."):GameContentCopy.Text("Otur ve Loaf sırasında enerji yavaşça dolar.","Sit and Loaf gently restore energy.");
+            status.text=resting?GameContentCopy.Text("Acele yok. Dinlenirken enerjim yavaşça doluyor.","No hurry. My energy gently recovers as I rest."):busy?GameContentCopy.Text("Bu hareketi bitirince yeni bir komut seçebilirsin.","Choose another command when this action finishes."):GameContentCopy.Text("Otururken veya patilerini toplayıp dinlenirken enerji yavaşça dolar.","Sit and Loaf gently restore energy.");
         }
     }
     public static void OpenGuide(){if(instance!=null)instance.Show(true);}
     public void Show(bool help)
     {
-        if(cat==null)cat=FindFirstObjectByType<CatMovement>();if(cat==null||AnotherPanel)return;
+        if(cat==null)cat=FindAnyObjectByType<CatMovement>();if(cat==null||AnotherPanel)return;
         cat.AcquireInputBlock(this);modal.SetActive(true);commands.SetActive(!help);guide.SetActive(help);
         for(int i=0;i<3;i++)
         {
@@ -160,11 +167,7 @@ public sealed class CatCompanionPanel : MonoBehaviour
     }
     static void StyleTab(Button tab,bool selected)
     {
-        ModernUiArt.FlatNavigation(tab);
-        var surface=tab.targetGraphic as LowPolyPanelGraphic;
-        var tone=selected?ModernUiArt.Ink:ModernUiArt.Inset;
-        if(surface!=null)surface.ConfigureModernStyle(tone,tone,13);
-        foreach(var label in tab.GetComponentsInChildren<TMP_Text>())label.color=selected?Color.white:ModernUiArt.Muted;
+        StorybookScreenStyle.Action(tab,!selected,selected);
     }
     private void RefreshGuide()
     {

@@ -185,7 +185,7 @@ public sealed class BathroomPropActivityTests
         yield return LoadBathroom();
         Buy(HomeStoreService.BathroomMirrorId);
         yield return null;
-        Assert.That(Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        Assert.That(Object.FindObjectsByType<SitLookActivity>(FindObjectsInactive.Include)
             .Any(a => a.Kind == CatActivityKind.MirrorGaze), Is.False);
     }
 

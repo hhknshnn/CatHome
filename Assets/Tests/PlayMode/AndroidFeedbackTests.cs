@@ -16,11 +16,11 @@ public sealed class AndroidFeedbackTests
         {
             if(room.Id==HomeRoomService.LivingRoomId)continue;
             yield return RoomPlayModeSupport.LoadRoomAlone(System.IO.Path.GetFileNameWithoutExtension(room.ScenePath));
-            var door=Object.FindObjectsByType<Transform>(FindObjectsSortMode.None).FirstOrDefault(t=>t.name=="RoomDoor_Premium");
+            var door=Object.FindObjectsByType<Transform>().FirstOrDefault(t=>t.name=="RoomDoor_Premium");
             if(door==null)continue;
             var obstacle=door.GetComponent<BoxCollider>();
             Assert.That(obstacle,Is.Not.Null,room.Id);
-            var cat=Object.FindFirstObjectByType<CatMovement>();
+            var cat=Object.FindAnyObjectByType<CatMovement>();
             cat.enabled=false;
             var controller=cat.GetComponent<CharacterController>();
             controller.enabled=false;
@@ -51,7 +51,7 @@ public sealed class AndroidFeedbackTests
     public IEnumerator HomeAudioHasNoRepeatingOrPointerPlopSources()
     {
         yield return null;
-        var home=Object.FindFirstObjectByType<HomeAudioController>();
+        var home=Object.FindAnyObjectByType<HomeAudioController>();
         Assert.That(home,Is.Not.Null);
         var sources=home.GetComponents<AudioSource>();
         Assert.That(sources.Length,Is.Zero,"Home events route through the single shared pool.");

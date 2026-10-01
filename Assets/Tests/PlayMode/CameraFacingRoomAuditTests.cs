@@ -229,7 +229,7 @@ public sealed class CameraFacingRoomAuditTests
 
     private IEnumerator AuditProduct(string room, string product)
     {
-        var activities = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        var activities = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include)
             .Where(a => a.gameObject.scene == cat.gameObject.scene && a.StoreProductId == product && !a.IsRetired)
             .OrderBy(a => HierarchyPath(a.transform)).ToArray();
         if (activities.Length == 0)
@@ -267,7 +267,7 @@ public sealed class CameraFacingRoomAuditTests
         {
             yield return Prepare(HomeRoomService.Rooms.Single(room => room.Id == pair.Key));
             if (cat == null) continue;
-            var activities = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            var activities = Object.FindObjectsByType<CatActivity>(FindObjectsInactive.Include)
                 .Where(activity => activity.gameObject.scene == cat.gameObject.scene &&
                     string.IsNullOrEmpty(activity.StoreProductId) && !activity.IsRetired && !(activity is CatCommandActivity))
                 .OrderBy(activity => HierarchyPath(activity.transform)).ToArray();

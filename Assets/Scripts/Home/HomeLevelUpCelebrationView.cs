@@ -154,9 +154,9 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         NewPanel(medallion, "MedallionRim", new Vector2(180f, 180f), Vector2.zero, PremiumUiStyle.Champagne, 88f, 6f);
         NewPanel(medallion, "MedallionFace", new Vector2(142f, 142f), Vector2.zero, PremiumUiStyle.Ivory, 68f, 4f);
         NewText(medallion, "LvLabel", font, "LV.", 28f, FontStyles.Bold,
-            new Vector2(140f, 32f), new Vector2(0f, 34f), PremiumUiStyle.Navy);
+            new Vector2(140f, 40f), new Vector2(0f, 34f), PremiumUiStyle.Navy);
         levelNumber = NewText(medallion, "LevelNumber", font, "6", 86f, FontStyles.Bold,
-            new Vector2(160f, 104f), new Vector2(0f, -16f), PremiumUiStyle.Navy);
+            new Vector2(160f, 108f), new Vector2(0f, -16f), PremiumUiStyle.Navy);
 
         titleText = NewText(panel, "Title", font, GameLanguageService.Text("celebration.level"), 44f, FontStyles.Bold,
             new Vector2(574f, 116f), new Vector2(176f, 152f), PremiumUiStyle.Ink);
@@ -190,6 +190,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
             graphics[i].raycastTarget = false;
         if (collectFace != null) collectFace.raycastTarget = true;
         if (adFace != null) adFace.raycastTarget = true;
+        StorybookMilestonePresentation.Apply(panel);
     }
 
     private void BuildConfetti()
@@ -233,8 +234,11 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         if (closing)
             return;
 
+        StorybookScreenStyle.CurrencyIcons(panel);
         shownLevel = level;
         rewardClaimed = false;
+        if (titleText != null)
+            titleText.text = GameLanguageService.Text("celebration.level");
         if (levelNumber != null)
             levelNumber.text = level.ToString();
         if (subtitleText != null)
@@ -420,7 +424,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
 
     private TMP_FontAsset FindFont()
     {
-        TMP_Text[] texts = FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        TMP_Text[] texts = FindObjectsByType<TMP_Text>(FindObjectsInactive.Include);
         for (int i = 0; i < texts.Length; i++)
         {
             if (texts[i] != null && texts[i].font != null)

@@ -54,6 +54,7 @@ public sealed class PrivacyDataPanel : MonoBehaviour
             return;
         }
         activeInstance = this;
+        StorybookSettingsPresentation.ApplyPrivacy(transform);
         ApplyClosed();
         Bind();
     }

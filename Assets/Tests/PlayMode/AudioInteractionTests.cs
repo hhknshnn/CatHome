@@ -75,9 +75,9 @@ public sealed class AudioInteractionTests
         HomeStoreService.ApplySavedState(state);
         ProgressionService.ApplySavedState(coins,diamonds,Math.Max(bond,250),chapter,quests);
         CatBreedService.Select("oriental-shorthair");yield return null;yield return null;
-        cat=Object.FindFirstObjectByType<CatMovement>();Assert.That(cat,Is.Not.Null);
+        cat=Object.FindAnyObjectByType<CatMovement>();Assert.That(cat,Is.Not.Null);
         var idle=cat.GetComponent<CatIdleBehavior>();if(idle!=null)idle.enabled=false;
-        GameAudio.Clip(AudioCue.UIClick);var audio=Object.FindFirstObjectByType<GameAudio>();audio.SendMessage("OnApplicationFocus",true);audio.SendMessage("OnApplicationPause",false);
+        GameAudio.Clip(AudioCue.UIClick);var audio=Object.FindAnyObjectByType<GameAudio>();audio.SendMessage("OnApplicationFocus",true);audio.SendMessage("OnApplicationPause",false);
         UnityEditor.EditorUtility.audioMasterMute=false;
         yield return new WaitForSecondsRealtime(.5f);
         Assert.That(cat.GetComponent<CatFoley>(),Is.Not.Null);
@@ -92,11 +92,11 @@ public sealed class AudioInteractionTests
         Write();Assert.That(failures,Is.Empty,string.Join("\n",failures));
     }
 
-    [UnityTest,Timeout(600000)] public IEnumerator CatCollection_AllSeventeenProducts()
+    [UnityTest,Timeout(600000)] public IEnumerator CatCollection_AllSixteenProducts()
     {
         reportName="cat-collection";
         string[][] groups={
-            new[]{"home.ball-basket","home.scratch-post","cat.play-tunnel","cat.bell-collar","cat.nap-pillow"},
+            new[]{"home.ball-basket","home.scratch-post","cat.play-tunnel","cat.bell-collar"},
             new[]{"cat.cozy-pod-bed","cat.toy-mouse","cat.ceramic-bowl","cat.feather-toy","cat.collar"},
             new[]{"cat.cloud-bed","cat.treat-jar","cat.leash","cat.kibble-bag"},
             new[]{"cat.canopy-bed","cat.catnip-plant","cat.cardboard-hideout"}};
@@ -110,7 +110,7 @@ public sealed class AudioInteractionTests
                 yield return Observe(HomeRoomService.LivingRoomId,a);
             }
         }
-        Assert.That(report.rows.Count,Is.EqualTo(17));Write();Assert.That(failures,Is.Empty,string.Join("\n",failures));
+        Assert.That(report.rows.Count,Is.EqualTo(16));Write();Assert.That(failures,Is.Empty,string.Join("\n",failures));
     }
 
     private IEnumerator Start(CatActivity a)
@@ -203,7 +203,7 @@ public sealed class AudioInteractionTests
     [UnityTest,Timeout(90000)] public IEnumerator OutdoorRestPauseCancelAndRoomChange()
     {
         reportName="soundscape-flow";yield return Prepare(HomeRoomService.GardenId);
-        var soundscape=Object.FindFirstObjectByType<GameSoundscape>();
+        var soundscape=Object.FindAnyObjectByType<GameSoundscape>();
         yield return new WaitForSecondsRealtime(1.2f);
         Assert.That(soundscape.Selection,Is.EqualTo("Outdoor"));
         Assert.That(soundscape.GetComponents<AudioSource>().Count(s=>s.isPlaying&&s.clip!=null&&s.clip.name=="GardenAir_1"),Is.EqualTo(1));
@@ -223,7 +223,7 @@ public sealed class AudioInteractionTests
         yield return Prepare(HomeRoomService.KitchenId);yield return new WaitForSecondsRealtime(1.3f);
         Assert.That(soundscape.Selection,Is.EqualTo("Home"));
         Assert.That(soundscape.GetComponents<AudioSource>().Any(s=>s.isPlaying&&s.clip!=null&&s.clip.name=="GardenAir_1"),Is.False,"Garden air stays outdoors");
-        Assert.That(Object.FindObjectsByType<GameAudio>(FindObjectsSortMode.None).Length,Is.EqualTo(1));
+        Assert.That(Object.FindObjectsByType<GameAudio>().Length,Is.EqualTo(1));
         report.rows[0].status="passed";Write();
     }
     private static void Required(CatActivity a,Row row)

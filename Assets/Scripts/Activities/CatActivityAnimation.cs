@@ -13,6 +13,7 @@ public enum CatActivityPose { Walk, Sit, Sleep, Eat, Drink, Paw, Scratch, Hop, C
 public sealed class CatActivityAnimation : MonoBehaviour
 {
     private CatActivity owner;
+    private SleepInteraction sleepOwner;
     private Animator animator;
     private Transform visual;
     private SkinnedMeshRenderer skin;
@@ -34,16 +35,49 @@ public sealed class CatActivityAnimation : MonoBehaviour
     private CatHomeLocomotionCatalog locomotion;
     private float horizontalSupportBlend = 1f;
     private bool nativeJump;
+    private bool supportedPivot;
+    private Vector3 pivotOffset;
+    public bool IsSupportedPivot => IsActive && supportedPivot;
     private Vector3 jumpStartOffset, jumpEndOffset;
     private float jumpOffsetBlend;
+    private float jumpSupportLift;
+    private bool jumpStartsOnSupport,jumpLandsOnSupport;
     private bool ownsAnimatorSpeed;
     private float previousAnimatorSpeed;
 
-    public bool IsActive => owner != null && owner.IsRunning;
+    public bool IsActive => (owner != null && owner.IsRunning) ||
+        (sleepOwner != null && sleepOwner.IsSleeping);
     public CatActivityPose CurrentPose => pose;
     public Transform ContactSurface => support;
     public bool IsNativeJump => IsActive && nativeJump;
+    public bool NativeHasOwnerSupport => IsNativeJump&&
+        (phase<=CatJumpMotion.Takeoff?jumpStartsOnSupport:phase>=CatJumpMotion.Touchdown&&jumpLandsOnSupport);
     public float NativeJumpPhase => phase;
+    public Vector3 NativeJumpStartOffset => jumpStartOffset;
+    public Vector3 NativeJumpEndOffset => jumpEndOffset;
+
+    // Read only. Predict the existing support-centering offset at a candidate
+    // departure heading; this does not sample, restore or move the live visual.
+    public bool TryReadNativeJumpStartOffset(Quaternion proposedHeading, out Vector3 offset)
+    {
+        offset = Vector3.zero;
+        if (visual == null || animator == null || visual.parent == null) return false;
+        Vector3 sourcePosition=visual.position;
+        var measured=GetComponent<CatMeasuredSupportMotion>();
+        if(measured!=null&&measured.TryReadSourceVisualMatrix(visual,out var sourceMatrix))sourcePosition=sourceMatrix.GetColumn(3);
+        Vector3 world = sourcePosition - visual.parent.TransformPoint(visualPosition);
+        offset = transform.InverseTransformVector(world); offset.y = 0f;
+        var area = support != null ? support.GetComponent<CatActivitySurface>() : null;
+        if (!nativeJump && area != null && area.AlignAlongSurface)
+        {
+            // Such a support holds the visual's WORLD axis while the root
+            // pivots. Its world centering offset does not rotate with the root.
+            world = transform.TransformVector(offset);
+            offset = Matrix4x4.TRS(Vector3.zero, proposedHeading, transform.lossyScale).inverse.MultiplyVector(world);
+            offset.y = 0f;
+        }
+        return true;
+    }
 
     public void Begin(CatActivity activity)
     {
@@ -54,9 +88,28 @@ public sealed class CatActivityAnimation : MonoBehaviour
         SetPose(CatActivityPose.Walk);
     }
 
+    // The bed uses the same source jump as furniture activities, while keeping
+    // its persistent sleep/save ownership in SleepInteraction.
+    public bool BeginExternal(SleepInteraction activity)
+    {
+        if (activity == null || !activity.IsSleeping || (IsActive && sleepOwner != activity)) return false;
+        End();
+        sleepOwner = activity;
+        movement = GetComponent<CatMovement>();
+        rootScale = transform.localScale;
+        SetPose(CatActivityPose.Walk);
+        return true;
+    }
+
+    public void EndExternal(SleepInteraction activity)
+    {
+        if (sleepOwner == activity) End();
+    }
+
     public void SetPose(CatActivityPose value, Transform contactSurface = null)
     {
         nativeJump = false;
+        supportedPivot = false;
         scriptedPhase = false;
         horizontalSupportBlend = 1f;
         walkMetresPerSecond = -1f;
@@ -78,13 +131,34 @@ public sealed class CatActivityAnimation : MonoBehaviour
         walkMetresPerSecond = Mathf.Max(0f, metresPerSecond);
     }
 
+    // Preserve the landing's horizontal body centre while the existing walk
+    // supplies a short gait fragment. The measured support solver runs last.
+    public void BeginSupportedPivot(Transform contact)
+    {
+        ResolveVisual();
+        var measured = GetComponent<CatMeasuredSupportMotion>();
+        Vector3 source = visual != null ? visual.position : transform.position;
+        if (measured != null && measured.TryReadSourceVisualMatrix(visual, out var matrix)) source = matrix.GetColumn(3);
+        pivotOffset = visual != null ? transform.InverseTransformVector(source - visual.parent.TransformPoint(visualPosition)) : Vector3.zero;
+        pivotOffset.y = 0f;
+        SetWalkSpeed(0f, contact);
+        supportedPivot = true;
+    }
+
+    public void SetSupportedPivotSpeed(float speed) => walkMetresPerSecond = Mathf.Max(0f, speed);
+
     public void SetHorizontalSupportBlend(float blend) => horizontalSupportBlend = Mathf.Clamp01(blend);
 
     // A jump has one translation owner. Keep planted paws at their authored
     // horizontal position; transfer seat centering only while airborne.
-    public void BeginNativeJump(bool landOnSupport)
+    public void BeginNativeJump(bool landOnSupport,bool? landingOnFurniture=null)
     {
+        jumpStartsOnSupport=CatActivityStartResolver.LandsOnSupport(GetComponent<CatMovement>(),transform.position);
+        jumpLandsOnSupport=landingOnFurniture??landOnSupport;
         GetComponent<CatSurfaceTurnMotion>()?.Clear();
+        var measuredSupport = GetComponent<CatMeasuredSupportMotion>();
+        jumpSupportLift = measuredSupport != null ? measuredSupport.VisualLift : 0f;
+        measuredSupport?.Restore();
         ResolveVisual();
         if (animator == null || visual == null || skin == null) return;
         jumpStartOffset = transform.InverseTransformVector(visual.position - visual.parent.TransformPoint(visualPosition));
@@ -178,7 +252,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
         }
         if (area != null && area.AlignAlongSurface)
             visual.rotation = CatActivityFacing.AlongAxis(movement, support.position,
-                support.rotation * Quaternion.Euler(0f, 90f, 0f)) * visualRotation;
+                CatActivityFacing.SupportedAxis(support)) * visualRotation;
         if (sampledMesh == null) sampledMesh = new Mesh { name = "Cat contact sample" };
         // Account for the breed hierarchy's scale before transforming to world
         // space. The default overload expands this sample again under the 1.5x
@@ -203,6 +277,15 @@ public sealed class CatActivityAnimation : MonoBehaviour
         {
             visual.position += transform.TransformVector(Vector3.Lerp(jumpStartOffset, jumpEndOffset, jumpOffsetBlend));
             visual.position += Vector3.up * (-bounds.min.y + .008f);
+            // Carry the measured departure support height through preparation,
+            // then release it continuously during the original flight. Root
+            // trajectory, jump clip and horizontal offset are untouched.
+            visual.position += Vector3.up * (jumpSupportLift * (1f - jumpOffsetBlend));
+        }
+        else if (supportedPivot)
+        {
+            visual.position += transform.TransformVector(pivotOffset);
+            visual.position += up * (-bounds.min.y + .008f);
         }
         else if (area != null)
         {
@@ -244,9 +327,10 @@ public sealed class CatActivityAnimation : MonoBehaviour
 
     public void End()
     {
+        GetComponent<CatMeasuredSupportMotion>()?.Clear();
         GetComponent<CatSurfaceTurnMotion>()?.Clear();
         RestoreAnimatorSpeed();
-        if (owner != null)
+        if (owner != null || sleepOwner != null)
         {
             transform.localScale = rootScale;
             RestoreVisual();
@@ -256,7 +340,9 @@ public sealed class CatActivityAnimation : MonoBehaviour
                 animator.CrossFadeInFixedTime("Idle", .12f);
             }
         }
+        supportedPivot = false;
         owner = null;
+        sleepOwner = null;
         support = null;
         stateHash = 0;
     }

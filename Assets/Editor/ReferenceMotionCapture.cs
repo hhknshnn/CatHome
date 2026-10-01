@@ -16,7 +16,7 @@ public static class ReferenceMotionCapture
     public static void Begin(CatActivityKind[] kinds,string outputDirectory)
     {
         if(!Application.isPlaying || !EditorQaSession.IsActive)throw new System.InvalidOperationException("Use isolated Play QA.");
-        var cat=Object.FindFirstObjectByType<CatMovement>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();
         if(cat==null)throw new System.InvalidOperationException("Missing live cat.");
         cat.StartCoroutine(Run(kinds,outputDirectory));
     }
@@ -26,11 +26,11 @@ public static class ReferenceMotionCapture
         Status="Recording";
         try
         {
-        var cat=Object.FindFirstObjectByType<CatMovement>();var controller=cat.GetComponent<CharacterController>();
+        var cat=Object.FindAnyObjectByType<CatMovement>();var controller=cat.GetComponent<CharacterController>();
         foreach(var kind in kinds)
         {
             var activity=CatActivity.Registered.First(a=>a.Kind==kind);
-            Object.FindFirstObjectByType<EnergySystem>().ApplySavedValue(75);
+            Object.FindAnyObjectByType<EnergySystem>().ApplySavedValue(75);
             controller.enabled=false;cat.transform.SetPositionAndRotation(activity.RoutineEntryPoint.position,Quaternion.identity);controller.enabled=true;
             yield return null;
             string folder=Path.Combine(outputDirectory,kind.ToString());Directory.CreateDirectory(folder);

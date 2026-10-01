@@ -132,8 +132,8 @@ public static class CameraFacingRoomOverviewCapture
             Require(expected.SequenceEqual(visible), room.Id + " missing current visible products: " +
                 string.Join(", ", expected.Except(visible)));
             var camera = WorldCamera();
-            Require((camera.transform.position - HomeRoomCameraProfile.Position).sqrMagnitude < .0001f &&
-                Quaternion.Angle(camera.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.Angles)) < .1f &&
+            Require((camera.transform.position - HomeRoomCameraProfile.PositionFor(room.ScenePath)).sqrMagnitude < .0001f &&
+                Quaternion.Angle(camera.transform.rotation, Quaternion.Euler(HomeRoomCameraProfile.AnglesFor(room.ScenePath))) < .1f &&
                 camera.GetComponent<HomeWorldViewport>() != null && camera.GetComponent<HomeWorldViewport>().enabled,
                 "The room must retain its normal shared camera and HUD viewport: " + room.Id);
             yield return new WaitForSecondsRealtime(.4f);
@@ -183,7 +183,7 @@ public static class CameraFacingRoomOverviewCapture
 
     static string[] VisibleProducts(string roomId)
     {
-        return Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+        return Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include)
             .Where(p => p.gameObject.scene == cat.gameObject.scene && HomeStoreService.IsProductInRoomCollection(roomId, p.ProductId) &&
                 HomeStoreService.IsOwned(p.ProductId) && !HomeStoreService.IsStored(p.ProductId) && HasVisibleMesh(p))
             .Select(p => p.ProductId).Distinct().OrderBy(id => id).ToArray();
@@ -199,12 +199,12 @@ public static class CameraFacingRoomOverviewCapture
 
     static Camera WorldCamera()
     {
-        var cameras = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None).Where(c => c.enabled && c.targetTexture == null).ToArray();
+        var cameras = Object.FindObjectsByType<Camera>().Where(c => c.enabled && c.targetTexture == null).ToArray();
         Require(cameras.Length == 1, "Exactly one existing world camera is required.");
         return cameras[0];
     }
 
-    static CatMovement FindCat() => Object.FindObjectsByType<CatMovement>(FindObjectsSortMode.None)
+    static CatMovement FindCat() => Object.FindObjectsByType<CatMovement>()
         .FirstOrDefault(c => loader != null && loader.HasCurrentRoom && c.gameObject.scene.name == loader.CurrentRoom.SceneName);
 
     static void PlaceOnClearCentralFloor()
@@ -226,11 +226,11 @@ public static class CameraFacingRoomOverviewCapture
     {
         Quiet<CollectionCompleteCelebrationView>(); Quiet<HomeLevelUpCelebrationView>(); Quiet<PetTutorialHint>(); Quiet<CatIdleBehavior>();
         Object.FindAnyObjectByType<CatCompanionPanel>()?.Close(); UiQaVisualTour.Clear();
-        foreach (var popup in Object.FindObjectsByType<WhileYouWereAwayPopup>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var popup in Object.FindObjectsByType<WhileYouWereAwayPopup>(FindObjectsInactive.Include))
         { popup.Close(); RememberAndDisable(popup); }
     }
     static void Quiet<T>() where T : Behaviour
-    { foreach (var item in Object.FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None)) RememberAndDisable(item); }
+    { foreach (var item in Object.FindObjectsByType<T>(FindObjectsInactive.Include)) RememberAndDisable(item); }
     static string Key(Behaviour item)
     {
         string path = item.name;
@@ -271,9 +271,9 @@ public static class CameraFacingRoomOverviewCapture
 
     static void SetNeeds(float food, float water, float rest)
     {
-        foreach (var value in Object.FindObjectsByType<HungerSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None)) value.ApplySavedValue(food);
-        foreach (var value in Object.FindObjectsByType<ThirstSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None)) value.ApplySavedValue(water);
-        foreach (var value in Object.FindObjectsByType<EnergySystem>(FindObjectsInactive.Include, FindObjectsSortMode.None)) value.ApplySavedValue(rest);
+        foreach (var value in Object.FindObjectsByType<HungerSystem>(FindObjectsInactive.Include)) value.ApplySavedValue(food);
+        foreach (var value in Object.FindObjectsByType<ThirstSystem>(FindObjectsInactive.Include)) value.ApplySavedValue(water);
+        foreach (var value in Object.FindObjectsByType<EnergySystem>(FindObjectsInactive.Include)) value.ApplySavedValue(rest);
     }
 
     static void Finish()
@@ -300,7 +300,7 @@ public static class CameraFacingRoomOverviewCapture
         catch (Exception exception) { AddError(exception); }
         finally
         {
-            foreach (var item in Object.FindObjectsByType<Behaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (var item in Object.FindObjectsByType<Behaviour>(FindObjectsInactive.Include))
                 if (enabledStates.TryGetValue(Key(item), out bool enabled)) item.enabled = enabled;
             foreach (var pref in preferences)
             {

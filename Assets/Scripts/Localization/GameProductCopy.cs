@@ -92,7 +92,7 @@ public static class GameProductCopy
         {"balcony.hanging-chair",new[]{"Asma koltuk","Hafifçe sallanan, yumurta biçimli koltuk."}},
         {"balcony.sun-awning",new[]{"Güneş tentesi","Balkona gölge sağlayan çizgili tente."}},
         {"patio.stone-rug",new[]{"Avlu halısı","Taş zemine sıcaklık katan dış mekân halısı."}},
-        {"patio.potted-ferns",new[]{"Eğrelti saksıları","Taş saksılarda canlı yeşil yapraklar."}},
+        {"patio.potted-ferns",new[]{"Saksılar","Taş saksılarda canlı yeşil yapraklar."}},
         {"patio.herb-trough",new[]{"Bitki saksısı","Avlu kenarına uzanan yeşil bir köşe."}},
         {"patio.string-lights",new[]{"Avlu ışıkları","Kendi direkleri üzerinde sıcak akşam ışıkları."}},
         {"patio.water-fountain",new[]{"Su fıskiyesi","Katlarından su süzülen küçük taş fıskiye."}},
@@ -136,13 +136,15 @@ public static class GameProductCopy
     };
     public static string Title(string id,string fallback)
     {
-        if(GameLanguageService.Current==GameLanguage.Turkish && Turkish.TryGetValue(id,out var copy))return copy[0];
-        if (EnglishTitles.TryGetValue(id, out var title)) return title;
+        if(GameLanguageService.Current==GameLanguage.Turkish)
+            return !string.IsNullOrEmpty(id) && Turkish.TryGetValue(id,out var copy) ? copy[0] : GameLanguageService.Text("product.unknown");
+        if (!string.IsNullOrEmpty(id) && EnglishTitles.TryGetValue(id, out var title)) return title;
         return CultureInfo.InvariantCulture.TextInfo.ToTitleCase((fallback??string.Empty).ToLowerInvariant()).Replace("Tv ","TV ");
     }
     public static string Description(string id,string fallback)
     {
-        if(GameLanguageService.Current==GameLanguage.Turkish && Turkish.TryGetValue(id,out var copy))return copy[1];
+        if(GameLanguageService.Current==GameLanguage.Turkish)
+            return !string.IsNullOrEmpty(id) && Turkish.TryGetValue(id,out var copy) ? copy[1] : GameLanguageService.Text("product.description_unknown");
         if(id=="room.colorful-book-set")return "Ten books fill three shelves automatically. Requires the tall bookshelf.";
         if(id=="patio.string-lights")return "Warm evening lights on their own two posts.";
         if(id=="bathroom.tub")return "A premium bathtub with an edge your cat can explore.";

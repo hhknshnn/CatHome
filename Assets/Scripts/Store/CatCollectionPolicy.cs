@@ -4,7 +4,7 @@ using UnityEngine;
 public static class CatCollectionPolicy
 {
     public const int Capacity = 5;
-    public static bool IsCatItem(string id) => HomeStoreService.TryGetProduct(id, out var p) &&
+    public static bool IsCatItem(string id) => !HomeStoreService.IsRetiredProduct(id) && HomeStoreService.TryGetProduct(id, out var p) &&
         p.StoreCategory == HomeStoreCategory.Cat && p.IsPlaceable;
     public static bool IsBed(string id) => id == "cat.cozy-pod-bed" || id == "cat.cloud-bed" ||
         id == "cat.canopy-bed" || id == "cat.nap-pillow";
@@ -17,6 +17,7 @@ public static class CatCollectionPolicy
     public static bool CanDisplay(string id, out string reason)
     {
         reason = string.Empty;
+        if(HomeStoreService.IsRetiredProduct(id)) return false;
         if(!IsCatItem(id)) return true;
         int count=0; bool bed=false;
         foreach(var p in HomeStoreService.Products)

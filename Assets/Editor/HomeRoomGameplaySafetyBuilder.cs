@@ -162,48 +162,7 @@ public static class HomeRoomGameplaySafetyBuilder
         if (target == null)
             throw new InvalidOperationException($"Living Room fixed furniture '{objectName}' is missing.");
 
-        Renderer[] renderers = target.GetComponentsInChildren<Renderer>(true);
-        if (renderers.Length == 0)
-            throw new InvalidOperationException($"Living Room fixed furniture '{objectName}' has no renderer.");
-
-        Bounds localBounds = CalculateLocalBounds(target, renderers);
-        BoxCollider collider = target.GetComponent<BoxCollider>();
-        if (collider == null)
-            collider = Undo.AddComponent<BoxCollider>(target.gameObject);
-        Undo.RecordObject(collider, "Repair fixed furniture collider");
-        collider.enabled = true;
-        collider.isTrigger = false;
-        collider.center = localBounds.center;
-        collider.size = localBounds.size;
-        EditorUtility.SetDirty(collider);
-    }
-
-    private static Bounds CalculateLocalBounds(Transform root, Renderer[] renderers)
-    {
-        bool initialized = false;
-        Bounds result = default;
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Bounds bounds = renderers[i].bounds;
-            for (int x = -1; x <= 1; x += 2)
-            for (int y = -1; y <= 1; y += 2)
-            for (int z = -1; z <= 1; z += 2)
-            {
-                Vector3 world = bounds.center + Vector3.Scale(
-                    bounds.extents, new Vector3(x, y, z));
-                Vector3 local = root.InverseTransformPoint(world);
-                if (!initialized)
-                {
-                    result = new Bounds(local, Vector3.zero);
-                    initialized = true;
-                }
-                else
-                {
-                    result.Encapsulate(local);
-                }
-            }
-        }
-        return result;
+        HomeFixedFurnitureCollisionBuilder.EnsureMeshGeometry(target);
     }
 
     private static Transform FindNamed(Scene scene, string objectName)

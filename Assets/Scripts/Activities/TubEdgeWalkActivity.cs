@@ -32,6 +32,15 @@ public sealed class TubEdgeWalkActivity : CatActivity
     public bool IsRimWalking { get; private set; }
     public Vector3 SelectedRimStart { get; private set; }
     public Vector3 SelectedRimEnd { get; private set; }
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        if (actor == null || floorPoint == null || rimStartPoint == null || rimEndPoint == null) return false;
+        ResolveRimPath(actor, out Vector3 first, out _);
+        return CatActivityStartResolver.GroundLaunch(this, actor, floorPoint.position, first, out start);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
@@ -59,45 +68,29 @@ public sealed class TubEdgeWalkActivity : CatActivity
         if (characterController != null)
             characterController.enabled = false;
 
-        Vector3 start = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 floor = Flatten(floorPoint.position, start.y);
-        Vector3 rimStart = rimStartPoint.position;
-        Vector3 rimEnd = rimEndPoint.position;
-        // The old endpoints were beyond the curved lip. Leave room for the
-        // entire animal, then measure the actual low rim of this built model.
-        Vector3 axis = (rimEnd - rimStart).normalized;
-        Vector3 inward = waterPoint != null ? waterPoint.position - (rimStart + rimEnd) * .5f : transform.forward;
-        inward = Vector3.ProjectOnPlane(inward, Vector3.up).normalized;
-        float inset = Mathf.Min(.40f, Vector3.Distance(rimStart, rimEnd) * .30f);
-        rimStart += axis * inset + inward * .045f;
-        rimEnd -= axis * inset - inward * .045f;
+        Vector3 floor = Flatten(floorPoint.position, AcceptedStart.Position.y);
+        ResolveRimPath(Cat, out Vector3 rimStart, out Vector3 rimEnd);
+        // A camera transition after acceptance must not exchange the ends of
+        // the already prepared jump. Its actual rim height is measured below.
+        if (Vector3.ProjectOnPlane(rimStart - AcceptedStart.ActionTarget, Vector3.up).sqrMagnitude >
+            Vector3.ProjectOnPlane(rimEnd - AcceptedStart.ActionTarget, Vector3.up).sqrMagnitude)
+        { Vector3 swap = rimStart; rimStart = rimEnd; rimEnd = swap; }
         rimMotion = Cat.GetComponent<CatTubRimMotion>();
         if (rimMotion == null) rimMotion = Cat.gameObject.AddComponent<CatTubRimMotion>();
         rimMotion.Prepare(this, GetComponentInChildren<MeshCollider>(), rimStartPoint.position, rimEndPoint.position);
         rimStart.y = rimMotion.HeightAt(rimStart) - .045f;
         rimEnd.y = rimMotion.HeightAt(rimEnd) - .045f;
-        Quaternion authoredAlong = LookTowards(rimEnd - rimStart, startRotation);
-        Quaternion viewAlong = CatActivityFacing.AlongAxis(Cat, (rimStart + rimEnd) * .5f, authoredAlong);
-        if (Vector3.Dot(viewAlong * Vector3.forward, rimEnd - rimStart) < 0f)
-        { Vector3 swap = rimStart; rimStart = rimEnd; rimEnd = swap; }
         SelectedRimStart = rimStart; SelectedRimEnd = rimEnd;
+        Quaternion up = LookTowards(rimStart - floor, AcceptedStart.Rotation);
+        yield return Hop(AcceptedStart.Position, rimStart, up, 0.44f);
 
-        Quaternion toFloor = LookTowards(floor - start, startRotation);
-        yield return Move(start, floor, startRotation, toFloor, 0.32f);
-
-        Quaternion up = LookTowards(
-            new Vector3(rimStart.x - floor.x, 0f, rimStart.z - floor.z), toFloor);
-        yield return Move(floor, floor, toFloor, up, 0.16f);
-
-        yield return Hop(floor, rimStart, up, 0.44f);
-
+        // The landing pivot is already supported by the rim, before walking.
+        IsRimWalking = true;
         Quaternion along = LookTowards(rimEnd - rimStart, up);
         yield return CatActivityMotion.TurnForStep(Cat, along);
         float elapsed = 0f;
         var animation = Cat.GetComponent<CatActivityAnimation>();
         animation.SetWalkSpeed(Vector3.Distance(rimStart, rimEnd) / WalkDuration, null);
-        IsRimWalking = true;
         if (Time.time >= nextBalanceSpeech)
         {
             ShowSpeech("TUB_BALANCE");
@@ -119,13 +112,33 @@ public sealed class TubEdgeWalkActivity : CatActivity
         // Leave from the end reached by the balance walk. Returning to the
         // centre and reaching toward the water read as an unrelated paw attack.
         Cat.transform.SetPositionAndRotation(rimEnd, along);
-        IsRimWalking = false;
-        rimMotion.Clear();
+        // The departure pivot still stands on this rim. Keep its measured
+        // support bound until the jump finishes; native flight owns its bones.
         Quaternion down = LookTowards(floor - rimEnd, along);
         yield return Hop(rimEnd, floor, down, 0.40f);
+        IsRimWalking = false;
+        rimMotion.Clear();
 
         RestoreCat();
         CompleteActivity("STILL DRY!");
+    }
+
+    private void ResolveRimPath(CatMovement actor, out Vector3 first, out Vector3 last)
+    {
+        first = rimStartPoint.position;
+        last = rimEndPoint.position;
+        // Share the inset and direction choice with the prompt without adding
+        // a rig component, playing a pose or changing the actor's transform.
+        Vector3 axis = (last - first).normalized;
+        Vector3 inward = waterPoint != null ? waterPoint.position - (first + last) * .5f : transform.forward;
+        inward = Vector3.ProjectOnPlane(inward, Vector3.up).normalized;
+        float inset = Mathf.Min(.40f, Vector3.Distance(first, last) * .30f);
+        first += axis * inset + inward * .045f;
+        last -= axis * inset - inward * .045f;
+        Quaternion authoredAlong = LookTowards(last - first, actor.transform.rotation);
+        Quaternion viewAlong = CatActivityFacing.AlongAxis(actor, (first + last) * .5f, authoredAlong);
+        if (Vector3.Dot(viewAlong * Vector3.forward, last - first) < 0f)
+        { Vector3 swap = first; first = last; last = swap; }
     }
 
     /// <summary>Arc between two points, peaking above the higher end.</summary>

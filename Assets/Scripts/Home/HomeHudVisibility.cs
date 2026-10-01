@@ -25,10 +25,12 @@ public sealed class HomeHudVisibility : MonoBehaviour
     }
     private void LateUpdate()
     {
-        bool blocked=HomeUiFlow.IsHomeControlBlocked || TitleScreen.IsShowing || ShopPanelController.IsAnyOpen || CatBreedShopPanel.IsAnyOpen ||
+        bool otherWindow=HomeUiFlow.IsMiniGameVisible || CatCompanionPanel.IsAnyOpen || TitleScreen.IsShowing || ShopPanelController.IsAnyOpen || CatBreedShopPanel.IsAnyOpen ||
             RoomSelectorPanel.IsAnyOpen || QuestPanelController.IsAnyOpen || SettingsPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen ||
             GamesHubPanel.IsAnyOpen || LeaderboardPanel.IsAnyOpen || WhileYouWereAwayPopup.IsAnyOpen ||
             HomeLevelUpCelebrationView.IsAnyOpen || CollectionCompleteCelebrationView.IsAnyOpen || OnboardingCelebrationView.IsAnyOpen;
+        bool blocked=otherWindow||CatDialogueView.IsAnyVisible;
+        bool explainNeeds=!otherWindow&&CatDialogueView.IsAnyVisible&&PetTutorialHint.IsShowingNeedsGuide;
         if(targets==null)return;
         if(blocked&&!hidden)
         {
@@ -36,7 +38,18 @@ public sealed class HomeHudVisibility : MonoBehaviour
             for(int i=0;i<targets.Length;i++)if(targets[i]!=null){previousAlpha[i]=targets[i].alpha;previousInteraction[i]=targets[i].interactable;previousRaycasts[i]=targets[i].blocksRaycasts;}
             hidden=true;
         }
-        if(blocked){foreach(var group in targets)if(group!=null){group.alpha=0;group.interactable=group.blocksRaycasts=false;}}
+        if(blocked)
+        {
+            for(int i=0;i<targets.Length;i++)
+            {
+                var group=targets[i];if(group==null)continue;
+                bool isNeed=group.name=="FoodBar"||group.name=="HungerUI"||group.name=="ThirstUI"||group.name=="EnergyUI";
+                // Show only what this lesson explains. The modal still owns all
+                // input, and any other window keeps the normal HUD suppression.
+                group.alpha=explainNeeds&&isNeed?previousAlpha[i]:0f;
+                group.interactable=group.blocksRaycasts=false;
+            }
+        }
         else Restore();
     }
     private void Restore()

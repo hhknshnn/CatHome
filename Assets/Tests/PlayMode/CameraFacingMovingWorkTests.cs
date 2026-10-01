@@ -72,7 +72,7 @@ public sealed class CameraFacingMovingWorkTests
         cat.ApplySavedWorldPose(point,Quaternion.identity);Physics.SyncTransforms();RoomPlayModeSupport.ProvisionNeeds();
     }
 
-    [UnityTest] public IEnumerator KitchenMeal_ActualEatingAndSatisfiedInspection_DipsRemainVisibleAtTheBowl()
+    [UnityTest] public IEnumerator KitchenMeal_EatsWhenHungry_AndRefusesWhenSatisfied()
     {
         yield return Prepare(HomeRoomService.KitchenId);
         var meal=CatActivity.Registered.OfType<MealTimeActivity>().Single(a=>a.StoreProductId==HomeStoreService.KitchenFeedingStationId);
@@ -81,8 +81,17 @@ public sealed class CameraFacingMovingWorkTests
         {
             Place(meal.RoutineEntryPoint.position);
             var hunger=Object.FindAnyObjectByType<HungerSystem>();hunger.ApplySavedValue(satisfied?100f:35f);
-            string phase=satisfied?"inspection_dips":"eating_dips";
-            yield return Observe(HomeRoomService.KitchenId,meal,phase,satisfied?CatActivityPose.Sniff:CatActivityPose.Eat,row=>
+            if (satisfied)
+            {
+                var position = cat.transform.position; var rotation = cat.transform.rotation;
+                Check(!meal.TryStart(cat), "full meal must refuse before alignment");
+                Check(!meal.IsRunning && !meal.InspectingOnly, "full meal must not sniff");
+                Check(cat.transform.position == position && cat.transform.rotation == rotation, "refusal moved the cat");
+                Check(hunger.CurrentHunger == 100f, "refusal changed fullness");
+                continue;
+            }
+            string phase="eating_dips";
+            yield return Observe(HomeRoomService.KitchenId,meal,phase,CatActivityPose.Eat,row=>
             {
                 float radius=Planar(stand.position-bowl.position).magnitude;
                 float actual=Planar(cat.transform.position-bowl.position).magnitude;
@@ -91,7 +100,7 @@ public sealed class CameraFacingMovingWorkTests
                 Check(Vector3.Dot(Planar(cat.transform.forward).normalized,Planar(bowl.position-cat.transform.position).normalized)>.98f,
                     phase+": body must keep pointing into its actual bowl");
             });
-            Check(meal.InspectingOnly==satisfied,phase+": wrong needs branch");
+            Check(!meal.InspectingOnly,phase+": hungry care must eat");
             if(!satisfied)Check(hunger.CurrentHunger>65f,phase+": real completed meal did not restore hunger");
         }
         Finish("meal-moving-work");

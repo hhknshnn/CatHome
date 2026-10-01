@@ -44,6 +44,7 @@ public sealed class LeaderboardPanel : MonoBehaviour
     private void Awake()
     {
         activeInstance=this;
+        StorybookGamesPresentation.ApplyLeaderboard(transform);
         Bind(closeButton, CloseToGames);
         // The scrim only catches rays. A root Button also receives clicks that
         // bubble from labels/empty card space, which used to dismiss this panel.
@@ -175,7 +176,7 @@ public sealed class LeaderboardPanel : MonoBehaviour
             // Names are user data: escape TMP markup before adding alignment tags.
             var nickname=(entry.nickname??string.Empty).Replace("<","‹").Replace(">","›");
             row.text=$"#{entry.rank}<pos=13%>{nickname}<pos=78%>{entry.score:N0}";
-            row.color=entry.isCurrentPlayer?PremiumUiStyle.Teal:PremiumUiStyle.Ink;
+            StorybookGamesPresentation.ApplyRankRow(row, entry.isCurrentPlayer);
         }
 
         if (ownRankText != null)
@@ -210,10 +211,7 @@ public sealed class LeaderboardPanel : MonoBehaviour
 
     private static void Paint(Button button,bool selected)
     {
-        if(button==null)return;
-        var panel=button.targetGraphic as LowPolyPanelGraphic;
-        if(panel!=null)panel.SetPremiumBaseColor(selected?PremiumUiStyle.Teal:PremiumUiStyle.Mint);
-        var label=button.GetComponentInChildren<TMP_Text>(true);if(label!=null)label.color=selected?Color.white:PremiumUiStyle.Ink;
+        StorybookScreenStyle.Action(button, !selected, selected);
     }
 
     private void SetControls(bool enabled)

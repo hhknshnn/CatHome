@@ -193,6 +193,8 @@ public static class HomeRoomPremiumFinishBuilder
                     materials[i]!=null&&(materials[i].name.Contains("Mint")||materials[i].name.Contains("Teal"))?mint:ivory;
             renderer.sharedMaterials=materials;renderer.receiveShadows=true;
         }
+        if (name == "RoomWallPanel_Premium")
+            HomeEnvironmentCollisionBuilder.EnsurePremiumWallPanel(instance.transform);
         return instance.transform;
     }
     static void FitCentered(Transform root,Vector3 target)

@@ -213,7 +213,7 @@ public sealed class BathroomPaperContactTests
         ReadyCat(); Assert.That(paper.TryStart(cat), Is.True); yield return WaitForContact();
         yield return RoomPlayModeSupport.LoadRoomAlone("Garden_Level01"); yield return null;
         Assert.That(visual == null && mesh == null && material == null, Is.True, "The bathroom owns all transient paper resources.");
-        Assert.That(Object.FindObjectsByType<CatPaperTearFx>(FindObjectsInactive.Include, FindObjectsSortMode.None), Is.Empty);
+        Assert.That(Object.FindObjectsByType<CatPaperTearFx>(FindObjectsInactive.Include), Is.Empty);
     }
 
     [UnityTest] public IEnumerator StrokeAndCompletionBoundaries_WaitForResume_BeforeChangingPoseOrAwarding()

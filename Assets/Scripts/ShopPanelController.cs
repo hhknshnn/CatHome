@@ -109,7 +109,6 @@ public sealed class ShopPanelController : MonoBehaviour
 
     [Header("Responsive size")]
     [SerializeField, Range(0.35f, 0.9f)] private float widthFraction = 0.9f;
-    [SerializeField, Min(0f)] private float minWidth = 1460f;
     [SerializeField, Min(0f)] private float maxWidth = 1720f;
     [SerializeField, Min(0f)] private float safeAreaMargin = 34f;
 
@@ -154,6 +153,7 @@ public sealed class ShopPanelController : MonoBehaviour
 
     private void Awake()
     {
+        StorybookShopPresentation.Apply(transform);
         PremiumScrollInput.Ensure(productScrollRect);
         if (catMovement == null)
             catMovement = FindAnyObjectByType<CatMovement>();
@@ -331,7 +331,7 @@ public sealed class ShopPanelController : MonoBehaviour
 
         if (!product.IsAvailable || (!product.SupportsCoins && !product.SupportsDiamonds))
         {
-            SetFeedback("THIS COLLECTION IS READY FOR FUTURE CONTENT.");
+            SetFeedback(GameLanguageService.Text("shop.future_content"));
             return;
         }
 
@@ -365,77 +365,77 @@ public sealed class ShopPanelController : MonoBehaviour
 
         if (!HomeStoreService.MeetsHomeLevelRequirement(product))
         {
-            SetFeedback("REACH HOME LEVEL " + product.RequiredLevel + " TO UNLOCK THIS ITEM.");
+            SetFeedback(GameLanguageService.Format("shop.level_required", product.RequiredLevel));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeBathroomPreviewId &&
             !HomeStoreService.IsLivingRoomComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.LivingRoomItemCount -
-                         HomeStoreService.LivingRoomOwnedCount) +
-                        " MORE LIVING ROOM ITEMS TO UNLOCK BATHROOM.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.LivingRoomItemCount - HomeStoreService.LivingRoomOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.LivingRoomId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.BathroomId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeKitchenPreviewId &&
             !HomeStoreService.IsBathroomComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.BathroomItemCount -
-                         HomeStoreService.BathroomOwnedCount) +
-                        " MORE BATHROOM ITEMS TO UNLOCK KITCHEN.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.BathroomItemCount - HomeStoreService.BathroomOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.BathroomId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.KitchenId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeBedroomPreviewId &&
             !HomeStoreService.IsKitchenComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.KitchenItemCount -
-                         HomeStoreService.KitchenOwnedCount) +
-                        " MORE KITCHEN ITEMS TO UNLOCK BEDROOM.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.KitchenItemCount - HomeStoreService.KitchenOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.KitchenId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.BedroomId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeGardenPreviewId &&
             !HomeStoreService.IsBedroomComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.BedroomItemCount -
-                         HomeStoreService.BedroomOwnedCount) +
-                        " MORE BEDROOM ITEMS TO UNLOCK GARDEN.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.BedroomItemCount - HomeStoreService.BedroomOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.BedroomId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.GardenId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeBalconyPreviewId &&
             !HomeStoreService.IsGardenComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.GardenItemCount -
-                         HomeStoreService.GardenOwnedCount) +
-                        " MORE GARDEN ITEMS TO UNLOCK BALCONY.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.GardenItemCount - HomeStoreService.GardenOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.GardenId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.BalconyId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomePatioPreviewId &&
             !HomeStoreService.IsBalconyComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.BalconyItemCount -
-                         HomeStoreService.BalconyOwnedCount) +
-                        " MORE BALCONY ITEMS TO UNLOCK GARDEN PATIO.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.BalconyItemCount - HomeStoreService.BalconyOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.BalconyId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.PatioId, string.Empty)));
             return;
         }
 
         if (product.Id == HomeStoreService.HomeSecondFloorPreviewId &&
             !HomeStoreService.IsPatioComplete)
         {
-            SetFeedback("COMPLETE " +
-                        (HomeStoreService.PatioItemCount -
-                         HomeStoreService.PatioOwnedCount) +
-                        " MORE PATIO ITEMS TO UNLOCK SECOND FLOOR.");
+            SetFeedback(GameLanguageService.Format("shop.collection_required",
+                        HomeStoreService.PatioItemCount - HomeStoreService.PatioOwnedCount,
+                        GameContentCopy.RoomName(HomeRoomService.PatioId, string.Empty),
+                        GameContentCopy.RoomName(HomeRoomService.SecondFloorId, string.Empty)));
             return;
         }
 
@@ -620,12 +620,10 @@ public sealed class ShopPanelController : MonoBehaviour
                 ClosePurchaseDialog();
                 break;
             case HomeStorePurchaseStatus.InsufficientCoins:
-                SetFeedback("YOU NEED " + result.MissingAmount +
-                            " MORE COINS. TRY CAT RUNNER OR USE DIAMONDS.");
+                SetFeedback(GameLanguageService.Format("shop.coins_short", result.MissingAmount));
                 break;
             case HomeStorePurchaseStatus.InsufficientDiamonds:
-                SetFeedback("YOU NEED " + result.MissingAmount +
-                            " MORE DIAMONDS.");
+                SetFeedback(GameLanguageService.Format("shop.diamonds_short", result.MissingAmount));
                 break;
             case HomeStorePurchaseStatus.RequiredProductMissing:
                 OpenPurchaseDialog(
@@ -823,7 +821,7 @@ public sealed class ShopPanelController : MonoBehaviour
                 {
                     SetCardAction(
                         card,
-                        "BUY " + GetRequiredProductShortTitle(product.Id) + " FIRST",
+                        GameLanguageService.Format("shop.buy_first", GetRequiredProductShortTitle(product.Id)),
                         NeedColor);
                 }
                 else if (owned)
@@ -900,7 +898,7 @@ public sealed class ShopPanelController : MonoBehaviour
             return HomeStoreService.LivingRoomOwnedCount + " / " +
                    HomeStoreService.LivingRoomItemCount;
         if (!product.IsAvailable)
-            return "LEVEL " + product.RequiredLevel;
+            return GameLanguageService.Format("shop.level_label", product.RequiredLevel);
         if (product.SupportsCoins && product.SupportsDiamonds)
         {
             return product.CoinPrice.ToString("N0") + "  •  D " +
@@ -910,7 +908,7 @@ public sealed class ShopPanelController : MonoBehaviour
             return product.CoinPrice.ToString("N0");
         if (product.SupportsDiamonds)
             return product.DiamondPrice.ToString("N0");
-        return "LEVEL " + product.RequiredLevel;
+        return GameLanguageService.Format("shop.level_label", product.RequiredLevel);
     }
 
     private static bool ShowsCurrencyPrice(HomeStoreProduct product)
@@ -962,16 +960,15 @@ public sealed class ShopPanelController : MonoBehaviour
                 roomId,
                 out HomeStorePurchaseGoal goal))
         {
-            return "COLLECTION READY";
+            return GameLanguageService.Text("shop.collection_ready");
         }
 
         string title = GetShortProductTitle(goal.Product.Id);
         if (HomeStoreService.FreePurchaseTestingEnabled)
-            return "NEXT " + title + "  •  FREE TEST";
+            return GameLanguageService.Format("shop.next_free", title);
         return goal.CanAfford
-            ? "NEXT " + title + "  •  READY TO BUY"
-            : "NEXT " + title + "  •  NEED " +
-              goal.MissingCoins.ToString("N0") + " COINS";
+            ? GameLanguageService.Format("shop.next_ready", title)
+            : GameLanguageService.Format("shop.next_coins", title, goal.MissingCoins.ToString("N0"));
     }
 
     private bool IsVisibleInActiveCollection(HomeStoreProduct product)
@@ -1011,6 +1008,7 @@ public sealed class ShopPanelController : MonoBehaviour
                 tabs[i].label.color = active ? TabActiveTextColor : TabIdleTextColor;
             if (tabs[i].selectedMarker != null)
                 tabs[i].selectedMarker.SetActive(active);
+            StorybookScreenStyle.Action(tabs[i].button, !active, active);
         }
     }
 
@@ -1065,7 +1063,7 @@ public sealed class ShopPanelController : MonoBehaviour
             card.actionText.color = color == BuyColor ? Color.white : JoyfulUiArt.Ink;
         }
         if (card.actionBackground is LowPolyPanelGraphic && card.button != null)
-            ModernUiArt.Action(card.button, color != BuyColor);
+            StorybookScreenStyle.Action(card.button, color != BuyColor);
         else if (card.actionBackground != null)
             SetGraphicColor(card.actionBackground, color);
     }
@@ -1108,7 +1106,7 @@ public sealed class ShopPanelController : MonoBehaviour
         if (!string.IsNullOrEmpty(requiredProductId) &&
             HomeStoreService.IsStored(requiredProductId))
         {
-            SetFeedback("PLACE " + GetRequiredProductTitle(productId) + " FIRST.");
+            SetFeedback(GameLanguageService.Format("shop.place_first", GetRequiredProductTitle(productId)));
             BeginPlacement(requiredProductId);
             return;
         }
@@ -1260,16 +1258,16 @@ public sealed class ShopPanelController : MonoBehaviour
             activePlacement.PlacementKind == HomeProductPlacementKind.BookshelfOnly)
         {
             placementCounterText.text = activePlacement.IsPreviewValid
-                ? "BOOKSHELF FOUND - CONFIRM TO ARRANGE BOOKS"
-                : "DRAG THE BOOK SET DIRECTLY ONTO YOUR BOOKSHELF";
+                ? GameLanguageService.Text("shop.books_found")
+                : GameLanguageService.Text("shop.drag_books");
         }
         if (placementCounterText != null &&
             activePlacement.PlacementKind == HomeProductPlacementKind.ProductSurfaceOnly)
         {
             string targetTitle = GetRequiredProductTitle(activePlacement.ProductId);
             placementCounterText.text = activePlacement.IsPreviewValid
-                ? targetTitle + " FOUND - ROTATE OR CONFIRM"
-                : "DRAG THIS ITEM DIRECTLY ONTO " + targetTitle;
+                ? GameLanguageService.Format("shop.surface_found", targetTitle)
+                : GameLanguageService.Format("shop.drag_surface", targetTitle);
         }
         if (placementCounterText != null &&
             activePlacement.PlacementKind != HomeProductPlacementKind.BookshelfOnly &&
@@ -1366,7 +1364,6 @@ public sealed class ShopPanelController : MonoBehaviour
     private void OnValidate()
     {
         widthFraction = 0.9f;
-        minWidth = 1460f;
         maxWidth = 1720f;
         safeAreaMargin = 34f;
     }

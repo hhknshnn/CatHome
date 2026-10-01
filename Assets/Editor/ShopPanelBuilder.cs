@@ -180,7 +180,6 @@ public static class ShopPanelBuilder
         Assign(serialized, "placementConfirmButton", placement.Confirm);
         Assign(serialized, "placementCancelButton", placement.Cancel);
         serialized.FindProperty("widthFraction").floatValue = 0.9f;
-        serialized.FindProperty("minWidth").floatValue = 1460f;
         serialized.FindProperty("maxWidth").floatValue = 1720f;
         serialized.FindProperty("safeAreaMargin").floatValue = 34f;
         AssignTabs(serialized, panel.Tabs);

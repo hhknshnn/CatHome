@@ -18,7 +18,6 @@ public sealed class GardenYarnChaseActivity : CatActivity
     [SerializeField, Min(1)] private int catchesToComplete = 4;
     [SerializeField, Min(0.1f)] private float hopDuration = 0.42f;
     [SerializeField, Min(0.1f)] private float hopHeight = 0.32f;
-    [SerializeField, Min(0.1f)] private float pounceDuration = 0.62f;
     [SerializeField, Min(0f)] private float catchOffset = 0.34f;
 
     private CatToyContactMotion contact;
@@ -35,6 +34,13 @@ public sealed class GardenYarnChaseActivity : CatActivity
     public int CatchGoal => Mathf.Max(1, catchesToComplete);
     public Transform YarnBall => yarnBall;
     public Transform[] HopPoints => hopPoints;
+    protected override bool UsesPreparedStart => true;
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        start = default;
+        return RoutineEntryPoint != null && CatActivityStartResolver.Current(actor,
+            RoutineEntryPoint.position, PromptRadius, out start);
+    }
     public override string ProgressLabel => IsRunning
         ? $"CHASE THE YARN  {catches}/{CatchGoal}"
         : string.Empty;
@@ -89,7 +95,6 @@ public sealed class GardenYarnChaseActivity : CatActivity
         Cat.SetMovementLocked(this, true);
         if (characterController != null) characterController.enabled = false;
         PlayCatPose(CatActivityPose.Sniff);
-        yield return CatActivityFacing.Turn(Cat, CatActivityFacing.Resolve(Cat, Cat.transform.position, Cat.transform.rotation));
         yield return new WaitForSeconds(.2f);
         while (IsRunning && catches < CatchGoal)
         {

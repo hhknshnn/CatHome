@@ -27,7 +27,6 @@ public sealed class CatRunnerPlayer : MonoBehaviour
     [SerializeField] private float dragSensitivity = 1.08f;
     [SerializeField] private float surfaceFollowSpeed = 8f;
     [SerializeField] private float slideDuration = 0.72f;
-    [SerializeField, Range(0.45f, 0.9f)] private float slideVisualHeight = 0.62f;
     [SerializeField, Min(.2f)] private float standingCollisionHeight = .68f;
     [SerializeField, Min(.15f)] private float slidingCollisionHeight = .34f;
     [SerializeField] private bool reducedMotion;
@@ -593,7 +592,6 @@ public sealed class CatRunnerPlayer : MonoBehaviour
         dragSensitivity = 1.08f;
         surfaceFollowSpeed = 8f;
         slideDuration = .72f;
-        slideVisualHeight = .62f;
         standingCollisionHeight = .68f;
         slidingCollisionHeight = .34f;
     }

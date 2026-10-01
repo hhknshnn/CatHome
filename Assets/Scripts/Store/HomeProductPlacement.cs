@@ -552,7 +552,7 @@ public sealed class HomeProductPlacement : MonoBehaviour
     private bool OverlapsReservedProduct(bool ignoreCatProducts = false)
     {
         if (!CatCollectionPolicy.IsCatItem(productId)) return false;
-        foreach (var other in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var other in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include))
         {
             if (other == this || other.gameObject.scene != gameObject.scene) continue;
             bool fixedRoom = HomeStoreService.IsFixedRoomProduct(other.ProductId);

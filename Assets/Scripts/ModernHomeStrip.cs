@@ -18,10 +18,15 @@ public sealed class ModernHomeStrip : MonoBehaviour
     {
         if (rect == null) rect = (RectTransform)transform;
         if (owner == null) owner = GetComponentInParent<Canvas>();
-        if (fill == null) fill = GetComponent<Image>();
+        if (fill == null)
+        {
+            fill = GetComponent<Image>();
+            // Establish the legacy default once. The opted-in Storybook owner
+            // then supplies its final color without a per-frame repaint race.
+            if (fill != null) fill.color = ModernUiArt.Paper;
+        }
         if (owner == null || fill == null) return;
         fill.raycastTarget = false;
-        fill.color = ModernUiArt.Paper;
         // Mini-game cameras render their entire viewport; a home strip must
         // never paint over their lower controls or scenery.
         fill.enabled = !HomeUiFlow.IsMiniGameVisible;

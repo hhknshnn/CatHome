@@ -32,47 +32,151 @@ public sealed class SitLookActivity : CatActivity
     public Vector3 ViewStand { get; private set; }
     public Quaternion ViewRotation { get; private set; }
     public int VisibleLookTargetCount => visibleLookTargets != null ? visibleLookTargets.Length : 0;
-    private List<Vector3> viewApproach;
-    private Vector3 plannedOrigin;
-    // These floor observations can start beside their visible product. Search
-    // locally once; the generic contact routes used in other rooms are unchanged.
-    private bool UsesLocalViewingRoute => ReactionKind == SitLookReaction.Sit &&
-        (Kind == CatActivityKind.BookshelfSniff || Kind == CatActivityKind.BookSetSniff ||
-         Kind == CatActivityKind.PlantSniff || Kind == CatActivityKind.LampWatch ||
-         Kind == CatActivityKind.FridgeStare || (IsMirrorGaze && HasNearbyApproach));
+    private CatToyContactMotion contact;
+    private CatPawReachMotion pawReach;
+    public int ContactCount { get; private set; }
+    public float MinimumPawDistance { get; private set; }
+    public Vector3 LastContactPosition { get; private set; }
 
-    public override string ProgressLabel => IsRunning ? DisplayName : string.Empty;
+    public override string ProgressLabel => !IsRunning ? string.Empty : Kind == CatActivityKind.FernWatch
+        ? GameLanguageService.Text("interaction.fern.progress") : GameLanguageService.Text("interaction.watching");
     public Transform LookPoint => lookPoint;
     // Existing bathroom scenes serialized PawSwat. The reflection is observed
     // calmly even before that obsolete authoring value is regenerated.
     private bool IsMirrorGaze => Kind == CatActivityKind.MirrorGaze;
     public SitLookReaction ReactionKind => IsMirrorGaze ? SitLookReaction.Sit : reactionKind;
-    protected override bool UsesNearbyRoutineEntry => true;
+    protected override bool UsesFloorApproach => false;
+    protected override bool UsesPreparedStart => true;
+
+    struct LookStartCandidate { public Vector3 point; public float distance; public int index; }
+    readonly List<LookStartCandidate> startCandidates = new List<LookStartCandidate>(32);
+    public bool IsStartSearchPending {get;private set;}
+    CatMovement startSearchActor;
+    Matrix4x4 startSearchActorMatrix,startSearchOwnerMatrix,startSearchLookMatrix;
+    Vector3[] startSearchTargets;
+    int startSearchIndex;
+    int startSearchFrame=-1,startSearchFrameTarget;
+    bool startSearchInitialized;
+    static int CompareLookStart(LookStartCandidate a, LookStartCandidate b)
+    { int distance = a.distance.CompareTo(b.distance); return distance != 0 ? distance : a.index.CompareTo(b.index); }
+
+    protected override bool TryPrepareStart(CatMovement actor, out CatActivityStart start)
+    {
+        IsStartSearchPending=false;
+        Vector3 centre = RoutineEntryPoint != null ? RoutineEntryPoint.position : transform.position;
+        start = new CatActivityStart { ZoneCentre = centre, ActionTarget = lookPoint != null ? lookPoint.position : centre,
+            PromptDistance = float.PositiveInfinity };
+        if (actor == null || lookPoint == null) return false;
+        // Validate the current body once. Looking and touching never search for
+        // another stand or choose a camera-facing root orientation after a click.
+        if (!CatActivityStartResolver.Current(actor, actor.transform.position, 0f, out var candidate)) return false;
+        candidate.ZoneCentre = centre;
+        bool seated = ReactionKind == SitLookReaction.Sit;
+        bool flowers = StoreProductId == HomeStoreService.BalconyRailingFlowersId;
+        var actorMatrix=actor.transform.localToWorldMatrix;
+        var ownerMatrix=transform.localToWorldMatrix;var lookMatrix=lookPoint.localToWorldMatrix;
+        if(!flowers||!startSearchInitialized||startSearchActor!=actor||
+            !startSearchActorMatrix.Equals(actorMatrix)||!startSearchOwnerMatrix.Equals(ownerMatrix)||
+            !startSearchLookMatrix.Equals(lookMatrix)||!ReferenceEquals(startSearchTargets,visibleLookTargets))
+        {
+            startSearchInitialized=true;startSearchActor=actor;startSearchActorMatrix=actorMatrix;
+            startSearchOwnerMatrix=ownerMatrix;startSearchLookMatrix=lookMatrix;
+            startSearchTargets=visibleLookTargets;startSearchIndex=0;startSearchFrame=-1;
+        }
+        float nearest = float.PositiveInfinity;
+        startCandidates.Clear();
+        for (int i = 0; i < Mathf.Max(1, VisibleLookTargetCount); i++)
+        {
+            Vector3 point = LookTargetAt(i), direction = point - actor.transform.position;
+            direction.y = 0;
+            float distance = direction.magnitude;
+            if (distance < (seated ? .1f : .30f) || distance > (seated ? 1.5f : .58f) ||
+                Vector3.Angle(actor.transform.forward, direction) > (seated ? CatFurnitureGaze.SeatedYawLimit - 5f : flowers ? 100f : 25f)) continue;
+            startCandidates.Add(new LookStartCandidate { point = point, distance = distance, index = i });
+        }
+        // Test nearest surfaces first. This returns exactly the previous closest
+        // reachable result, without solving every farther target along the way.
+        startCandidates.Sort(CompareLookStart);
+        // Share the common per-frame budget across nearby surfaces, so one
+        // difficult leaf cannot starve a reachable neighbour. A ready surface
+        // stays first for the next fresh prompt/click validation.
+        if(flowers&&startCandidates.Count>0&&startSearchFrame!=Time.frameCount)
+        {
+            startSearchFrame=Time.frameCount;
+            startSearchFrameTarget=startSearchIndex%startCandidates.Count;
+        }
+        // HUD selection, hysteresis and click may all poll in the same frame.
+        // They must retry this frame's current target: a zero-budget Pending
+        // result cannot consume another target's turn. Every call still runs
+        // the current body/surface physics, including cached accepted plans.
+        int firstTarget = flowers && startCandidates.Count > 0 ? startSearchFrameTarget % startCandidates.Count : 0;
+        for(int step=0;step<startCandidates.Count;step++)
+        {
+            int targetIndex = (firstTarget + step) % startCandidates.Count;
+            if(flowers)startSearchIndex=targetIndex;
+            var target=startCandidates[targetIndex];
+            Vector3 point = target.point;
+            float distance = target.distance;
+            if (!CatActivityApproach.HasClearSight(this, actor, actor.transform.position + Vector3.up * .4f, point)) continue;
+            if (!seated)
+            {
+                bool left = Vector3.Dot(point - actor.transform.position, actor.transform.right) <= 0;
+                var pose = flowers || point.y - actor.transform.position.y > .55f ? CatActivityPose.Scratch :
+                    left ? CatActivityPose.BatLeft : CatActivityPose.BatRight;
+                CatPawReachPlan plan;
+                if (flowers)
+                {
+                    if(!CatPawReachResolver.TryMeasureSurface(transform,point,out var surface))continue;
+                    if(!CatPawReachResolver.TryResolveSurface(actor,surface,left,pose,out plan,
+                        CatPawReachResolver.MaximumChestPitch,CatPawReachResolver.MaximumChestYaw))
+                    {
+                        if(CatPawReachResolver.SurfaceQueryPending)
+                        {
+                            startSearchFrameTarget=targetIndex;
+                            startSearchIndex=(targetIndex+1)%startCandidates.Count;
+                            IsStartSearchPending=true;start=candidate;return false;
+                        }
+                        continue;
+                    }
+                    point=surface.point;
+                }
+                else if (!CatPawReachResolver.TryResolve(actor, point, left, pose, out plan,
+                    CatPawReachResolver.MaximumChestPitch, 0)) continue;
+                candidate.PawPlan = plan; candidate.HasPawPlan = true;
+            }
+            if(flowers){startSearchFrameTarget=targetIndex;startSearchIndex=targetIndex;}
+            nearest = distance; candidate.ActionTarget = point;
+            break;
+        }
+        if(flowers&&float.IsPositiveInfinity(nearest))startSearchIndex=0;
+        candidate.PromptDistance = nearest;
+        candidate.Kind = seated ? CatActivityStartKind.Stationary : CatActivityStartKind.Contact;
+        start = candidate;
+        return !float.IsPositiveInfinity(nearest);
+    }
 
     protected override bool CanBeginActivity(out string failureReason)
     {
-        if (lookPoint == null)
-        {
-            failureReason = "NOT READY YET";
-            return false;
-        }
-
-        ViewStandBlocked = !ResolveViewingRoute(Cat.transform.position);
-        failureReason = ViewStandBlocked ? "LET'S MAKE SOME ROOM." : string.Empty;
-        return !ViewStandBlocked;
+        ViewStandBlocked = lookPoint == null;
+        failureReason = ViewStandBlocked ? "NOT READY YET" : string.Empty;
+        if (ViewStandBlocked) return false;
+        ViewStand = AcceptedStart.Position;
+        ViewRotation = AcceptedStart.Rotation;
+        ActiveLookTarget = AcceptedStart.ActionTarget;
+        return true;
     }
 
     protected override bool BeginActivity()
     {
-        gestureBeats = 0;
-        // CanBeginActivity already solved this route before reserving energy.
-        // Only re-plan if the shared entrance actually moved the cat.
-        if (!UsesLocalViewingRoute || viewApproach == null || (Cat.transform.position - plannedOrigin).sqrMagnitude > .0001f)
-            ViewStandBlocked = !ResolveViewingRoute(Cat.transform.position);
-        if (ViewStandBlocked) return false;
-        PlayCatPose(IsMirrorGaze ? CatActivityPose.SitDown : CatActivityPose.Walk);
-        gaze = Cat.GetComponent<CatFurnitureGaze>();
-        if(gaze == null) gaze=Cat.gameObject.AddComponent<CatFurnitureGaze>();
+        gestureBeats = ContactCount = 0;
+        MinimumPawDistance = float.PositiveInfinity;
+        gaze = Cat.GetComponent<CatFurnitureGaze>() ?? Cat.gameObject.AddComponent<CatFurnitureGaze>();
+        if (ReactionKind != SitLookReaction.Sit)
+        {
+            if (!AcceptedStart.HasPawPlan) return false;
+            contact = Cat.GetComponent<CatToyContactMotion>() ?? Cat.gameObject.AddComponent<CatToyContactMotion>();
+            pawReach = Cat.GetComponent<CatPawReachMotion>() ?? Cat.gameObject.AddComponent<CatPawReachMotion>();
+        }
         characterController = Cat.GetComponent<CharacterController>();
         StartCoroutine(LookRoutine());
         return true;
@@ -81,98 +185,74 @@ public sealed class SitLookActivity : CatActivity
     private IEnumerator LookRoutine()
     {
         Cat.SetMovementLocked(this, true);
-        Vector3 startPosition = Cat.transform.position;
-        Quaternion startRotation = Cat.transform.rotation;
-        Vector3 sitPoint = ViewStand;
-        Vector3 lookTarget = ActiveLookTarget;
-        List<Vector3> approach = viewApproach;
-        Vector3 lookDirection = lookTarget - sitPoint;
-        lookDirection.y = 0f;
-        Quaternion sitRotation = ReactionKind == SitLookReaction.Sit ? ViewRotation : lookDirection.sqrMagnitude > 0.001f
-            ? Quaternion.LookRotation(lookDirection.normalized, Vector3.up)
-            : startRotation;
-
-        if (characterController != null)
-            characterController.enabled = false;
-
-        float elapsed = 0f;
-        bool movesToSeat = (sitPoint - startPosition).sqrMagnitude > .0004f;
-        if (movesToSeat)
-        {
-            if (approach == null && !CatActivityMotion.TryFloorPath(startPosition, sitPoint, out approach))
-            {
-                ViewStandBlocked = true;
-                approach = new List<Vector3>();
-                sitPoint = startPosition;
-                Vector3 fallbackLook = lookTarget - sitPoint; fallbackLook.y = 0f;
-                if (fallbackLook.sqrMagnitude > .001f) sitRotation = Quaternion.LookRotation(fallbackLook);
-            }
-            foreach (Vector3 waypoint in approach)
-            {
-                Vector3 from = Cat.transform.position;
-                Vector3 to = Flatten(waypoint, startPosition.y);
-                Vector3 travel = to - from; travel.y = 0f;
-                if (travel.sqrMagnitude < .0001f) continue;
-                Quaternion travelRotation = Quaternion.LookRotation(travel);
-                PlayCatPose(CatActivityPose.Sniff);
-                yield return CatActivityFacing.Turn(Cat, travelRotation);
-                PlayCatPose(CatActivityPose.Walk);
-                float duration = travel.magnitude / .85f;
-                elapsed = 0f;
-                while (elapsed < duration)
-                {
-                    elapsed += Time.deltaTime;
-                    Cat.transform.position = Vector3.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
-                    Cat.transform.rotation = travelRotation;
-                    yield return null;
-                }
-            }
-        }
-        Cat.transform.position = sitPoint;
-        PlayCatPose(CatActivityPose.Sniff);
-        yield return CatActivityFacing.Turn(Cat, sitRotation);
-
-        if (characterController != null)
-            characterController.enabled = true;
-
-        if (IsMirrorGaze)
+        if (characterController != null) characterController.enabled = false;
+        if (ReactionKind == SitLookReaction.Sit)
         {
             PlayCatPose(CatActivityPose.SitDown);
-            yield return new WaitForSeconds(.7f);
+            yield return new WaitForSeconds(.55f);
         }
-
-        // The entire observed beat belongs to this routine. A one-shot reaction
-        // previously reset to Sit after .58s, leaving most of the interaction idle.
-        // Touching props alternate paws; distant/hung objects receive a seated gaze.
-        float beatDuration = lookDuration / 3f;
-        for(int beat=0;beat<3;beat++)
+        else if (AcceptedStart.PawPlan.Pose == CatActivityPose.Scratch)
         {
-            CatActivityPose pose = ReactionKind == SitLookReaction.Sit ? CatActivityPose.Sit :
-                ReactionKind == SitLookReaction.Pounce && beat == 0 ? CatActivityPose.Stalk :
-                beat == 1 ? CatActivityPose.BatRight : CatActivityPose.BatLeft;
-            PlayCatPose(pose); gestureBeats++;
-            elapsed=0;
-            while(elapsed<beatDuration)
+            // Enter the raised source posture through its existing crossfade.
+            // The stance stays still while the chest and forelegs rise.
+            PlayCatPose(CatActivityPose.Scratch);
+            yield return new WaitForSeconds(.18f);
+        }
+        float beatDuration = lookDuration / 3f;
+        for (int beat = 0; beat < 3; beat++)
+        {
+            bool seated = ReactionKind == SitLookReaction.Sit;
+            bool left = Vector3.Dot(ActiveLookTarget - ViewStand, ViewRotation * Vector3.right) <= 0f;
+            CatActivityPose pose = seated ? CatActivityPose.Sit :
+                ActiveLookTarget.y - ViewStand.y > .55f ? CatActivityPose.Scratch :
+                left ? CatActivityPose.BatLeft : CatActivityPose.BatRight;
+            gestureBeats++;
+            bool touched = false;
+            float elapsed = 0f;
+            while (elapsed < beatDuration)
             {
-                elapsed+=Time.deltaTime;
-                if(Cat!=null && gaze!=null)
+                Cat.transform.SetPositionAndRotation(ViewStand, ViewRotation);
+                float phase = Mathf.Clamp01(elapsed / beatDuration);
+                if (seated)
                 {
-                    float blend=Mathf.Sin(Mathf.Clamp01(elapsed/beatDuration)*Mathf.PI);
-                    gaze.LookAt(lookTarget,blend,ReactionKind == SitLookReaction.Sit ? CatFurnitureGaze.SeatedYawLimit : CatFurnitureGaze.DefaultYawLimit);
+                    PlayCatPose(pose);
+                    gaze.LookAt(ActiveLookTarget, Mathf.Sin(phase * Mathf.PI), CatFurnitureGaze.SeatedYawLimit);
+                }
+                else
+                {
+                    pawReach.Sample(this, AcceptedStart.PawPlan, phase);
+                    if (AcceptedStart.PawPlan.Surface != null)
+                    {
+                        // Observe the same frame's actual skinned patch after
+                        // the source pose, chest and final limb solve.
+                        yield return new WaitForEndOfFrame();
+                        if (!IsRunning) yield break;
+                    }
+                    if (Time.timeScale > 0f && phase >= .30f && phase <= .68f)
+                    {
+                        MinimumPawDistance = Mathf.Min(MinimumPawDistance, contact.Distance);
+                        if (!touched && contact.Distance <= .025f)
+                        {
+                            touched = true; ContactCount++;
+                            LastContactPosition = contact.LastContactPosition;
+                            GameAudio.Play(AudioCue.Leaves, .45f);
+                        }
+                    }
                 }
                 yield return null;
+                if (Time.timeScale > 0f) elapsed += Time.deltaTime;
             }
+            pawReach?.Clear(); contact?.Clear();
+            if (!seated && !touched) { CancelForTransition(); yield break; }
         }
-
-        if(gaze!=null)gaze.Clear();
-        if (IsMirrorGaze)
+        gaze.Clear(); pawReach?.Clear(); contact?.Clear();
+        if (ReactionKind == SitLookReaction.Sit)
         {
             PlayCatPose(CatActivityPose.StandUp);
-            yield return new WaitForSeconds(.7f);
+            yield return new WaitForSeconds(.55f);
         }
-        if (Cat != null)
-            Cat.SetMovementLocked(this, false);
-        CompleteActivity(
+        Cat.SetMovementLocked(this, false);
+        CompleteActivity(Kind == CatActivityKind.FernWatch ? "FERN_INSPECTED" :
             string.IsNullOrWhiteSpace(completeMessage) ? "SO COZY!" : completeMessage);
     }
 
@@ -194,109 +274,13 @@ public sealed class SitLookActivity : CatActivity
         return found;
     }
 
-    bool ResolveViewingRoute(Vector3 origin)
-    {
-        if (Cat == null || lookPoint == null) return false;
-        Physics.SyncTransforms();
-        plannedOrigin = origin;
-        if (UsesLocalViewingRoute)
-        {
-            if (ResolveLocalViewingRoute(origin)) return true;
-            // A distant scripted start may still need the authored room path.
-            // Normal nearby mirror taps use the same short search as the living room.
-            if (!IsMirrorGaze && Kind != CatActivityKind.FridgeStare) return false;
-        }
-        Vector3 authored = Flatten(RoutineEntryPoint != null ? RoutineFloorPosition : transform.position, origin.y);
-        float best = float.PositiveInfinity; viewApproach = null;
-        for (int i = 0; i < Mathf.Max(1, VisibleLookTargetCount); i++)
-        {
-            Vector3 target = LookTargetAt(i), stand = authored;
-            List<Vector3> route = null;
-            bool seated = ReactionKind == SitLookReaction.Sit;
-            bool readable = seated ? CatActivityFacing.TryResolveViewFacing(Cat,stand,target,out _) :
-                CatActivityFacing.FacingDot(target-stand,stand,CatActivityFacing.CameraPosition(Cat)) >= CatActivityFacing.PreferredViewDot;
-            bool floorClear = seated ? CatActivityMotion.IsControllerFloorClear(Cat,stand) : CatActivityMotion.IsFloorClear(stand);
-            bool found = readable && floorClear && (seated ? CatActivityMotion.TryFloorPath(Cat,origin,stand,out route) :
-                CatActivityMotion.TryFloorPath(origin,stand,out route));
-            if (found && !CatActivityApproach.HasClearSight(this, Cat, stand + Vector3.up * .4f, target)) found = false;
-            if (!found) found = ReactionKind == SitLookReaction.Sit
-                ? CatActivityFacing.TryFindViewStand(Cat, target, authored, origin, out stand, out route, this)
-                : CatActivityFacing.TryFindContactStand(Cat, target, authored, origin, out stand, out route, this);
-            if (!found || !CatActivityApproach.HasClearSight(this, Cat, stand + Vector3.up * .4f, target)) continue;
-            float length = 0f; Vector3 previous = origin;
-            foreach (Vector3 point in route) { length += Vector3.Distance(previous, point); previous = point; }
-            if (length >= best) continue;
-            best = length; ViewStand = stand; ActiveLookTarget = target; viewApproach = route;
-            Quaternion rotation;
-            if (seated) CatActivityFacing.TryResolveViewFacing(Cat,stand,target,out rotation);
-            else rotation = Quaternion.LookRotation(new Vector3(target.x-stand.x,0,target.z-stand.z));
-            ViewRotation = rotation;
-        }
-        return viewApproach != null;
-    }
-
-    bool ResolveLocalViewingRoute(Vector3 origin)
-    {
-        viewApproach = null;
-        Vector3 camera = CatActivityFacing.CameraPosition(Cat);
-        float radius = CatActivityMotion.ControllerFloorRadius(Cat);
-        var boundary = HomeRoomBoundary.FindFor(Cat.gameObject.scene);
-        Vector3 centre = Kind == CatActivityKind.FridgeStare && !HasNearbyApproach ? RoutineEntryPoint.position : origin;
-        centre.y = origin.y;
-        var candidates = new List<Vector3> { origin };
-        // Reuse the room's .2m floor lattice: polar samples can miss the narrow
-        // open aisle beside the armchair. No occupancy grid or BFS is rebuilt.
-        for (int x = 0; x < 38; x++) for (int z = 0; z < 32; z++)
-        {
-            Vector3 point = CatActivityMotion.GridPoint(x, z); point.y = origin.y;
-            if ((point - centre).sqrMagnitude <= 1.6f * 1.6f) candidates.Add(point);
-        }
-        candidates.Sort((a,b) => (a-origin).sqrMagnitude.CompareTo((b-origin).sqrMagnitude));
-        foreach (Vector3 stand in candidates)
-        {
-            if (!CatActivityMotion.IsFloorClear(stand, radius) ||
-                (boundary != null && (boundary.ClampPosition(stand, radius)-stand).sqrMagnitude >= .000001f)) continue;
-            for (int index = 0; index < Mathf.Max(1, VisibleLookTargetCount); index++)
-            {
-                Vector3 target = LookTargetAt(index), flat = target - stand; flat.y = 0;
-                if (flat.sqrMagnitude < .0001f || flat.sqrMagnitude > 1.5f * 1.5f) continue;
-                Quaternion preferred = Quaternion.LookRotation(flat);
-                Quaternion rotation = CatActivityFacing.Resolve(stand, preferred, camera);
-                if (Quaternion.Angle(rotation, preferred) > CatFurnitureGaze.SeatedYawLimit - 5f ||
-                    !CatActivityApproach.HasClearSight(this, Cat, stand + Vector3.up * .4f, target)) continue;
-                // The approach disables the controller and uses the same .27m
-                // swept body clearance as the common floor entrance. The final
-                // seat additionally clears the full controller turning envelope.
-                List<Vector3> route;
-                if (Kind == CatActivityKind.FridgeStare && !HasNearbyApproach)
-                {
-                    if (!CatActivityMotion.TryFloorPath(origin, stand, out route)) break;
-                }
-                else
-                {
-                    if (!CatActivityMotion.ClearSegment(origin, stand)) break;
-                    route = new List<Vector3> { stand };
-                }
-                ViewStand = stand; ViewRotation = rotation; ActiveLookTarget = target;
-                viewApproach = route;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static Vector3 Flatten(Vector3 point, float y)
-    {
-        point.y = y;
-        return point;
-    }
-
     protected override void CancelActivity()
     {
         if (!IsRunning) return;
         StopAllCoroutines();
         if (!HasBegunActivity) { base.CancelActivity(); return; }
         if(gaze!=null)gaze.Clear();
+        pawReach?.Clear(); contact?.Clear();
         if (characterController != null)
             characterController.enabled = true;
         if (Cat != null)

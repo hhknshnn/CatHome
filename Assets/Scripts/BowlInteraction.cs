@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -99,7 +98,6 @@ public class BowlInteraction : MonoBehaviour
     };
 
     [Header("Interaction")]
-    [SerializeField, Min(0f)] private float interactionDistance = 0.45f;
     [SerializeField, Min(0f)] private float interactionDuration = 10f;
     [SerializeField, Min(0f)] private float animationTransitionTime = 0.15f;
 
@@ -117,14 +115,16 @@ public class BowlInteraction : MonoBehaviour
     private int speedParameterHash;
     private BowlSetup styledBowl;
     private bool showingSleepStyle;
+    private float nextFoodReadiness, nextWaterReadiness;
+    private bool foodReady, waterReady;
     private float eatingDuration;
     private float drinkingDuration;
     private float satisfiedActionThreshold = 90f;
     private bool atContact;
     private bool controllerHeld;
     private bool controllerWasEnabled;
-    private Vector3 returnPoint;
-    private Vector3 feedingPosition;
+    private CatMealHeadMotion headContact;
+    private float CareTransitionTime => Mathf.Max(.35f, animationTransitionTime);
 
     public bool IsInteracting => isInteracting;
     public bool IsAtContact => isInteracting && atContact;
@@ -303,7 +303,7 @@ public class BowlInteraction : MonoBehaviour
 
         if (showingSleepStyle)
         {
-            if (sleepInteraction != null && sleepInteraction.TryHandleActionButton())
+            if (sleepInteraction != null && sleepInteraction.WantsActionButton && sleepInteraction.TryHandleActionButton())
                 UpdateSleepButton();
             else
                 SetButtonVisible(false);
@@ -314,7 +314,13 @@ public class BowlInteraction : MonoBehaviour
         if (CatActionState.IsBusy(catMovement))
             return;
 
-        // Revalidate the displayed target at the click, including distance.
+        // Revalidate the displayed action silently if the world changed since
+        // it was offered. The HUD never offers an instruction to move or turn.
+        if (!CanInteractWith(currentBowl)) { currentBowl = null; SetButtonVisible(false); return; }
+        if (!CatCareEligibility.CanAccept(catMovement,
+            ReferenceEquals(currentBowl, food) ? CatCareNeed.Food : CatCareNeed.Water))
+        { currentBowl = null; SetButtonVisible(false); return; }
+
         // A stale button must neither teleport the cat nor select another item.
         if (float.IsPositiveInfinity(GetAvailableDistanceSquared(currentBowl)))
         {
@@ -331,51 +337,23 @@ public class BowlInteraction : MonoBehaviour
         }
 
         BowlSetup selectedBowl = currentBowl;
-        if(selectedBowl.FeedingPoint!=null && selectedBowl.ContactPoint!=null)
+        if (!TryPrepareBowlStart(selectedBowl, out _))
         {
-            var tag=GetComponentInChildren<CatBreedVisualTag>();
-            var profile=CatFeedingAlignmentCatalog.Load()?.Find(tag!=null?tag.BreedId:CatBreedService.SelectedBreedId);
-            if(profile==null)return;
-            float scale=catTransform.lossyScale.y/.5f;
-            Vector3 mouth=profile.mouthOffset*scale;mouth.y=0f;
-            var rotation=selectedBowl.FeedingPoint.rotation;
-            feedingPosition=selectedBowl.ContactPoint.position-rotation*(mouth+Vector3.forward*.035f);
-            feedingPosition.y=profile.rootHeight*scale;
-        }
-        if (IsSatisfied(selectedBowl))
-        {
-            speechBubble?.Show(ReferenceEquals(selectedBowl, food)
-                ? GameContentCopy.Text("Şu an aç değilim!","I'm not hungry right now!")
-                : GameContentCopy.Text("Şu an susamadım!","I'm not thirsty right now!"));
+            foodReady = waterReady = false;
+            nextFoodReadiness = nextWaterReadiness = 0f;
+            currentBowl = null;
+            SetButtonVisible(false);
             return;
         }
 
-        Vector3 authoredStand = selectedBowl.InteractionPoint.position;
-        authoredStand.y = catTransform.position.y;
-        Vector3 stand = authoredStand;
-        List<Vector3> approach;
-        bool measuredContact = selectedBowl.FeedingPoint != null && selectedBowl.ContactPoint != null;
-        bool reachable = measuredContact
-            ? CatActivityMotion.TryFloorPath(catMovement, catTransform.position, stand, out approach)
-            : CatActivityFacing.TryFindContactStand(catMovement, selectedBowl.Bowl.position,
-                authoredStand, catTransform.position, out stand, out approach);
-        // A nearby cat already on the open side need not visit the fixed
-        // entrance and turn back. Preserve its safe starting point for exit.
-        if(measuredContact && Vector3.Distance(catTransform.position,feedingPosition)<.85f &&
-            CatActivityMotion.IsControllerFloorClear(catMovement,catTransform.position) &&
-            CatActivityMotion.ClearSegment(catTransform.position,feedingPosition,.08f))
-        {stand=catTransform.position;approach=new List<Vector3>();reachable=true;}
-        if (!reachable)
-        {
-            speechBubble?.Show(GameContentCopy.Text("Kabın yanında biraz yer açalım.", "Let's make room beside the bowl."));
-            return;
-        }
-
-        interactionCoroutine = StartCoroutine(PerformInteraction(selectedBowl, stand, approach));
+        speechBubble?.DismissOwned(this);
+        interactionCoroutine = StartCoroutine(PerformInteraction(selectedBowl));
     }
 
-    private IEnumerator PerformInteraction(BowlSetup bowl, Vector3 stand, List<Vector3> approach)
+    private IEnumerator PerformInteraction(BowlSetup bowl)
     {
+        var idleBehavior = GetComponent<CatIdleBehavior>();
+        bool finishingIdleBeat = idleBehavior != null && idleBehavior.IsPerformingBeat;
         isInteracting = true;
         activeBowl = bowl;
         needRecoveryCompleted = false;
@@ -385,35 +363,61 @@ public class BowlInteraction : MonoBehaviour
             catMovement.SetMovementLocked(this, true);
 
         animator.SetFloat(speedParameterHash, 0f);
-        yield return ApproachBowl(bowl, approach);
-        Vector3 remaining = stand - catTransform.position; remaining.y = 0f;
-        if (remaining.magnitude > .04f || !CareInteractionTarget.IsVisibleInRoom(bowl.Bowl, catTransform) ||
-            !CatActivityMotion.IsFloorClear(catTransform.position) ||
-            (bowl.FeedingPoint == null && CatActivityFacing.FacingDot(bowl.Bowl.position - catTransform.position, catTransform.position,
-                CatActivityFacing.CameraPosition(catMovement)) < CatActivityFacing.MinimumViewDot))
-        { FinishInteraction();yield break; }
+        controllerWasEnabled = characterController != null && characterController.enabled;
+        controllerHeld = true;
+        if (controllerWasEnabled) characterController.enabled = false;
 
-        if (bowl.FeedingPoint != null && bowl.ContactPoint != null)
+        // A groom/stretch pose is not a standing source for the meal reach.
+        // Give its native pose a short, smooth return first. The movement lock
+        // makes idle ownership yield, so it cannot overwrite this transition.
+        if (finishingIdleBeat)
         {
-            // The walking capsule is wider than the planted feeding pose. Only
-            // the authored final step uses the measured body/paw clearance.
-            returnPoint = catTransform.position;
-            controllerWasEnabled = characterController != null && characterController.enabled;
-            controllerHeld = true;
-            if (controllerWasEnabled) characterController.enabled = false;
-            yield return MoveIntoBowl(feedingPosition,bowl.FeedingPoint.rotation);
+            animator.CrossFadeInFixedTime(BaseLayerPrefix + idleState, CareTransitionTime, 0);
+            yield return new WaitForSeconds(CareTransitionTime + .05f);
+            Physics.SyncTransforms();
+            if (!TryPrepareBowlStart(bowl, out _))
+            {
+                FinishInteraction();
+                foodReady = waterReady = false;
+                yield break;
+            }
         }
 
+        // Own the native Idle-to-Eat blend from its first frame. Binding after
+        // this blend left the low head unprotected and measured a raised eating
+        // forepaw as the permanent sole offset for the later standing pose.
+        headContact = GetComponent<CatMealHeadMotion>();
+        if (headContact == null) headContact = gameObject.AddComponent<CatMealHeadMotion>();
+        if (!headContact.Begin(this, bowl.ContactPoint != null ? bowl.ContactPoint : bowl.Bowl))
+        { CancelInteraction(); yield break; }
         string interactionStatePath = BaseLayerPrefix + bowl.AnimationState;
-        animator.CrossFadeInFixedTime(interactionStatePath, animationTransitionTime, 0);
-        if (controllerHeld)
+        float reachBlendDuration = CareTransitionTime;
+        animator.CrossFadeInFixedTime(interactionStatePath, reachBlendDuration, 0);
+        float reachTime = 0f;
+        // A native chew/lap cycle may reach its low point after the old .85s
+        // timeout, especially from the edge of an accepted stance. Wait for
+        // measured contact, with a bounded deadline, rather than cancelling a
+        // physically clear reach before the source animation gets there.
+        float reachDuration = Mathf.Max(2f, animationTransitionTime + .7f);
+        float contactTime = 0f;
+        while (reachTime < reachDuration)
         {
-            // Allow only the animator's original Eat/Drink transition. The
-            // measured root pose was reached while walking; no IK or per-frame
-            // tracking moves the neck, chest, limbs or body during the clip.
-            yield return new WaitForSeconds(animationTransitionTime+.05f);
-            atContact = true;
+            headContact.Sample(this, Mathf.Clamp01(reachTime / reachBlendDuration));
+            yield return null;
+            reachTime += Time.deltaTime;
+            bool touching = headContact.MinimumDistance <= CatCareReachGeometry.ContactDistance && headContact.CareFrameClear &&
+                headContact.Distance <= CatCareReachGeometry.ContactDistance;
+            contactTime = touching ? contactTime + Time.deltaTime : 0f;
+            if (contactTime >= .10f) break;
         }
+        if (contactTime < .10f)
+        {
+            yield return LeaveBowl();
+            FinishInteraction();
+            foodReady = waterReady = false;
+            yield break;
+        }
+        atContact = true;
         if (!TryBeginNeedRecovery(bowl))
         { yield return LeaveBowl(); FinishInteraction(); yield break; }
         ActiveCareSound=ReferenceEquals(bowl,water)?"CatDrink":"CatEat";
@@ -423,7 +427,10 @@ public class BowlInteraction : MonoBehaviour
         while (!needRecoveryCompleted && (ReferenceEquals(bowl, food)
             ? hungerSystem != null && hungerSystem.IsEatingFor(this)
             : thirstSystem != null && thirstSystem.IsDrinkingFor(this)))
+        {
+            headContact.Sample(this, 1f);
             yield return null;
+        }
 
         if (!needRecoveryCompleted)
         {
@@ -446,96 +453,8 @@ public class BowlInteraction : MonoBehaviour
         if (!isActiveAndEnabled)
             yield break;
 
-        animator.CrossFadeInFixedTime(BaseLayerPrefix + idleState, animationTransitionTime, 0);
         yield return LeaveBowl();
         FinishInteraction();
-    }
-
-    private IEnumerator ApproachBowl(BowlSetup bowl, List<Vector3> approach)
-    {
-        // Follow the validated side route; turning the cat away from the bowl
-        // would improve its silhouette while breaking the actual mouth contact.
-        float remaining = 7f;
-        foreach (Vector3 point in approach)
-        {
-            Vector3 target = point; target.y = catTransform.position.y;
-            while ((target - catTransform.position).sqrMagnitude > .0016f)
-            {
-                remaining -= Time.deltaTime;
-                if (remaining <= 0f || !CareInteractionTarget.IsVisibleInRoom(bowl.Bowl, catTransform) ||
-                    !CatActivityMotion.ClearSegment(catTransform.position, target, CatActivityMotion.ControllerFloorRadius(catMovement)))
-                { animator.SetFloat(speedParameterHash, 0f); yield break; }
-                Vector3 direction = target - catTransform.position; direction.y = 0f;
-                Quaternion turn = Quaternion.LookRotation(direction) * Quaternion.Euler(0, modelForwardOffset, 0);
-                catTransform.rotation = Quaternion.RotateTowards(catTransform.rotation, turn, 220f * Time.deltaTime);
-                if (Quaternion.Angle(catTransform.rotation, turn) < 45f)
-                {
-                    Vector3 next = Vector3.MoveTowards(catTransform.position, target, .75f * Time.deltaTime);
-                    if (characterController != null && characterController.enabled) characterController.Move(next - catTransform.position);
-                    else catTransform.position = next;
-                    animator.SetFloat(speedParameterHash, .5f);
-                }
-                else animator.SetFloat(speedParameterHash, 0f);
-                yield return null;
-            }
-        }
-        animator.SetFloat(speedParameterHash, 0f);
-        if (bowl.FeedingPoint != null) yield break;
-        Vector3 facing = bowl.Bowl.position - catTransform.position; facing.y = 0f;
-        if (facing.sqrMagnitude < .0001f) yield break;
-        Quaternion rotation = Quaternion.LookRotation(facing) * Quaternion.Euler(0, modelForwardOffset, 0);
-        while (Quaternion.Angle(catTransform.rotation, rotation) > 1f)
-        { catTransform.rotation = Quaternion.RotateTowards(catTransform.rotation, rotation, 220f * Time.deltaTime); yield return null; }
-    }
-
-    private IEnumerator TurnAtBowl(Quaternion target)
-    {
-        animator.SetFloat(speedParameterHash, 0f);
-        while (Quaternion.Angle(catTransform.rotation, target) > .5f)
-        { catTransform.rotation = Quaternion.RotateTowards(catTransform.rotation, target, 220f * Time.deltaTime); yield return null; }
-    }
-
-    private IEnumerator MoveIntoBowl(Vector3 target,Quaternion finalRotation)
-    {
-        Vector3 origin=catTransform.position,direction=target-origin;direction.y=0f;
-        if(direction.sqrMagnitude<.000025f)
-        {catTransform.position=target;yield return TurnAtBowl(finalRotation);yield break;}
-        Vector3 first=Vector3.Lerp(origin,target,.35f);
-        Vector3 second=target-finalRotation*Vector3.forward*Mathf.Min(.12f,direction.magnitude*.30f);
-        float t=0f;
-        while(t<1f)
-        {
-            float u=1f-t;
-            Vector3 tangent=3f*u*u*(first-origin)+6f*u*t*(second-first)+3f*t*t*(target-second);
-            Vector3 heading=tangent;heading.y=0f;
-            Quaternion desired=heading.sqrMagnitude>.000001f?Quaternion.LookRotation(heading):finalRotation;
-            catTransform.rotation=Quaternion.RotateTowards(catTransform.rotation,desired,220f*Time.deltaTime);
-            if(Quaternion.Angle(catTransform.rotation,desired)<45f)
-            {
-                t=Mathf.Min(1f,t+.55f*Time.deltaTime/Mathf.Max(.01f,tangent.magnitude));u=1f-t;
-                catTransform.position=u*u*u*origin+3f*u*u*t*first+3f*u*t*t*second+t*t*t*target;
-                animator.SetFloat(speedParameterHash,.5f);
-            }
-            else animator.SetFloat(speedParameterHash,0f);
-            yield return null;
-        }
-        catTransform.SetPositionAndRotation(target,finalRotation);
-        animator.SetFloat(speedParameterHash,0f);
-    }
-
-    private IEnumerator MoveAtBowl(Vector3 target)
-    {
-        Vector3 direction = target - catTransform.position;
-        direction.y = 0f;
-        if (direction.sqrMagnitude < .0001f) yield break;
-        yield return TurnAtBowl(Quaternion.LookRotation(direction));
-        while ((target - catTransform.position).sqrMagnitude > .000025f)
-        {
-            catTransform.position = Vector3.MoveTowards(catTransform.position, target, .55f * Time.deltaTime);
-            animator.SetFloat(speedParameterHash, .5f);
-            yield return null;
-        }
-        animator.SetFloat(speedParameterHash, 0f);
     }
 
     private IEnumerator LeaveBowl()
@@ -543,8 +462,14 @@ public class BowlInteraction : MonoBehaviour
         ActiveCareSound = null;
         atContact = false;
         if (!controllerHeld) yield break;
-        animator.CrossFadeInFixedTime(BaseLayerPrefix + idleState, animationTransitionTime, 0);
-        yield return MoveAtBowl(returnPoint);
+        if (headContact != null) yield return headContact.SettleOut(this,
+            () => animator.CrossFadeInFixedTime(BaseLayerPrefix + idleState, CareTransitionTime, 0), CareTransitionTime);
+        else
+        {
+            animator.CrossFadeInFixedTime(BaseLayerPrefix + idleState, CareTransitionTime, 0);
+            yield return new WaitForSeconds(CareTransitionTime);
+        }
+        if (headContact != null) headContact.Stop(this);
         RestoreController();
     }
 
@@ -552,9 +477,8 @@ public class BowlInteraction : MonoBehaviour
     {
         if (!controllerHeld) return;
         controllerHeld = false;
-        // Cancellation returns to the already validated open entry before the
-        // walking capsule becomes active; it must never push through the tray.
-        catTransform.position = returnPoint;
+        // The root stayed in the accepted clear stance throughout care.
+        if (headContact != null) headContact.Stop(this);
         if (characterController != null) characterController.enabled = controllerWasEnabled;
     }
 
@@ -563,8 +487,8 @@ public class BowlInteraction : MonoBehaviour
         if (catTransform == null)
             return null;
 
-        float foodDistanceSquared = GetAvailableDistanceSquared(food);
-        float waterDistanceSquared = GetAvailableDistanceSquared(water);
+        float foodDistanceSquared = GetReadyDistanceSquared(food, ref nextFoodReadiness, ref foodReady);
+        float waterDistanceSquared = GetReadyDistanceSquared(water, ref nextWaterReadiness, ref waterReady);
 
         bool foodIsNear = !float.IsPositiveInfinity(foodDistanceSquared);
         bool waterIsNear = !float.IsPositiveInfinity(waterDistanceSquared);
@@ -584,7 +508,43 @@ public class BowlInteraction : MonoBehaviour
         if (!CanInteractWith(bowl))
             return float.PositiveInfinity;
 
-        return CareInteractionTarget.NearbyDistanceSquared(bowl.InteractionPoint, catTransform, interactionDistance);
+        if (!CatCareEligibility.CanAccept(catMovement,
+            ReferenceEquals(bowl, food) ? CatCareNeed.Food : CatCareNeed.Water))
+            return float.PositiveInfinity;
+
+        // Cheap stance checks run every frame. Skin clearance is sampled only
+        // for an otherwise usable bowl, at a bounded rate below, and on click.
+        Transform target = bowl.ContactPoint != null ? bowl.ContactPoint : bowl.Bowl;
+        Vector3 delta = target.position - catTransform.position;
+        if (Mathf.Abs(delta.y) > .4f) return float.PositiveInfinity;
+        delta.y = 0f;
+        float radius = .75f * Mathf.Abs(catTransform.lossyScale.y / .5f);
+        return delta.sqrMagnitude <= radius * radius &&
+            CatMealHeadMotion.TryPrepareBowlPose(catMovement, target, out _) ? delta.sqrMagnitude : float.PositiveInfinity;
+    }
+
+    private float GetReadyDistanceSquared(BowlSetup bowl, ref float nextCheck, ref bool ready)
+    {
+        float distance = GetAvailableDistanceSquared(bowl);
+        if (float.IsPositiveInfinity(distance))
+        { ready = false; return distance; }
+        if (Time.unscaledTime >= nextCheck)
+        {
+            nextCheck = Time.unscaledTime + .15f;
+            Physics.SyncTransforms();
+            ready = TryPrepareBowlStart(bowl, out _);
+        }
+        return ready ? distance : float.PositiveInfinity;
+    }
+
+    private bool TryPrepareBowlStart(BowlSetup bowl, out CatActivityStart start)
+    {
+        start = default;
+        return bowl != null && CareInteractionTarget.IsVisibleInRoom(bowl.Bowl, catTransform) &&
+            CatMealHeadMotion.TryPrepareBowlPose(catMovement,
+                bowl.ContactPoint != null ? bowl.ContactPoint : bowl.Bowl, out _) &&
+            CatMealHeadMotion.TryPrepareCareStart(catMovement,
+                bowl.ContactPoint != null ? bowl.ContactPoint : bowl.Bowl, out start);
     }
 
     private bool CanInteractWith(BowlSetup bowl)
@@ -599,15 +559,6 @@ public class BowlInteraction : MonoBehaviour
         if (ReferenceEquals(bowl, water))
             return thirstSystem != null && !thirstSystem.IsDrinking;
 
-        return false;
-    }
-
-    private bool IsSatisfied(BowlSetup bowl)
-    {
-        if(ReferenceEquals(bowl,food))
-            return hungerSystem!=null&&hungerSystem.CurrentHunger>=satisfiedActionThreshold;
-        if(ReferenceEquals(bowl,water))
-            return thirstSystem!=null&&thirstSystem.CurrentThirst>=satisfiedActionThreshold;
         return false;
     }
 
@@ -746,7 +697,7 @@ public class BowlInteraction : MonoBehaviour
 
     private void SetButtonText(string text)
     {
-        text=GameInteractionCopy.Text(text);
+        text=GameInteractionCopy.Action(text);
         if (buttonText != null && buttonText.text != text)
             buttonText.text = text;
 
@@ -758,8 +709,8 @@ public class BowlInteraction : MonoBehaviour
     {
         if(interactionButton!=null && interactionButton.targetGraphic is LowPolyPanelGraphic surface)
         {
-            ModernUiArt.Action(interactionButton);
-            if(buttonText!=null)buttonText.color=Color.white;
+            StorybookHudBottomPresentation.StyleButton(interactionButton,true);
+            if(buttonText!=null)buttonText.color=StorybookHudBottomPresentation.Cream;
             if(buttonShadowText!=null)buttonShadowText.gameObject.SetActive(false);
             return;
         }
@@ -795,8 +746,8 @@ public class BowlInteraction : MonoBehaviour
     {
         if(interactionButton!=null && interactionButton.targetGraphic is LowPolyPanelGraphic surface)
         {
-            ModernUiArt.Action(interactionButton);
-            if(buttonText!=null)buttonText.color=Color.white;
+            StorybookHudBottomPresentation.StyleButton(interactionButton,true);
+            if(buttonText!=null)buttonText.color=StorybookHudBottomPresentation.Cream;
             if(buttonShadowText!=null)buttonShadowText.gameObject.SetActive(false);
             return;
         }

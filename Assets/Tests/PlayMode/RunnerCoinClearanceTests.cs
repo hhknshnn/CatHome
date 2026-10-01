@@ -12,7 +12,7 @@ public sealed class RunnerCoinClearanceTests
     [UnityTest] public IEnumerator EightHundredGeneratedRows_KeepEveryCoinOutsideBuiltHazards()
     {
         yield return SceneManager.LoadSceneAsync("CatRunner",LoadSceneMode.Single);
-        var track=Object.FindFirstObjectByType<CatRunnerTrackManager>();track.enabled=false;
+        var track=Object.FindAnyObjectByType<CatRunnerTrackManager>();track.enabled=false;
         var field=typeof(CatRunnerTrackManager).GetField("activeObjects",BindingFlags.Instance|BindingFlags.NonPublic);
         var items=(System.Collections.Generic.List<CatRunnerTrackObject>)field.GetValue(track);
         for(int i=0;i<800;i++)

@@ -34,7 +34,7 @@ public static class OutdoorArrangementProfile
     {
         {"patio.stone-rug", new Vector4(0,0,.60f,0)},
         {"patio.potted-ferns", new Vector4(-1.25f,0,1.75f,270)},
-        {"patio.herb-trough", new Vector4(-3.49f,0,-.15f,90)},
+        {"patio.herb-trough", new Vector4(-3.29f,0,-.15f,90)},
         {"patio.string-lights", new Vector4(-.80f,0,2.58f,180)},
         {"patio.water-fountain", new Vector4(-2.36f,0,-1.77f,180)},
         {"patio.fire-pit", new Vector4(-2.13f,0,-.65f,270)},

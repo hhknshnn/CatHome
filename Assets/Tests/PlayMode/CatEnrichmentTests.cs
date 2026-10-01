@@ -20,7 +20,7 @@ public sealed class CatEnrichmentTests
         yield return RoomPlayModeSupport.LoadRoomAlone("LivingRoom_Level01");
         typeof(CatHomeSaveSystem).GetField("initialized",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).SetValue(null,false);
         var owned=new List<string>();
-        foreach(var d in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include,FindObjectsSortMode.None))owned.Add(d.ProductId);
+        foreach(var d in Object.FindObjectsByType<StoreProductDisplay>(FindObjectsInactive.Include))owned.Add(d.ProductId);
         owned.Add(HomeStoreService.BallBasketId);owned.Add(HomeStoreService.ScratchPostId);
         var state=HomeStoreSaveState.CreateDefault();state.ownedProductIds=owned.ToArray();state.storedProductIds=owned.FindAll(CatCollectionPolicy.IsCatItem).ToArray();HomeStoreService.ApplySavedState(state);
         yield return null;Physics.SyncTransforms();
@@ -37,7 +37,7 @@ public sealed class CatEnrichmentTests
     {
         yield return Prepare();
         var cat=Object.FindAnyObjectByType<CatMovement>();var controller=cat.GetComponent<CharacterController>();var parent=cat.transform.parent;var scale=cat.transform.localScale;
-        var products=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None);
+        var products=Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include);
         Assert.That(products.Length,Is.EqualTo(15));var failures=new List<string>();
         var report=new System.Text.StringBuilder("product,breed,started,finished,boneMotion,movingPart,exitClear\n");
         var breeds=CatBreedCatalog.Load();Time.timeScale=8;
@@ -76,7 +76,7 @@ public sealed class CatEnrichmentTests
     [UnityTest] public IEnumerator CancelAndOwnership_RestorePhysicsPoseAndToy()
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();
-        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include))
         {
             EquipOnly(activity.StoreProductId);yield return null;
             RoomPlayModeSupport.ProvisionNeeds();var controller=cat.GetComponent<CharacterController>();controller.enabled=false;cat.transform.position=new Vector3(0,0,-1.7f);controller.enabled=true;
@@ -96,7 +96,7 @@ public sealed class CatEnrichmentTests
             Assert.That(activity.IsContentVisible,Is.False);HomeStoreService.TrySetStored(activity.StoreProductId,false);
         }
         HomeStoreService.ApplySavedState(HomeStoreSaveState.CreateDefault());
-        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None))Assert.That(activity.TryStart(cat),Is.False);
+        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include))Assert.That(activity.TryStart(cat),Is.False);
     }
     [UnityTest] public IEnumerator BasketAndScratchPost_KeepRealPlayOnEveryBreed()
     {
@@ -130,7 +130,7 @@ public sealed class CatEnrichmentTests
         var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();cc.enabled=false;cat.transform.position=new Vector3(0,0,-2);cc.enabled=true;
         var energy=RoomPlayModeSupport.ProvisionNeeds();energy.ApplySavedValue(0);
         CatEnrichmentActivity bed=null;
-        foreach(var a in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None))if(a.StoreProductId==HomeStoreService.CloudBedId)bed=a;
+        foreach(var a in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include))if(a.StoreProductId==HomeStoreService.CloudBedId)bed=a;
         Assert.That(bed.TryStart(cat),Is.True,"An exhausted cat can rest");
         float deadline=Time.realtimeSinceStartup+12;
         while(!bed.IsResting&&bed.IsRunning&&Time.realtimeSinceStartup<deadline)yield return null;
@@ -149,7 +149,7 @@ public sealed class CatEnrichmentTests
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();var cc=cat.GetComponent<CharacterController>();
         var poses=new HashSet<CatActivityPose>();var failures=new List<string>();Time.timeScale=1;
-        foreach(var a in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+        foreach(var a in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsInactive.Include))
         {
             if(a.MovingPart==null||a.Mode==CatEnrichmentMode.Tunnel||a.Mode==CatEnrichmentMode.Hide)continue;
             EquipOnly(a.StoreProductId);yield return null;RoomPlayModeSupport.ProvisionNeeds();
@@ -167,7 +167,7 @@ public sealed class CatEnrichmentTests
     {
         yield return Prepare();var cat=Object.FindAnyObjectByType<CatMovement>();
         var controller=cat.GetComponent<CharacterController>();CatEnrichmentActivity tunnel=null;
-        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>(FindObjectsSortMode.None))
+        foreach(var activity in Object.FindObjectsByType<CatEnrichmentActivity>())
             if(activity.Mode==CatEnrichmentMode.Tunnel)tunnel=activity;
         EquipOnly(tunnel.StoreProductId);yield return null;
         var breeds=CatBreedCatalog.Load();var sample=new Mesh();Time.timeScale=2;

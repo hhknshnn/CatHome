@@ -12,16 +12,7 @@ public sealed class PetHeartEffect : MonoBehaviour
     [SerializeField] private Material heartMaterial;
     [SerializeField] private Camera billboardCamera;
     [Header("Emission")]
-    [SerializeField, Range(4, 7)] private int poolSize = 7;
-    [SerializeField, Min(0.05f)] private float emissionInterval = 0.24f;
-    [SerializeField, Min(0.1f)] private float lifetime = 1.35f;
     [SerializeField] private Vector3 headOffset = new Vector3(0f, 0.22f, 0f);
-    [SerializeField, Min(0.1f)] private float heartScaleMultiplier = 1.7f;
-    [SerializeField, Range(0f, 0.15f)] private float heartScaleVariation = 0.12f;
-    [SerializeField, Min(0.001f)] private float startSize = 0.055f;
-    [SerializeField, Min(0.001f)] private float endSize = 0.09f;
-    [SerializeField, Min(0f)] private float riseSpeed = 0.18f;
-    [SerializeField, Min(0f)] private float horizontalSpread = 0.055f;
 
     public const float PresentationInterval = .45f;
     public const float PresentationLifetime = 1.65f;

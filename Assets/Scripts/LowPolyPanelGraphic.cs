@@ -31,9 +31,33 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     [SerializeField] private bool modernFinish;
     [SerializeField] private bool modernAction;
     [SerializeField] private bool playfulAction;
+    [SerializeField] private bool storybookFinish;
+    private bool screenFinish;
+    private bool pearlHudFinish;
+    private bool jewelHudFinish;
+    private Color jewelRim;
     private bool modernPressed;
     private bool modernFocused;
     private bool modernDisabled;
+    private Sprite hudArtwork;
+    private int hudJoystickPart;
+
+    public void ConfigureHudJoystickFinish(int part)
+    {
+        if(hudJoystickPart==part)return;
+        hudJoystickPart=part;SetVerticesDirty();
+    }
+
+    public override Texture mainTexture => hudArtwork != null ? hudArtwork.texture : base.mainTexture;
+
+    /// <summary>Optional HUD artwork on the existing input graphic; no overlay or new hit area.</summary>
+    public void ConfigureHudArtwork(Sprite artwork)
+    {
+        if (hudArtwork == artwork) return;
+        hudArtwork = artwork;
+        SetMaterialDirty();
+        SetVerticesDirty();
+    }
 
     /// <summary>Content surfaces and controls share a thin, cool edge. Unlike
     /// the legacy enamel treatment, the authored corner radius is never
@@ -43,8 +67,12 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     {
         ConfigurePremiumStyle(top, bottom, radius, 1f, Color.clear, Color.clear, Color.clear);
         modernFinish = true;
+        pearlHudFinish = false;
+        jewelHudFinish = false;
         modernAction = action;
         playfulAction = false;
+        storybookFinish = false;
+        screenFinish = false;
         referenceFinish = false;
         softElevation = elevated;
         cornerSegments = 12;
@@ -54,13 +82,31 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     public void ConfigurePlayfulAction(Color top,Color bottom,float radius)
     {ConfigureModernStyle(top,bottom,radius,true,true);playfulAction=true;SetVerticesDirty();}
 
+    /// <summary>Quiet content surfaces and satin actions for the storybook screens.
+    /// This is opt-in; the home HUD keeps its authored enamel finish.</summary>
+    public void ConfigureScreenStyle(Color top, Color bottom, float radius, bool action = false, bool elevated = true)
+    {
+        ConfigureModernStyle(top, bottom, radius, elevated, action);
+        hudPanelFinish = hudPortraitFinish = hudInsetFinish = false;
+        screenFinish = true;
+        SetVerticesDirty();
+    }
+
+    /// <summary>Opt-in title treatment; other screens retain their authored finish.</summary>
+    public void ConfigureStorybookStyle(Color top, Color bottom, float radius)
+    {
+        ConfigureModernStyle(top, bottom, radius, true, true);
+        storybookFinish = true;
+        SetVerticesDirty();
+    }
+
     public void SetInteractionState(bool pressed, bool focused, bool disabled)
     {
         if (modernPressed == pressed && modernFocused == focused && modernDisabled == disabled) return;
         modernPressed = pressed;
         modernFocused = focused;
         modernDisabled = disabled;
-        if (modernFinish) SetVerticesDirty();
+        if (modernFinish || hudArtwork != null) SetVerticesDirty();
     }
 
     public void ConfigureReferenceFinish(bool enabled)
@@ -130,6 +176,12 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
     public void SetPremiumBaseColor(Color baseColor)
     {
+        if (screenFinish)
+        {
+            ConfigureScreenStyle(Color.Lerp(baseColor, Color.white, modernAction ? .12f : .025f),
+                baseColor, cornerCut, modernAction, softElevation);
+            return;
+        }
         if (modernFinish)
         {
             ConfigureModernStyle(Color.Lerp(baseColor, Color.white, modernAction ? .10f : .035f),
@@ -147,6 +199,18 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         Rect rect = GetPixelAdjustedRect();
         if (rect.width <= 0.01f || rect.height <= 0.01f)
             return;
+
+        if (hudJoystickPart != 0)
+        {
+            DrawHudJoystick(vh,rect);
+            return;
+        }
+
+        if (hudArtwork != null)
+        {
+            DrawHudArtwork(vh, rect);
+            return;
+        }
 
         if (modernFinish)
         {
@@ -282,8 +346,102 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         AddInnerGlow(vh,face,Mathf.Max(0,radius-8.5f),segments,.08f,ref frameInsetPoints);
     }
 
+    // Final HUD only: polished colored enamel and a restrained metal rim.
+    public void ConfigureJewelHudStyle(Color top,Color bottom,Color rim,float radius)
+    {
+        ConfigureModernStyle(top,bottom,radius,true,true);
+        hudPanelFinish=hudPortraitFinish=hudInsetFinish=false;
+        jewelHudFinish=true;jewelRim=rim;SetVerticesDirty();
+    }
+    private void DrawJewelHudSurface(VertexHelper vh,Rect rect)
+    {
+        float radius=Mathf.Min(cornerCut,Mathf.Min(rect.width,rect.height)*.5f);
+        Color top=gradientTop,bottom=gradientBottom,rim=jewelRim;
+        if(modernPressed){top=Color.Lerp(top,bottom,.6f);bottom=Color.Lerp(bottom,Color.black,.12f);}
+        if(modernDisabled){top=Color.Lerp(top,new Color32(192,207,215,255),.12f);bottom=Color.Lerp(bottom,new Color32(149,174,194,255),.12f);}
+        for(int layer=3;layer>=1;layer--)
+        {
+            float spread=layer*.9f;
+            var shadow=new Rect(rect.xMin-spread,rect.yMin-spread-3,rect.width+spread*2,rect.height+spread*2);
+            AddPolygon(vh,CreateRoundedRect(ref elevationPoints,shadow,radius+spread,18),new Color(.035f,.065f,.14f,.048f));
+        }
+        float depth=modernPressed?.5f:2.5f;
+        var foot=new Rect(rect.xMin,rect.yMin-depth,rect.width,rect.height);
+        DrawFrameLayer(vh,foot,radius,0,Color.Lerp(bottom,Color.black,.28f),bottom,18);
+        DrawFrameLayer(vh,rect,radius,0,Color.Lerp(rim,new Color32(117,73,24,255),.42f),Color.Lerp(rim,Color.white,.35f),18);
+        DrawFrameLayer(vh,rect,radius,1.1f,Color.Lerp(rim,Color.white,.58f),Color.white,18);
+        DrawFrameLayer(vh,rect,radius,2.1f,Color.Lerp(bottom,Color.black,.35f),rim,18);
+        var face=new Rect(rect.xMin+3.1f,rect.yMin+3.1f,rect.width-6.2f,rect.height-6.2f);
+        AddGradientPolygon(vh,CreateRoundedRect(ref innerPoints,face,Mathf.Max(0,radius-3.1f),18),face,bottom,top);
+        if(!modernPressed)
+        {
+            AddCandyGloss(vh,face,Mathf.Max(0,radius-3.1f),18,.38f,ref glossPoints);
+            // A short highlight at the upper rim, not a perpetual moving sheen.
+            HudSpark(vh,new Vector2(rect.xMin+radius*.7f,rect.yMax-5.5f),3.4f,new Color(1,1,.95f,.78f));
+        }
+    }
+    private static void HudSpark(VertexHelper vh,Vector2 p,float r,Color color)
+    {
+        int n=vh.currentVertCount;
+        vh.AddVert(p,color,Vector2.zero);
+        for(int i=0;i<8;i++)
+        {
+            float a=Mathf.PI*i*.25f;float distance=i%2==0?r:r*.19f;
+            vh.AddVert(p+new Vector2(Mathf.Cos(a)*distance,Mathf.Sin(a)*distance),color,Vector2.zero);
+        }
+        for(int i=0;i<8;i++)vh.AddTriangle(n,n+1+i,n+1+(i+1)%8);
+    }
+
+    // Opt-in Top HUD V2.1 only; no world or other UI surface uses this finish.
+    public void ConfigurePearlHudStyle(Color top, Color bottom, float radius, bool action = false)
+    {
+        ConfigureModernStyle(top,bottom,radius,true,action);
+        hudPanelFinish=hudPortraitFinish=hudInsetFinish=false;
+        pearlHudFinish=true;
+        SetVerticesDirty();
+    }
+    private void DrawPearlHudSurface(VertexHelper vh, Rect rect)
+    {
+        float radius=Mathf.Min(cornerCut,Mathf.Min(rect.width,rect.height)*.5f);
+        Color top=gradientTop,bottom=gradientBottom;
+        if(modernPressed){top=Color.Lerp(top,bottom,.6f);bottom=Color.Lerp(bottom,new Color32(54,101,130,255),.1f);}
+        if(modernDisabled){top=Color.Lerp(top,new Color32(223,236,240,255),.18f);bottom=Color.Lerp(bottom,new Color32(198,218,228,255),.18f);}
+        for(int layer=4;layer>=1;layer--)
+        {
+            float spread=layer*.65f;
+            var shadow=new Rect(rect.xMin-spread,rect.yMin-spread-2.2f,rect.width+2*spread,rect.height+2*spread);
+            AddPolygon(vh,CreateRoundedRect(ref elevationPoints,shadow,radius+spread,18),new Color(.055f,.12f,.23f,.024f));
+        }
+        float depth=modernPressed?.6f:1.8f;
+        var foot=new Rect(rect.xMin,rect.yMin-depth,rect.width,rect.height);
+        Color side=Color.Lerp(bottom,new Color32(109,146,177,255),modernAction?.23f:.18f);
+        DrawFrameLayer(vh,foot,radius,0,side,bottom,18);
+        var edgeBottom=Color.Lerp(bottom,new Color32(101,145,176,255),.20f);
+        DrawFrameLayer(vh,rect,radius,0,edgeBottom,Color.Lerp(top,Color.white,.7f),18);
+        var face=new Rect(rect.xMin+.85f,rect.yMin+.85f,rect.width-1.7f,rect.height-1.7f);
+        AddGradientPolygon(vh,CreateRoundedRect(ref innerPoints,face,Mathf.Max(0,radius-.85f),18),face,bottom,top);
+        if(!modernPressed)AddCandyGloss(vh,face,Mathf.Max(0,radius-1),18,modernAction?.15f:.075f,ref glossPoints);
+        if(modernFocused&&!modernDisabled)
+            DrawFrameLayer(vh,rect,radius,.8f,Color.Lerp(bottom,new Color32(79,181,189,255),.25f),Color.Lerp(top,Color.white,.6f),18);
+    }
+
     private void DrawModernSurface(VertexHelper vh, Rect rect)
     {
+        if (jewelHudFinish) { DrawJewelHudSurface(vh, rect); return; }
+        if (pearlHudFinish) { DrawPearlHudSurface(vh, rect); return; }
+        if (screenFinish) { DrawScreenSurface(vh, rect); return; }
+        if (hudInsetFinish)
+        {
+            float insetRadius=Mathf.Min(cornerCut,Mathf.Min(rect.width,rect.height)*.5f);
+            DrawFrameLayer(vh,rect,insetRadius,0f,new Color32(108,143,188,255),new Color32(13,29,62,255),18);
+            DrawFrameLayer(vh,rect,insetRadius,1.6f,gradientBottom,gradientTop,18);
+            return;
+        }
+        if (storybookFinish)
+        {
+            DrawStorybookSurface(vh, rect);
+            return;
+        }
         float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
         Color bottom = useVerticalGradient ? gradientBottom : color;
         Color top = useVerticalGradient ? gradientTop : color;
@@ -333,6 +491,184 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         }
         DrawFrameLayer(vh, rect, radius, 0, edgeBottom, edgeTop, 12);
         DrawFrameLayer(vh, rect, radius, 1.1f, bottom, top, 12);
+    }
+
+    private void DrawScreenSurface(VertexHelper vh, Rect rect)
+    {
+        float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
+        Color top = gradientTop, bottom = gradientBottom;
+        if (modernDisabled)
+        {
+            top = new Color32(90, 111, 140, 255);
+            bottom = new Color32(64, 83, 112, 255);
+        }
+        else if (modernPressed)
+        {
+            top = Color.Lerp(top, bottom, .72f);
+            bottom = Color.Lerp(bottom, Color.black, .08f);
+        }
+        bool mask = GetComponent<Mask>() != null;
+        if (softElevation && !mask && !modernPressed)
+        {
+            for (int layer = 2; layer >= 1; layer--)
+            {
+                float spread = layer * 1.2f;
+                var shadow = new Rect(rect.xMin-spread, rect.yMin-spread-2f,
+                    rect.width+spread*2f, rect.height+spread*2f);
+                AddPolygon(vh, CreateRoundedRect(ref elevationPoints, shadow, radius+spread, 12),
+                    new Color(.035f, .065f, .13f, .055f));
+            }
+        }
+        if (modernFocused && !modernDisabled && !mask)
+        {
+            var focus = new Rect(rect.xMin-2f, rect.yMin-2f, rect.width+4f, rect.height+4f);
+            DrawFrameLayer(vh, focus, radius+2f, 0f, new Color32(77, 197, 183, 255), new Color32(171, 243, 222, 255), 12);
+        }
+        if (radius < .1f || rect.height < 12f || mask)
+        {
+            AddGradientPolygon(vh, CreateRoundedRect(ref outerPoints, rect, radius, 12), rect, bottom, top);
+            return;
+        }
+        DrawFrameLayer(vh, rect, radius, 0f, Color.Lerp(bottom, new Color32(25, 43, 70, 255), .16f),
+            Color.Lerp(top, Color.white, modernAction ? .28f : .18f), 12);
+        var face = new Rect(rect.xMin+1f, rect.yMin+1f, rect.width-2f, rect.height-2f);
+        AddGradientPolygon(vh, CreateRoundedRect(ref innerPoints, face, Mathf.Max(0, radius-1f), 12), face, bottom, top);
+        if (modernAction && !modernDisabled && !modernPressed)
+            AddCandyGloss(vh, face, Mathf.Max(0, radius-1f), 12, .055f, ref glossPoints);
+    }
+
+    private void DrawStorybookSurface(VertexHelper vh, Rect rect)
+    {
+        if (hudPortraitFinish) { DrawHudPortrait(vh, rect); return; }
+        float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
+        Color top = gradientTop, bottom = gradientBottom;
+        if (hudPanelFinish)
+        {
+            // Saturated enamel colours keep cream labels distinct from the reflected light.
+            if (top.b > top.r && top.b > top.g)
+            { top=hudBackdrop?new Color32(61,91,150,255):new Color32(70,112,187,255); bottom=new Color32(25,42,91,255); }
+            else if (top.g > top.r && top.g > top.b)
+            { top=new Color32(120,238,205,255); bottom=new Color32(23,142,153,255); }
+            else if (top.r > top.g * 1.15f)
+            { top=new Color32(255,151,117,255); bottom=new Color32(222,67,76,255); }
+        }
+        if (modernDisabled)
+        {
+            top = new Color32(80, 99, 123, 255);
+            bottom = new Color32(49, 64, 89, 255);
+        }
+        else if (modernPressed)
+        {
+            top = Color.Lerp(top, bottom, .45f);
+            bottom = Color.Lerp(bottom, Color.black, .08f);
+        }
+        float depth = modernPressed ? 1f : Mathf.Min(7f, rect.height * .075f);
+        if(hudPanelFinish&&hudBackdrop)depth=Mathf.Min(depth,3.5f);
+        for (int layer = 3; layer >= 1; layer--)
+        {
+            float spread = layer * 1.35f;
+            Rect shadow = new Rect(rect.xMin - spread, rect.yMin - depth - spread - 2f,
+                rect.width + spread * 2f, rect.height + spread * 2f);
+            AddPolygon(vh, CreateRoundedRect(ref elevationPoints, shadow, radius + spread, 18),
+                new Color(.025f, .055f, .13f, .045f));
+        }
+        Color side = Color.Lerp(bottom, new Color32(13, 23, 50, 255), .40f);
+        Rect foot = new Rect(rect.xMin, rect.yMin - depth, rect.width, rect.height);
+        DrawFrameLayer(vh, foot, radius, 0f, Color.Lerp(side, Color.black, .18f), side, 18);
+        Color rimTop = Color.Lerp(top, Color.white, modernFocused && !modernDisabled ? .70f : hudPanelFinish?.34f:.50f);
+        Color rimBottom = Color.Lerp(bottom, Color.black, .30f);
+        DrawFrameLayer(vh, rect, radius, 0f, rimBottom, rimTop, 18);
+        if (hudPanelFinish)
+        {
+            DrawFrameLayer(vh, rect, radius, 1.6f, bottom, top, 18);
+            var enamel=new Rect(rect.xMin+2.4f,rect.yMin+2.4f,rect.width-4.8f,rect.height-4.8f);
+            float reflection=modernDisabled?0f:modernPressed?.055f:hudBackdrop?.19f:.36f;
+            DrawHudEnamel(vh,enamel,Mathf.Max(0,radius-2.4f),bottom,top,reflection);
+            if (!modernDisabled)
+            {
+                AddRuntimeGloss(vh,enamel,Mathf.Max(0,radius-2.4f),runtimeGlossPhase,
+                    modernPressed?0f:runtimeGlossStrength);
+            }
+            return;
+        }
+        DrawFrameLayer(vh, rect, radius, 2.2f, bottom, top, 18);
+        Rect highlight = new Rect(rect.xMin + 5f, rect.yMin + 5f, rect.width - 10f, rect.height - 10f);
+        AddCandyGloss(vh, highlight, Mathf.Max(0f, radius - 5f), 18,
+            modernDisabled ? 0f : .055f, ref glossPoints);
+    }
+
+    // Only the home HUD opts into these finishes; other screens retain their authored material.
+    private bool hudPanelFinish, hudPortraitFinish, hudInsetFinish, hudBackdrop;
+    public void ConfigureHudInsetStyle(Color top,Color bottom,float radius)
+    {
+        ConfigureModernStyle(top,bottom,radius);
+        hudInsetFinish=true;SetVerticesDirty();
+    }
+    public void ConfigureHudPanelFinish(bool backdrop=false)
+    { hudPanelFinish = true; hudPortraitFinish = false; hudBackdrop=backdrop; SetVerticesDirty(); }
+    public void ConfigureHudPortraitFinish()
+    { hudPortraitFinish = true; hudPanelFinish = false; SetVerticesDirty(); }
+
+    private void DrawHudJoystick(VertexHelper vh,Rect rect)
+    {
+        float radius=Mathf.Min(rect.width,rect.height)*.5f;
+        bool outer=hudJoystickPart==1,cap=hudJoystickPart==3;
+        DrawFrameLayer(vh,rect,radius,0,new Color32(26,57,115,255),new Color32(150,210,245,255),24);
+        DrawFrameLayer(vh,rect,radius,1.2f,new Color32(116,77,30,255),new Color32(255,236,174,255),24);
+        if(outer)DrawFrameLayer(vh,rect,radius,3.1f,new Color32(23,58,119,255),new Color32(121,181,233,255),24);
+        float inset=outer?5f:2.5f;
+        var inner=new Rect(rect.xMin+inset,rect.yMin+inset,rect.width-inset*2,rect.height-inset*2);
+        DrawHudEnamel(vh,inner,radius-inset,
+            cap?(Color)new Color32(207,178,133,255):outer?(Color)new Color32(28,66,138,255):new Color32(13,132,162,255),
+            cap?(Color)new Color32(255,251,230,255):outer?(Color)new Color32(79,139,209,255):new Color32(119,255,239,255),
+            cap?.42f:outer?.27f:.38f);
+    }
+
+    private void DrawHudPortrait(VertexHelper vh, Rect rect)
+    {
+        float radius = Mathf.Min(rect.width, rect.height) * .5f;
+        var foot = new Rect(rect.xMin, rect.yMin - 3f, rect.width, rect.height);
+        DrawFrameLayer(vh, foot, radius, 0f, new Color32(11,28,52,255), new Color32(31,58,90,255), 24);
+        DrawFrameLayer(vh, rect, radius, 0f, new Color32(25,54,80,255), new Color32(142,193,219,255), 24);
+        var ring=new Rect(rect.xMin+2,rect.yMin+2,rect.width-4,rect.height-4);
+        DrawHudEnamel(vh,ring,radius-2,new Color32(25,141,153,255),new Color32(123,243,212,255),.42f);
+        DrawFrameLayer(vh, rect, radius, 10f, new Color32(22,72,87,255), new Color32(43,132,140,255), 24);
+        DrawFrameLayer(vh, rect, radius, 11.5f, new Color32(74,160,168,255), new Color32(102,207,208,255), 24);
+        // The portrait covers the central well; the light stays on its sculpted mint surround.
+    }
+
+    private static void DrawHudEnamel(VertexHelper vh,Rect rect,float radius,Color bottom,Color top,float reflection)
+    {
+        if(rect.width<=0||rect.height<=0)return;
+        const int rows=24,columns=12;
+        radius=Mathf.Clamp(radius,0,Mathf.Min(rect.width,rect.height)*.5f);
+        int start=vh.currentVertCount;
+        for(int row=0;row<=rows;row++)
+        {
+            // Cosine spacing gives the curved silhouette more samples near its poles.
+            float v=(1f-Mathf.Cos(Mathf.PI*row/rows))*.5f;
+            float y=rect.yMin+v*rect.height;
+            float dy=y<rect.yMin+radius?y-(rect.yMin+radius):y>rect.yMax-radius?y-(rect.yMax-radius):0f;
+            float inset=radius-Mathf.Sqrt(Mathf.Max(0,radius*radius-dy*dy));
+            for(int col=0;col<=columns;col++)
+            {
+                float u=(float)col/columns;
+                float x=Mathf.Lerp(rect.xMin+inset,rect.xMax-inset,u);
+                float surfaceU=(x-rect.xMin)/rect.width;
+                Color baseColor=Color.Lerp(bottom,top,Mathf.SmoothStep(0,1,v));
+                float across=(surfaceU-.22f)/.62f,vertical=(v-.91f)/.24f;
+                float softbox=Mathf.Exp(-across*across-vertical*vertical)*reflection;
+                float edge=Mathf.Exp(-Mathf.Pow((v-.965f)/.028f,2f))*(1f-surfaceU)*reflection*.42f;
+                Color lit=Color.Lerp(baseColor,new Color(0.91f,1f,1f,baseColor.a),Mathf.Clamp01(softbox+edge));
+                AddVertex(vh,new Vector2(x,y),lit);
+                if(row>0&&col>0)
+                {
+                    int current=start+row*(columns+1)+col;
+                    vh.AddTriangle(current-columns-2,current-columns-1,current);
+                    vh.AddTriangle(current-columns-2,current,current-1);
+                }
+            }
+        }
     }
 
     private void DrawFrameLayer(VertexHelper vh,Rect rect,float radius,float inset,Color bottom,Color top,int segments)
@@ -649,6 +985,37 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         AddVertex(vh, b, tint);
         AddVertex(vh, c, tint);
         vh.AddTriangle(start, start + 1, start + 2);
+    }
+
+    private void DrawHudArtwork(VertexHelper vh, Rect rect)
+    {
+        Vector4 outer = UnityEngine.Sprites.DataUtility.GetOuterUV(hudArtwork);
+        Vector4 inner = UnityEngine.Sprites.DataUtility.GetInnerUV(hudArtwork);
+        Vector4 border = hudArtwork.border;
+        // Scale the corner artwork with height, including the much wider dock frame.
+        float scale = Mathf.Min(rect.height / hudArtwork.rect.height,
+            rect.width / Mathf.Max(1f, border.x + border.z));
+        border *= scale;
+        float brightness = modernDisabled ? .56f : modernPressed ? .82f : modernFocused ? 1.06f : 1f;
+        Color tint = new Color(brightness, brightness, brightness, color.a);
+        for (int y = 0; y < 4; y++)
+        {
+            float py = y == 0 ? rect.yMin : y == 1 ? rect.yMin + border.y : y == 2 ? rect.yMax - border.w : rect.yMax;
+            float v = y == 0 ? outer.y : y == 1 ? inner.y : y == 2 ? inner.w : outer.w;
+            for (int x = 0; x < 4; x++)
+            {
+                float px = x == 0 ? rect.xMin : x == 1 ? rect.xMin + border.x : x == 2 ? rect.xMax - border.z : rect.xMax;
+                float u = x == 0 ? outer.x : x == 1 ? inner.x : x == 2 ? inner.z : outer.z;
+                vh.AddVert(new Vector3(px, py), tint, new Vector2(u, v));
+            }
+        }
+        for (int y = 0; y < 3; y++)
+            for (int x = 0; x < 3; x++)
+            {
+                int i = y * 4 + x;
+                vh.AddTriangle(i, i + 4, i + 5);
+                vh.AddTriangle(i, i + 5, i + 1);
+            }
     }
 
     private static void AddVertex(VertexHelper vh, Vector2 position, Color tint)

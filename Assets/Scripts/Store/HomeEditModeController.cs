@@ -124,10 +124,10 @@ public sealed class HomeEditModeController : MonoBehaviour
         if (!activePlacement.IsPreviewValid)
         {
             activePlacement.RevertInvalidPreview();
-            UpdateUi("BLOCKED - RETURNED TO THE LAST SAFE SPOT");
+            UpdateUi(GameLanguageService.Text("edit.returned_safe"));
             return;
         }
-        SaveActivePlacement("PLACED - DRAG AGAIN TO ADJUST");
+        SaveActivePlacement(GameLanguageService.Text("edit.placed_adjust"));
     }
 
     private void SelectPreviousItem() => CycleSelection(-1);
@@ -167,7 +167,7 @@ public sealed class HomeEditModeController : MonoBehaviour
         activePlacement = placement;
         zoneGuide?.Show(placement);
         UpdateUi(activeSnapshot.Stored
-            ? "FROM STORAGE - DRAG IT INTO PLACE"
+            ? GameLanguageService.Text("edit.from_storage")
             : GetPlacementHint(placement));
     }
 
@@ -179,10 +179,10 @@ public sealed class HomeEditModeController : MonoBehaviour
         if (!activePlacement.IsPreviewValid)
         {
             activePlacement.RevertInvalidPreview();
-            UpdateUi("NOT ENOUGH ROOM TO TURN HERE");
+            UpdateUi(GameLanguageService.Text("edit.no_turn_room"));
             return;
         }
-        SaveActivePlacement("TURNED AND SAVED");
+        SaveActivePlacement(GameLanguageService.Text("edit.turned_saved"));
     }
 
     private void SaveActivePlacement(string confirmation)
@@ -192,7 +192,7 @@ public sealed class HomeEditModeController : MonoBehaviour
         HomeProductPlacement selected = activePlacement;
         if (!selected.CommitPreview())
         {
-            UpdateUi("COULD NOT SAVE THIS PLACEMENT");
+            UpdateUi(GameLanguageService.Text("edit.save_failed"));
             return;
         }
         selected.ApplySavedPlacement();
@@ -201,7 +201,7 @@ public sealed class HomeEditModeController : MonoBehaviour
         {
             activePlacement = null;
             zoneGuide?.Hide();
-            UpdateUi("PLACEMENT SAVED");
+            UpdateUi(GameLanguageService.Text("edit.saved"));
             return;
         }
         activePlacement = selected;
@@ -213,7 +213,7 @@ public sealed class HomeEditModeController : MonoBehaviour
     {
         if (activePlacement == null)
         {
-            UpdateUi("CHOOSE AN ITEM TO STORE");
+            UpdateUi(GameLanguageService.Text("edit.choose_to_store"));
             return;
         }
         HomeProductPlacement selected = activePlacement;
@@ -224,14 +224,14 @@ public sealed class HomeEditModeController : MonoBehaviour
         if (!HomeStoreService.TrySetStored(selected.ProductId, true))
         {
             RestoreSnapshot(snapshot);
-            UpdateUi("THIS ITEM CANNOT BE STORED");
+            UpdateUi(GameLanguageService.Text("edit.cannot_store"));
             return;
         }
         activeSnapshot = default;
         zoneGuide?.Hide();
         UpdateUi(attachedStored > 0
-            ? "STORED WITH ITS ATTACHED ITEM"
-            : "STORED - USE THE TITLE ARROWS TO BRING IT BACK");
+            ? GameLanguageService.Text("edit.stored_attached")
+            : GameLanguageService.Text("edit.stored_restore"));
     }
 
     private int StoreAttachedProducts(string supportProductId)
@@ -333,13 +333,13 @@ public sealed class HomeEditModeController : MonoBehaviour
     private void UpdateUi(string overrideHint = null)
     {
         if (roomTitleText != null)
-            roomTitleText.text = "EDIT " + HomeRoomService.CurrentRoom.DisplayName;
+            roomTitleText.text = GameLanguageService.Format("edit.room", HomeRoomService.CurrentRoom.DisplayName);
         if (productTitleText != null)
             productTitleText.text = activePlacement != null
-                ? GetTitle(activePlacement.ProductId) : "SELECT AN ITEM";
+                ? GetTitle(activePlacement.ProductId) : GameLanguageService.Text("edit.select_item");
         if (placementRuleText != null)
             placementRuleText.text = activePlacement != null
-                ? GetPlacementRule(activePlacement) : "TAP TO SELECT";
+                ? GetPlacementRule(activePlacement) : GameLanguageService.Text("edit.tap_select");
         if (placementRuleBadge != null)
             placementRuleBadge.SetPremiumBaseColor(GetPlacementColor(activePlacement));
 
@@ -347,7 +347,7 @@ public sealed class HomeEditModeController : MonoBehaviour
             hintText.text = overrideHint;
         else if (hintText != null && activePlacement == null)
             hintText.text = placements.Count == 0
-                ? "BUY ROOM ITEMS IN THE SHOP TO DECORATE" : "TAP AN ITEM TO MOVE IT";
+                ? GameLanguageService.Text("edit.buy_hint") : GameLanguageService.Text("edit.move_hint");
         else if (hintText != null)
             hintText.text = activePlacement.IsPreviewValid
                 ? GetPlacementHint(activePlacement) : GetBlockedHint(activePlacement);
@@ -358,7 +358,7 @@ public sealed class HomeEditModeController : MonoBehaviour
         if (storeButton != null)
             storeButton.interactable = selected;
         if (storeButtonText != null)
-            storeButtonText.text = "STORE";
+            storeButtonText.text = GameLanguageService.Text("edit.store");
         if (previousItemButton != null)
             previousItemButton.interactable = placements.Count > 0;
         if (nextItemButton != null)
@@ -368,14 +368,14 @@ public sealed class HomeEditModeController : MonoBehaviour
     private static string GetPlacementRule(HomeProductPlacement placement)
     {
         if (placement == null)
-            return "TAP TO SELECT";
+            return GameLanguageService.Text("edit.tap_select");
         switch (placement.PlacementKind)
         {
-            case HomeProductPlacementKind.WallEdge: return "WALL ZONE";
-            case HomeProductPlacementKind.BookshelfOnly: return "BOOKSHELF ONLY";
+            case HomeProductPlacementKind.WallEdge: return GameLanguageService.Text("edit.wall");
+            case HomeProductPlacementKind.BookshelfOnly: return GameLanguageService.Text("edit.bookshelf");
             case HomeProductPlacementKind.ProductSurfaceOnly:
-                return GetTitle(placement.RequiredProductId) + " ONLY";
-            default: return "FLOOR ZONE";
+                return GameLanguageService.Format("edit.surface", GetTitle(placement.RequiredProductId));
+            default: return GameLanguageService.Text("edit.floor");
         }
     }
 
@@ -397,12 +397,12 @@ public sealed class HomeEditModeController : MonoBehaviour
         switch (placement.PlacementKind)
         {
             case HomeProductPlacementKind.WallEdge:
-                return "DRAG ALONG THE LILAC WALL ZONE";
+                return GameLanguageService.Text("edit.drag_wall");
             case HomeProductPlacementKind.BookshelfOnly:
             case HomeProductPlacementKind.ProductSurfaceOnly:
-                return "DRAG ONTO THE GOLD TARGET";
+                return GameLanguageService.Text("edit.drag_surface");
             default:
-                return "DRAG INSIDE THE MINT FLOOR ZONE";
+                return GameLanguageService.Text("edit.drag_floor");
         }
     }
 
@@ -410,21 +410,21 @@ public sealed class HomeEditModeController : MonoBehaviour
     {
         return placement.PlacementKind == HomeProductPlacementKind.BookshelfOnly ||
                placement.PlacementKind == HomeProductPlacementKind.ProductSurfaceOnly
-            ? "THIS ITEM ONLY FITS THE GOLD TARGET"
-            : "BLOCKED - MOVE AWAY FROM OTHER FURNITURE";
+            ? GameLanguageService.Text("edit.only_surface")
+            : GameLanguageService.Text("edit.blocked");
     }
 
     private static string GetUnavailableHint(HomeProductPlacement placement)
     {
         if (!string.IsNullOrEmpty(placement.RequiredProductId))
-            return "PUT " + GetTitle(placement.RequiredProductId) + " BACK IN THE ROOM FIRST";
-        return "THIS ITEM CANNOT BE MOVED RIGHT NOW";
+            return GameLanguageService.Format("edit.restore_required", GetTitle(placement.RequiredProductId));
+        return GameLanguageService.Text("edit.unavailable");
     }
 
     private static string GetTitle(string productId)
     {
         return HomeStoreService.TryGetProduct(productId, out HomeStoreProduct product)
-            ? product.Title : productId;
+            ? product.Title : GameLanguageService.Text("product.unknown");
     }
 
     private void SetVisible(bool visible)

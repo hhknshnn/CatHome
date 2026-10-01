@@ -59,7 +59,7 @@ public static class CatHomeEditPreview
             var planner=host.AddComponent<CatRoomArrangement>();
             var ids=HomeStoreService.Products.Where(p=>CatCollectionPolicy.IsCatItem(p.Id)&&HomeStoreService.IsOwned(p.Id)&&!HomeStoreService.IsStored(p.Id)).Select(p=>p.Id).ToArray();
             if(planner.TryPlan(ids,out var plan))
-                foreach(var product in UnityEngine.Object.FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+                foreach(var product in UnityEngine.Object.FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include))
                     if(product.gameObject.scene==room&&plan.TryGetValue(product.ProductId,out var pose))state.Place(product.MovableRoot,pose.position,Quaternion.Euler(0,pose.yaw,0));
             var cat=room.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<CatMovement>(true)).FirstOrDefault();
             var catalog=CatBreedCatalog.Load();
@@ -99,7 +99,8 @@ public static class CatHomeEditPreview
         var rect=(RectTransform)button.transform;rect.anchorMin=rect.anchorMax=new Vector2(.5f,0);
         ModernUiArt.FlatNavigation(button);JoyfulUiArt.Icon("TogetherPaw",button.targetGraphic.transform,"Paw",-83,0,48);
         U.At(label.rectTransform,23,0,162,42);label.fontSize=21;label.text=GameContentCopy.Text("Kedi komutları","Cat commands");
-        owner.GetComponent<EditorHomePreviewState>().ConfigureDock(rect,safe);
+        StorybookHudBottomPresentation.StyleCompanion(button,AssetDatabase.LoadAssetAtPath<Texture2D>(StorybookTitleBuilder.CatIconPath));
+        owner.GetComponent<EditorHomePreviewState>().ConfigureDock(rect,safe,source);
         // Preview controls are visual only; runtime installs the real connected button.
         foreach(var graphic in root.GetComponentsInChildren<Graphic>(true))graphic.raycastTarget=false;
     }

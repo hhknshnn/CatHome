@@ -290,6 +290,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
             player.SlideStarted += HandleTutorialSlide;
             player.JumpStarted += CatRunnerProgressService.RecordJump;
         }
+        StorybookMiniGamePresentation.Apply(runnerCanvas != null ? runnerCanvas.transform : null);
     }
 
     private static void BindNavigation(Button button, UnityEngine.Events.UnityAction action)
