@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class CatSpeechBubble : MonoBehaviour
 {
-    private const int CurrentVisualVersion = 14;
+    private const int CurrentVisualVersion = 16;
     private const float HoldDuration = 1.75f;
     private const string VisualRootName = "CatSpeechBubbleVisual";
 
@@ -16,6 +16,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
     [SerializeField] private CanvasGroup group;
     [SerializeField] private RectTransform bubble;
     [SerializeField] private TMP_Text label;
+    private TMP_FontAsset legacyFont;
     private Transform head;
     private Camera gameplayCamera;
     private Coroutine routine;
@@ -24,6 +25,15 @@ public sealed class CatSpeechBubble : MonoBehaviour
     private float animationYOffset;
     [SerializeField, HideInInspector] private int visualVersion;
     private readonly RectTransform[] tails = new RectTransform[3];
+
+    readonly Vector3[] screenCorners=new Vector3[4];
+    public bool TryVisibleScreenRect(out Rect rect)
+    {
+        rect=default;
+        if(bubble==null||group==null||group.alpha<.01f||!bubble.gameObject.activeInHierarchy)return false;
+        bubble.GetWorldCorners(screenCorners);
+        rect=Rect.MinMaxRect(screenCorners[0].x,screenCorners[0].y,screenCorners[2].x,screenCorners[2].y);return true;
+    }
 
     public static CatSpeechBubble EnsureOn(CatMovement actor)
     {
@@ -41,6 +51,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
     public bool IsOwnedBy(Object owner) => owner != null && messageOwner == owner && routine != null;
     public void ShowOwned(Object owner, string message) => ShowInternal(owner, GameContentCopy.CatReaction(message));
     public void ShowLocalized(string message) => ShowInternal(null, message);
+    public void ShowLocalizedOwned(Object owner,string message) => ShowInternal(owner,message);
 
     private void ShowInternal(Object owner, string message)
     {
@@ -156,8 +167,8 @@ public sealed class CatSpeechBubble : MonoBehaviour
         label = GetOrAdd<TextMeshProUGUI>(text.gameObject);
         text.gameObject.SetActive(true);
         label.enabled = true;
-        if (label.font == null)
-            label.font = FindPreferredFont();
+        if(label.font==null)label.font=FindPreferredFont();
+        if(legacyFont==null)legacyFont=label.font;
         label.fontSize = 23f;
         label.fontStyle = FontStyles.Bold;
         label.alignment = TextAlignmentOptions.Center;
@@ -174,7 +185,24 @@ public sealed class CatSpeechBubble : MonoBehaviour
             labelRenderer.SetAlpha(1f);
         text.SetAsLastSibling();
         RemoveExtraTextObjects();
+        ApplyLivingSurface();
         visualVersion = CurrentVisualVersion;
+    }
+
+    private void ApplyLivingSurface()
+    {
+        var face=LivingFinalVisuals.Image(bubble,"LivingPearlBubble",0);
+        face.gameObject.SetActive(true);
+        if(WelcomeRefreshPresentation.Conversation!=null)face.sprite=WelcomeRefreshPresentation.Conversation;
+        foreach(string n in new[]{"ShadowTail","ShadowPanel","OrangeTail","OrangeFrame","CreamTail","CreamFace"})
+            bubble.Find(n).gameObject.SetActive(false);
+        LivingPearlVisuals.Stretch(face.rectTransform,new Vector2(9,10));
+        face.rectTransform.anchoredPosition=new Vector2(0,-3);
+        face.transform.SetAsFirstSibling();
+        label.font=PremiumTypography.Body;
+        label.fontStyle=FontStyles.Normal;
+        label.color=WelcomeRefreshPresentation.Ink;
+        WelcomeRefreshPresentation.Emblem(bubble,"ConversationPaw",new Vector2(-125,1),43);
     }
 
     private RectTransform EnsureLayer(
@@ -328,8 +356,8 @@ public sealed class CatSpeechBubble : MonoBehaviour
     private void ResizeToMessage()
     {
         label.ForceMeshUpdate();
-        float width = Mathf.Clamp(label.preferredWidth + 64f, 200f, 320f);
-        float textWidth = width - 48f;
+        float width = Mathf.Clamp(label.preferredWidth + 94f, 240f, 350f);
+        float textWidth = width - 92f;
         Vector2 preferred = label.GetPreferredValues(label.text, textWidth, 60f);
         float height = preferred.y > 30f ? 96f : 78f;
         bubble.sizeDelta = new Vector2(width, height);
@@ -340,7 +368,8 @@ public sealed class CatSpeechBubble : MonoBehaviour
         SetTailY("OrangeTail", -height * .5f - 1f);
         SetTailY("CreamTail", -height * .5f + 5f);
         label.rectTransform.sizeDelta = new Vector2(textWidth, height - 34f);
-        label.rectTransform.anchoredPosition = new Vector2(0f, 2f);
+        label.rectTransform.anchoredPosition = new Vector2(20f, 3f);
+        WelcomeRefreshPresentation.Emblem(bubble,"ConversationPaw",new Vector2(-width*.5f+32,3),43);
     }
 
     private void SetLayerSize(string layerName, Vector2 size)
@@ -374,7 +403,7 @@ public sealed class CatSpeechBubble : MonoBehaviour
             group.alpha = 1f;
             bubble.localScale = Vector3.one;
             bubble.localRotation = Quaternion.identity;
-            animationYOffset = 0f;
+            animationYOffset = LivingRoomSpeech.IsLiving&&!CatRunnerProgressService.ReducedMotion?Mathf.Sin(elapsed*2f)*1.2f:0f;
             UpdatePosition();
             yield return null;
         }
@@ -407,6 +436,8 @@ public sealed class CatSpeechBubble : MonoBehaviour
 
     private void UpdatePosition()
     {
+        if(LivingRoomSpeech.IsLiving&&(IsModalBlocking()||HomeLevelUpCelebrationView.IsAnyOpen||CollectionCompleteCelebrationView.IsAnyOpen||HomeUiFlow.IsHomeControlBlocked))
+        {if(group!=null)group.alpha=0f;return;}
         if (bubble == null || head == null)
             return;
         if (gameplayCamera == null)
@@ -568,3 +599,4 @@ public sealed class CatSpeechBubbleGraphic : MaskableGraphic
     }
 
 }
+

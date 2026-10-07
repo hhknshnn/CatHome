@@ -199,7 +199,7 @@ public static class HomeRoomLayoutPlanner
         var entry = position + Quaternion.Euler(0, yaw, 0) * item.entry; entry.y = 0;
         if (item.requiredFacing.sqrMagnitude > .001f &&
             CatActivityFacing.FacingDot(Quaternion.Euler(0, yaw, 0) * item.requiredFacing,
-                entry, HomeRoomCameraProfile.Position) < .30f)
+                entry, CameraPosition(item.roomId)) < .30f)
         { item.rejection = "camera-facing physical action axis"; return; }
         float sideLimit = OutdoorArrangementProfile.IsReviewedProduct(item.id)?3.70f:KitchenBedroomArrangementProfile.SideLimit(item.id);
         float frontLimit = OutdoorArrangementProfile.IsReviewedProduct(item.id)?-2.20f:KitchenBedroomArrangementProfile.FrontLimit(item.id);
@@ -209,7 +209,7 @@ public static class HomeRoomLayoutPlanner
         if (!item.Hung && item.height >= 1.25f && position.z < .40f) return;
         if (!item.Hung && item.height >= 1.25f && body.min.z < CorridorBack && body.min.x > -3.20f && body.max.x < 3.20f) return;
         item.rejection = "architectural sightline";
-        if (item.architecturalViews != null && item.architecturalViews.Any(view => Hides(view, body))) return;
+        if (item.architecturalViews != null && item.architecturalViews.Any(view => Hides(view, body, item.roomId))) return;
         item.rejection = "door/window volume";
         if (item.protectedFeatures != null && item.protectedFeatures.Any(feature => feature.Intersects(body))) return;
         item.rejection = "fixed obstacle";
@@ -222,11 +222,11 @@ public static class HomeRoomLayoutPlanner
         if (item.hasActivity) views.Add(entry + Vector3.up * .35f);
         // Reserve the visible cat, not merely its pivot: foreground edge activities
         // otherwise leave half the body outside the player's viewport.
-        if (views.Any(view => !FitsPlayerView(view, item.id == "bathroom.toilet" ? .995f : .94f)))
+        if (views.Any(view => !FitsPlayerView(view, item.id == "bathroom.toilet" ? .995f : .94f, item.roomId)))
         { item.rejection = "cat framing"; return; }
         views.Add(position + Vector3.up * Mathf.Max(.18f, item.height * .55f));
         item.rejection = "fixed obstacle sightline";
-        if (item.fixedObstacles != null && views.Any(view => item.fixedObstacles.Any(obstacle => Hides(view, obstacle)))) return;
+        if (item.fixedObstacles != null && views.Any(view => item.fixedObstacles.Any(obstacle => Hides(view, obstacle, item.roomId)))) return;
         item.candidates.Add(new Candidate { position = position, yaw = yaw, entry = entry, body = body, score = score, views = views.ToArray() });
     }
 
@@ -255,31 +255,35 @@ public static class HomeRoomLayoutPlanner
         if (a.hasActivity && !b.Flat && !b.Hung && Contains(bp.body, ap.entry, EntryRadius)) return a.id+" entry "+ap.entry+" in "+b.id;
         if (b.hasActivity && !a.Flat && !a.Hung && Contains(ap.body, bp.entry, EntryRadius)) return b.id+" entry "+bp.entry+" in "+a.id;
         if (a.hasActivity && b.hasActivity && Vector2.Distance(new Vector2(ap.entry.x, ap.entry.z), new Vector2(bp.entry.x, bp.entry.z)) < .62f) return "entry spacing: "+ap.entry+" / "+bp.entry;
-        foreach(var view in ap.views)if(Hides(view,bp.body))return a.id+" view "+view+" hidden by "+b.id;
-        foreach(var view in bp.views)if(Hides(view,ap.body))return b.id+" view "+view+" hidden by "+a.id;
+        foreach(var view in ap.views)if(Hides(view,bp.body,a.roomId))return a.id+" view "+view+" hidden by "+b.id;
+        foreach(var view in bp.views)if(Hides(view,ap.body,b.roomId))return b.id+" view "+view+" hidden by "+a.id;
         return null;
     }
     private static bool Overlap(Bounds a, Bounds b, float gap) =>
         a.min.x < b.max.x + gap && a.max.x + gap > b.min.x && a.min.z < b.max.z + gap && a.max.z + gap > b.min.z;
     private static bool Contains(Bounds body, Vector3 point, float radius) =>
         point.x > body.min.x - radius && point.x < body.max.x + radius && point.z > body.min.z - radius && point.z < body.max.z + radius;
-    private static bool Hides(Vector3 target, Bounds body)
+    static string CameraScene(string roomId) => HomeRoomService.TryGetRoom(roomId, out var room) ? room.ScenePath : null;
+    static Vector3 CameraPosition(string roomId) => HomeRoomCameraProfile.PositionFor(CameraScene(roomId));
+    private static bool Hides(Vector3 target, Bounds body, string roomId)
     {
-        Vector3 delta = target - HomeRoomCameraProfile.Position;
-        return body.IntersectRay(new Ray(HomeRoomCameraProfile.Position, delta.normalized), out float distance) && distance < delta.magnitude - .18f;
+        var camera = CameraPosition(roomId);
+        Vector3 delta = target - camera;
+        return body.IntersectRay(new Ray(camera, delta.normalized), out float distance) && distance < delta.magnitude - .18f;
     }
 
-    public static bool FitsPlayerView(Vector3 center, float horizontalInset = .94f)
+    public static bool FitsPlayerView(Vector3 center, float horizontalInset = .94f, string roomId = null)
     {
-        var inverse = Quaternion.Inverse(Quaternion.Euler(HomeRoomCameraProfile.Angles));
-        float tangent = Mathf.Tan(HomeRoomCameraProfile.FieldOfView * .5f * Mathf.Deg2Rad);
+        string scene = CameraScene(roomId);
+        var inverse = Quaternion.Inverse(Quaternion.Euler(HomeRoomCameraProfile.AnglesFor(scene)));
+        float tangent = Mathf.Tan(HomeRoomCameraProfile.FieldOfViewFor(scene) * .5f * Mathf.Deg2Rad);
         const float aspect = 1920f / 1000f;
         foreach (float x in new[] { -.34f, .34f })
         // Callers use a .35m body center: include the feet at floor height.
         // The old -.18 sample left the lowest .17m outside the framing check.
         foreach (float y in new[] { -.35f, .42f })
         {
-            var local = inverse * (center + new Vector3(x, y, 0) - HomeRoomCameraProfile.Position);
+            var local = inverse * (center + new Vector3(x, y, 0) - HomeRoomCameraProfile.PositionFor(scene));
             float halfHeight = local.z * tangent;
             if (local.z <= 0 || Mathf.Abs(local.x) > halfHeight * aspect * horizontalInset ||
                 local.y > halfHeight * .86f || local.y < -halfHeight * .96f) return false;

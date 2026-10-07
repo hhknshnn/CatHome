@@ -58,7 +58,7 @@ public static class HomeRoomArrangementValidation
             if (activities[i].RoutineEntryPoint == null) continue;
             var entry = activities[i].RoutineEntryPoint.position; entry.y = 0;
             if (!HomeRoomLayoutPlanner.FitsPlayerView(entry + Vector3.up * .35f,
-                activities[i].StoreProductId == "bathroom.toilet" ? .995f : .94f))
+                activities[i].StoreProductId == "bathroom.toilet" ? .995f : .94f, roomId))
                 errors.Add(activities[i].name + ": activity cuts the cat off at the screen edge");
             for (int j = 0; j < i; j++)
             {

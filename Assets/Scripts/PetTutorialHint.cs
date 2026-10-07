@@ -251,9 +251,9 @@ public sealed class PetTutorialHint : MonoBehaviour
         cardSize=new Vector2(360f,204f);
         hintRoot.sizeDelta=new Vector2(cardSize.x+20f,cardSize.y+64f); hintRoot.localScale=Vector3.one;
         cardRoot=CreateRect(hintRoot,"CardFloatRoot",cardSize,Vector2.zero);
-        StorybookScreenStyle.Shell(CreatePanel(cardRoot,"IvoryFrame",cardSize,Vector2.zero,PremiumUiStyle.Ivory,24f,2f),24f);
+        StorybookScreenStyle.RoomShell(CreatePanel(cardRoot,"IvoryFrame",cardSize,Vector2.zero,PremiumUiStyle.Ivory,24f,2f),24f,true);
         lessonProgress=CreateText(cardRoot,"LessonProgress",font,18f,FontStyles.Bold,TextAlignmentOptions.Center,new Vector2(316f,28f),new Vector2(0f,78f));
-        lessonProgress.color=StorybookScreenStyle.Mint;
+        lessonProgress.color=StorybookScreenStyle.Muted;
         lessonProgressStep=-1;
         RectTransform pointer=CreateRect(cardRoot,"TargetPointer",new Vector2(58f,48f),new Vector2(0f,-cardSize.y*.5f-15f));
         pointer.gameObject.AddComponent<CanvasRenderer>(); pointerGraphic=pointer.gameObject.AddComponent<LowPolyTutorialPointerGraphic>(); pointerGraphic.raycastTarget=false;
@@ -265,10 +265,10 @@ public sealed class PetTutorialHint : MonoBehaviour
         var cat=movePortrait.gameObject.AddComponent<Image>(); cat.raycastTarget=false;
         movePortrait.gameObject.AddComponent<SelectedCatPortrait>().Refresh();
         RectTransform joystick=CreateRect(cardRoot,"JoystickCue",new Vector2(190f,48f),new Vector2(40f,20f)); joystick.gameObject.AddComponent<CanvasRenderer>();
-        TMP_Text joy=joystick.gameObject.AddComponent<TextMeshProUGUI>(); joy.font=font; joy.fontSize=34f; joy.alignment=TextAlignmentOptions.Center; joy.text="←  ●  →"; joy.color=StorybookScreenStyle.Mint; joy.raycastTarget=false;
+        TMP_Text joy=joystick.gameObject.AddComponent<TextMeshProUGUI>(); joy.font=font; joy.fontSize=34f; joy.alignment=TextAlignmentOptions.Center; joy.text="←  ●  →"; joy.color=StorybookScreenStyle.Muted; joy.raycastTarget=false;
         RectTransform labelRect=CreateRect(cardRoot,"Instruction",new Vector2(316f,58f),new Vector2(0f,-52f)); labelRect.gameObject.AddComponent<CanvasRenderer>();
         instructionLabel=labelRect.gameObject.AddComponent<TextMeshProUGUI>(); instructionLabel.font=font; instructionLabel.fontSize=23f; instructionLabel.fontStyle=FontStyles.Bold;
-        instructionLabel.alignment=TextAlignmentOptions.Center; instructionLabel.color=StorybookScreenStyle.Cream; instructionLabel.raycastTarget=false;
+        instructionLabel.alignment=TextAlignmentOptions.Center; instructionLabel.color=StorybookScreenStyle.Ink; instructionLabel.raycastTarget=false;
         instructionLabel.enableAutoSizing=true; instructionLabel.fontSizeMin=21f; instructionLabel.fontSizeMax=25f;
         Image tapSurface=cardRoot.gameObject.GetComponent<Image>()??cardRoot.gameObject.AddComponent<Image>(); tapSurface.color=Color.clear; tapSurface.raycastTarget=false;
         Button cardButton=cardRoot.gameObject.GetComponent<Button>()??cardRoot.gameObject.AddComponent<Button>(); cardButton.targetGraphic=tapSurface; cardButton.transition=Selectable.Transition.None; cardButton.onClick.RemoveAllListeners(); cardButton.onClick.AddListener(HandleContinue);
@@ -282,7 +282,7 @@ public sealed class PetTutorialHint : MonoBehaviour
         skipLabelRect.gameObject.AddComponent<CanvasRenderer>();
         TMP_Text skipLabel=skipLabelRect.gameObject.AddComponent<TextMeshProUGUI>();
         skipLabel.font=font; skipLabel.fontSize=23f; skipLabel.fontStyle=FontStyles.Bold;
-        skipLabel.alignment=TextAlignmentOptions.Center; skipLabel.color=StorybookScreenStyle.Cream;
+        skipLabel.alignment=TextAlignmentOptions.Center; skipLabel.color=StorybookScreenStyle.Ink;
         skipLabel.text=GameContentCopy.Text("Turu atla","Skip tour"); skipLabel.raycastTarget=false; skipLabel.characterSpacing=1.2f;
         Button skipButton=skipRect.gameObject.AddComponent<Button>();
         skipButton.targetGraphic=skipFace; skipButton.transition=Selectable.Transition.None;
@@ -346,9 +346,9 @@ public sealed class PetTutorialHint : MonoBehaviour
         
         StorybookScreenStyle.Shell(CreatePanel(spotlightCopy,"CaptionFace",new Vector2(750f,78f),Vector2.zero,PremiumUiStyle.Ivory,24f,2f),24f);
         spotlightTitle=CreateText(spotlightCopy,"Title",font,27f,FontStyles.Bold,TextAlignmentOptions.Center,new Vector2(720f,34f),new Vector2(0f,17f));
-        spotlightTitle.color=StorybookScreenStyle.Cream; spotlightTitle.characterSpacing=.8f; spotlightTitle.outlineWidth=0f;
+        spotlightTitle.color=StorybookScreenStyle.Ink; spotlightTitle.characterSpacing=.8f; spotlightTitle.outlineWidth=0f;
         spotlightSubtitle=CreateText(spotlightCopy,"Subtitle",font,18f,FontStyles.Normal,TextAlignmentOptions.Center,new Vector2(720f,26f),new Vector2(0f,-18f));
-        spotlightSubtitle.color=StorybookScreenStyle.Mint; spotlightSubtitle.characterSpacing=.3f;
+        spotlightSubtitle.color=StorybookScreenStyle.Muted; spotlightSubtitle.characterSpacing=.3f;
         dialogue=GetComponentInChildren<CatDialogueView>(true);
         RectTransform dialogueRoot=dialogue!=null?dialogue.transform as RectTransform:EnsureStretchRect(transform,"CatDialogue");
         if(dialogue==null) dialogue=dialogueRoot.gameObject.AddComponent<CatDialogueView>();

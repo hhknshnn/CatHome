@@ -1,0 +1,21 @@
+# Salon — pati teması ve uyku/balon düzeltmesi
+
+Başlangıç: 2026-10-01 19:23:20 UTC. Kesin 30 dakika sınırı: 19:53:20 UTC. Son durum `QA/SCRATCH_SLEEP_FIX_2026-10-01/closure.json` içindedir.
+
+Yalnız iki problem ele alındı. Mevcut rig, scratch kaynak pozu ve omuz/dirsek eklem çözümü kullanılır. Salon direğinde gerçek distal pati derisinin öndeki noktaları, board collider yüzeyine normal yönde ışınla oturtulur. Sekiz öndeki aday gerçek yüzey derinliğine göre seçilir ve mevcut eklem uzunluklarıyla çözülür. Önceki ırk boyutuyla büyüyen boşluk payı kaldırıldı. Yeni yöntem sadece salon direğinin açıkça seçtiği bayrakla çalışır; diğer oyuncak/oda çağrıları eski yoldadır. Kaynak klipte beraber yükselen dinlenen kol, kendi rig nötr duruşuna doğru hafifçe katlanır; vuruş yapan pati ayrı izlenir. Sol/sağ sıra, iki ritim, kavisli toparlanma, göğüs ve bakış hareketi korunur. Root taşınmaz. Kabul eşiği genişletilmedi; yeni testte gerçek vuruş noktası–mesh mesafesi 3 mm altında istenir, önceki 5 mm ek deri sınırı aynıdır.
+
+Uyku göstergesi balonun gerçek ekran dikdörtgenini okur ve ekranın iç tarafında çakışmayan alana yerleşir. Ay korunur; okunur Zzz yazısı hafif sallanır/yükselir, iki küçük yıldız yavaş faz farkıyla hareket eder. Zzz görünürlüğü döngünün başında sıfırlanmaz. Aynı anda balon/ay/Zzz görünürlük ve dikdörtgen çakışmama kontrolü yapılır. Mevcut uyku pozu/yan yatış, fade giriş/çıkış, gerçek uyanma ve azaltılmış hareket davranışı korunur. Yeni görsel asset veya Blender işlemi gerekmedi.
+
+Testler ayrı güncel QA kayıt kopyasında çalıştı. SMALL Persian, MEDIUM Domestic Shorthair, LARGE Maine Coon; her birinde iki ritim, sol/sağ ikişer vuruş, gerçek eylem düğmesi, tamamlama/kilit bırakma, kök kayması ve örneklenmiş gerçek deri. Uyku testi gerçek yatağa girişten sonra balon + ay + Zzz'yi birlikte denetler; uyanmada fade kapanışı ve hareket kilidi bırakma kontrol edilir. Esas XML `PlayMode-accepted.xml`; ara düzlem/eğri/board denemeleri tarihsel, nihai PASS yerine sayılmaz.
+
+Video: `QA/SCRATCH_SLEEP_FIX_2026-10-01/CatHome_Scratch_Sleep_Fix.mp4`, gerçek Unity Game View, 10 saniye, 1920×1080, 24 FPS, 240 kare, sessiz. Önce scratch, sonra uyuyan kedide balon/ay/Zzz. Hazırlık taşıma geçişleri kesilir; sayaçlar QA kopyasıdır. Başlangıç/döngü/son görüntüler Computer Use ve gerçek Game View kareleriyle incelendi. Oynatım sonucu `video-playback.json`, dosya SHA ve seçilmiş native testler `native-final-manifest.json` içindedir.
+
+HUD, oda sahneleri, diğer oyuncaklar, ekonomi, ownership/kayıt sistemi, kamera, ışık, diğer odalar, 180 konuşma metni ve uyku pozu değiştirilmedi. Ortak temas yardımcısındaki ek yol yalnız salon scratch bayrağıyla etkinleşir. Kayıtlar ve tercihler bu turun başlangıcıyla karşılaştırılır; tarihsel oyuncu kaydı geri yüklenmez. APK/commit/push/yayın yok. Son test sonuçları ve kapanış aşağıda yer alır.
+
+## Nihai sonuç
+
+Son beş native kontrolde **3 PASS / 2 FAIL**. Small tam kontrol, uyku/balon/uyanma ve 10 saniyelik oynatım PASS. Medium/Large işlevsel vuruşlar, iki ritim, tamamlanma ve kilit bırakma geçti; ek 5 mm deri testi Medium **5,0453 mm**, Large **5,0635 mm** nedeniyle FAIL. Small **4,5803 mm**. Bu küçük girişler giderilmiş sayılmaz; dinlenen kol denemesi bunların tek nedenini kanıtlamadı. Vuruş temas mesafesi üç boyutta **0–0,1664 mm**; üçünde kök kayması **0**. Altı tam tırmalama döngüsü, toplam 501 etkin kare ve 496.592 örneklenen deri noktası. Sıfır çakışma veya tüm duruşlar için kabul iddiası yoktur.
+
+Video son uygulamayı içerir: 240 kare / 24 FPS / 10 saniye; Unity oynatımı decoded240, highest239, endedtrue. Windows Media Foundation renk primarileri için varsayılan dönüşüm kaydı verdi; dosya tamamen oynadı, renk ölçümü yapılmadı. Native test sonucu kaydetme mesajları ve geçiş dinleyici uyarıları tarihsel loglarda durur; Console0 iddiası yoktur.
+
+7.934 okunabilen başlangıç dosyasının **7.929'u aynı, 5 mevcut C# değişik, 2 yeni test/metası, eksik 0**. Dört gerçek kayıt + başlangıçtaki eski CP2 ve 16 tercih aynı. Bir eski Eat klibi başlangıçta okunamadı. İki font önbelleği ve EditorSettings yalnız güncel başlangıca döndü. Üç temiz normal sahne, tek etkin dinleyici; Play/QA/derleme/profiler kapalı, Unity açık. Kaydedildi ve 30 dakika sınırında duruldu; yeni iş kendiliğinden başlamaz.

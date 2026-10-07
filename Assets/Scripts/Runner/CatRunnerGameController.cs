@@ -11,6 +11,11 @@ using UnityEngine.UI;
 public sealed class CatRunnerGameController : MonoBehaviour
 {
     public const int MaximumCollisionHits = 3;
+    public const float HomewardDuration = 75f;
+    public bool EndlessMode { get; private set; }
+    public void SetEndlessMode(bool value){if(!IsRunning&&!countdownActive)EndlessMode=value;}
+    public int RouteStage => Mathf.Clamp(Mathf.FloorToInt(elapsed/25f),0,2);
+    public bool ReachedHome => !EndlessMode&&elapsed>=HomewardDuration;
     public const float CurtainDurationSeconds = 30f;
     public const int CoinsPerCurtain = 90;
     public const float MagnetDurationSeconds = 9f;
@@ -291,6 +296,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
             player.JumpStarted += CatRunnerProgressService.RecordJump;
         }
         StorybookMiniGamePresentation.Apply(runnerCanvas != null ? runnerCanvas.transform : null);
+        CozyArcadePresentation.Apply(runnerCanvas != null ? runnerCanvas.transform : null,true);
     }
 
     private static void BindNavigation(Button button, UnityEngine.Events.UnityAction action)
@@ -315,7 +321,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
     private void Update()
     {
-        RunnerEnergyService.Refresh();
+        MiniGameLivesService.Refresh();
         int energyUiSecond = Mathf.FloorToInt(Time.unscaledTime);
         if (energyUiSecond != lastEnergyUiSecond)
         {
@@ -332,6 +338,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
 
         float delta = Time.deltaTime;
         elapsed += delta;
+        if(!EndlessMode&&elapsed>=HomewardDuration){elapsed=HomewardDuration;CompleteRun();return;}
         distance += CurrentSpeed * delta;
         // Bank only points earned while the star is active. Expiry never removes score.
         scoreStarBonus += CurrentSpeed * Mathf.Min(delta,scoreStarRemaining);
@@ -471,7 +478,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
             return;
 
         startActionLocked = true;
-        if (!RunnerEnergyService.TrySpendRunEnergy())
+        if (!MiniGameLivesService.TrySpendLife())
         {
             startActionLocked = false;
             RefreshWelcome();
@@ -665,7 +672,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (welcomeMissionsText != null)
             welcomeMissionsText.text = CatRunnerProgressService.GetDailyMissionSummary();
 
-        bool canStart = RunnerEnergyService.CanStartRun();
+        bool canStart = MiniGameLivesService.CanStartRound();
         if (welcomeStartButton != null)
             welcomeStartButton.interactable = canStart;
         if (welcomeRewardedEnergyButton != null)
@@ -681,14 +688,14 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (welcomeEnergyText == null)
             return;
 
-        if (RunnerEnergyService.IsUnlimited)
+        if (MiniGameLivesService.IsUnlimited)
             welcomeEnergyText.text = GameLanguageService.Text("games.unlimited");
         else if (canStart)
             welcomeEnergyText.text =
-                GameLanguageService.Format("games.lives_ready",RunnerEnergyService.CurrentEnergy,RunnerEnergyService.MaximumEnergy);
+                GameLanguageService.Format("games.lives_ready",MiniGameLivesService.CurrentLives,MiniGameLivesService.MaximumLives);
         else
         {
-            TimeSpan remaining = RunnerEnergyService.TimeUntilNextEnergy();
+            TimeSpan remaining = MiniGameLivesService.TimeUntilNextLife();
             int seconds = Mathf.Max(0, Mathf.CeilToInt((float)remaining.TotalSeconds));
             welcomeEnergyText.text = GameLanguageService.Format("games.next_life",$"{seconds / 60:00}:{seconds % 60:00}");
         }
@@ -916,9 +923,10 @@ public sealed class CatRunnerGameController : MonoBehaviour
         RefreshDoubleCoinsButton();
 
         if (resultTitle != null)
-            resultTitle.text = GameLanguageService.Text("runner.complete");
+            resultTitle.text = ReachedHome ? CozyGameUi.Copy("Evine hoş geldin!", "Welcome home!") : GameLanguageService.Text("runner.complete");
         if (resultMissionsText != null)
-            resultMissionsText.text = CatRunnerProgressService.GetDailyMissionSummary();
+            resultMissionsText.text = EndlessMode?CatRunnerProgressService.GetDailyMissionSummary():
+                GameContentCopy.Text($"{(ReachedHome?"✓":"—")} Eve ulaştın   ·   {(coins>=30?"✓":"—")} 30 jeton   ·   {(collisions==0?"✓":"—")} Temiz koşu",$"{(ReachedHome?"✓":"—")} Reached home   ·   {(coins>=30?"✓":"—")} 30 coins   ·   {(collisions==0?"✓":"—")} Clean run");
         if (newBestBadge != null)
             newBestBadge.SetActive(resultWasNewBest);
         if (resultPanel != null)
@@ -946,7 +954,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         }
         else if (resultTitle != null)
         {
-            resultTitle.text = GameLanguageService.Text("runner.complete");
+            resultTitle.text = ReachedHome ? CozyGameUi.Copy("Evine hoş geldin!", "Welcome home!") : GameLanguageService.Text("runner.complete");
         }
         CatHomeSaveSystem.SaveNow();
         RefreshRetryButton();
@@ -1012,7 +1020,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
             return;
         }
 
-        if (!RunnerEnergyService.TrySpendRunEnergy())
+        if (!MiniGameLivesService.TrySpendLife())
         {
             if (resultTitle != null)
                 resultTitle.text = GameLanguageService.Text("games.no_lives");
@@ -1119,14 +1127,15 @@ public sealed class CatRunnerGameController : MonoBehaviour
     private void RefreshHud()
     {
         if (timerLabel != null)
-            timerLabel.text = FormatElapsed(elapsed);
+            timerLabel.text = FormatElapsed(EndlessMode?elapsed:Mathf.Max(0,HomewardDuration-elapsed));
         if (coinLabel != null)
             coinLabel.text = coins.ToString();
         if (distanceLabel != null)
             distanceLabel.text = Mathf.RoundToInt(distance) + " m";
         if (bonusLabel != null)
             bonusLabel.text =
-                GameContentCopy.Text($"Etap {CurrentCurtainNumber} · Mutluluk +%{CatRunnerSessionContext.CareBonusPercent}",$"Stage {CurrentCurtainNumber} · Happiness +{CatRunnerSessionContext.CareBonusPercent}%");
+                EndlessMode?GameContentCopy.Text($"Sonsuz koşu · Etap {CurrentCurtainNumber}",$"Endless run · Stage {CurrentCurtainNumber}"):
+                GameContentCopy.Text(new[]{"Bahçe yolu","Küçük pazar","Evimizin sokağı"}[RouteStage],new[]{"Garden path","Little market","Our home street"}[RouteStage])+" · "+Mathf.RoundToInt(elapsed/HomewardDuration*100)+"%";
         if (chancesLabel != null)
             chancesLabel.text = GameContentCopy.Text($"Hak {ChancesRemaining}/{MaximumCollisionHits}",$"Chances {ChancesRemaining}/{MaximumCollisionHits}");
         if (scoreLabel != null)
@@ -1192,7 +1201,7 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (retryButton == null)
             return;
 
-        bool canRetry = RunnerEnergyService.CanStartRun();
+        bool canRetry = MiniGameLivesService.CanStartRound();
         if (collectButton != null && resultPanel != null && resultPanel.activeSelf)
             collectButton.interactable = resultSettled && !resultActionLocked && !exiting;
         if (resultGamesButton != null)
@@ -1202,13 +1211,13 @@ public sealed class CatRunnerGameController : MonoBehaviour
         if (label == null)
             return;
 
-        if (RunnerEnergyService.IsUnlimited)
+        if (MiniGameLivesService.IsUnlimited)
             label.text = GameLanguageService.Text("runner.again");
         else if (canRetry)
-            label.text = GameLanguageService.Format("runner.again_lives",RunnerEnergyService.CurrentEnergy);
+            label.text = GameLanguageService.Format("runner.again_lives",MiniGameLivesService.CurrentLives);
         else
         {
-            TimeSpan time = RunnerEnergyService.TimeUntilNextEnergy();
+            TimeSpan time = MiniGameLivesService.TimeUntilNextLife();
             int totalSeconds = Mathf.Max(0, Mathf.CeilToInt((float)time.TotalSeconds));
             label.text = GameLanguageService.Format("games.next_life",$"{totalSeconds / 60:00}:{totalSeconds % 60:00}");
         }

@@ -9,13 +9,13 @@ public static class StorybookReturnPresentation
         if (root == null) return;
         var panel = root.Find("SafeArea/CenteredSafeLayout/AnimationContainer");
         if (panel == null) return;
-        StorybookScreenStyle.Shell(Surface(panel, "ReturnFace"), 32f);
-        StorybookScreenStyle.Inset(Surface(panel, "ReturnBanner"), new Color32(23, 66, 92, 255), 26f);
+        StorybookScreenStyle.RoomShell(Surface(panel, "ReturnFace"), 32f);
+        StorybookScreenStyle.Inset(Surface(panel, "ReturnBanner"), StorybookScreenStyle.MintWash, 26f);
         StorybookScreenStyle.Enamel(Surface(panel, "PortraitMedallion"),
             StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 66f);
-        StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "AwayDurationBadge/Duration", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "ReturnKicker", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "AwayDurationBadge/Duration", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "ReturnKicker", StorybookScreenStyle.Muted);
         StorybookScreenStyle.Card(Surface(panel, "ReturnSummaryBadge/SummaryFace"), 22f);
         StorybookScreenStyle.Text(panel, "ReturnSummaryBadge/ReturnSummary", StorybookScreenStyle.Ink);
         foreach (string name in new[] { "HungerRewardCard", "ThirstRewardCard", "EnergyRewardCard" })

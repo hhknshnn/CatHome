@@ -38,12 +38,12 @@ public static class LocalNotificationService
         utcNow = utcNow.Kind == DateTimeKind.Utc ? utcNow : utcNow.ToUniversalTime();
         Pending.Clear();
 
-        RunnerEnergySaveState energy = RunnerEnergyService.CaptureState(utcNow);
-        if (!RunnerEnergyService.IsUnlimitedAt(utcNow) &&
-            energy.energy < RunnerEnergyService.MaximumEnergy)
+        MiniGameLivesSaveState energy = MiniGameLivesService.CaptureState(utcNow);
+        if (!MiniGameLivesService.IsUnlimitedAt(utcNow) &&
+            energy.lives < MiniGameLivesService.MaximumLives)
         {
-            DateTime ready = utcNow + RunnerEnergyService.TimeUntilNextEnergy(utcNow);
-            Enqueue(EnergyFullId, "RUNNER ENERGY IS READY!", ready);
+            DateTime ready = utcNow + MiniGameLivesService.TimeUntilNextLife(utcNow);
+            Enqueue(EnergyFullId, GameContentCopy.Text("OYUN CANIN HAZIR!", "YOUR GAME LIFE IS READY!"), ready);
         }
 
         DateTime nextMidnight = utcNow.Date.AddDays(1);

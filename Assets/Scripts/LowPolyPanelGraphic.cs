@@ -33,6 +33,10 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
     [SerializeField] private bool playfulAction;
     [SerializeField] private bool storybookFinish;
     private bool screenFinish;
+    private bool roomFrameFinish;
+    private bool cozyFinish;
+    private bool glassFinish;
+    private bool glassOutline;
     private bool pearlHudFinish;
     private bool jewelHudFinish;
     private Color jewelRim;
@@ -73,6 +77,10 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         playfulAction = false;
         storybookFinish = false;
         screenFinish = false;
+        roomFrameFinish = false;
+        cozyFinish = false;
+        glassFinish = false;
+        glassOutline = false;
         referenceFinish = false;
         softElevation = elevated;
         cornerSegments = 12;
@@ -89,6 +97,36 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         ConfigureModernStyle(top, bottom, radius, elevated, action);
         hudPanelFinish = hudPortraitFinish = hudInsetFinish = false;
         screenFinish = true;
+        SetVerticesDirty();
+    }
+
+    public void ConfigureRoomFrame(float radius)
+    {
+        ConfigureScreenStyle(new Color32(219, 164, 95, 255), new Color32(160, 99, 52, 255), radius);
+        roomFrameFinish = true;
+        SetVerticesDirty();
+    }
+
+    /// <summary>Wood-edged, softly glazed controls and upholstered content surfaces.</summary>
+    public void ConfigureCozyStyle(Color top, Color bottom, float radius, bool action = false, bool elevated = true)
+    {
+        ConfigureScreenStyle(top, bottom, radius, action, elevated);
+        cozyFinish = true;
+        SetVerticesDirty();
+    }
+
+    /// <summary>Translucent sea glass with actual thin rings: borders never fill the transparent centre.</summary>
+    public void ConfigureGlassStyle(Color top, Color bottom, float radius, bool action = false, bool elevated = true)
+    {
+        ConfigureScreenStyle(top, bottom, radius, action, elevated);
+        glassFinish = true;
+        SetVerticesDirty();
+    }
+
+    public void ConfigureGlassOutline(Color tint, float radius)
+    {
+        ConfigureGlassStyle(tint, tint, radius, false, false);
+        glassOutline = true;
         SetVerticesDirty();
     }
 
@@ -176,6 +214,18 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
     public void SetPremiumBaseColor(Color baseColor)
     {
+        if (glassFinish)
+        {
+            ConfigureGlassStyle(Color.Lerp(baseColor, StorybookScreenStyle.Mint, .08f),
+                baseColor, cornerCut, modernAction, softElevation);
+            return;
+        }
+        if (cozyFinish)
+        {
+            ConfigureCozyStyle(Color.Lerp(baseColor, StorybookScreenStyle.Cream, .10f),
+                baseColor, cornerCut, modernAction, softElevation);
+            return;
+        }
         if (screenFinish)
         {
             ConfigureScreenStyle(Color.Lerp(baseColor, Color.white, modernAction ? .12f : .025f),
@@ -495,12 +545,24 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
 
     private void DrawScreenSurface(VertexHelper vh, Rect rect)
     {
+        if (glassFinish) { DrawGlassSurface(vh, rect); return; }
         float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
+        if (roomFrameFinish)
+        {
+            var shadow = new Rect(rect.xMin-2f, rect.yMin-5f, rect.width+4f, rect.height+4f);
+            AddPolygon(vh, CreateRoundedRect(ref elevationPoints, shadow, radius+2f, 12), new Color(.12f,.07f,.035f,.22f));
+            DrawFrameLayer(vh, rect, radius, 0, new Color32(116,75,43,255), new Color32(174,119,65,255), 12);
+            DrawFrameLayer(vh, rect, radius, 1.6f, new Color32(168,105,52,255), new Color32(243,197,128,255), 12);
+            DrawFrameLayer(vh, rect, radius, 3.4f, new Color32(181,121,66,255), new Color32(216,154,82,255), 12);
+            DrawFrameLayer(vh, rect, radius, 10.4f, new Color32(225,184,125,255), new Color32(133,87,51,255), 12);
+            DrawFrameLayer(vh, rect, radius, 12f, new Color32(240,204,154,255), new Color32(199,146,86,255), 12);
+            return;
+        }
         Color top = gradientTop, bottom = gradientBottom;
         if (modernDisabled)
         {
-            top = new Color32(90, 111, 140, 255);
-            bottom = new Color32(64, 83, 112, 255);
+            top = cozyFinish ? new Color32(113, 132, 125, 255) : new Color32(237, 243, 231, 255);
+            bottom = cozyFinish ? new Color32(86, 107, 102, 255) : new Color32(209, 224, 213, 255);
         }
         else if (modernPressed)
         {
@@ -522,19 +584,96 @@ public sealed class LowPolyPanelGraphic : MaskableGraphic
         if (modernFocused && !modernDisabled && !mask)
         {
             var focus = new Rect(rect.xMin-2f, rect.yMin-2f, rect.width+4f, rect.height+4f);
-            DrawFrameLayer(vh, focus, radius+2f, 0f, new Color32(77, 197, 183, 255), new Color32(171, 243, 222, 255), 12);
+            DrawFrameLayer(vh, focus, radius+2f, 0f,
+                cozyFinish ? StorybookScreenStyle.Wood : new Color32(77, 197, 183, 255),
+                cozyFinish ? StorybookScreenStyle.Honey : new Color32(171, 243, 222, 255), 12);
         }
-        if (radius < .1f || rect.height < 12f || mask)
+        if (radius < .1f || rect.height < 12f || mask || (cozyFinish && rect.width < 12f))
         {
             AddGradientPolygon(vh, CreateRoundedRect(ref outerPoints, rect, radius, 12), rect, bottom, top);
             return;
         }
-        DrawFrameLayer(vh, rect, radius, 0f, Color.Lerp(bottom, new Color32(25, 43, 70, 255), .16f),
-            Color.Lerp(top, Color.white, modernAction ? .28f : .18f), 12);
-        var face = new Rect(rect.xMin+1f, rect.yMin+1f, rect.width-2f, rect.height-2f);
-        AddGradientPolygon(vh, CreateRoundedRect(ref innerPoints, face, Mathf.Max(0, radius-1f), 12), face, bottom, top);
+        if (cozyFinish)
+        {
+            if (modernAction && !modernPressed)
+            {
+                var foot = new Rect(rect.xMin, rect.yMin-3f, rect.width, rect.height);
+                DrawFrameLayer(vh, foot, radius, 0, new Color32(78, 61, 45, 255), StorybookScreenStyle.Wood, 12);
+            }
+            DrawFrameLayer(vh, rect, radius, 0, new Color32(111, 83, 56, 255), StorybookScreenStyle.Honey, 12);
+            DrawFrameLayer(vh, rect, radius, 1.6f, new Color32(163, 127, 83, 255), new Color32(223, 198, 151, 255), 12);
+            var inset = new Rect(rect.xMin+3.4f, rect.yMin+3.4f, rect.width-6.8f, rect.height-6.8f);
+            AddGradientPolygon(vh, CreateRoundedRect(ref innerPoints, inset, Mathf.Max(0, radius-3.4f), 12), inset, bottom, top);
+            if (modernAction && !modernDisabled && !modernPressed)
+                AddCandyGloss(vh, inset, Mathf.Max(0, radius-3.4f), 12, .085f, ref glossPoints);
+            return;
+        }
+        // The accepted home menu's fine jade edge and ivory inner lip, shared by popup surfaces.
+        DrawFrameLayer(vh, rect, radius, 0f, new Color32(144, 184, 161, 255), new Color32(201, 225, 203, 255), 12);
+        DrawFrameLayer(vh, rect, radius, 1.1f, new Color32(245, 236, 208, 255), new Color32(255, 255, 246, 255), 12);
+        var face = new Rect(rect.xMin+3f, rect.yMin+3f, rect.width-6f, rect.height-6f);
+        AddGradientPolygon(vh, CreateRoundedRect(ref innerPoints, face, Mathf.Max(0, radius-3f), 12), face, bottom, top);
         if (modernAction && !modernDisabled && !modernPressed)
-            AddCandyGloss(vh, face, Mathf.Max(0, radius-1f), 12, .055f, ref glossPoints);
+            AddCandyGloss(vh, face, Mathf.Max(0, radius-3f), 12, .16f, ref glossPoints);
+    }
+
+    private void DrawGlassSurface(VertexHelper vh, Rect rect)
+    {
+        float radius = Mathf.Min(cornerCut, Mathf.Min(rect.width, rect.height) * .5f);
+        if (glassOutline) { DrawGlassRing(vh, rect, radius, 2.5f, gradientBottom, gradientTop); return; }
+        Color top = gradientTop, bottom = gradientBottom;
+        if (modernDisabled)
+        {
+            top = new Color32(86, 116, 115, 230);
+            bottom = new Color32(58, 85, 87, 230);
+        }
+        else if (modernPressed)
+        {
+            top = Color.Lerp(top, bottom, .7f);
+            bottom = Color.Lerp(bottom, new Color32(25, 57, 62, 255), .17f);
+        }
+        bool mask = GetComponent<Mask>() != null;
+        if (softElevation && !mask && !modernPressed)
+        {
+            var shadow = new Rect(rect.xMin - 1f, rect.yMin - 3f, rect.width + 2f, rect.height + 2f);
+            AddPolygon(vh, CreateRoundedRect(ref elevationPoints, shadow, radius + 1f, 16),
+                new Color(.025f, .08f, .085f, modernAction ? .16f : .07f));
+        }
+        AddGradientPolygon(vh, CreateRoundedRect(ref outerPoints, rect, radius, 16), rect, bottom, top);
+        if (radius < .1f || rect.height < 12f || rect.width < 12f || mask) return;
+        bool coral = modernAction && top.r > top.g * 1.2f;
+        Color rimTop = coral ? new Color32(255, 220, 196, 220) : new Color32(184, 238, 224, 195);
+        Color rimBottom = coral ? new Color32(255, 162, 137, 175) : new Color32(126, 201, 193, 145);
+        if (modernDisabled) { rimTop.a *= .35f; rimBottom.a *= .35f; }
+        DrawGlassRing(vh, rect, radius, modernAction ? 1.5f : 1.2f, rimBottom, rimTop);
+        if (modernFocused && !modernDisabled)
+        {
+            var focus = new Rect(rect.xMin - 2f, rect.yMin - 2f, rect.width + 4f, rect.height + 4f);
+            DrawGlassRing(vh, focus, radius + 2f, 2f, StorybookScreenStyle.Mint, StorybookScreenStyle.Cream);
+        }
+        if (modernAction && !modernPressed && !modernDisabled)
+        {
+            var inset = new Rect(rect.xMin + 3f, rect.yMin + 3f, rect.width - 6f, rect.height - 6f);
+            AddCandyGloss(vh, inset, Mathf.Max(0, radius - 3f), 16, .10f, ref glossPoints);
+        }
+    }
+
+    private void DrawGlassRing(VertexHelper vh, Rect rect, float radius, float width, Color bottom, Color top)
+    {
+        var outer = CreateRoundedRect(ref framePoints, rect, radius, 16);
+        var inset = new Rect(rect.xMin + width, rect.yMin + width, rect.width - width * 2, rect.height - width * 2);
+        var inner = CreateRoundedRect(ref frameInsetPoints, inset, Mathf.Max(0, radius - width), 16);
+        int start = vh.currentVertCount;
+        for (int i = 0; i < outer.Length; i++)
+        {
+            vh.AddVert(outer[i], Color.Lerp(bottom, top, Mathf.InverseLerp(rect.yMin, rect.yMax, outer[i].y)), Vector2.zero);
+            vh.AddVert(inner[i], Color.Lerp(bottom, top, Mathf.InverseLerp(rect.yMin, rect.yMax, inner[i].y)), Vector2.zero);
+        }
+        for (int i = 0; i < outer.Length; i++)
+        {
+            int a = start + i * 2, b = start + ((i + 1) % outer.Length) * 2;
+            vh.AddTriangle(a, b, a + 1); vh.AddTriangle(a + 1, b, b + 1);
+        }
     }
 
     private void DrawStorybookSurface(VertexHelper vh, Rect rect)

@@ -92,6 +92,53 @@ public sealed class CompetitionModule
         return new SubmitResult(true, "SCORE SUBMITTED", canonical, safeName);
     }
 
+
+    [CloudCodeFunction("SubmitCozyScore")]
+    public async Task<SubmitResult> SubmitCozyScore(
+        IExecutionContext context, IGameApiClient api, string game, string runId,
+        int claimedScore, string nickname, int[] levelStars, bool[] pearls,
+        int fishCount, int basePoints, int comboSteps, int perfect, int bonus)
+    {
+        RequirePlayer(context);
+        string baseId = runId.EndsWith("-c", StringComparison.Ordinal) ? runId[..^2] : runId;
+        RequireAttemptId(baseId);
+        if (game != "yarn-route" && game != "pond-play")
+            throw new ArgumentException("Unknown cozy game.");
+        if (game == "pond-play" && baseId != runId)
+            throw new ArgumentException("Pond rounds cannot be continued.");
+        int canonical = ValidateCozyMetrics(game, levelStars, pearls, fishCount, basePoints, comboSteps, perfect, bonus);
+        if (canonical != claimedScore)
+            throw new ArgumentException("Cozy score does not match its gameplay metrics.");
+        string safeName = SanitizeNickname(nickname);
+        if (!await BeginAttempt(context, api, game, runId))
+            return new SubmitResult(false, "RUN ALREADY SUBMITTED", canonical, safeName);
+        await WriteAllPeriods(context, api, game, canonical, safeName);
+        return new SubmitResult(true, "SCORE SUBMITTED", canonical, safeName);
+    }
+
+    // The same score breakdown is shown in the local round result.
+    public static int ValidateCozyMetrics(string game, int[] stars, bool[] pearls,
+        int fishCount, int basePoints, int comboSteps, int perfect, int bonus)
+    {
+        if (game == "yarn-route")
+        {
+            if (stars == null || pearls == null || stars.Length != 24 || pearls.Length != 24 ||
+                stars.Any(s => s < 0 || s > 3))
+                throw new ArgumentException("Invalid yarn level results.");
+            int total = 0;
+            for (int i = 0; i < 24; i++)
+                if (stars[i] > 0) total += 100 + i * 25 + stars[i] * 25 + (pearls[i] ? 25 : 0);
+            return total;
+        }
+        if (game != "pond-play" || fishCount < 0 || fishCount > 90 ||
+            basePoints < fishCount * 100 || basePoints > fishCount * 175 ||
+            (basePoints - fishCount * 100) % 15 != 0 ||
+            comboSteps < 0 || comboSteps > fishCount * 4 ||
+            perfect < 0 || perfect > fishCount || bonus < 0 || bonus > fishCount)
+            throw new ArgumentException("Invalid pond catch results.");
+        return basePoints + comboSteps * 25 + perfect * 50 + bonus * 75;
+    }
+
     [CloudCodeFunction("ClaimLeaderboardReward")]
     public async Task<RewardResult> ClaimLeaderboardReward(
         IExecutionContext context,
@@ -103,7 +150,9 @@ public sealed class CompetitionModule
         bool daily = leaderboardId.EndsWith("-daily", StringComparison.Ordinal);
         bool weekly = leaderboardId.EndsWith("-weekly", StringComparison.Ordinal);
         bool knownGame = leaderboardId.StartsWith("cat-runner-", StringComparison.Ordinal) ||
-                         leaderboardId.StartsWith("cat-catch-", StringComparison.Ordinal);
+                         leaderboardId.StartsWith("cat-catch-", StringComparison.Ordinal) ||
+                         leaderboardId.StartsWith("yarn-route-", StringComparison.Ordinal) ||
+                         leaderboardId.StartsWith("pond-play-", StringComparison.Ordinal);
         if (!knownGame || (!daily && !weekly) || string.IsNullOrWhiteSpace(leaderboardVersionId))
             throw new ArgumentException("Unknown reward leaderboard.");
 
@@ -237,3 +286,4 @@ public sealed class ModuleConfig : ICloudCodeSetup
         config.AddGameApiClient();
     }
 }
+

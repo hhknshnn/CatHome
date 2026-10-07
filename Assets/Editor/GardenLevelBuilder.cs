@@ -137,6 +137,9 @@ public static class GardenLevelBuilder
         if (!EditorSceneManager.SaveScene(garden, ScenePath))
             throw new InvalidOperationException("Garden_Level01 could not be saved.");
 
+        RemainingRoomsThemeBuilder.ApplyScene(garden);
+        EditorSceneManager.SaveScene(garden);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(garden, true);

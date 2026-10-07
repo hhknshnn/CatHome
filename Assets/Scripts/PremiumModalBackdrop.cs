@@ -24,7 +24,7 @@ public sealed class PremiumModalBackdrop : MonoBehaviour
         {
             var rect=PremiumUiElements.Rect("ReferenceWorldBlur",transform);PremiumUiElements.Fill(rect);rect.SetAsFirstSibling();
             image=rect.gameObject.AddComponent<RawImage>();image.raycastTarget=false;
-            image.color=new Color(.86f,.86f,.81f,1);
+            image.color=new Color(.93f,.97f,.94f,1);
         }
         if(opaqueCopy==null)
         {

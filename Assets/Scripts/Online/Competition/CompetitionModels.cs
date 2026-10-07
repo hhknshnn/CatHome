@@ -6,7 +6,9 @@ using UnityEngine;
 public enum CompetitionGame
 {
     CatRunner = 0,
-    CatCatch = 1
+    CatCatch = 1,
+    YarnRoute = 2,
+    PondPlay = 3
 }
 
 public enum CompetitionPeriod
@@ -32,6 +34,8 @@ public sealed class CompetitionSnapshot
     public string leaderboardId;
     public string refreshedUtc;
     public bool isOfflineCopy;
+    public bool isPersonalRecord;
+    public int personalBest;
     public int totalPlayers;
     public List<CompetitionEntry> entries = new List<CompetitionEntry>();
     public CompetitionEntry currentPlayer;
@@ -85,7 +89,8 @@ public static class CompetitionRules
 
     public static string BoardId(CompetitionGame game, CompetitionPeriod period)
     {
-        string gameId = game == CompetitionGame.CatCatch ? "cat-catch" : "cat-runner";
+        string gameId;
+        switch(game){case CompetitionGame.CatRunner:gameId="cat-runner";break;case CompetitionGame.CatCatch:gameId="cat-catch";break;case CompetitionGame.YarnRoute:gameId="yarn-route";break;case CompetitionGame.PondPlay:gameId="pond-play";break;default:throw new ArgumentOutOfRangeException(nameof(game));}
         string periodId = period == CompetitionPeriod.Daily
             ? "daily"
             : period == CompetitionPeriod.Weekly ? "weekly" : "all-time";

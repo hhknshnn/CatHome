@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+<defs>
+ <linearGradient id="pearl" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffffff"/><stop offset=".48" stop-color="#fffdf5"/><stop offset="1" stop-color="#ede9dc"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1d89a"/><stop offset=".45" stop-color="#af8851"/><stop offset="1" stop-color="#dfc48b"/></linearGradient>
+ <linearGradient id="moon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8d8"/><stop offset="1" stop-color="#e4bd70"/></linearGradient>
+</defs>
+<!-- Independent speech surface: protected popup atlas is never replaced. -->
+<path d="M74 35H950Q991 35 991 76V215Q991 260 946 260H550L520 291Q512 299 504 291L474 260H78Q33 260 33 215V76Q33 35 74 35Z" fill="#172f43" opacity=".07" transform="translate(0 10)"/>
+<path d="M74 29H950Q991 29 991 70V209Q991 254 946 254H550L520 285Q512 293 504 285L474 254H78Q33 254 33 209V70Q33 29 74 29Z" fill="#172f43" opacity=".12" transform="translate(0 5)"/>
+<path d="M74 25H950Q991 25 991 66V205Q991 250 946 250H548L518 280Q512 286 506 280L476 250H78Q33 250 33 205V66Q33 25 74 25Z" fill="url(#pearl)" stroke="#304a5a" stroke-width="5"/>
+<path d="M77 33H947Q983 33 983 69V202Q983 242 944 242H545L512 275L479 242H80Q41 242 41 202V69Q41 33 77 33Z" fill="none" stroke="url(#gold)" stroke-width="3"/>
+<path d="M80 44H944Q972 44 972 70" fill="none" stroke="#ffffff" stroke-width="4" opacity=".9"/>
+<path d="M48 92V181" fill="none" stroke="#5baeb5" stroke-width="5" stroke-linecap="round"/>
+<path d="M961 204Q955 222 935 226" fill="none" stroke="#5baeb5" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+<!-- High contrast, quiet crescent. No halo or opaque medallion. -->
+<path d="M204 345C165 340 129 369 129 408C129 449 162 480 200 480C228 480 252 464 262 440C236 451 208 444 192 423C174 399 180 365 204 345Z" fill="#1e3c51" opacity=".16" transform="translate(0 4)"/>
+<path d="M204 341C165 336 129 365 129 404C129 445 162 476 200 476C228 476 252 460 262 436C236 447 208 440 192 419C174 395 180 361 204 341Z" fill="url(#moon)" stroke="#294459" stroke-width="5" stroke-linejoin="round"/>
+<path d="M170 357C140 375 137 415 157 440" fill="none" stroke="#fffdf2" stroke-width="4" stroke-linecap="round"/>
+<path d="M376 365L388 395L418 407L388 419L376 449L364 419L334 407L364 395Z" fill="#81c8cb" stroke="#294459" stroke-width="4" stroke-linejoin="round"/>
+<path d="M376 386L382 402L398 407L382 412L376 428L370 412L354 407L370 402Z" fill="#effffc"/>
+<path d="M512 377L520 400L543 408L520 416L512 439L504 416L481 408L504 400Z" fill="url(#moon)" stroke="#294459" stroke-width="3" stroke-linejoin="round"/>
+</svg>

@@ -88,6 +88,7 @@ public sealed class CollectionCompleteCelebrationView : MonoBehaviour
 
     private void Show(CollectionMilestone milestone)
     {
+        LivingPopupSurface.Apply(panel,"Face","reward");
         StorybookScreenStyle.CurrencyIcons(panel);
         current = milestone;
         claimed = false;

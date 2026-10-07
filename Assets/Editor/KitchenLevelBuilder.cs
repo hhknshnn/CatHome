@@ -140,6 +140,10 @@ public static class KitchenLevelBuilder
         if (!EditorSceneManager.SaveScene(kitchen, ScenePath))
             throw new InvalidOperationException("Kitchen_Level01 could not be saved.");
 
+        // The first save establishes the path used by the room camera profile.
+        KitchenThemeBuilder.ApplyScene(kitchen);
+        EditorSceneManager.SaveScene(kitchen);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(kitchen, true);

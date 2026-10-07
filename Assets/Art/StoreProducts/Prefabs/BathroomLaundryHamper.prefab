@@ -361,27 +361,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3bbd3ba77eef53e43ba83b8252da0602, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6709f2806db7288409c6be7cc431ea28, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 8f8ec4f39578b4a4a970ba39390c2bdd, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 386e37846da3ae24e97eb9689290d9d5, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: a692b6c9649d04844b496109af9d3fcb, type: 2}
+      objectReference: {fileID: 2100000, guid: d346fdb8b24a5b149866a68cb8bc21ec, type: 2}
     - target: {fileID: -7511558181221131132, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 2bc3ca279f435244ca8d5b44679ef5fa, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: 919132149155446097, guid: 1a5cf7fac93f8eb42a23b4913c0c7c80, type: 3}
       propertyPath: m_Name
       value: BathroomLaundryHamper_PremiumModel

@@ -175,13 +175,14 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
             spawnedCoins++;
         }
 
-        if (!tutorialSafety)
+        if (!tutorialSafety && (game.EndlessMode || game.ElapsedSeconds < CozyHomewardRules.ClearApproachAt))
         {
             untilNextObstacle -= Time.deltaTime;
             if (untilNextObstacle <= 0f)
             {
                 SpawnObstacleRow();
-                untilNextObstacle += CurrentObstacleInterval;
+                // Short phrases followed by a breathing space; the final approach is clear.
+                untilNextObstacle += game!=null&&!game.EndlessMode&&Mathf.FloorToInt(game.ElapsedSeconds/1.8f)%5==4?3.4f:CurrentObstacleInterval;
             }
 
             untilNextElevation -= Time.deltaTime;
@@ -361,6 +362,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         previousSceneryVariant = lastSceneryVariant;
         lastSceneryVariant = selectedVariant;
         scenery.ApplyVariant(selectedVariant);
+        var route=scenery.GetComponent<CozyRouteSection>();if(route!=null)route.Select(game!=null?game.RouteStage:0);
     }
 
     private void ScrollObjects(float distance)
@@ -508,7 +510,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
         // The rising coins teach the gesture naturally: the apex coin sits over
         // a real obstacle, so following the arc with an upward swipe both earns
         // the coin and clears the hazard.
-        if (!tutorialSafety && coinFormationHasJump && coinFormationIndex == 2)
+        if (!tutorialSafety && (game.EndlessMode || game.ElapsedSeconds < CozyHomewardRules.ClearApproachAt) && coinFormationHasJump && coinFormationIndex == 2)
             SpawnObstacle(coinFormationLane, spawnZ);
 
         coinFormationIndex++;
@@ -534,6 +536,7 @@ public sealed class CatRunnerTrackManager : MonoBehaviour
 
     private void SpawnObstacleRow()
     {
+        if(game!=null&&!game.EndlessMode&&game.ElapsedSeconds>CozyHomewardRules.ClearApproachAt)return;
         if (random == null)
             random = new System.Random(7301);
 

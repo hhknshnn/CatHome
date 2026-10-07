@@ -234,6 +234,7 @@ public sealed class HomeLevelUpCelebrationView : MonoBehaviour
         if (closing)
             return;
 
+        LivingPopupSurface.Apply(panel,"IvoryFace","reward");
         StorybookScreenStyle.CurrencyIcons(panel);
         shownLevel = level;
         rewardClaimed = false;

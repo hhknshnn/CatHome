@@ -349,27 +349,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 4dd38da38c6541648b225987d6627a57, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: ad1133ff17a2850498580535037d47eb, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: cf4af19d131484c4fb19f58d7b1c910d, type: 2}
+      objectReference: {fileID: 2100000, guid: d346fdb8b24a5b149866a68cb8bc21ec, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 1a264fa8dd50c0241b9559bf200452da, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 4c341b3dbda9e89449833172ab534378, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7354b8f86a426904b980eae9fa1f9196, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: 919132149155446097, guid: 97a9caf47e26f7642bf11e66519331dc, type: 3}
       propertyPath: m_Name
       value: LoftFloorCushions_PremiumModel

@@ -18,6 +18,9 @@ public sealed class CatPawSurfacePlan
     // A compact source gesture goes out to the measured contact and retraces
     // that same complete source interval. It never freezes a clipped long tail.
     public bool ReturnToStart;
+    // Salon scratch only: seat the foremost real paw skin on the measured plane.
+    public bool ConformScratchSupport;
+    public float ScratchClearance;
     public static bool ContactPhase(CatActivityPose pose,float phase) => pose==CatActivityPose.Paw ?
         Mathf.Abs(phase-.15f)<.00001f||Mathf.Abs(phase-.20f)<.00001f||Mathf.Abs(phase-.25f)<.00001f :
         Mathf.Abs(phase-.32f)<.00001f||Mathf.Abs(phase-.42f)<.00001f||Mathf.Abs(phase-.52f)<.00001f||Mathf.Abs(phase-.62f)<.00001f;
@@ -87,11 +90,14 @@ public static class CatPawSurfaceCcd
 public sealed class CatPawSurfaceBinding
 {
     readonly CatPawSurfacePlan plan;
+    readonly Transform bindingRoot;
     readonly Transform[][] bones;
+    Transform[][] supportBones;
+    int[] supportIndices;
     public bool IsValid { get; private set; }
     public CatPawSurfaceBinding(CatPawSurfacePlan plan,Transform animationRoot)
     {
-        this.plan=plan;IsValid=plan!=null&&plan.IsValid&&animationRoot!=null;
+        this.plan=plan;bindingRoot=animationRoot;IsValid=plan!=null&&plan.IsValid&&animationRoot!=null;
         if(!IsValid){bones=Array.Empty<Transform[]>();return;}
         bones=new Transform[plan.Vertices.Length][];
         for(int v=0;v<bones.Length;v++)
@@ -102,6 +108,58 @@ public sealed class CatPawSurfaceBinding
             for(int i=0;i<bones[v].Length;i++)
             {bones[v][i]=animationRoot.Find(vertex.influences[i].bonePath);IsValid&=bones[v][i]!=null;}
         }
+    }
+    public Vector3 SupportPoint(Vector3 plane,Vector3 normal)
+    {
+        if(supportBones==null)
+        {
+            var indices=new List<int>();var bound=new List<Transform[]>();
+            // Reuse the exact animation root retained by the binding.
+            for(int v=0;v<plan.Definitions.Length;v++)
+            {
+                var def=plan.Definitions[v];if(!def.distal)continue;
+                var links=new Transform[def.influences.Length];bool valid=true;
+                for(int i=0;i<links.Length;i++){links[i]=bindingRoot.Find(def.influences[i].bonePath);valid&=links[i]!=null;}
+                if(valid){indices.Add(v);bound.Add(links);}
+            }
+            supportIndices=indices.ToArray();supportBones=bound.ToArray();
+        }
+        Vector3 closest=Point();float distance=float.PositiveInfinity;
+        for(int v=0;v<supportIndices.Length;v++)
+        {
+            var def=plan.Definitions[supportIndices[v]];Vector3 point=Vector3.zero;
+            for(int i=0;i<def.influences.Length;i++)point+=supportBones[v][i].TransformPoint(def.influences[i].bindPosition)*def.influences[i].weight;
+            float d=Vector3.Dot(point-plane,normal);if(d<distance){distance=d;closest=point;}
+        }
+        return closest;
+    }
+    int[] boardCandidates;
+    public void ResetBoardSupport()=>boardCandidates=null;
+    Vector3 SupportVertex(int v)
+    {
+        var def=plan.Definitions[supportIndices[v]];Vector3 point=Vector3.zero;
+        for(int i=0;i<def.influences.Length;i++)point+=supportBones[v][i].TransformPoint(def.influences[i].bindPosition)*def.influences[i].weight;
+        return point;
+    }
+    public Vector3 BoardSupportPoint(Vector3 normal,float rayLength)
+    {
+        if(supportBones==null)SupportPoint(plan.Point,normal);
+        if(boardCandidates==null)
+        {
+            var ranked=new List<KeyValuePair<int,float>>();
+            for(int i=0;i<supportIndices.Length;i++)
+            {
+                Vector3 point=SupportVertex(i);
+                if(plan.Collider.Raycast(new Ray(point+normal*rayLength,-normal),out var hit,rayLength*2))
+                    ranked.Add(new KeyValuePair<int,float>(i,Vector3.Dot(point-hit.point,normal)));
+            }
+            ranked.Sort((a,b)=>a.Value.CompareTo(b.Value));
+            boardCandidates=new int[Mathf.Min(8,ranked.Count)];
+            for(int i=0;i<boardCandidates.Length;i++)boardCandidates[i]=ranked[i].Key;
+        }
+        // Keep one real distal vertex for this frame's joint solve. Switching the
+        // effector during each joint iteration makes corrugated contact jitter.
+        return boardCandidates.Length>0?SupportVertex(boardCandidates[0]):SupportPoint(plan.Point,normal);
     }
     public Vector3 Point()
     {
@@ -929,3 +987,4 @@ public static partial class CatPawReachResolver
         return best;
     }
 }
+

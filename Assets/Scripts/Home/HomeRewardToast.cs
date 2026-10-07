@@ -87,8 +87,8 @@ public sealed class HomeRewardToast : MonoBehaviour
             CatBreedShopPanel.IsAnyOpen || RoomSelectorPanel.IsAnyOpen || GamesHubPanel.IsAnyOpen ||
             LeaderboardPanel.IsAnyOpen || PrivacyDataPanel.IsAnyOpen || CatJournalPanel.IsAnyOpen || HomeEditModeController.IsAnyOpen;
         if(blocked){group.alpha=0;return;}
-        if(remaining<=0 && pending.Count>0){message.text=pending.Dequeue();remaining=5f;}
-        if(remaining>0){remaining-=Time.unscaledDeltaTime;group.alpha=1;}else group.alpha=0;
+        if(remaining<=0 && pending.Count>0){message.text=pending.Dequeue();remaining=5f;LivingPopupSurface.Apply(notice,"","success");}
+        if(remaining>0){remaining-=Time.unscaledDeltaTime;group.alpha=LivingRoomSpeech.IsLiving?Mathf.Min(Mathf.Clamp01((5f-remaining)/.22f),Mathf.Clamp01(remaining/.30f)):1;}else group.alpha=0;
     }
 #if UNITY_EDITOR
     public void EditorConfigure(TMP_FontAsset value){font=value;}

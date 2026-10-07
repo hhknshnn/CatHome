@@ -333,6 +333,52 @@ public sealed class ActionReadyReviewTests
         Assert.That(rows.Where(r=>!r.ready||!r.started||!r.completed||!r.released).Select(r=>r.id+": "+r.error),Is.Empty);
         if(SessionState.GetString("CatHome.QA.ReviewOnly","").Length==0)Assert.That(rows.Count,Is.EqualTo(28));
     }
+    [UnityTest,Timeout(600000)] public IEnumerator Bathroom_TwoSizes_RealButtonsComplete()
+    {
+        yield return Boot();
+        yield return (IEnumerator)Call(home,"Room",HomeRoomService.BathroomId);
+        foreach(string breed in new[]{"persian","maine-coon"})
+        {
+            yield return (IEnumerator)Call(home,"Breed",breed);
+            yield return QaBreedReadiness.WaitForSelected(Cat,breed);
+            var actions=CatActivity.Registered.Where(a=>a.gameObject.scene==Cat.gameObject.scene&&!a.IsRetired&&!(a is CatCommandActivity)&&a.IsUnlocked).OrderBy(Id).ToArray();
+            Assert.That(actions.Length,Is.EqualTo(9));
+            foreach(var action in actions)yield return Observe(action);
+        }
+        Write(true);
+        Assert.That(rows.Count,Is.EqualTo(18));
+        Assert.That(rows.Where(r=>!r.ready||!r.started||!r.completed||!r.released).Select(r=>r.breed+"/"+r.id+": "+r.error),Is.Empty);
+    }
+    [UnityTest,Timeout(600000)] public IEnumerator Kitchen_TwoSizes_RealButtonsComplete()
+    {
+        yield return Boot();
+        yield return (IEnumerator)Call(home,"Room",HomeRoomService.KitchenId);
+        foreach(string breed in new[]{"persian","maine-coon"})
+        {
+            yield return (IEnumerator)Call(home,"Breed",breed);
+            yield return QaBreedReadiness.WaitForSelected(Cat,breed);
+            var actions=CatActivity.Registered.Where(a=>a.gameObject.scene==Cat.gameObject.scene&&!a.IsRetired&&!(a is CatCommandActivity)&&a.IsUnlocked).OrderBy(Id).ToArray();
+            Assert.That(actions.Length,Is.EqualTo(11));
+            foreach(var action in actions)yield return Observe(action);
+        }
+        Write(true);
+        Assert.That(rows.Count,Is.EqualTo(22));
+        Assert.That(rows.Where(r=>!r.ready||!r.started||!r.completed||!r.released).Select(r=>r.breed+"/"+r.id+": "+r.error),Is.Empty);
+    }
+    [UnityTest,Timeout(180000)] public IEnumerator Bathroom_WallLitter_TwoSizes_RealButtonsComplete()
+    {
+        yield return Boot();
+        yield return (IEnumerator)Call(home,"Room",HomeRoomService.BathroomId);
+        foreach(string breed in new[]{"persian","maine-coon"})
+        {
+            yield return (IEnumerator)Call(home,"Breed",breed);
+            yield return QaBreedReadiness.WaitForSelected(Cat,breed);
+            yield return Observe(CatActivity.Registered.Single(a=>a.StoreProductId==HomeStoreService.BathroomLitterBoxId&&!a.IsRetired));
+        }
+        Write(true);
+        Assert.That(rows.Count,Is.EqualTo(2));
+        Assert.That(rows.Where(r=>!r.ready||!r.started||!r.completed||!r.released).Select(r=>r.breed+": "+r.error),Is.Empty);
+    }
     [UnityTest,Timeout(1200000)] public IEnumerator EightRooms_EnabledActionsStartWithoutAdvice()
     {
         yield return Boot();

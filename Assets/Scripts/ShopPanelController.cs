@@ -1063,7 +1063,7 @@ public sealed class ShopPanelController : MonoBehaviour
             card.actionText.color = color == BuyColor ? Color.white : JoyfulUiArt.Ink;
         }
         if (card.actionBackground is LowPolyPanelGraphic && card.button != null)
-            StorybookScreenStyle.Action(card.button, color != BuyColor);
+            StorybookScreenStyle.Action(card.button, color != BuyColor, color == BuyColor);
         else if (card.actionBackground != null)
             SetGraphicColor(card.actionBackground, color);
     }

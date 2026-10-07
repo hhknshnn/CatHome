@@ -26,6 +26,8 @@ namespace CatHome.Economy
         CatRunner = 13,
         Onboarding = 14,
         CatCatch = 15,
+        YarnRoute = 16,
+        PondPlay = 17,
     }
 
     /// <summary>Outcome of a single economy transaction.</summary>

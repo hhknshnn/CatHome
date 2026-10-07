@@ -137,6 +137,9 @@ public static class BalconyLevelBuilder
         if (!EditorSceneManager.SaveScene(balcony, ScenePath))
             throw new InvalidOperationException("Balcony_Level01 could not be saved.");
 
+        RemainingRoomsThemeBuilder.ApplyScene(balcony);
+        EditorSceneManager.SaveScene(balcony);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(balcony, true);

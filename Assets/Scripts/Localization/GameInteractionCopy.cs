@@ -87,6 +87,7 @@ public static class GameInteractionCopy
     public static string ProductAction(string productId, string title, string action, bool needsEnergy)
     {
         if (needsEnergy) return title + "\n" + action;
+        if (productId == HomeStoreService.ScratchPostId) return GameContentCopy.Text("Tırmala", "Scratch");
         if (string.IsNullOrEmpty(productId) && (action == Action("JUMP ON SOFA") || action == Action("JUMP ON TABLE"))) return action;
         if (productId == "loft.record-player") return GameLanguageService.Text("record.action");
         if (productId == "patio.potted-ferns") return GameLanguageService.Text("interaction.fern.action");

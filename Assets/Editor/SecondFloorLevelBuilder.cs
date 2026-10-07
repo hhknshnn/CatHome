@@ -134,6 +134,9 @@ public static class SecondFloorLevelBuilder
         if (!EditorSceneManager.SaveScene(loft, ScenePath))
             throw new InvalidOperationException("SecondFloor_Level01 could not be saved.");
 
+        RemainingRoomsThemeBuilder.ApplyScene(loft);
+        EditorSceneManager.SaveScene(loft);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(loft, true);

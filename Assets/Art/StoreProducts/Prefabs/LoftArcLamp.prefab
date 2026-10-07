@@ -332,23 +332,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 167c7fc33e74c524d9b66936de757fa4, type: 2}
+      objectReference: {fileID: 2100000, guid: d346fdb8b24a5b149866a68cb8bc21ec, type: 2}
     - target: {fileID: -7511558181221131132, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: ed75dc93680d5a941ac92ab955e9406c, type: 2}
+      objectReference: {fileID: 2100000, guid: f7064ebb0e80c7c44bc552f12a080eea, type: 2}
     - target: {fileID: 919132149155446097, guid: afaaf1c972eb2ec40bd4ea78484e48d9, type: 3}
       propertyPath: m_Name
       value: LoftArcLamp_PremiumModel

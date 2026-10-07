@@ -85,8 +85,10 @@ public sealed class CatCareSkinClearance
         }
         return support;
     }
-    public bool IsClear(float maximumDepth=.0029f)
+    Matrix4x4 pointDelta=Matrix4x4.identity;
+    public bool IsClear(float maximumDepth=.0029f,Matrix4x4? plannedDelta=null)
     {
+        pointDelta=plannedDelta??Matrix4x4.identity;
         LastVertices=LastRays=LastTriangleTests=LastMetricQueries=0;LastMaximumDepth=0;
         LastRejectedSourceVertex=-1;LastRejectedCollider=null;LastRejectedPoint=Vector3.zero;
         if(!skin.CaptureMatrices())return false;
@@ -112,7 +114,7 @@ public sealed class CatCareSkinClearance
     }
     bool IsVertexClear(int vertex,float maximumDepth)
     {
-        Vector3 point=skin.Point(vertex);LastVertices++;
+        Vector3 point=pointDelta.MultiplyPoint3x4(skin.Point(vertex));LastVertices++;
         if(point.y<floorY-.003f)
         {RejectWitness(vertex,point,null);return false;}
         foreach(var part in parts)

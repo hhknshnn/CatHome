@@ -112,6 +112,7 @@ public sealed class SleepInteraction : MonoBehaviour
         ResolveCatReferences();
         speedParameterHash = Animator.StringToHash(speedAnimatorParameter);
         if(GetComponent<CatSleepContactAlignment>()==null)gameObject.AddComponent<CatSleepContactAlignment>();
+        if(GetComponent<LivingSleepPose>()==null)gameObject.AddComponent<LivingSleepPose>();
         satisfiedActionThreshold = GameBalanceConfig.GetSatisfiedActionThreshold();
         speechBubble = speechBubble != null ? speechBubble : GetComponent<CatSpeechBubble>() ?? gameObject.AddComponent<CatSpeechBubble>();
         sleepEffect = GetComponent<CatSleepZzzEffect>() ?? gameObject.AddComponent<CatSleepZzzEffect>();
@@ -219,6 +220,7 @@ public sealed class SleepInteraction : MonoBehaviour
             CancelForTransition();
             return;
         }
+        LivingRoomSpeech.Show(catMovement,this,"sleep",false);
         sleepCoroutine = StartCoroutine(EnterSleepAfterLieDown());
 
         try
@@ -274,14 +276,17 @@ public sealed class SleepInteraction : MonoBehaviour
             return;
         }
         waking = true;
-        settledOnBed = false;
-        poseDriver = GetComponent<CatActivityAnimation>() ?? gameObject.AddComponent<CatActivityAnimation>();
-        if (!poseDriver.BeginExternal(this)) { CancelForTransition(); return; }
         sleepCoroutine = StartCoroutine(WakeAndLeaveBed());
     }
 
     private IEnumerator WakeAndLeaveBed()
     {
+        var livingPose=GetComponent<LivingSleepPose>();
+        if(LivingRoomSpeech.IsLiving&&livingPose!=null&&livingPose.Weight>0)
+        {livingPose.PrepareWake();yield return new WaitForSeconds(.36f);}
+        settledOnBed=false;
+        poseDriver = GetComponent<CatActivityAnimation>() ?? gameObject.AddComponent<CatActivityAnimation>();
+        if(!poseDriver.BeginExternal(this)){CancelForTransition();yield break;}
         // Keep the source sleep-to-sit and sit-to-stand motion on the mattress
         // before the genuine downward jump releases the movement controller.
         yield return WakePose(CatActivityPose.TowelWake, .85f, true);
@@ -304,6 +309,7 @@ public sealed class SleepInteraction : MonoBehaviour
             catMovement.SetMovementLocked(this, false);
 
         ownsMovementLock = false;
+        LivingRoomSpeech.Show(catMovement,this,"sleep",true);
     }
 
     private IEnumerator WakePose(CatActivityPose pose, float seconds, bool reverse)

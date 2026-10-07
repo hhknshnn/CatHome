@@ -37,6 +37,7 @@ public sealed class LeaderboardPanel : MonoBehaviour
     private bool open;
     private static LeaderboardPanel activeInstance;
     private CatMovement movement;
+    private Button yarnButton,pondButton;
     public static bool IsAnyOpen=>activeInstance!=null && activeInstance.open;
 
     public bool IsOpen => open;
@@ -45,6 +46,7 @@ public sealed class LeaderboardPanel : MonoBehaviour
     {
         activeInstance=this;
         StorybookGamesPresentation.ApplyLeaderboard(transform);
+        BuildFourGameTabs();
         Bind(closeButton, CloseToGames);
         // The scrim only catches rays. A root Button also receives clicks that
         // bubble from labels/empty card space, which used to dismiss this panel.
@@ -56,6 +58,8 @@ public sealed class LeaderboardPanel : MonoBehaviour
         }
         Bind(runnerButton, () => SelectGame(CompetitionGame.CatRunner));
         Bind(catchButton, () => SelectGame(CompetitionGame.CatCatch));
+        Bind(yarnButton,()=>SelectGame(CompetitionGame.YarnRoute));
+        Bind(pondButton,()=>SelectGame(CompetitionGame.PondPlay));
         Bind(dailyButton, () => SelectPeriod(CompetitionPeriod.Daily));
         Bind(weeklyButton, () => SelectPeriod(CompetitionPeriod.Weekly));
         Bind(allTimeButton, () => SelectPeriod(CompetitionPeriod.AllTime));
@@ -159,11 +163,12 @@ public sealed class LeaderboardPanel : MonoBehaviour
     {
         int totalPlayers = snapshot?.totalPlayers ?? 0;
         int count = snapshot?.entries?.Count ?? 0;
-        if(globalSummaryText!=null)globalSummaryText.text=GameContentCopy.Text($"{totalPlayers:N0} oyuncu",$"{totalPlayers:N0} players");
+        bool personal=snapshot!=null&&snapshot.isPersonalRecord;
+        if(globalSummaryText!=null)globalSummaryText.text=personal?CozyGameUi.Copy("Bu cihazdaki rekor","Best on this device"):GameContentCopy.Text($"{totalPlayers:N0} oyuncu",$"{totalPlayers:N0} players");
         if(emptyStateText!=null)
         {
             emptyStateText.gameObject.SetActive(count==0);
-            emptyStateText.text=snapshot != null && snapshot.isOfflineCopy
+            emptyStateText.text=personal?CozyGameUi.Copy(snapshot.personalBest>0?$"En iyi turun\n{snapshot.personalBest:N0} puan":"Henüz bir skor yok.\nİlk turunu tamamla.",snapshot.personalBest>0?$"Your best round\n{snapshot.personalBest:N0} points":"No score yet.\nComplete your first round."):snapshot != null && snapshot.isOfflineCopy
                 ? GameContentCopy.Text("Sıralamaya ulaşılamadı.\nBağlantını kontrol edip yeniden dene.","Rankings are unavailable.\nCheck your connection and try again.")
                 : GameContentCopy.Text("Henüz bir skor yok.\nİlk oyununla listede yerini al.","No scores just yet.\nPlay a game to join the list.");
         }
@@ -193,14 +198,22 @@ public sealed class LeaderboardPanel : MonoBehaviour
             : snapshot != null && snapshot.isOfflineCopy
                 ? (count > 0 ? GameContentCopy.Text("Kaydedilmiş liste · Bağlanınca yenilenir", "Saved list · Refreshes when connected") : GameStatusCopy.Text("RANKINGS UNAVAILABLE"))
                 : GameStatusCopy.Text(CompetitionService.LastMessage));
+        if(personal)
+        {
+            if(ownRankText!=null)ownRankText.text=CozyGameUi.Copy("Kişisel sonuç · Dünya sıralaması değildir","Personal result · Not a world ranking");
+            SetStatus(CozyGameUi.Copy("Çevrimiçi listeye ulaşılamadı. Yerel rekorun korunuyor.","The online board is unavailable. Your local best is saved."));
+        }
     }
 
     private void RefreshHeaders()
     {
         Paint(runnerButton,game==CompetitionGame.CatRunner);Paint(catchButton,game==CompetitionGame.CatCatch);
+        Paint(yarnButton,game==CompetitionGame.YarnRoute);Paint(pondButton,game==CompetitionGame.PondPlay);
+        var names=new[]{CozyGameUi.Copy("Eve Dönüş","Homeward Run"),CozyGameUi.Copy("Pati Avı","Paw Hunt"),CozyGameUi.Copy("Yumak Rotası","Yarn Trail"),CozyGameUi.Copy("Gölet Keyfi","Pond Moments")};
+        var buttons=new[]{runnerButton,catchButton,yarnButton,pondButton};for(int i=0;i<4;i++)if(buttons[i]!=null)CozyGameUi.Label(buttons[i],names[i]);
         Paint(dailyButton,period==CompetitionPeriod.Daily);Paint(weeklyButton,period==CompetitionPeriod.Weekly);Paint(allTimeButton,period==CompetitionPeriod.AllTime);
         if (gameTitle != null)
-            gameTitle.text = game == CompetitionGame.CatRunner ? "CAT RUNNER" : "CAT CATCH";
+            gameTitle.text = names[(int)game];
         if (periodTitle != null)
             periodTitle.text = period == CompetitionPeriod.Daily
                 ? GameContentCopy.Text("Her gün 00.00 UTC’de yenilenir", "Resets daily at 00:00 UTC")
@@ -212,6 +225,21 @@ public sealed class LeaderboardPanel : MonoBehaviour
     private static void Paint(Button button,bool selected)
     {
         StorybookScreenStyle.Action(button, !selected, selected);
+    }
+
+    private void BuildFourGameTabs()
+    {
+        var card=transform.Find("SafeArea/LeaderboardCard");if(card==null)return;
+        yarnButton=CozyGameUi.Button("YarnTab",card,"",Vector2.zero,Vector2.one,null,true);
+        pondButton=CozyGameUi.Button("PondTab",card,"",Vector2.zero,Vector2.one,null,true);
+        var games=new[]{runnerButton,catchButton,yarnButton,pondButton};
+        for(int i=0;i<4;i++)PlaceTab(games[i],-571+i*214,198);
+        PlaceTab(dailyButton,300,140);PlaceTab(weeklyButton,454,140);PlaceTab(allTimeButton,608,140);
+    }
+    private static void PlaceTab(Button button,float x,float width)
+    {
+        if(button==null)return;var r=(RectTransform)button.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,276);r.sizeDelta=new Vector2(width,62);
+        var label=button.GetComponentInChildren<TMP_Text>();if(label!=null){label.enableAutoSizing=true;label.fontSizeMin=17;label.fontSizeMax=23;label.textWrappingMode=TextWrappingModes.NoWrap;}
     }
 
     private void SetControls(bool enabled)

@@ -28,6 +28,8 @@ public sealed class CatRoomArrangement : MonoBehaviour
     readonly bool[] roomGrid=new bool[31*27];
     bool pending=true, cached, applying, preferSaved, compactCentre, referenceDisplay;
     int visits;
+    Vector3 foodZoneAnchor;
+    bool hasFoodZone;
     public string LastFailure { get; private set; }
     public int DisplayedCount { get; private set; }
 
@@ -66,6 +68,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
     {
         if(cached)return;
         items.Clear();furniture.Clear();care.Clear();protectedPoints.Clear();
+        hasFoodZone=false;
         foreach(var p in FindObjectsByType<HomeProductPlacement>(FindObjectsInactive.Include))
         {
             if(p.gameObject.scene!=gameObject.scene)continue;
@@ -80,6 +83,7 @@ public sealed class CatRoomArrangement : MonoBehaviour
         foreach(var t in FindObjectsByType<Transform>(FindObjectsInactive.Include))
         {
             if(t.gameObject.scene!=gameObject.scene)continue;
+            if(t.name=="FoodBowl"){foodZoneAnchor=t.position;foodZoneAnchor.y=0;hasFoodZone=true;}
             if(t.name=="FoodInteractionPoint" || t.name=="WaterInteractionPoint" ||
                t.name=="SleepInteractionPoint" || t.name=="BedInteractionPoint" || t.name=="SofaJumpEntry" || t.name=="TableJumpEntry")
             {care.Add(t.position);protectedPoints.Add(t.position);}
@@ -194,9 +198,21 @@ public sealed class CatRoomArrangement : MonoBehaviour
         for(int z=0;z<10;z++)for(int x=0;x<16;x++)points.Add(new Vector3(-2.35f+x*.35f,0,.6f-z*.35f));
         // The basket is used from its room-facing side, clear of the joystick.
         var yaws=(p.ProductId==HomeStoreService.BallBasketId||(referenceDisplay&&p.ProductId==HomeStoreService.ToyMouseId))?new[]{180f,0f,90f,270f}:new[]{0f,180f,90f,270f};
+        bool foodZone=p.ProductId==HomeStoreService.CeramicBowlId;
+        if(foodZone)
+        {
+            // Bonus food stays beside the actual daily feeding station. Every
+            // bay still passes footprint, entry and connected-path checks.
+            points.Clear();
+            if(hasFoodZone)
+                foreach(float side in new[]{-.80f,-1.05f,-1.30f})
+                foreach(float depth in new[]{0f,-.15f,.10f})
+                    points.Add(foodZoneAnchor+new Vector3(side,0,depth));
+            yaws=new[]{0f,90f,270f};
+        }
         // Relocating the pad must not shuffle the user's other four displays.
         // A saved pose is preferred only when all normal clearance tests pass.
-        if(preferSaved && p.ProductId!=HomeStoreService.NapPillowId && HomeStoreService.TryGetWorldPlacement(p.ProductId,out var savedPosition,out float savedYaw))
+        if(preferSaved && !foodZone && p.ProductId!=HomeStoreService.NapPillowId && HomeStoreService.TryGetWorldPlacement(p.ProductId,out var savedPosition,out float savedYaw))
         {
             points.Insert(0,savedPosition);
             var ordered=new List<float>{savedYaw};foreach(float yaw in yaws)if(Mathf.Abs(Mathf.DeltaAngle(savedYaw,yaw))>.1f)ordered.Add(yaw);

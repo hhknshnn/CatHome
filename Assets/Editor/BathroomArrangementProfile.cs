@@ -13,9 +13,9 @@ public static class BathroomArrangementProfile
         { "bathroom.grooming-cart", new Vector4(-.75f, 0, 2.20f, 0) },
         { "bathroom.towel-storage", new Vector4(2.45f, 0, 2.375f, 0) },
         { "bathroom.tub", new Vector4(2.85f, 0, .35f, 270) },
-        { "bathroom.toilet", new Vector4(3.29118f, 0, -1.30f, 270) },
+        { "bathroom.toilet", new Vector4(2.86f, 0, -1.30f, 270) },
         { "bathroom.laundry-hamper", new Vector4(-1.525f, 0, 2.27108f, 0) },
-        { "bathroom.litter-box", new Vector4(-3.17891f, 0, -1.35f, 270) },
+        { "bathroom.litter-box", new Vector4(-3.18091f, 0, -1.35f, 270) },
         { "bathroom.bath-mat", new Vector4(0, 0, .25f, 0) }
     };
 
@@ -25,7 +25,7 @@ public static class BathroomArrangementProfile
         return HomeRoomLayoutPlanner.PlanAuthored(items, Poses, views, features, obstacles);
     }
 
-    // These two backs are measured against the side-wall panels at X +/-3.6615.
+    // Keep the architectural limits; foreground fixtures move inward for the lower camera.
     public static float SideLimit(string id) => id == "bathroom.litter-box" || id == "bathroom.toilet" ? 3.72f : 3.65f;
 
     // Adjacent cabinets form one furniture bay; their accessible fronts stay open.

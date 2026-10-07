@@ -334,31 +334,31 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 167c7fc33e74c524d9b66936de757fa4, type: 2}
+      objectReference: {fileID: 2100000, guid: d346fdb8b24a5b149866a68cb8bc21ec, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 946b23c09763c9f408c05fce1c6737e7, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 5be24bf3cbd9c6247ba59c544b7f38a7, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: ed75dc93680d5a941ac92ab955e9406c, type: 2}
+      objectReference: {fileID: 2100000, guid: f7064ebb0e80c7c44bc552f12a080eea, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: 'm_Materials.Array.data[6]'
       value: 
-      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: 919132149155446097, guid: 9354b9ca7ca99cc41868f55b2e19ec06, type: 3}
       propertyPath: m_Name
       value: LoftBookStack_PremiumModel
@@ -454,19 +454,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7636f3c580c036a4292e3a4963f795c4, type: 2}
+      objectReference: {fileID: 2100000, guid: d5a48c2e1dfdbf24cb9bab2d3678afdf, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 5aa5c2d6bc27fdc4a85322b897460a9f, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: 919132149155446097, guid: cf0ea0434f7fd0c46bd8a6fe1fd4bff5, type: 3}
       propertyPath: m_Name
       value: Book

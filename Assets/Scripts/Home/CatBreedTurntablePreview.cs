@@ -43,6 +43,7 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
     private RenderTexture renderTexture;
     private Material platformMaterial;
     private Material platformTopMaterial;
+    private Mesh cushionMesh;
     private Animator previewAnimator;
     private Vector3 focus;
     private float distance = 4f;
@@ -95,6 +96,8 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         float platformTop = stage.transform.position.y + .17f;
         model.transform.position += Vector3.up * (platformTop - initial.min.y);
         Bounds bounds = CalculateBounds(model);
+        var cushion = stage.transform.Find("TurntableCushion");
+        if (cushion != null) bounds.Encapsulate(cushion.GetComponent<Renderer>().bounds);
         focus = bounds.center + Vector3.up * bounds.size.y * .02f;
 
         float radius = Mathf.Max(bounds.extents.x, bounds.extents.y, bounds.extents.z);
@@ -207,15 +210,10 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         stage.transform.position = new Vector3(2200f+64f*stageSlot, 0f, 2200f);
 
         Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
-        platformMaterial = new Material(shader) { name = "CatTurntable_Gold" };
-        SetMaterialColor(platformMaterial, new Color32(199, 213, 196, 255));
-        platformTopMaterial = new Material(shader) { name = "CatTurntable_Pearl" };
-        SetMaterialColor(platformTopMaterial, new Color32(255, 249, 239, 255));
-
-        CreatePlatform("TurntableBase", new Vector3(0f, .055f, 0f),
-            new Vector3(1.58f, .11f, 1.58f), platformMaterial);
-        CreatePlatform("TurntableTop", new Vector3(0f, .135f, 0f),
-            new Vector3(1.42f, .06f, 1.42f), platformTopMaterial);
+        platformMaterial = new Material(shader) { name = "CatTurntable_MintCushion" };
+        SetMaterialColor(platformMaterial, new Color32(127, 190, 164, 255));
+        if (platformMaterial.HasProperty("_Smoothness")) platformMaterial.SetFloat("_Smoothness", .12f);
+        CreateCushion();
 
         var cameraObject = new GameObject("CatTurntableCamera", typeof(Camera));
         cameraObject.transform.SetParent(stage.transform, false);
@@ -238,18 +236,36 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
         ApplyLightQuality();
     }
 
-    private void CreatePlatform(string name, Vector3 localPosition, Vector3 localScale,
-        Material material)
+    private void CreateCushion()
     {
-        GameObject platform = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        platform.name = name;
+        // The existing .17 m contact plane and footprint are preserved. Only this isolated
+        // preview prop changes; no gameplay bed or collider is involved.
+        var profile = new Vector2[] { new Vector2(0, -.07f), new Vector2(.61f, -.07f),
+            new Vector2(.73f, -.045f), new Vector2(.79f, .007f), new Vector2(.79f, .072f),
+            new Vector2(.75f, .133f), new Vector2(.65f, .16f), new Vector2(.48f, .17f), new Vector2(0, .17f) };
+        const int segments = 64;
+        var vertices = new Vector3[profile.Length * (segments + 1)];
+        var triangles = new int[(profile.Length - 1) * segments * 6];
+        for (int ring = 0; ring < profile.Length; ring++) for (int i = 0; i <= segments; i++)
+        {
+            float angle = i * Mathf.PI * 2f / segments;
+            float seam = 1f - .012f * Mathf.Pow(Mathf.Abs(Mathf.Cos(angle * 12f)), 12f);
+            float radius = profile[ring].x * seam;
+            vertices[ring * (segments + 1) + i] = new Vector3(Mathf.Cos(angle) * radius, profile[ring].y, Mathf.Sin(angle) * radius);
+        }
+        int index = 0;
+        for (int ring = 0; ring < profile.Length - 1; ring++) for (int i = 0; i < segments; i++)
+        {
+            int a = ring * (segments + 1) + i, b = a + segments + 1;
+            triangles[index++] = a; triangles[index++] = b; triangles[index++] = a + 1;
+            triangles[index++] = a + 1; triangles[index++] = b; triangles[index++] = b + 1;
+        }
+        cushionMesh = new Mesh { name = "Preview mint cushion", vertices = vertices, triangles = triangles };
+        cushionMesh.RecalculateNormals(); cushionMesh.RecalculateBounds();
+        GameObject platform = new GameObject("TurntableCushion", typeof(MeshFilter), typeof(MeshRenderer));
         platform.transform.SetParent(stage.transform, false);
-        platform.transform.localPosition = localPosition;
-        platform.transform.localScale = localScale;
-        platform.GetComponent<Renderer>().sharedMaterial = material;
-        Collider collider = platform.GetComponent<Collider>();
-        if (collider != null)
-            collider.enabled = false;
+        platform.GetComponent<MeshFilter>().sharedMesh = cushionMesh;
+        platform.GetComponent<Renderer>().sharedMaterial = platformMaterial;
         SetLayerRecursively(platform, PreviewLayer);
     }
 
@@ -457,6 +473,8 @@ public sealed class CatBreedTurntablePreview : MonoBehaviour,
             Destroy(platformMaterial);
         if (platformTopMaterial != null)
             Destroy(platformTopMaterial);
+        if (cushionMesh != null) Destroy(cushionMesh);
+        cushionMesh = null;
         if(stageSlot>=0)OccupiedStages.Remove(stageSlot);stageSlot=-1;
         stage = null;
         model = null;

@@ -10,16 +10,24 @@ public static class StorybookRoomsPresentation
         var panel = root.Find("SafeArea/RoomSelectorPanelVisual");
         if (panel == null) return;
 
-        StorybookScreenStyle.Shell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
-        StorybookScreenStyle.Inset(Surface(panel, "HomeSidebar"), new Color32(41, 66, 119, 255), 30f);
+        StorybookScreenStyle.RoomShell(panel.GetComponent<LowPolyPanelGraphic>(), 34f, false, true);
+        StorybookScreenStyle.Card(Surface(panel, "HomeSidebar"), 30f);
+        // Leave a visible room vignette at the left edge; the text keeps its authored width.
+        var sidebar = panel.Find("HomeSidebar") as RectTransform;
+        if (sidebar != null) { sidebar.anchoredPosition = new Vector2(-544f, 0f); sidebar.sizeDelta = new Vector2(370f, 804f); }
+        foreach (string name in new[] { "HomeEmblem", "Title", "HomeLevel", "Subtitle", "RoomHint", "RoomFeedback" })
+        {
+            var item = panel.Find(name) as RectTransform;
+            if (item != null) item.anchoredPosition = new Vector2(-544f, item.anchoredPosition.y);
+        }
         foreach (string name in new[] { "RoomsHeading", "Title", "Subtitle" })
-            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Cream);
+            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Ink);
         foreach (string name in new[] { "HomeLevel", "RoomHint", "RoomFeedback" })
-            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Muted);
 
         var close = panel.Find("CloseButton");
         if (close != null) StorybookScreenStyle.Action(close.GetComponent<Button>(), true);
-        StorybookScreenStyle.Inset(Surface(panel, "RoomScroll/VerticalScrollbar"), new Color32(22, 36, 76, 255), 9f);
+        StorybookScreenStyle.Inset(Surface(panel, "RoomScroll/VerticalScrollbar"), StorybookScreenStyle.MintWash, 9f);
         StorybookScreenStyle.Enamel(Surface(panel, "RoomScroll/VerticalScrollbar/Handle"),
             StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 6f);
 
@@ -38,7 +46,7 @@ public static class StorybookRoomsPresentation
                     break;
                 case "LockBadge":
                     StorybookScreenStyle.Shell(face, 12f);
-                    StorybookScreenStyle.Text(face.transform, "BadgeText", StorybookScreenStyle.Cream);
+                    StorybookScreenStyle.Text(face.transform, "BadgeText", StorybookScreenStyle.Ink);
                     break;
             }
         }
@@ -53,18 +61,18 @@ public static class StorybookRoomsPresentation
 
         // A cream top keeps the large card a quiet content surface; only its lower tint signals the current room.
         if (current)
-            StorybookScreenStyle.Enamel(face, StorybookScreenStyle.Cream, new Color32(213, 239, 225, 255), 22f);
+            StorybookScreenStyle.Selected(face, 22f);
         else
             StorybookScreenStyle.Card(face);
 
         var action = Surface(face.transform, "ActionFace");
         bool visit = unlocked && !current;
         if (visit)
-            StorybookScreenStyle.Enamel(action, StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 17f, false);
+            StorybookScreenStyle.Enamel(action, StorybookScreenStyle.CoralTop, StorybookScreenStyle.Coral, 17f, false);
         else
-            StorybookScreenStyle.Shell(action, 17f);
+            StorybookScreenStyle.Enamel(action, new Color32(102, 142, 132, 255), StorybookScreenStyle.Teal, 17f, false);
         StorybookScreenStyle.Text(face.transform, "ActionFace/ActionText",
-            visit ? StorybookScreenStyle.Ink : StorybookScreenStyle.Cream);
+            StorybookScreenStyle.Cream);
         // The complete card remains the original button. Locked cards still open the store,
         // and the controller continues to suspend its existing feedback during transitions.
     }

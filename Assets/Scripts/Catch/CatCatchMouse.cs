@@ -16,6 +16,8 @@ public sealed class CatCatchMouse : MonoBehaviour
     [SerializeField] private Vector3 localMax = new Vector3(2.45f, 0.12f, 1.7f);
     [SerializeField] private Transform hunter;
     private Vector3 target;
+    private int personality;
+    public void SetPersonality(int value) => personality=Mathf.Clamp(value,0,2);
     private bool active;
     private Vector3 restScale;
     private float graceRemaining;
@@ -195,9 +197,10 @@ public sealed class CatCatchMouse : MonoBehaviour
                 // still cut the corner and the run stays readable.
                 Vector3 radial = away / distance;
                 Vector3 tangent = Vector3.Cross(Vector3.up, radial);
-                Vector3 escape = (radial + tangent * 0.55f).normalized;
+                float side=personality==0?0:personality==1?.65f:.25f;
+                Vector3 escape = (radial + tangent * side).normalized;
                 target = Clamp(transform.position + escape * 1.8f);
-                return fleeSpeed;
+                return fleeSpeed*(personality==2?.84f:1f);
             }
 
             fleeStamina = Mathf.Min(
@@ -218,7 +221,7 @@ public sealed class CatCatchMouse : MonoBehaviour
 
     private void BeginPause()
     {
-        pauseRemaining = Random.Range(0.4f, 1.2f);
+        pauseRemaining = personality==2?Random.Range(.9f,1.4f):Random.Range(.4f,.8f);
     }
 
     private void PickTarget()

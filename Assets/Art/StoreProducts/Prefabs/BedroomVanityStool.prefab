@@ -362,27 +362,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 66930c74da216ac43a8fc2724daf08ab, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: c5d67fcfdf183be4da87497c6442f18f, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6a9a38645dd6ab44c96ab40ab4d4c5f1, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: d0cdd28d5a647024eafb26a31ab8e338, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: -7511558181221131132, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: f8c1eb866786aff4bb18126505661642, type: 2}
+      objectReference: {fileID: 2100000, guid: d346fdb8b24a5b149866a68cb8bc21ec, type: 2}
     - target: {fileID: 919132149155446097, guid: f5d4a6690fd6ff341b0f18deb90df2da, type: 3}
       propertyPath: m_Name
       value: BedroomVanityStool_PremiumModel

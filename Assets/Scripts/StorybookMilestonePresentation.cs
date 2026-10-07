@@ -13,17 +13,17 @@ public static class StorybookMilestonePresentation
         if (face != null && face.GetComponent<LowPolyPanelGraphic>() != null)
         {
             content = face;
-            StorybookScreenStyle.Shell(face.GetComponent<LowPolyPanelGraphic>(), 32f);
+            StorybookScreenStyle.RoomShell(face.GetComponent<LowPolyPanelGraphic>(), 32f);
         }
-        else StorybookScreenStyle.Shell(Surface(panel, "IvoryFace"), 32f);
+        else StorybookScreenStyle.RoomShell(Surface(panel, "IvoryFace"), 32f);
 
         // A light mint stage keeps its illustrated captions readable without changing the existing art layers.
         StorybookScreenStyle.Inset(Surface(content, "MomentStage"), StorybookScreenStyle.Mint, 28f);
         StorybookScreenStyle.Card(Surface(content, "RewardTray"), 22f);
-        StorybookScreenStyle.Text(content, "Title", StorybookScreenStyle.Cream);
+        StorybookScreenStyle.Text(content, "Title", StorybookScreenStyle.Ink);
         bool onboarding = content.Find("LetsPlayButton") != null;
-        StorybookScreenStyle.Text(content, "Subtitle", onboarding ? StorybookScreenStyle.Ink : StorybookScreenStyle.Mint);
-        StorybookScreenStyle.Text(content, "Detail", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.Text(content, "Subtitle", onboarding ? StorybookScreenStyle.Ink : StorybookScreenStyle.Muted);
+        StorybookScreenStyle.Text(content, "Detail", StorybookScreenStyle.Muted);
         StorybookScreenStyle.Text(content, "Reward", StorybookScreenStyle.Ink);
         if (onboarding)
         {
@@ -38,7 +38,7 @@ public static class StorybookMilestonePresentation
             Vector2 position = caption.rectTransform.anchoredPosition;
             bool onStage = caption.transform.parent.name == "MomentStage" || position.x < -200f;
             caption.color = onStage ? StorybookScreenStyle.Ink
-                : position.y > 150f ? StorybookScreenStyle.Mint : StorybookScreenStyle.Cream;
+                : position.y > 150f ? StorybookScreenStyle.Muted : StorybookScreenStyle.Ink;
             if (onboarding && Mathf.Abs(position.x - 176f) < .1f && Mathf.Abs(position.y + 134f) < .1f)
             {
                 var copy = caption.GetComponent<BilingualCopyLabel>();

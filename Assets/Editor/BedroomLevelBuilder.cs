@@ -139,6 +139,9 @@ public static class BedroomLevelBuilder
         if (!EditorSceneManager.SaveScene(bedroom, ScenePath))
             throw new InvalidOperationException("Bedroom_Level01 could not be saved.");
 
+        RemainingRoomsThemeBuilder.ApplyScene(bedroom);
+        EditorSceneManager.SaveScene(bedroom);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(bedroom, true);

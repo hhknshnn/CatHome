@@ -197,10 +197,16 @@ public sealed class WhileYouWereAwayPopup : MonoBehaviour
             ? FormatNeedValues(summary.EnergyBefore, summary.EnergyAfter)
             : FormatNeed("ENERGY", summary.EnergyBefore, summary.EnergyAfter);
         summaryText.text = SelectSummaryCopy(summary);
+        WelcomeGlossPresentation.Need(animationContainer, "HungerRewardCard", summary.HungerAfter, new Color32(245,110,100,255));
+        WelcomeGlossPresentation.Need(animationContainer, "ThirstRewardCard", summary.ThirstAfter, new Color32(55,176,186,255));
+        WelcomeGlossPresentation.Need(animationContainer, "EnergyRewardCard", summary.EnergyAfter, new Color32(153,119,217,255));
     }
 
     private void Show()
     {
+        LivingPopupSurface.Apply(animationContainer,"ReturnFace","welcome");
+        WelcomeRefreshPresentation.Return(animationContainer);
+        StorybookReturnPresentation.Apply(transform);
         SetStaticCopy();
         if (catMovement == null)
         {

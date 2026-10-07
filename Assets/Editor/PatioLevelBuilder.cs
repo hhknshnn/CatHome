@@ -135,6 +135,9 @@ public static class PatioLevelBuilder
         if (!EditorSceneManager.SaveScene(patio, ScenePath))
             throw new InvalidOperationException("Patio_Level01 could not be saved.");
 
+        RemainingRoomsThemeBuilder.ApplyScene(patio);
+        EditorSceneManager.SaveScene(patio);
+
         EnsureBuildSettings();
         AssetDatabase.SaveAssets();
         EditorSceneManager.CloseScene(patio, true);

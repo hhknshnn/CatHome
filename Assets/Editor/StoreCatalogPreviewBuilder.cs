@@ -20,6 +20,18 @@ public static class StoreCatalogPreviewBuilder
         return BuildPreviews(forceAll: false);
     }
 
+    public static string BuildRoomPreviews(string roomId)
+    {
+        EnsureIconFolder(); int count = 0;
+        foreach (var definition in StoreCatalogAssets.PlaceableProducts)
+        {
+            if (!definition.GeneratePreview || !HomeStoreService.IsProductInRoomCollection(roomId, definition.ProductId)) continue;
+            Render(definition); if (count == 0) Render(definition); count++;
+        }
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        return count + " room product previews updated.";
+    }
+
     private static string BuildPreviews(bool forceAll)
     {
         EnsureIconFolder();
@@ -125,7 +137,7 @@ public static class StoreCatalogPreviewBuilder
 
             Camera camera = preview.camera;
             camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color32(255, 249, 239, 255);
+            camera.backgroundColor = Color.clear;
             camera.orthographic = true;
             camera.nearClipPlane = .01f;
             camera.farClipPlane = 100f;
@@ -144,6 +156,10 @@ public static class StoreCatalogPreviewBuilder
                     Mathf.Max(.45f, bounds.size.magnitude * .42f);
             }
             camera.transform.LookAt(bounds.center);
+            // These two deep silhouettes extend past the projected vertical bounds at this
+            // oblique angle. Keep the original view, with enough breathing room for the whole prop.
+            if (definition.PrefabName == "BathroomShower" || definition.PrefabName == "RetroTelevision")
+                camera.orthographicSize *= 1.18f;
 
             preview.ambientColor = new Color(.78f, .8f, .84f, 1f);
             if (preview.lights.Length > 0)
@@ -157,11 +173,22 @@ public static class StoreCatalogPreviewBuilder
                 preview.lights[1].transform.rotation = Quaternion.Euler(320f, 210f, 0f);
             }
 
-            preview.BeginStaticPreview(new Rect(0f, 0f, PreviewSize, PreviewSize));
+            preview.BeginPreview(new Rect(0f, 0f, PreviewSize, PreviewSize), GUIStyle.none);
             preview.Render(true);
-            texture = preview.EndStaticPreview();
-            if (texture == null)
+            var rendered = preview.EndPreview() as RenderTexture;
+            if (rendered == null)
                 throw new InvalidOperationException("Unity returned no preview for " + definition.ProductId);
+            var previous = RenderTexture.active;
+            var resolved = RenderTexture.GetTemporary(PreviewSize, PreviewSize, 0, RenderTextureFormat.ARGB32);
+            try
+            {
+                Graphics.Blit(rendered, resolved);
+                RenderTexture.active = resolved;
+                texture = new Texture2D(PreviewSize, PreviewSize, TextureFormat.RGBA32, false);
+                texture.ReadPixels(new Rect(0, 0, PreviewSize, PreviewSize), 0, 0);
+                texture.Apply();
+            }
+            finally { RenderTexture.active = previous; RenderTexture.ReleaseTemporary(resolved); }
 
             File.WriteAllBytes(definition.IconPath, texture.EncodeToPNG());
         }

@@ -62,7 +62,8 @@ public sealed class TitleCatShowcase : MonoBehaviour
         image = GetComponent<RawImage>();
         catalog = catalog != null ? catalog : CatBreedCatalog.Load();
         if (catalog == null || catalog.Count < 3) return;
-        stage = Instantiate(stagePrefab);
+        var welcomeRoom = Resources.Load<GameObject>("WelcomeGloss/TitleRoom");
+        stage = Instantiate(welcomeRoom != null ? welcomeRoom : stagePrefab);
         stage.name = "Title Cat Showcase (Presentation Only)";
         stage.hideFlags = HideFlags.DontSave;
         stage.transform.position = new Vector3(2000f, 0f, 2000f);
@@ -98,13 +99,14 @@ public sealed class TitleCatShowcase : MonoBehaviour
         }
         for (int i = 0; ids.Count < 3 && i < catalog.Count; i++)
             if (!ids.Contains(catalog.Get(i))) ids.Add(catalog.Get(i));
-        Vector3[] positions = { new Vector3(.3f, .09f, -.65f), new Vector3(-.85f, .09f, .5f), new Vector3(1.38f, .09f, .65f) };
+        Vector3[] positions = { new Vector3(.30f, .03f, -.30f), new Vector3(-.65f, .03f, .80f), new Vector3(1.18f, .03f, 1.65f) };
         for (int i = 0; i < 3; i++)
         {
             var root = new GameObject("Showcase Cat " + ids[i].Id).transform;
             root.SetParent(stage.transform, false);
             root.localPosition = positions[i];
-            root.localScale = Vector3.one * (i == 0 ? 1.2f : 1f);
+            // Same root scale as the playable cat; the breed factory supplies its own size differences.
+            root.localScale = Vector3.one * .5f;
             var visual = CatBreedVisualFactory.Create(ids[i], catalog.GameplayController, root);
             var animator = visual.GetComponentInChildren<Animator>();
             animator.updateMode = AnimatorUpdateMode.UnscaledTime;

@@ -68,6 +68,57 @@ public static class RoomPreviewCaptureBuilder
         return "Second Floor room selector and HOME shop previews were captured.";
     }
 
+    public static string CaptureBathroomSilently()
+    {
+        EnsureFolder(PreviewFolder);
+        var active = SceneManager.GetActiveScene();
+        try
+        {
+            CaptureRoom(HomeRoomService.BathroomScenePath, BathroomPreviewPath);
+            CopyShopIcon(BathroomPreviewPath, StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            ConfigureImporter(BathroomPreviewPath);
+            ConfigureImporter(StoreCatalogAssets.IconFolder + "/BathroomRoomPreview.png");
+            return "Bathroom selector and store photography updated.";
+        }
+        finally { if (active.IsValid() && active.isLoaded) EditorSceneManager.SetActiveScene(active); }
+    }
+
+    public static string CaptureKitchenSilently()
+    {
+        EnsureFolder(PreviewFolder);
+        var active = SceneManager.GetActiveScene();
+        try
+        {
+            CaptureRoom(HomeRoomService.KitchenScenePath, KitchenPreviewPath);
+            CopyShopIcon(KitchenPreviewPath, StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            ConfigureImporter(KitchenPreviewPath);
+            ConfigureImporter(StoreCatalogAssets.IconFolder + "/KitchenRoomPreview.png");
+            return "Kitchen selector and store photography updated.";
+        }
+        finally { if (active.IsValid() && active.isLoaded) EditorSceneManager.SetActiveScene(active); }
+    }
+
+    public static string CaptureRemainingRoomSilently(string roomId)
+    {
+        if (!RemainingRoomsThemeBuilder.Handles(roomId)) throw new ArgumentException("Reviewed room required", nameof(roomId));
+        HomeRoomService.TryGetRoom(roomId, out var room);
+        string stem = roomId == HomeRoomService.SecondFloorId ? "SecondFloor" :
+            Path.GetFileNameWithoutExtension(room.ScenePath).Replace("_Level01", "");
+        string photo = PreviewFolder + "/" + stem + "Preview.png";
+        string icon = StoreCatalogAssets.IconFolder + "/" + stem + "RoomPreview.png";
+        var active = SceneManager.GetActiveScene();
+        try
+        {
+            CaptureRoom(room.ScenePath, photo); CopyShopIcon(photo, icon);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            ConfigureImporter(photo); ConfigureImporter(icon);
+            return roomId + " room and store photos updated.";
+        }
+        finally { if (active.IsValid() && active.isLoaded) EditorSceneManager.SetActiveScene(active); }
+    }
+
     public static string CaptureSilently()
     {
         EnsureFolder(PreviewFolder);

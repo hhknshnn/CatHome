@@ -19,14 +19,14 @@ public static class StorybookShopPresentation
         }
         foreach (var face in root.GetComponentsInChildren<LowPolyPanelGraphic>(true))
         {
-            if (face.color.a < .98f || face.name.Contains("Blocker") || face.name.Contains("Scrim")) continue;
+            if (face.name.Contains("Blocker") || face.name.Contains("Scrim")) continue;
             switch (face.name)
             {
                 case "Surface":
                 case "DialogFace":
                 case "ConfirmationFace":
                 case "DiamondStoreFace":
-                    StorybookScreenStyle.Shell(face, 34f); break;
+                    StorybookScreenStyle.RoomShell(face, 34f, face.name != "Surface" && face.name != "DiamondStoreFace"); break;
                 case "Wallet":
                 case "OwnedBadge":
                 case "BestMatch":
@@ -34,10 +34,9 @@ public static class StorybookShopPresentation
                 case "ProductArtStage":
                     // Match the authored product photography backdrop exactly;
                     // square source images then sit naturally inside the rounded stage.
-                    var photoPaper = new Color32(255, 249, 239, 255);
-                    face.ConfigureScreenStyle(photoPaper, photoPaper, 20f, false, false); break;
+                    StorybookScreenStyle.Card(face, 20f); break;
                 case "ModernTabRail":
-                    StorybookScreenStyle.Inset(face, new Color32(22, 36, 76, 255), 26f); break;
+                    StorybookScreenStyle.Inset(face, StorybookScreenStyle.MintWash, 26f); break;
                 case "Card":
                 case "RequestedProduct":
                 case "PlacementInfo":
@@ -53,6 +52,15 @@ public static class StorybookShopPresentation
             bool secondary = button.name.Contains("Close") || button.name.Contains("Cancel") || button.name == "NotNow";
             StorybookScreenStyle.Action(button, secondary);
         }
+        foreach (var scrollbar in root.GetComponentsInChildren<Scrollbar>(true))
+        {
+            StorybookScreenStyle.Inset(scrollbar.GetComponent<LowPolyPanelGraphic>(), StorybookScreenStyle.MintWash, 6f);
+            StorybookScreenStyle.Enamel(scrollbar.targetGraphic as LowPolyPanelGraphic,
+                StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 5f);
+            var colors = scrollbar.colors;
+            colors.normalColor = colors.highlightedColor = colors.pressedColor = colors.selectedColor = Color.white;
+            scrollbar.colors = colors;
+        }
         var content = root.Find("SafeArea/Panel/StoreContent");
         if (content != null)
         {
@@ -62,8 +70,8 @@ public static class StorybookShopPresentation
                 balance.anchoredPosition = new Vector2(-48f, balance.anchoredPosition.y);
                 balance.sizeDelta = new Vector2(88f, balance.sizeDelta.y);
             }
-            foreach (string name in new[] { "Title", "SectionTitle" }) StorybookScreenStyle.Text(content, name, StorybookScreenStyle.Cream);
-            foreach (string name in new[] { "Subtitle", "OwnedCount", "HomeLevelText", "Feedback" }) StorybookScreenStyle.Text(content, name, StorybookScreenStyle.Mint);
+            foreach (string name in new[] { "Title", "SectionTitle" }) StorybookScreenStyle.Text(content, name, StorybookScreenStyle.Ink);
+            foreach (string name in new[] { "Subtitle", "OwnedCount", "HomeLevelText", "Feedback" }) StorybookScreenStyle.Text(content, name, StorybookScreenStyle.Muted);
             var surface = content.Find("Surface");
             if (surface != null) surface.SetAsFirstSibling();
         }
@@ -73,13 +81,13 @@ public static class StorybookShopPresentation
             {
                 case "Balance": case "DiamondBalance": case "OwnedText":
                 case "DialogTitle": case "ConfirmationTitle": case "ConfirmationMessage":
-                    label.color = StorybookScreenStyle.Cream; break;
-                case "DialogMessage": label.color = StorybookScreenStyle.Mint; break;
+                    label.color = StorybookScreenStyle.Ink; break;
+                case "DialogMessage": label.color = StorybookScreenStyle.Muted; break;
                 case "ProductTitle": case "SpecialPrice": case "CoinPrice": case "DiamondPrice":
                     label.color = StorybookScreenStyle.Ink; break;
             }
         }
         var diamondSheet = root.Find("SafeArea/Panel/DiamondStore/DiamondStoreFace");
-        foreach (string name in new[] { "Title", "Subtitle", "Feedback" }) StorybookScreenStyle.Text(diamondSheet, name, StorybookScreenStyle.Cream);
+        foreach (string name in new[] { "Title", "Subtitle", "Feedback" }) StorybookScreenStyle.Text(diamondSheet, name, StorybookScreenStyle.Ink);
     }
 }

@@ -9,11 +9,11 @@ public static class StorybookCompanionPresentation
         if (root == null) return;
         var card = root.Find("SafeArea/CompanionModal/CompanionCard");
         if (card == null) return;
-        StorybookScreenStyle.Shell(Surface(card, "Paper"), 32f);
-        StorybookScreenStyle.Inset(Surface(card, "HeaderWash"), new Color32(35, 54, 106, 255), 24f);
-        StorybookScreenStyle.Inset(Surface(card, "CompanionTabs"), new Color32(22, 36, 76, 255), 17f);
-        StorybookScreenStyle.Text(card, "Title", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(card, "Subtitle", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.RoomShell(Surface(card, "Paper"), 32f, true);
+        StorybookScreenStyle.Inset(Surface(card, "HeaderWash"), StorybookScreenStyle.MintWash, 24f);
+        StorybookScreenStyle.Inset(Surface(card, "CompanionTabs"), StorybookScreenStyle.MintWash, 17f);
+        StorybookScreenStyle.Text(card, "Title", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(card, "Subtitle", StorybookScreenStyle.Muted);
         Action(card, "Close", true);
         Action(card, "TogetherTab", true);
         Action(card, "GuideTab", true);
@@ -25,13 +25,14 @@ public static class StorybookCompanionPresentation
             {
                 string tile = "Command" + i;
                 StorybookScreenStyle.Card(Surface(commands, tile), 24f);
+                StorybookScreenStyle.Inset(Surface(commands, tile + "/PoseFrame"), StorybookScreenStyle.Photo, 18f);
                 StorybookScreenStyle.Text(commands, tile + "/CommandHint", StorybookScreenStyle.Muted);
                 Action(commands, tile + "/CommandButton" + i);
                 string need = "CurrentNeeds/Need" + i;
                 StorybookScreenStyle.Card(Surface(commands, need), 18f);
                 StorybookScreenStyle.Text(commands, need + "/Value", StorybookScreenStyle.Ink);
             }
-            StorybookScreenStyle.Text(commands, "CatStatus", StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(commands, "CatStatus", StorybookScreenStyle.Muted);
             Action(commands, "StopRest", false, true);
         }
 
@@ -41,7 +42,7 @@ public static class StorybookCompanionPresentation
             StorybookScreenStyle.Card(Surface(guide, "GuidePaper"), 24f);
             StorybookScreenStyle.Text(guide, "GuideTitle", StorybookScreenStyle.Ink);
             StorybookScreenStyle.Text(guide, "GuideViewport/GuideCopy", StorybookScreenStyle.Ink);
-            StorybookScreenStyle.Text(guide, "GuidePage", StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(guide, "GuidePage", StorybookScreenStyle.Muted);
             Action(guide, "Previous", true);
             Action(guide, "Next");
         }

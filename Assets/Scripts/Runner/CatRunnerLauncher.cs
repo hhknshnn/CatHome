@@ -39,15 +39,14 @@ public sealed class CatRunnerLauncher : MonoBehaviour
             roomsButton.onClick.RemoveListener(OpenShop);
             roomsButton.onClick.AddListener(OpenShop);
         }
-        RunnerEnergyService.EnsureInitialized();
-        CatchLivesService.EnsureInitialized();
+        MiniGameLivesService.EnsureInitialized();
         ResolveReferences();
     }
 
     private void Update()
     {
         ResolveReferences();
-        RunnerEnergyService.Refresh();
+        MiniGameLivesService.Refresh();
         bool baseReady = !loading && !HomeUiFlow.IsHomeControlBlocked &&
                          !GamesHubPanel.IsAnyOpen && !LeaderboardPanel.IsAnyOpen &&
                          !SettingsPanel.IsAnyOpen && !PrivacyDataPanel.IsAnyOpen &&
@@ -171,7 +170,7 @@ public sealed class CatRunnerLauncher : MonoBehaviour
 
     private void CompleteRewardedAd()
     {
-        if (!RunnerEnergyService.TryGrantRewardedAd())
+        if (!MiniGameLivesService.TryGrantRewardedAd())
             return;
 
         CatHomeSaveSystem.SaveNow();
@@ -180,7 +179,7 @@ public sealed class CatRunnerLauncher : MonoBehaviour
 
     public bool CanRequestRewardedEnergy()
     {
-        if (!RunnerEnergyService.CanClaimRewardedAd())
+        if (!MiniGameLivesService.CanClaimRewardedAd())
             return false;
 #if UNITY_EDITOR
         return true;
@@ -194,37 +193,8 @@ public sealed class CatRunnerLauncher : MonoBehaviour
         if (energyLabel == null)
             return;
 
-        if (RunnerEnergyService.IsUnlimited)
-        {
-            energyLabel.text = GameLanguageService.Text("games.unlimited");
-            SetButtonText(playButton, GameLanguageService.Text("title.games"));
-            return;
-        }
-
-        int value = RunnerEnergyService.CurrentEnergy;
-        if (value > 0)
-        {
-            energyLabel.text =
-                $"Runner {value}/{RunnerEnergyService.MaximumEnergy}  ·  Catch {DescribeCatchLives()}";
-            SetButtonText(playButton, GameLanguageService.Text("title.games"));
-            return;
-        }
-
-        TimeSpan remaining = RunnerEnergyService.TimeUntilNextEnergy();
-        energyLabel.text = $"Runner 0/{RunnerEnergyService.MaximumEnergy}  ·  " +
-                           GameContentCopy.Text($"Yeni can {FormatCountdown(remaining)}",$"Next life {FormatCountdown(remaining)}");
+        energyLabel.text = MiniGameLivesPresentation.Count();
         SetButtonText(playButton, GameLanguageService.Text("title.games"));
-    }
-
-    /// <summary>
-    /// The dock summary has to agree with the Games hub card, which prints
-    /// UNLIMITED while the Catch entitlement is active instead of a live count.
-    /// </summary>
-    private static string DescribeCatchLives()
-    {
-        return CatchLivesService.IsUnlimited
-            ? "UNLIMITED"
-            : $"{CatchLivesService.CurrentLives}/{CatchLivesService.MaximumLives}";
     }
 
     private void RefreshRoomUi()

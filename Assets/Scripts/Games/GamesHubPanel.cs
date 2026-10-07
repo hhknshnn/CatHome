@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Home Games overlay. The dock GAMES button opens this picker so Cat Runner
-/// and Cat Catch stay selectable without sharing a life pool.
+/// and the other adventures share a single 20-life pool.
 /// </summary>
 [DisallowMultipleComponent]
 public sealed class GamesHubPanel : MonoBehaviour
@@ -36,6 +36,7 @@ public sealed class GamesHubPanel : MonoBehaviour
         Bind(runnerButton, PlayRunner);
         Bind(catchButton, PlayCatch);
         Bind(leaderboardButton, ShowLeaderboards);
+        CozyGamesHub.Build(this,runnerButton,catchButton,out runnerLivesText,out catchLivesText);
         HideImmediate();
     }
 
@@ -76,6 +77,7 @@ public sealed class GamesHubPanel : MonoBehaviour
     private void ShowCore()
     {
         open = true;
+        CozyGamesHub.Refresh(this);
         movement=FindAnyObjectByType<CatMovement>();if(movement!=null)movement.AcquireInputBlock(this);
         if (rootGroup != null)
         {
@@ -122,6 +124,14 @@ public sealed class GamesHubPanel : MonoBehaviour
             catchLauncher.Launch();
     }
 
+    public void PlayCozy(CozyGameKind kind)
+    {
+        if(!open||HomeUiFlow.IsMiniGameVisible)return;
+        var launcher=GetComponent<CozyGameLauncher>();if(launcher==null)launcher=gameObject.AddComponent<CozyGameLauncher>();
+        launcher.Launch(kind);
+        if(CatRunnerSessionContext.IsLaunching)HideImmediate();
+    }
+
     private void ShowLeaderboards()
     {
         if (!open || HomeUiFlow.IsMiniGameVisible)
@@ -133,20 +143,10 @@ public sealed class GamesHubPanel : MonoBehaviour
 
     private void RefreshLives()
     {
-        RunnerEnergyService.Refresh();
-        CatchLivesService.Refresh();
-        if (runnerLivesText != null)
-        {
-            runnerLivesText.text = RunnerEnergyService.IsUnlimited
-                ? GameLanguageService.Text("games.unlimited")
-                : GameLanguageService.Format("games.life_count",RunnerEnergyService.CurrentEnergy,RunnerEnergyService.MaximumEnergy);
-        }
-        if (catchLivesText != null)
-        {
-            catchLivesText.text = CatchLivesService.IsUnlimited
-                ? GameLanguageService.Text("games.unlimited")
-                : GameLanguageService.Format("games.life_count",CatchLivesService.CurrentLives,CatchLivesService.MaximumLives);
-        }
+        var status=transform.Find("SafeArea/GamesHubCard/SharedLives/Count");
+        var timer=transform.Find("SafeArea/GamesHubCard/SharedLives/Refill");
+        if(status!=null)status.GetComponent<TMP_Text>().text=MiniGameLivesPresentation.Count();
+        if(timer!=null)timer.GetComponent<TMP_Text>().text=MiniGameLivesPresentation.Refill();
     }
 
     private static void Bind(Button button, UnityEngine.Events.UnityAction action)

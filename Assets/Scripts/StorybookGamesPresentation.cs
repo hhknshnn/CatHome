@@ -10,9 +10,9 @@ public static class StorybookGamesPresentation
         if (root == null) return;
         var panel = root.Find("SafeArea/GamesHubCard");
         if (panel == null) return;
-        StorybookScreenStyle.Shell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
-        StorybookScreenStyle.Text(panel, "GamesTitle", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "GamesSubtitle", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.RoomShell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
+        StorybookScreenStyle.Text(panel, "GamesTitle", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "GamesSubtitle", StorybookScreenStyle.Muted);
         ApplyGameCard(panel.Find("HubCatRunnerButton/Visual"), true);
         ApplyGameCard(panel.Find("HubCatCatchButton/Visual"), false);
         Action(panel, "GamesHubLeaderboards");
@@ -24,9 +24,9 @@ public static class StorybookGamesPresentation
         if (root == null) return;
         var panel = root.Find("SafeArea/LeaderboardCard");
         if (panel == null) return;
-        StorybookScreenStyle.Shell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
-        StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "Status", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.RoomShell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
+        StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "Status", StorybookScreenStyle.Muted);
         Action(panel, "Close", true);
         Action(panel, "Refresh");
         foreach (string name in new[] { "RunnerTab", "CatchTab", "DailyTab", "WeeklyTab", "AllTimeTab" })
@@ -46,16 +46,16 @@ public static class StorybookGamesPresentation
         var list = panel.Find("LeaderboardList");
         if (list != null)
         {
-            StorybookScreenStyle.Inset(list.GetComponent<LowPolyPanelGraphic>(), new Color32(31, 47, 90, 255), 24f);
+            StorybookScreenStyle.Inset(list.GetComponent<LowPolyPanelGraphic>(), StorybookScreenStyle.MintWash, 24f);
             foreach (string name in new[] { "SelectedGame", "EmptyState" })
-                StorybookScreenStyle.Text(list, name, StorybookScreenStyle.Cream);
+                StorybookScreenStyle.Text(list, name, StorybookScreenStyle.Ink);
             foreach (string name in new[] { "GlobalSummary", "SelectedPeriod", "OwnRank" })
-                StorybookScreenStyle.Text(list, name, StorybookScreenStyle.Mint);
+                StorybookScreenStyle.Text(list, name, StorybookScreenStyle.Muted);
             foreach (var label in list.GetComponentsInChildren<TMP_Text>(true))
                 if (label.name == "RowLabel") ApplyRankRow(label, false);
             var track = list.Find("Scrollbar");
             var image = track == null ? null : track.GetComponent<Image>();
-            if (image != null) image.color = new Color32(21, 35, 71, 255);
+            if (image != null) image.color = StorybookScreenStyle.MintWash;
             StorybookScreenStyle.Enamel(Surface(list, "Scrollbar/Handle"),
                 StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 4f);
         }
@@ -77,7 +77,7 @@ public static class StorybookGamesPresentation
         var row = label.transform.parent;
         var surface = row == null ? null : row.GetComponent<LowPolyPanelGraphic>();
         if (currentPlayer)
-            StorybookScreenStyle.Enamel(surface, StorybookScreenStyle.Cream, new Color32(213, 239, 225, 255), 16f);
+            StorybookScreenStyle.Selected(surface, 16f);
         else
             StorybookScreenStyle.Card(surface, 16f);
         label.color = StorybookScreenStyle.Ink;
@@ -94,9 +94,8 @@ public static class StorybookGamesPresentation
         StorybookScreenStyle.Text(visual, "Descriptor", StorybookScreenStyle.Muted);
         StorybookScreenStyle.Text(visual, "Lives", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Enamel(Surface(visual, "Action"),
-            runner ? new Color32(255, 157, 121, 255) : StorybookScreenStyle.Mint,
-            runner ? StorybookScreenStyle.Coral : StorybookScreenStyle.Teal, 22f, false);
-        StorybookScreenStyle.Text(visual, "Action/Label", StorybookScreenStyle.Ink);
+            StorybookScreenStyle.CoralTop, StorybookScreenStyle.Coral, 22f, false);
+        StorybookScreenStyle.Text(visual, "Action/Label", StorybookScreenStyle.Cream);
         // The card's existing button and feedback own interaction; the coloured plate is decorative.
         // Hero image, mask, preview UVs and every label's live text remain untouched.
     }

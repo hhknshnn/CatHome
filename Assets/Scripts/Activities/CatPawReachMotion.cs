@@ -47,7 +47,10 @@ public sealed class CatPawReachMotion : MonoBehaviour
         float sourceEnd=plan.Surface!=null&&plan.Surface.ReturnToStart?0f:1f;
         float source = phase < .35f ? Mathf.Lerp(0, plan.SourcePhase, Mathf.SmoothStep(0, 1, phase / .35f)) :
             phase <= .68f ? plan.SourcePhase : Mathf.Lerp(plan.SourcePhase, sourceEnd, Mathf.SmoothStep(0, 1, (phase - .68f) / .32f));
-        poseDriver.SetTimedPose(plan.Pose, source);
+        if (plan.Pose == CatActivityPose.Scratch && plan.Surface != null && plan.Surface.ConformScratchSupport)
+            poseDriver.SetTimedPoseBlended(plan.Pose, source, envelope);
+        else
+            poseDriver.SetTimedPose(plan.Pose, source);
         requested = hasSample = true;
     }
 

@@ -334,19 +334,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: c274bd29dd5ab9e498a6a86fa2ea8d68, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 45326f33f189bd144848eb88906ed500, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: c274bd29dd5ab9e498a6a86fa2ea8d68, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7ee4255c3fcf61a4a8cbf9e85e671eac, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: c274bd29dd5ab9e498a6a86fa2ea8d68, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3ea64df1e3c35ef4f9a9727af4d521c3, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: c274bd29dd5ab9e498a6a86fa2ea8d68, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 714f5e8be1571264fa0382b2d020e7b4, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: 919132149155446097, guid: c274bd29dd5ab9e498a6a86fa2ea8d68, type: 3}
       propertyPath: m_Name
       value: BalconySideTable_PremiumModel
@@ -442,19 +442,19 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 8d8112878bbbda340a75a32438b12395, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3ea64df1e3c35ef4f9a9727af4d521c3, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 8d8112878bbbda340a75a32438b12395, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: a1c9a63bd0936074aa1ad5228bc0eea3, type: 2}
+      objectReference: {fileID: 2100000, guid: d5a48c2e1dfdbf24cb9bab2d3678afdf, type: 2}
     - target: {fileID: -7511558181221131132, guid: 8d8112878bbbda340a75a32438b12395, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 7ee4255c3fcf61a4a8cbf9e85e671eac, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: 8d8112878bbbda340a75a32438b12395, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: b650fbf9e5bcb8f459a403b337a6398c, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: 919132149155446097, guid: 8d8112878bbbda340a75a32438b12395, type: 3}
       propertyPath: m_Name
       value: Glass

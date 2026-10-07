@@ -58,6 +58,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
     private Collider floorCollider;
     private bool pounceStarted;
     private bool strikePending;
+    private bool tapPounceQueued;
     private Vector3 strikePoint;
     private CatCatchMouse strikePrey;
 
@@ -65,6 +66,24 @@ public sealed class CatCatchPlayer : MonoBehaviour
     public bool IsPouncing => phase == Phase.Pounce;
     public bool IsBusy => phase == Phase.Pounce || phase == Phase.Recover;
     public CatCatchMouse Prey => prey;
+    public bool CanPounce
+    {
+        get
+        {
+            if(!inputEnabled||paused||IsBusy||prey==null||!prey.IsCatchable)return false;
+            var d=prey.transform.position-transform.position;d.y=0;
+            var lead=CatchHuntRules.PredictPreyPoint(prey.transform.position,prey.Velocity)+prey.Velocity*CatchHuntRules.PouncePrepareSeconds-transform.position;lead.y=0;
+            return d.magnitude<=CatchHuntRules.PounceMaximumDistance && Vector3.Angle(FlatForward(),d)<=CatchHuntRules.PounceAlignmentDegrees && Vector3.Angle(FlatForward(),lead)<=CatchHuntRules.PounceAlignmentDegrees;
+        }
+    }
+    public bool RequestPounce()
+    {
+        if(!CanPounce)return false;
+        var predicted=CatchHuntRules.PredictPreyPoint(prey.transform.position,prey.Velocity)+prey.Velocity*CatchHuntRules.PouncePrepareSeconds;
+        predicted.y=floorY;var lunge=predicted-transform.position;lunge.y=0;
+        if(Vector3.Angle(FlatForward(),lunge)>CatchHuntRules.PounceAlignmentDegrees)return false;
+        BeginPounce(predicted,lunge.magnitude);return true;
+    }
 
     public void EditorBind(Animator catAnimator, Camera camera)
     {
@@ -99,6 +118,7 @@ public sealed class CatCatchPlayer : MonoBehaviour
         hasMovePoint = false;
         strikePending = false;
         strikePrey = null;
+        tapPounceQueued = false;
         phase = Phase.Idle;
         phaseTimer = 0f;
         // Ending a hunt cancels its airborne motion. Preserve its horizontal
@@ -156,11 +176,29 @@ public sealed class CatCatchPlayer : MonoBehaviour
         phase = Phase.Chase;
     }
 
+    public void PounceAt(CatCatchMouse target)
+    {
+        if(!inputEnabled||paused||IsBusy||target==null||!target.IsCatchable)return;
+        ChasePrey(target);
+        tapPounceQueued=true;
+        if(TryQueuedPounce())tapPounceQueued=false;
+    }
+
+    private bool TryQueuedPounce()
+    {
+        if(!CanPounce)return false;
+        var lead=CatchHuntRules.PredictPreyPoint(prey.transform.position,prey.Velocity)+prey.Velocity*CatchHuntRules.PouncePrepareSeconds-transform.position;lead.y=0;
+        // Wait until the predicted landing, not only the current mouse position,
+        // is within reach. Otherwise a fleeing mouse outruns the clamped leap.
+        return lead.magnitude<=CatchHuntRules.PounceMaximumDistance-.1f&&RequestPounce();
+    }
+
     public void MoveTo(Vector3 worldPoint)
     {
         if (!inputEnabled || paused || IsBusy)
             return;
         prey = null;
+        tapPounceQueued = false;
         movePoint = ClampToArena(worldPoint);
         movePoint.y = floorY;
         hasMovePoint = true;
@@ -288,22 +326,12 @@ public sealed class CatCatchPlayer : MonoBehaviour
             Vector3 preyDirection = preyDistance > 0.0001f ? toPrey / preyDistance : direction;
             float facingAngle = Vector3.Angle(FlatForward(), preyDirection);
             chaseSeconds += delta;
-            if (CatchHuntRules.ShouldPounce(preyDistance, facingAngle) ||
-                CatchHuntRules.ShouldForcePounce(preyDistance, chaseSeconds, facingAngle))
+            // A mouse tap commits one pounce. Distant targets are approached on
+            // the floor first; the existing reach and heading gates still apply.
+            if(tapPounceQueued&&TryQueuedPounce()){tapPounceQueued=false;return;}
+            if (preyDistance < .82f)
             {
-                Vector3 predicted = CatchHuntRules.PredictPreyPoint(
-                    prey.transform.position, prey.Velocity);
-                predicted += prey.Velocity * CatchHuntRules.PouncePrepareSeconds;
-                predicted.y = floorY;
-                Vector3 lunge = predicted - transform.position;
-                lunge.y = 0f;
-                // A sideways lead must also be aligned. Proximity to the mouse
-                // alone is not permission to turn through the airborne pose.
-                if (Vector3.Angle(FlatForward(), lunge) <= CatchHuntRules.PounceAlignmentDegrees)
-                {
-                    BeginPounce(predicted, lunge.magnitude);
-                    return;
-                }
+                ReportAnimatedSpeed(0f,delta);return;
             }
         }
 
@@ -430,6 +458,9 @@ public sealed class CatCatchPlayer : MonoBehaviour
         if(motion!=null&&(phase==Phase.Chase||phase==Phase.Idle))motion.Run(normalized*moveSpeed);
         if (animator == null)
             return;
+        // The controller can disable input from its Awake before this component's Awake.
+        if (speedParameterHash == 0)
+            speedParameterHash = Animator.StringToHash(speedParameterName);
         if (delta <= 0f)
             animator.SetFloat(speedParameterHash, normalized);
         else

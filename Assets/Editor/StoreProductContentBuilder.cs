@@ -104,6 +104,9 @@ public static class StoreProductContentBuilder
         RoomProductInteractionBuilder.UpgradePrefabs();
         ModernWorldArtBuilder.ApplyCatalogPrefabs();
         LivingProgressionComposition.ApplyProductPrefabs();
+        BathroomThemeBuilder.ApplyProductPrefabs();
+        KitchenThemeBuilder.ApplyProductPrefabs();
+        RemainingRoomsThemeBuilder.ApplyProductPrefabs();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -118,6 +121,9 @@ public static class StoreProductContentBuilder
         RoomProductInteractionBuilder.UpgradePrefab(definition,new System.Text.StringBuilder());
         ModernWorldArtBuilder.ApplyCatalogPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
         LivingProgressionComposition.ApplyProductPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
+        BathroomThemeBuilder.ApplyProductPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
+        KitchenThemeBuilder.ApplyProductPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
+        RemainingRoomsThemeBuilder.ApplyProductPrefab(PrefabFolder + "/" + definition.PrefabName + ".prefab");
         AssetDatabase.SaveAssets();
     }
 
@@ -5664,6 +5670,9 @@ public static class StoreProductContentBuilder
         if(roomId==HomeRoomService.LivingRoomId)CatProductContentBuilder.UpgradeLegacyStations(scene);
         RoomActivityLayoutBuilder.Configure(scene, roomId);
         ModernWorldArtBuilder.Apply(scene, roomId);
+        if(roomId==HomeRoomService.BathroomId)BathroomThemeBuilder.ApplyScene(scene);
+        if(roomId==HomeRoomService.KitchenId)KitchenThemeBuilder.ApplyScene(scene);
+        if(RemainingRoomsThemeBuilder.Handles(roomId))RemainingRoomsThemeBuilder.ApplyScene(scene);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         if (openedForBuild)
@@ -5753,7 +5762,10 @@ public static class StoreProductContentBuilder
         OutdoorPolishBuilder.ConfigureScene(scene, roomId);
         HomeRoomArrangementBuilder.ConfigureApproaches(scene, roomId);
         ModernWorldArtBuilder.ApplyRoot(root.transform, roomId);
+        if(roomId==HomeRoomService.BathroomId)BathroomThemeBuilder.ApplyScene(scene);
         if(roomId==HomeRoomService.KitchenId)KitchenDiningSetBuilder.Apply(scene);
+        if(roomId==HomeRoomService.KitchenId)KitchenThemeBuilder.ApplyScene(scene);
+        if(RemainingRoomsThemeBuilder.Handles(roomId))RemainingRoomsThemeBuilder.ApplyScene(scene);
     }
 
     private static GameObject CreateHierarchyGroup(string name, Transform parent)

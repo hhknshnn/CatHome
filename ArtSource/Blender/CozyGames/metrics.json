@@ -1,0 +1,46 @@
+{
+  "YarnBall": {
+    "vertices": 9626,
+    "faces": 9648
+  },
+  "Basket": {
+    "vertices": 4672,
+    "faces": 4434
+  },
+  "Cushion": {
+    "vertices": 1002,
+    "faces": 1026
+  },
+  "Fish0": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Fish1": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Fish2": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Fish3": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Fish4": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Fish5": {
+    "vertices": 2708,
+    "faces": 2904
+  },
+  "Ripple": {
+    "vertices": 640,
+    "faces": 640
+  },
+  "Plant": {
+    "vertices": 2070,
+    "faces": 2170
+  }
+}

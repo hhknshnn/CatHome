@@ -68,6 +68,7 @@ public sealed class MiniGameTransitionSafetyTests
                 if (prey != null)
                     player.ChasePrey(prey);
             }
+            if(player.CanPounce)player.RequestPounce();
             yield return null;
         }
         Assert.That(player.IsPouncing, Is.True);
@@ -228,6 +229,7 @@ public sealed class MiniGameTransitionSafetyTests
                     .OrderBy(m => (m.transform.position - player.Position).sqrMagnitude).FirstOrDefault();
                 if (prey != null) player.ChasePrey(prey);
             }
+            if(player.CanPounce)player.RequestPounce();
             yield return null;
         }
         Assert.That(game.Catches, Is.GreaterThanOrEqualTo(1), "Use a real earned payout to detect duplicate settlement.");
@@ -399,8 +401,21 @@ public sealed class MiniGameTransitionSafetyTests
                 bowls.ResolveSceneReferences();
                 var bowl = Read<BowlInteraction.BowlSetup>(bowls, kind);
                 bowl.Fill();
-                MoveHomeCat(cat, bowl.InteractionPoint.position, Quaternion.identity);
-                Invoke(bowls, "Update");
+                // Use a genuinely reachable heading after the accepted room/bowl revisions.
+                var target=bowl.ContactPoint;var outward=bowl.InteractionPoint.position-target.position;outward.y=0;outward.Normalize();
+                bool ready=false;
+                foreach(float radius in new[]{.30f,.34f,.38f,.42f,.46f,.50f})
+                {
+                    foreach(float angle in new[]{0f,15f,-15f,30f,-30f,60f,-60f})
+                    {
+                        var side=Quaternion.Euler(0,angle,0)*outward;var point=target.position+side*radius;point.y=.05f;
+                        MoveHomeCat(cat,point,Quaternion.LookRotation(-side));Invoke(bowls,"Update");
+                        ready=CatMealHeadMotion.TryPrepareBowlPose(cat,target,out _)&&CatMealHeadMotion.TryPrepareCareStart(cat,target,out _)&&ReferenceEquals(Read<BowlInteraction.BowlSetup>(bowls,"currentBowl"),bowl);
+                        if(ready)break;
+                    }
+                    if(ready)break;
+                }
+                Assert.That(ready,Is.True,"The actual care target must be reachable before testing mini-game cancellation.");
                 Assert.That(Read<BowlInteraction.BowlSetup>(bowls, "currentBowl"), Is.SameAs(bowl), kind);
                 Assert.That(bowls.HasVisibleAction, Is.True, kind);
                 Read<UnityEngine.UI.Button>(bowls, "interactionButton").onClick.Invoke();

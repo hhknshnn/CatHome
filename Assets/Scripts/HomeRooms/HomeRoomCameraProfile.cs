@@ -10,12 +10,20 @@ public static class HomeRoomCameraProfile
     public static readonly Vector3 LivingRoomAngles = new Vector3(18f, 0f, 0f);
     public const float LivingRoomFieldOfView = 36f;
 
+    static bool UsesLivingView(string scenePath) => scenePath == HomeRoomService.LivingRoomScenePath ||
+        scenePath == HomeRoomService.BathroomScenePath || scenePath == HomeRoomService.KitchenScenePath ||
+        scenePath == HomeRoomService.BedroomScenePath || scenePath == HomeRoomService.GardenScenePath ||
+        scenePath == HomeRoomService.BalconyScenePath || scenePath == HomeRoomService.PatioScenePath ||
+        scenePath == HomeRoomService.SecondFloorScenePath;
     public static Vector3 PositionFor(string scenePath) =>
-        scenePath == HomeRoomService.LivingRoomScenePath ? LivingRoomPosition : Position;
+        UsesLivingView(scenePath) ? LivingRoomPosition : Position;
     public static Vector3 AnglesFor(string scenePath) =>
-        scenePath == HomeRoomService.LivingRoomScenePath ? LivingRoomAngles : Angles;
+        UsesLivingView(scenePath) ? LivingRoomAngles : Angles;
     public static float FieldOfViewFor(string scenePath) =>
-        scenePath == HomeRoomService.LivingRoomScenePath ? LivingRoomFieldOfView : FieldOfView;
+        scenePath == HomeRoomService.LivingRoomScenePath ? LivingRoomFieldOfView :
+        // The balcony awning is higher than indoor wall art; keep it below the needs HUD.
+        scenePath == HomeRoomService.BalconyScenePath ? 48f :
+        UsesLivingView(scenePath) ? 42f : FieldOfView;
     // Full-frame catalog photos have no reserved HUD strip; retain the living-room photo framing.
     public const float PreviewFieldOfView = 42f;
 

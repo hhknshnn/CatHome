@@ -103,11 +103,19 @@ public static class CompanionPreviewBuilder
             preview.lights[0].intensity=1.25f;preview.lights[0].transform.rotation=Quaternion.Euler(35,35,0);
             preview.lights[1].intensity=.75f;preview.lights[1].transform.rotation=Quaternion.Euler(320,210,0);
             foreach(var light in preview.lights)light.cullingMask=1<<PreviewLayer;
-            preview.BeginStaticPreview(new Rect(0,0,Width,Height));preview.Render(true);
-            var warm=preview.EndStaticPreview();Object.DestroyImmediate(warm);
-            preview.BeginStaticPreview(new Rect(0,0,Width,Height));preview.Render(true);
-            texture=preview.EndStaticPreview();
-            if(texture==null)throw new InvalidOperationException("Portrait rendering returned no image: "+path);
+            preview.BeginPreview(new Rect(0,0,Width,Height),GUIStyle.none);preview.Render(true);preview.EndPreview();
+            preview.BeginPreview(new Rect(0,0,Width,Height),GUIStyle.none);preview.Render(true);
+            var rendered=preview.EndPreview() as RenderTexture;
+            if(rendered==null)throw new InvalidOperationException("Portrait rendering returned no image: "+path);
+            var previous=RenderTexture.active;
+            var resolved=RenderTexture.GetTemporary(Width,Height,0,RenderTextureFormat.ARGB32);
+            try
+            {
+                Graphics.Blit(rendered,resolved);RenderTexture.active=resolved;
+                texture=new Texture2D(Width,Height,TextureFormat.RGBA32,false);
+                texture.ReadPixels(new Rect(0,0,Width,Height),0,0);texture.Apply();
+            }
+            finally { RenderTexture.active=previous;RenderTexture.ReleaseTemporary(resolved); }
             File.WriteAllBytes(path,texture.EncodeToPNG());
         }
         finally
@@ -130,15 +138,15 @@ public static class CompanionPreviewBuilder
 
     private static Color Background(string pose)
     {
-        return new Color32(235,243,250,255);
+        return Color.clear;
     }
 
     private static void ImportPortrait(string path)
     {
         var importer=(TextureImporter)AssetImporter.GetAtPath(path);
         importer.textureType=TextureImporterType.Default;
-        importer.alphaSource=TextureImporterAlphaSource.None;
-        importer.alphaIsTransparency=false;
+        importer.alphaSource=TextureImporterAlphaSource.FromInput;
+        importer.alphaIsTransparency=true;
         importer.sRGBTexture=true;
         importer.mipmapEnabled=false;importer.isReadable=false;
         importer.npotScale=TextureImporterNPOTScale.None;
@@ -148,7 +156,7 @@ public static class CompanionPreviewBuilder
         importer.compressionQuality=70;
         var android=importer.GetPlatformTextureSettings("Android");
         android.name="Android";android.overridden=true;android.maxTextureSize=512;
-        android.format=TextureImporterFormat.ETC2_RGB4;android.compressionQuality=70;
+        android.format=TextureImporterFormat.ETC2_RGBA8;android.compressionQuality=70;
         importer.SetPlatformTextureSettings(android);
         importer.SaveAndReimport();
     }

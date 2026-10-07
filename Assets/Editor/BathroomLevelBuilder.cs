@@ -135,6 +135,7 @@ public static class BathroomLevelBuilder
             bathroom,
             HomeRoomService.BathroomId,
             furniture);
+        BathroomThemeBuilder.ApplyScene(bathroom);
 
         RenderSettings.ambientMode = AmbientMode.Skybox;
         RenderSettings.ambientSkyColor = LivingAmbientSkyColor;

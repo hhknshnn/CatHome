@@ -208,13 +208,17 @@ public abstract class CatActivity : MonoBehaviour
         {
             restWaiting=true;
             if(restStarted<0)restStarted=Time.time;
+            if(restStopRequested&&LivingRoomSpeech.IsLiving&&Cat!=null)
+            {var livingPose=Cat.GetComponent<LivingSleepPose>();if(livingPose!=null&&livingPose.Weight>.001f)return true;}
             return !restStopRequested;
         }
     }
     public bool RequestRestStop()
     {
         if(!IsRunning || !SupportsContinuousRest)return false;
-        restStopRequested=true;NotifyChanged();return true;
+        restStopRequested=true;
+        if(LivingRoomSpeech.IsLiving&&Cat!=null)Cat.GetComponent<LivingSleepPose>()?.PrepareWake();
+        NotifyChanged();return true;
     }
     public bool IsRestingOnFurniture => IsRunning && catAnimation != null && catAnimation.ContactSurface != null &&
         (catAnimation.CurrentPose == CatActivityPose.Sleep ||
@@ -463,7 +467,7 @@ public abstract class CatActivity : MonoBehaviour
     private bool BeginRoutineBody()
     {
         HasBegunActivity = true;
-        try { return BeginActivity(); }
+        try { bool started=BeginActivity(); if(started) LivingRoomSpeech.Show(Cat,this,LivingRoomSpeech.Context(this),false); return started; }
         catch (Exception error) { Debug.LogException(error, this); return false; }
     }
 
@@ -500,7 +504,8 @@ public abstract class CatActivity : MonoBehaviour
 
         if(RecordsQuestProgress) ProgressionService.RecordProgress(questType);
         CatHomeSaveSystem.SaveNow();
-        ShowSpeech(string.IsNullOrWhiteSpace(message) ? "GREAT PLAY!" : message);
+        if(!LivingRoomSpeech.Show(Cat,this,LivingRoomSpeech.Context(this),true))
+            ShowSpeech(string.IsNullOrWhiteSpace(message) ? "GREAT PLAY!" : message);
         RefreshUnlockPresentation();
         NotifyChanged();
         Completed?.Invoke(this);

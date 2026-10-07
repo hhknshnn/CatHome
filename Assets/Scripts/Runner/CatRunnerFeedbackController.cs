@@ -60,8 +60,8 @@ public sealed class CatRunnerFeedbackController : MonoBehaviour
             float pulse = 1f + coinPunch * 0.26f;
             coinLabel.rectTransform.localScale = coinLabelScale * pulse;
             coinLabel.color = Color.Lerp(
-                PremiumUiStyle.Ink,
-                new Color32(20, 119, 111, 255),
+                StorybookScreenStyle.Ink,
+                StorybookScreenStyle.Mint,
                 coinPunch * 0.72f);
         }
 

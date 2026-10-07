@@ -16,15 +16,15 @@ public static class StorybookMiniGamePresentation
     private static void Welcome(Transform card)
     {
         if (card == null) return;
-        StorybookScreenStyle.Shell(Surface(card, "WelcomeCard"), 32f);
-        StorybookScreenStyle.Inset(Surface(card, "PlayfulPoster"), new Color32(23, 66, 92, 255), 26f);
-        StorybookScreenStyle.Inset(Surface(card, "GameIdentityBanner"), new Color32(23, 66, 92, 255), 24f);
+        StorybookScreenStyle.RoomShell(Surface(card, "WelcomeCard"), 32f);
+        StorybookScreenStyle.Inset(Surface(card, "PlayfulPoster"), StorybookScreenStyle.MintWash, 26f);
+        StorybookScreenStyle.Inset(Surface(card, "GameIdentityBanner"), StorybookScreenStyle.MintWash, 24f);
         StorybookScreenStyle.Card(Surface(card, "WelcomeHeroArtFrame"), 20f);
         PortraitFrame(card);
         foreach (string name in new[] { "WelcomeTitle", "PlayStyle", "PlayfulReady", "WelcomeEnergy" })
-            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Cream);
+            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Ink);
         foreach (string name in new[] { "Tagline", "DailyMissions" })
-            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Muted);
         StorybookScreenStyle.Card(Surface(card, "BestScorePill"), 20f);
         StorybookScreenStyle.Text(card, "BestScorePill/BestScore", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Card(Surface(card, "PlayfulPerks"), 17f);
@@ -46,9 +46,9 @@ public static class StorybookMiniGamePresentation
     private static void Pause(Transform card)
     {
         if (card == null) return;
-        StorybookScreenStyle.Shell(Surface(card, "PauseCard"), 32f);
-        StorybookScreenStyle.Text(card, "PauseTitle", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Inset(Surface(card, "PreferenceSection"), new Color32(22, 36, 76, 255), 24f);
+        StorybookScreenStyle.RoomShell(Surface(card, "PauseCard"), 32f);
+        StorybookScreenStyle.Text(card, "PauseTitle", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Inset(Surface(card, "PreferenceSection"), StorybookScreenStyle.MintWash, 24f);
         Action(card, "ResumeButton", true);
         foreach (string name in new[] { "ReducedMotionButton", "SoundButton", "HapticsButton", "PauseExitButton", "PauseGamesButton" })
             Action(card, name);
@@ -58,9 +58,9 @@ public static class StorybookMiniGamePresentation
     private static void Results(Transform card)
     {
         if (card == null) return;
-        StorybookScreenStyle.Shell(Surface(card, "ResultsCard"), 32f);
-        StorybookScreenStyle.Inset(Surface(card, "ResultBanner"), new Color32(23, 66, 92, 255), 24f);
-        StorybookScreenStyle.Text(card, "ResultTitle", StorybookScreenStyle.Cream);
+        StorybookScreenStyle.RoomShell(Surface(card, "ResultsCard"), 32f);
+        StorybookScreenStyle.Inset(Surface(card, "ResultBanner"), StorybookScreenStyle.MintWash, 24f);
+        StorybookScreenStyle.Text(card, "ResultTitle", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Card(Surface(card, "NewBestBadge"), 16f);
         StorybookScreenStyle.Text(card, "NewBestBadge/NewBestLabel", StorybookScreenStyle.Ink);
         PortraitFrame(card);
@@ -71,9 +71,9 @@ public static class StorybookMiniGamePresentation
         if (score != null) score.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 116f);
         StorybookScreenStyle.Text(card, "ScoreCaption", StorybookScreenStyle.Muted);
         foreach (string name in new[] { "Reward", "ResultDetails" })
-            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Cream);
+            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Ink);
         foreach (string name in new[] { "RewardCaption", "ResultMissions" })
-            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(card, name, StorybookScreenStyle.Muted);
         Action(card, "CollectButton");
         Action(card, "ResultGamesButton");
         Action(card, "RetryButton", true);
@@ -84,8 +84,8 @@ public static class StorybookMiniGamePresentation
     private static void Tutorial(Transform card)
     {
         if (card == null) return;
-        StorybookScreenStyle.Shell(Surface(card, "TutorialCard"), 24f);
-        StorybookScreenStyle.Text(card, "TutorialMessage", StorybookScreenStyle.Cream);
+        StorybookScreenStyle.RoomShell(Surface(card, "TutorialCard"), 24f, true);
+        StorybookScreenStyle.Text(card, "TutorialMessage", StorybookScreenStyle.Ink);
         Action(card, "TutorialSkipButton");
         StorybookScreenStyle.CurrencyIcons(card);
     }

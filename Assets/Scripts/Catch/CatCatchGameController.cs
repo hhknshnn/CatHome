@@ -79,13 +79,16 @@ public sealed class CatCatchGameController : MonoBehaviour
     public int Score => score;
     public bool IsHunting => hunting;
     public bool IsPaused => paused;
+    public int Wave => Mathf.Clamp(1+Mathf.FloorToInt((HuntDuration-remaining)/20f),1,3);
+    private int DesiredMice => tutorialActive?2:Wave+1;
+    public bool Pounce() => hunting&&!paused&&!settling&&player!=null&&player.RequestPounce();
     public int StrikesResolved { get; private set; }
     public int StrikesMissed { get; private set; }
     public float LastStrikeGap { get; private set; } = -1f;
 
     private void Awake()
     {
-        CatchLivesService.EnsureInitialized();
+        MiniGameLivesService.EnsureInitialized();
         if (mice == null || mice.Length == 0)
             mice = GetComponentsInChildren<CatCatchMouse>(true);
         catchBursts = GetComponentsInChildren<CatchBurstFx>(true);
@@ -112,6 +115,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         Bind(resumeButton, ResumeHunt);
         Bind(pauseExitButton, ExitFromPause);
         StorybookMiniGamePresentation.Apply(huntCanvas != null ? huntCanvas.transform : null);
+        CozyArcadePresentation.Apply(huntCanvas.transform,false);
         ShowWelcome();
         ParkHomePresentation();
     }
@@ -138,6 +142,8 @@ public sealed class CatCatchGameController : MonoBehaviour
     {
         if (welcomePanel != null && welcomePanel.activeSelf)
             RefreshWelcome();
+        if (resultPanel != null && resultPanel.activeSelf && retryButton != null)
+            retryButton.interactable = !settling && !exiting && MiniGameLivesService.CanStartRound();
 
         if (!hunting || player == null || paused)
             return;
@@ -203,7 +209,7 @@ public sealed class CatCatchGameController : MonoBehaviour
     {
         if (hunting || settling || exiting)
             return;
-        if (!CatchLivesService.TrySpendHuntLife())
+        if (!MiniGameLivesService.TrySpendLife())
         {
             RefreshWelcome();
             return;
@@ -245,15 +251,15 @@ public sealed class CatCatchGameController : MonoBehaviour
 
     public void RequestRewardedLives()
     {
-        if (!CatchLivesService.CanClaimRewardedAd())
+        if (!MiniGameLivesService.CanClaimRewardedAd())
             return;
 #if UNITY_EDITOR
-        if (CatchLivesService.TryGrantRewardedAd())
+        if (MiniGameLivesService.TryGrantRewardedAd())
             CatHomeSaveSystem.SaveNow();
 #else
         if (CatRunnerRewardedAdBridge.TryShow(verified =>
             {
-                if (verified && CatchLivesService.TryGrantRewardedAd())
+                if (verified && MiniGameLivesService.TryGrantRewardedAd())
                     CatHomeSaveSystem.SaveNow();
             }))
         {
@@ -376,7 +382,7 @@ public sealed class CatCatchGameController : MonoBehaviour
 
         }
         if (retryButton != null)
-            retryButton.interactable = CatchLivesService.CanStartHunt();
+            retryButton.interactable = MiniGameLivesService.CanStartRound();
         settling = false;
     }
 
@@ -486,7 +492,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         CatCatchMouse prey = FindStrikeTarget(world, CatchHuntRules.TapTargetRadius);
         if (prey != null)
         {
-            player.ChasePrey(prey);
+            player.PounceAt(prey);
             if (tutorialActive && tutorialStage == 0)
                 AdvanceTutorial();
             return;
@@ -544,6 +550,8 @@ public sealed class CatCatchGameController : MonoBehaviour
         {
             if (mice[i] == null)
                 continue;
+            if(i>=DesiredMice){mice[i].Hide();continue;}
+            mice[i].SetPersonality(i%3);
             Vector3 zone = SpawnZones[i % SpawnZones.Length];
             Vector3 local = zone + new Vector3(
                 UnityEngine.Random.Range(-0.35f, 0.35f), 0f,
@@ -568,7 +576,7 @@ public sealed class CatCatchGameController : MonoBehaviour
             if (mice[i] != null && mice[i].IsActive)
                 active++;
         }
-        while (active < Mathf.Min(4, mice.Length))
+        while (active < Mathf.Min(DesiredMice, mice.Length))
         {
             LaunchOneMouse();
             active++;
@@ -582,6 +590,7 @@ public sealed class CatCatchGameController : MonoBehaviour
         CatCatchMouse mouse = index >= 0 && index < mice.Length ? mice[index] : FindIdleMouse();
         if (mouse == null)
             return;
+        mouse.SetPersonality(System.Array.IndexOf(mice,mouse)%3);
         mouse.Launch(RandomArenaPoint(MouseSpawnClearance), MouseSpawnGrace);
     }
 
@@ -675,17 +684,17 @@ public sealed class CatCatchGameController : MonoBehaviour
 
     private void RefreshWelcome()
     {
-        CatchLivesService.Refresh();
+        MiniGameLivesService.Refresh();
         // The caption lives in the same label as the value, matching the Cat
         // Runner best-score pill; a separate caption row overlapped the digits.
         if (welcomeBestText != null)
             welcomeBestText.text = GameLanguageService.Format("games.best",bestScore.ToString("N0"));
-        bool canStart = CatchLivesService.CanStartHunt();
+        bool canStart = MiniGameLivesService.CanStartRound();
         if (welcomeStartButton != null)
             welcomeStartButton.interactable = canStart;
         if (welcomeRewardedButton != null)
         {
-            bool canReward = CatchLivesService.CanClaimRewardedAd();
+            bool canReward = MiniGameLivesService.CanClaimRewardedAd();
             welcomeRewardedButton.gameObject.SetActive(!canStart && canReward);
             if (welcomeStartButton != null)
                 welcomeStartButton.gameObject.SetActive(canStart || !canReward);
@@ -693,15 +702,15 @@ public sealed class CatCatchGameController : MonoBehaviour
         }
         if (welcomeLivesText == null)
             return;
-        if (CatchLivesService.IsUnlimited)
+        if (MiniGameLivesService.IsUnlimited)
             welcomeLivesText.text = GameLanguageService.Text("games.unlimited");
         else
         {
             welcomeLivesText.text =
-                GameLanguageService.Format("games.lives_ready",CatchLivesService.CurrentLives,CatchLivesService.MaximumLives);
+                GameLanguageService.Format("games.lives_ready",MiniGameLivesService.CurrentLives,MiniGameLivesService.MaximumLives);
             if (!canStart)
             {
-                TimeSpan remainingLife = CatchLivesService.TimeUntilNextLife();
+                TimeSpan remainingLife = MiniGameLivesService.TimeUntilNextLife();
                 int seconds = Mathf.Max(0, Mathf.CeilToInt((float)remainingLife.TotalSeconds));
                 welcomeLivesText.text = GameLanguageService.Format("games.next_life",$"{seconds / 60:00}:{seconds % 60:00}");
             }
@@ -717,10 +726,10 @@ public sealed class CatCatchGameController : MonoBehaviour
             int seconds = Mathf.CeilToInt(remaining);
             timerLabel.text = seconds.ToString();
             // The last ten seconds read as urgent without an extra widget.
-            timerLabel.color = seconds <= 10 ? LowTimeColor : PremiumUiStyle.Ink;
+            timerLabel.color = seconds <= 10 ? StorybookScreenStyle.CoralTop : StorybookScreenStyle.Ink;
         }
         if (catchLabel != null)
-            catchLabel.text = $"{catches}  •  {CatchScoring.CoinsForCatches(catches)}";
+            catchLabel.text = GameContentCopy.Text($"Tur {Wave}/3 · {catches} fare",$"Wave {Wave}/3 · {catches} mice");
         if (comboLabel == null)
             return;
         bool comboLive = combo > 1 && Time.time - lastCatchTime <= CatchScoring.ComboWindowSeconds;
@@ -781,7 +790,7 @@ public sealed class CatCatchGameController : MonoBehaviour
                 tutorialText.text = GameContentCopy.Text("Bir fareye dokun\nKedin peşinden koşsun", "Tap a squeaky mouse\nYour cat chases it");
                 break;
             case 1:
-                tutorialText.text = GameContentCopy.Text("Yaklaşınca kedin atlar\nİnişte fareyi yakalar", "Get close and your cat pounces\nLand to catch the mouse");
+                tutorialText.text = GameContentCopy.Text("Fareye dokun: yaklaş, sıçra ve yakala\nYeni hamle için yeni bir fare seç", "Tap a mouse: approach, pounce and catch\nChoose another mouse for your next move");
                 break;
             default:
                 tutorialText.text = GameContentCopy.Text("Altmış saniyen var\nKaç fare yakalayabilirsin?", "You have sixty seconds\nHow many can you catch?");

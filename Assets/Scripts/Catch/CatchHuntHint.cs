@@ -20,6 +20,6 @@ public sealed class CatchHuntHint:MonoBehaviour
         score=game.Score;misses=game.StrikesMissed;
         label.text=Time.time<messageUntil?message:cat.IsPouncing?GameContentCopy.Text("Hedefe odaklandım…","Eyes on the prize…"):
             cat.IsBusy?GameContentCopy.Text("Bir nefes, sonra yeni bir hamle.","A little breather before the next move."):
-            cat.Prey!=null?GameContentCopy.Text("Peşindeyim! Hazır olunca atılacağım.","On the trail! I'll pounce when ready."):GameLanguageService.Text("catch.hint");
+            cat.Prey!=null?GameContentCopy.Text("Yaklaşıyorum… birazdan sıçrayacağım!","Getting closer… ready to pounce!"):GameContentCopy.Text("Fareye dokun · Yaklaş, sıçra ve yakala","Tap a mouse · Approach, pounce and catch");
     }
 }

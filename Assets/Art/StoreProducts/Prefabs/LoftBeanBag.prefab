@@ -350,23 +350,23 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3abd856c4f4ba3d419a12320d1a1b84f, type: 2}
+      objectReference: {fileID: 2100000, guid: 79d39c4fdbd6501408bc1ac06be25f8d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: 6299585c857846047a134781c21afa5c, type: 2}
+      objectReference: {fileID: 2100000, guid: 892af794312548048ab068a2f9783aa3, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: 748962b596c94bc4d8cab09857b6364d, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 756a58a34332ff24b93093ce9abdb57a, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 39a7ab537e6fb02428c635096f5f6ffc, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: 919132149155446097, guid: 3a6bbf86ba9feb64ca49918d90f7b8ab, type: 3}
       propertyPath: m_Name
       value: LoftBeanBag_PremiumModel

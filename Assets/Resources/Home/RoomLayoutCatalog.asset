@@ -14,86 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: CatHome.Runtime::HomeRoomLayoutCatalog
   layoutVersion: 1
   entries:
-  - roomId: bathroom-01
-    productId: bathroom.bath-mat
-    position: {x: 0, y: 0, z: 0.25}
-    yaw: 0
-    modelScale: 1
-    height: 0.08
-    footprint: {x: 1.9, y: 1.15}
-    zone: 3
-  - roomId: bathroom-01
-    productId: bathroom.laundry-hamper
-    position: {x: -1.525, y: 0, z: 2.27108}
-    yaw: 0
-    modelScale: 0.82
-    height: 0.7544
-    footprint: {x: 0.6724, y: 0.6724}
-    zone: 0
-  - roomId: bathroom-01
-    productId: bathroom.litter-box
-    position: {x: -3.17891, y: 0, z: -1.35}
-    yaw: 270
-    modelScale: 1
-    height: 0.48
-    footprint: {x: 1.3, y: 1.02}
-    zone: 2
-  - roomId: bathroom-01
-    productId: bathroom.grooming-cart
-    position: {x: -0.75, y: 0, z: 2.2}
-    yaw: 0
-    modelScale: 0.84
-    height: 0.85679996
-    footprint: {x: 0.77279997, y: 0.5376}
-    zone: 0
-  - roomId: bathroom-01
-    productId: bathroom.towel-storage
-    position: {x: 2.45, y: 0, z: 2.375}
-    yaw: 0
-    modelScale: 0.9
-    height: 1.638
-    footprint: {x: 0.918, y: 0.45}
-    zone: 0
-  - roomId: bathroom-01
-    productId: bathroom.wall-mirror
-    position: {x: -0.75, y: 1.25, z: 2.65}
-    yaw: 0
-    modelScale: 1
-    height: 0.78
-    footprint: {x: 0.92, y: 0.16}
-    zone: 4
-  - roomId: bathroom-01
-    productId: bathroom.toilet
-    position: {x: 3.29118, y: 0, z: -1.3}
-    yaw: 270
-    modelScale: 0.7
-    height: 1.0919999
-    footprint: {x: 0.658, y: 0.826}
-    zone: 2
-  - roomId: bathroom-01
-    productId: bathroom.vanity-sink
-    position: {x: -3.05, y: 0, z: 0.4}
-    yaw: 90
-    modelScale: 0.82
-    height: 1.3858
-    footprint: {x: 1.6072, y: 0.7052}
-    zone: 1
-  - roomId: bathroom-01
-    productId: bathroom.tub
-    position: {x: 2.85, y: 0, z: 0.35}
-    yaw: 270
-    modelScale: 0.82
-    height: 1.1152
-    footprint: {x: 2.009, y: 1.0741999}
-    zone: 1
-  - roomId: bathroom-01
-    productId: bathroom.shower
-    position: {x: -2.6, y: 0, z: 2.12}
-    yaw: 180
-    modelScale: 0.88
-    height: 1.9448
-    footprint: {x: 1.452, y: 1.1264}
-    zone: 0
   - roomId: kitchen-01
     productId: kitchen.paw-mat
     position: {x: -2.1, y: 0, z: 0.08}
@@ -574,3 +494,83 @@ MonoBehaviour:
     height: 0.7
     footprint: {x: 1.6, y: 0.7}
     zone: 1
+  - roomId: bathroom-01
+    productId: bathroom.bath-mat
+    position: {x: 0, y: 0, z: 0.25}
+    yaw: 0
+    modelScale: 1
+    height: 0.08
+    footprint: {x: 1.9, y: 1.15}
+    zone: 3
+  - roomId: bathroom-01
+    productId: bathroom.laundry-hamper
+    position: {x: -1.525, y: 0, z: 2.27108}
+    yaw: 0
+    modelScale: 0.82
+    height: 0.7544
+    footprint: {x: 0.6724, y: 0.6724}
+    zone: 0
+  - roomId: bathroom-01
+    productId: bathroom.litter-box
+    position: {x: -3.18091, y: 0, z: -1.35}
+    yaw: 270
+    modelScale: 1
+    height: 0.48
+    footprint: {x: 1.3, y: 1.02}
+    zone: 2
+  - roomId: bathroom-01
+    productId: bathroom.grooming-cart
+    position: {x: -0.75, y: 0, z: 2.2}
+    yaw: 0
+    modelScale: 0.84
+    height: 0.85679996
+    footprint: {x: 0.77279997, y: 0.5376}
+    zone: 0
+  - roomId: bathroom-01
+    productId: bathroom.towel-storage
+    position: {x: 2.45, y: 0, z: 2.375}
+    yaw: 0
+    modelScale: 0.9
+    height: 1.638
+    footprint: {x: 0.918, y: 0.45}
+    zone: 0
+  - roomId: bathroom-01
+    productId: bathroom.wall-mirror
+    position: {x: -0.75, y: 1.25, z: 2.65}
+    yaw: 0
+    modelScale: 1
+    height: 0.78
+    footprint: {x: 0.92, y: 0.16}
+    zone: 4
+  - roomId: bathroom-01
+    productId: bathroom.toilet
+    position: {x: 2.86, y: 0, z: -1.3}
+    yaw: 270
+    modelScale: 0.7
+    height: 1.0919999
+    footprint: {x: 0.658, y: 0.826}
+    zone: 2
+  - roomId: bathroom-01
+    productId: bathroom.vanity-sink
+    position: {x: -3.05, y: 0, z: 0.4}
+    yaw: 90
+    modelScale: 0.82
+    height: 1.3858
+    footprint: {x: 1.6072, y: 0.7052}
+    zone: 1
+  - roomId: bathroom-01
+    productId: bathroom.tub
+    position: {x: 2.85, y: 0, z: 0.35}
+    yaw: 270
+    modelScale: 0.82
+    height: 1.1152
+    footprint: {x: 2.009, y: 1.0741999}
+    zone: 1
+  - roomId: bathroom-01
+    productId: bathroom.shower
+    position: {x: -2.6, y: 0, z: 2.12}
+    yaw: 180
+    modelScale: 0.88
+    height: 1.9448
+    footprint: {x: 1.452, y: 1.1264}
+    zone: 0

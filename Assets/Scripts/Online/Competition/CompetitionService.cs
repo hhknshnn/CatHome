@@ -39,6 +39,7 @@ public static class CompetitionService
         CompetitionPeriod period)
     {
         string boardId = CompetitionRules.BoardId(game, period);
+        if(EditorQaSession.IsActive)return PersonalFallback(game,period,boardId);
         SetBusy(true, "LOADING RANKINGS...");
         try
         {
@@ -76,7 +77,7 @@ public static class CompetitionService
             Debug.Log("Cat Home rankings are using the offline copy: " + exception.Message);
             CompetitionSnapshot cached = LoadCache(boardId);
             LastMessage = cached != null ? "OFFLINE COPY" : "RANKINGS UNAVAILABLE";
-            return cached ?? Empty(boardId, true);
+            return cached ?? PersonalFallback(game,period,boardId);
         }
         finally
         {
@@ -136,6 +137,24 @@ public static class CompetitionService
             { "claimedScore", Mathf.Max(0, claimedScore) },
             { "nickname", nickname }
         });
+    }
+
+    private static CompetitionSnapshot PersonalFallback(CompetitionGame game,CompetitionPeriod period,string boardId)
+    {
+        var snapshot=Empty(boardId,true);
+        if(game==CompetitionGame.YarnRoute||game==CompetitionGame.PondPlay)
+        {
+            snapshot.isPersonalRecord=true;
+            snapshot.personalBest=CozyGameProgress.PeriodBest(game==CompetitionGame.YarnRoute?CozyGameKind.Yarn:CozyGameKind.Pond,period,DateTime.UtcNow);
+        }
+        return snapshot;
+    }
+
+    public static async Task SubmitCozyAsync(CozyGameKind game,string runId,int score,int[] stars,bool[] pearls,int fishCount,int basePoints,int comboSteps,int perfect,int bonus)
+    {
+        if(!CanSubmit||string.IsNullOrWhiteSpace(Nickname))return;
+        var payload=new Dictionary<string,object>{{"game",game==CozyGameKind.Yarn?"yarn-route":"pond-play"},{"runId",runId},{"claimedScore",score},{"nickname",Nickname},{"levelStars",stars??new int[0]},{"pearls",pearls??new bool[0]},{"fishCount",fishCount},{"basePoints",basePoints},{"comboSteps",comboSteps},{"perfect",perfect},{"bonus",bonus}};
+        await SubmitAsync("SubmitCozyScore",payload);
     }
 
     public static async Task<CompetitionRewardSummary> ClaimAvailableRewardsAsync()

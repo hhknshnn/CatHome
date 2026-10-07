@@ -23,13 +23,13 @@ public sealed class StorybookQuestBadge : MaskableGraphic
     {
         vh.Clear();
         Color accent = state == QuestState.Locked ? StorybookScreenStyle.Muted : StorybookQuestPresentation.PositiveText;
-        Circle(vh, Vector2.zero, .37f, new Color32(226, 238, 226, 255), 32);
+        Circle(vh, Vector2.zero, .37f, StorybookScreenStyle.Photo, 32);
         const int steps = 64;
         for (int i = 0; i < steps; i++)
         {
             float a = Mathf.PI * .5f - i * Mathf.PI * 2f / steps;
             float b = Mathf.PI * .5f - (i+1) * Mathf.PI * 2f / steps;
-            Color tint = (float)i / steps < progress && state != QuestState.Locked ? StorybookScreenStyle.Teal : new Color32(220, 225, 211, 255);
+            Color tint = (float)i / steps < progress && state != QuestState.Locked ? StorybookScreenStyle.Mint : StorybookScreenStyle.Track;
             Quad(vh, Polar(a,.415f), Polar(b,.415f), Polar(b,.48f), Polar(a,.48f), tint);
         }
         if (state == QuestState.Completed || state == QuestState.Claimed)

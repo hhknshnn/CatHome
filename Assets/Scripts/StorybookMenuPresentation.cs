@@ -14,13 +14,13 @@ public static class StorybookMenuPresentation
             listRect.anchoredPosition = new Vector2(listRect.anchoredPosition.x,
                 -(StorybookHudLayout.TopPanelBottom + 16f));
 
-        StorybookScreenStyle.Inset(Surface(list, "ListRim"), new Color32(44, 86, 103, 255), 20f);
-        StorybookScreenStyle.Shell(Surface(list, "ListFace"), 18f);
+        StorybookScreenStyle.Inset(Surface(list, "ListRim"), StorybookScreenStyle.MintWash, 20f);
+        StorybookScreenStyle.RoomShell(Surface(list, "ListFace"), 18f, true);
         foreach (Transform row in list)
         {
             if (!row.name.StartsWith("Row_", System.StringComparison.Ordinal)) continue;
             // Face is the authored target graphic. Leave the transparent hit frame and existing FX intact.
-            StorybookScreenStyle.Shell(Surface(row, "Face"), 12f);
+            StorybookScreenStyle.Enamel(Surface(row, "Face"), new Color32(102, 142, 132, 255), StorybookScreenStyle.Teal, 12f, false);
             StorybookScreenStyle.Text(row, "Content/Label", StorybookScreenStyle.Cream);
             var divider = row.Find("Divider");
             var line = divider == null ? null : divider.GetComponent<Image>();

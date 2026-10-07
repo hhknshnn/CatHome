@@ -41,6 +41,18 @@ public sealed class CatCatchHuntTests
     }
 
     [UnityTest]
+    public IEnumerator SingleMouseTap_ApproachesPouncesAndHasNoActionButton()
+    {
+        yield return new WaitForSeconds(.5f);var prey=NearestCatchableMouse();Assert.That(prey,Is.Not.Null);
+        var camera=game.GetComponentInChildren<Camera>();if(camera==null)foreach(var c in Object.FindObjectsByType<Camera>())if(c.gameObject.scene==game.gameObject.scene){camera=c;break;}
+        Assert.That(camera,Is.Not.Null);game.HandleTap(camera.WorldToScreenPoint(prey.transform.position));
+        float until=Time.time+10;while(game.StrikesResolved==0&&Time.time<until)yield return null;
+        Assert.That(game.StrikesResolved,Is.EqualTo(1),"The mouse tap must queue a strike.");Assert.That(game.Catches,Is.EqualTo(1),"The queued strike should land within reach.");
+        yield return new WaitForSeconds(1);Assert.That(game.StrikesResolved,Is.EqualTo(1),"One mouse tap queues exactly one strike.");
+        foreach(var b in Object.FindObjectsByType<UnityEngine.UI.Button>(FindObjectsInactive.Include))if(b.gameObject.scene==game.gameObject.scene)Assert.That(b.name,Is.Not.EqualTo("PawAction"));
+    }
+
+    [UnityTest]
     public IEnumerator Turnaround_PivotsBeforeRunningAndNeverSteersInFlight()
     {
         player.transform.rotation=Quaternion.identity;
@@ -55,6 +67,7 @@ public sealed class CatCatchHuntTests
         while(Time.time<until)
         {
             if(!player.IsBusy)player.ChasePrey(NearestCatchableMouse());
+            if(player.CanPounce)player.RequestPounce();
             if(player.IsPouncing)
             {
                 if(!sawFlight){sawFlight=true;launchedAt=Time.time;}
@@ -65,6 +78,16 @@ public sealed class CatCatchHuntTests
             yield return null;
         }
         Assert.That(sawFlight,Is.True);
+    }
+
+    [UnityTest]
+    public IEnumerator SelectedMouse_IsTrackedButDoesNotAutoPounce()
+    {
+        player.ChasePrey(NearestCatchableMouse());
+        yield return new WaitForSeconds(3);
+        Assert.That(game.StrikesResolved,Is.Zero);
+        Assert.That(game.Catches,Is.Zero);
+        Assert.That(player.IsPouncing,Is.False);
     }
 
     [UnityTest]
@@ -88,6 +111,7 @@ public sealed class CatCatchHuntTests
             CatCatchMouse prey = NearestCatchableMouse();
             if (prey != null && !player.IsBusy && player.Prey == null)
                 player.ChasePrey(prey);
+            if(player.CanPounce)player.RequestPounce();
             yield return null;
         }
 
@@ -125,6 +149,7 @@ public sealed class CatCatchHuntTests
             CatCatchMouse prey = NearestCatchableMouse();
             if (prey != null && !player.IsBusy && player.Prey == null)
                 player.ChasePrey(prey);
+            if(player.CanPounce)player.RequestPounce();
             lowest = Mathf.Min(lowest, player.Position.y);
             highest = Mathf.Max(highest, player.Position.y);
             yield return null;

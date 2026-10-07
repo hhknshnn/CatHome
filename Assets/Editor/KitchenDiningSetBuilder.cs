@@ -39,5 +39,6 @@ public static class KitchenDiningSetBuilder
         // Throw off the open right end, away from both rows of chairs.
         action.EditorConfigureScatter(perch,props,loose,Vector3.zero,new Vector3(1.04f,.78f,-.18f),new Vector3(1.57f,0,-.12f),false);
         ModernWorldArtBuilder.ApplyRoot(root.transform,HomeRoomService.KitchenId);
+        KitchenThemeBuilder.ApplyFurniture(root.transform, ActivityId);
     }
 }

@@ -421,6 +421,7 @@ public class BowlInteraction : MonoBehaviour
         if (!TryBeginNeedRecovery(bowl))
         { yield return LeaveBowl(); FinishInteraction(); yield break; }
         ActiveCareSound=ReferenceEquals(bowl,water)?"CatDrink":"CatEat";
+        LivingRoomSpeech.Show(catMovement,this,ReferenceEquals(bowl,food)?"food":"water",false);
 
         // Recovery runs on the persistent HUD need system. Keep action ownership
         // through its last tick and distinguish completion from interruption.
@@ -455,6 +456,7 @@ public class BowlInteraction : MonoBehaviour
 
         yield return LeaveBowl();
         FinishInteraction();
+        LivingRoomSpeech.Show(catMovement,this,ReferenceEquals(bowl,food)?"food":"water",true);
     }
 
     private IEnumerator LeaveBowl()

@@ -8,21 +8,21 @@ public static class StorybookDialoguePresentation
     public static void Apply(Transform panel)
     {
         if (panel == null) return;
-        StorybookScreenStyle.Card(Surface(panel, "Face"), 28f);
+        StorybookScreenStyle.RoomShell(Surface(panel, "Face"), 28f, true);
         StorybookScreenStyle.Enamel(Surface(panel, "CatPortrait/PortraitFrame"),
             StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 28f);
-        StorybookScreenStyle.Text(panel, "Name", StorybookQuestPresentation.PositiveText);
+        StorybookScreenStyle.Text(panel, "Name", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Text(panel, "Message", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Text(panel, "LessonProgress", StorybookScreenStyle.Muted);
         StorybookScreenStyle.Enamel(Surface(panel, "ContinueFace"),
-            StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 16f, false);
-        StorybookScreenStyle.Text(panel, "Continue", StorybookScreenStyle.Ink);
+            StorybookScreenStyle.CoralTop, StorybookScreenStyle.Coral, 16f, false);
+        StorybookScreenStyle.Text(panel, "Continue", StorybookScreenStyle.Cream);
         var arrow = panel.Find("Continue/ContinueArrow");
         if (arrow != null)
             foreach (var stroke in arrow.GetComponentsInChildren<Image>(true))
-                stroke.color = StorybookScreenStyle.Ink;
+                stroke.color = StorybookScreenStyle.Cream;
 
-        StorybookScreenStyle.Inset(Surface(panel, "NameInput/FieldFace"), new Color32(232, 240, 231, 255), 18f);
+        StorybookScreenStyle.Inset(Surface(panel, "NameInput/FieldFace"), StorybookScreenStyle.Paper, 18f);
         StorybookScreenStyle.Text(panel, "NameInput/Text", StorybookScreenStyle.Ink);
         StorybookScreenStyle.Text(panel, "NameInput/Placeholder", StorybookScreenStyle.Muted);
         var confirm = panel.Find("Confirm");

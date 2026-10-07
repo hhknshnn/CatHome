@@ -182,6 +182,7 @@ public sealed class CatBreedShopPanel : MonoBehaviour
                 cards[i].activeBadge.SetActive(active);
             if (cards[i].button != null)
                 cards[i].button.interactable = true; // Test phase: every breed is open.
+            StorybookCatPresentation.Selection(cards[i].button, previewed);
         }
 
         if (rebuildPreview && turntable != null)
@@ -196,6 +197,8 @@ public sealed class CatBreedShopPanel : MonoBehaviour
     {
         for (int i = 0; i < coatButtons.Length; i++)
             ModernUiArt.Action(coatButtons[i]);
+        for (int i = 0; i < coatButtons.Length; i++)
+            StorybookCatPresentation.Coat(coatButtons[i], i);
         for (int i = 0; i < coatSelection.Length; i++)
             if (coatSelection[i] != null) coatSelection[i].SetActive(i == draftCoat);
         if (turntable != null && draftCoat >= 0 && draftCoat < CatIdentityService.CoatCount)

@@ -43,6 +43,12 @@ public sealed class WhileYouWereAwayPopupFx : MonoBehaviour
     private bool basesCaptured;
     private bool idle;
 
+    public void ConfigureDesignSize(Vector2 size)
+    {
+        designSize = size;
+        ApplySafeAreaLayout(true);
+    }
+
     private void Awake()
     {
         phaseOffset = (EntityId.ToULong(GetEntityId()) % 857UL) / 857f;

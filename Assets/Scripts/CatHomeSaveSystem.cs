@@ -73,6 +73,11 @@ public sealed class CatHomeSaveData
     // Missing slices migrate to empty defaults; wallets and rooms are untouched.
     public DailyRetentionSaveState dailyRetention;
     public AchievementSaveState achievements;
+    // Version 12: the two calm mini-games share the existing local/cloud save.
+    public CozyGameSaveState cozyGames;
+    // Version 14: one entry pool for all four games. Legacy pool fields remain
+    // readable for migration; catchLives also retains tutorial completion.
+    public MiniGameLivesSaveState miniGameLives;
 }
 
 public static class CatHomeSaveSystem
@@ -115,7 +120,7 @@ public static class CatHomeSaveSystem
         public float EnergyAfter { get; }
     }
 
-    public const int CurrentSaveVersion = 11;
+    public const int CurrentSaveVersion = 14;
     public const string SaveFileName = "cat-home-save.json";
     public const string RecoveryFileSuffix = ".recovery";
     public const string NewGameBackupMarker = ".before-new-game-";
@@ -417,6 +422,8 @@ public static class CatHomeSaveSystem
             runnerProgress = runnerProgress,
             catchLives = catchLives,
             catchBestScore = 0,
+            cozyGames = new CozyGameSaveState(),
+            miniGameLives = MiniGameLivesService.CaptureState(utcNow),
             homeProgression = HomeProgressionSaveState.CreateDefault(),
             dailyRetention = DailyRetentionSaveState.CreateDefault(),
             achievements = AchievementSaveState.CreateDefault()
@@ -439,6 +446,8 @@ public static class CatHomeSaveSystem
         CatRunnerProgressService.ApplySavedState(data.runnerProgress, utcNow);
         CatchLivesService.ApplySavedState(data.catchLives, utcNow);
         CatCatchGameController.ApplyBestScore(0);
+        CozyGameProgress.Apply(data.cozyGames);
+        MiniGameLivesService.ApplySavedState(data.miniGameLives, DateTime.UtcNow);
         HomeProgressionService.ApplySavedState(data.homeProgression);
         DailyRetentionService.ApplySavedState(data.dailyRetention);
         AchievementService.ApplySavedState(data.achievements);
@@ -833,6 +842,8 @@ public static class CatHomeSaveSystem
             runnerProgress = CatRunnerProgressService.CaptureState(savedAtUtc),
             catchLives = CatchLivesService.CaptureState(savedAtUtc),
             catchBestScore = CatCatchGameController.CaptureBestScore(),
+            cozyGames = CozyGameProgress.Capture(),
+            miniGameLives = MiniGameLivesService.CaptureState(savedAtUtc),
             homeProgression = HomeProgressionService.CaptureState(),
             dailyRetention = DailyRetentionService.CaptureState(),
             achievements = AchievementService.CaptureState()
@@ -1043,6 +1054,14 @@ public static class CatHomeSaveSystem
             data.achievements = AchievementSaveState.CreateDefault();
         }
 
+        if (loadedVersion < 12) data.cozyGames = new CozyGameSaveState();
+        if(loadedVersion<13)
+        {
+            data.cozyGames=data.cozyGames??new CozyGameSaveState();
+            Array.Resize(ref data.cozyGames.yarnStars,CozyGameRules.LevelCount);
+        }
+        if (loadedVersion < 14)
+            data.miniGameLives = MiniGameLivesService.FromLegacy(data.runnerEnergy, data.catchLives, DateTime.UtcNow);
         data.version = CurrentSaveVersion;
         Debug.Log(
             $"CatHomeSaveSystem migrated the local save from version {loadedVersion} " +
@@ -1145,6 +1164,8 @@ public static class CatHomeSaveSystem
         CatRunnerProgressService.ApplySavedState(data.runnerProgress, DateTime.UtcNow);
         CatchLivesService.ApplySavedState(data.catchLives, DateTime.UtcNow);
         CatCatchGameController.ApplyBestScore(data.catchBestScore);
+        CozyGameProgress.Apply(data.cozyGames);
+        MiniGameLivesService.ApplySavedState(data.miniGameLives, DateTime.UtcNow);
         HomeProgressionService.ApplySavedState(data.homeProgression);
         DailyRetentionService.ApplySavedState(data.dailyRetention);
         AchievementService.ApplySavedState(data.achievements);

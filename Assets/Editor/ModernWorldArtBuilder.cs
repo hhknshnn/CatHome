@@ -154,6 +154,9 @@ public static class ModernWorldArtBuilder
         if (current == null) return null;
         var source = Original(current);
         string sourcePath = AssetDatabase.GetAssetPath(source);
+        // Reviewed bathroom finishes are shared by placed fixtures and catalog photos.
+        if (sourcePath.StartsWith(BathroomThemeBuilder.Folder + "/", StringComparison.Ordinal) ||
+            sourcePath.StartsWith(RemainingRoomsThemeBuilder.Folder + "/", StringComparison.Ordinal)) return source;
         string n = source.name.ToLowerInvariant();
         // Missing/deleted provenance must never create a Modern-from-Modern
         // chain or compound a previously approved tint on a repeated pass.

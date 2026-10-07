@@ -6,20 +6,20 @@ using QuestState = CatHome.Quests.QuestState;
 /// <summary>Quest chrome and readable state colours; the controller remains the sole owner of rows and claims.</summary>
 public static class StorybookQuestPresentation
 {
-    public static readonly Color PositiveText = new Color32(22, 104, 108, 255);
+    public static readonly Color PositiveText = new Color32(172, 241, 216, 255);
 
     public static void Apply(Transform root)
     {
         if (root == null) return;
         var panel = root.Find("SafeArea/Panel");
         if (panel == null) return;
-        StorybookScreenStyle.Shell(Surface(panel, "Face"), 34f);
-        StorybookScreenStyle.Text(panel, "Header/Title", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "LevelLabel/ChapterLabel", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.RoomShell(Surface(panel, "Face"), 34f);
+        StorybookScreenStyle.Text(panel, "Header/Title", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "LevelLabel/ChapterLabel", StorybookScreenStyle.Muted);
         // Message is itself the TMP text object in the authored quest panel.
-        StorybookScreenStyle.Text(panel, "Message", StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Inset(Surface(panel, "Footer/Bar"), new Color32(22, 36, 76, 255), 16f);
-        StorybookScreenStyle.Text(panel, "Footer/Label", StorybookScreenStyle.Mint);
+        StorybookScreenStyle.Text(panel, "Message", StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Inset(Surface(panel, "Footer/Bar"), StorybookScreenStyle.MintWash, 16f);
+        StorybookScreenStyle.Text(panel, "Footer/Label", StorybookScreenStyle.Muted);
         var content = panel.Find("ScrollView/Viewport/Content");
         if (content != null) foreach (Transform row in content)
         {
@@ -40,9 +40,9 @@ public static class StorybookQuestPresentation
         foreach (var scrollbar in panel.GetComponentsInChildren<Scrollbar>(true))
         {
             var track = scrollbar.GetComponent<LowPolyPanelGraphic>();
-            if (track != null) StorybookScreenStyle.Inset(track, new Color32(22, 36, 76, 255), 6f);
+            if (track != null) StorybookScreenStyle.Inset(track, StorybookScreenStyle.MintWash, 6f);
             var image = scrollbar.GetComponent<Image>();
-            if (image != null) image.color = new Color32(22, 36, 76, 255);
+            if (image != null) image.color = StorybookScreenStyle.MintWash;
             var handle = scrollbar.targetGraphic as LowPolyPanelGraphic;
             if (handle != track)
                 StorybookScreenStyle.Enamel(handle, StorybookScreenStyle.Mint, StorybookScreenStyle.Teal, 5f);

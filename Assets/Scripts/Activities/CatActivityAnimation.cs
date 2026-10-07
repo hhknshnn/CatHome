@@ -44,6 +44,12 @@ public sealed class CatActivityAnimation : MonoBehaviour
     private bool jumpStartsOnSupport,jumpLandsOnSupport;
     private bool ownsAnimatorSpeed;
     private float previousAnimatorSpeed;
+    private Transform[] scratchBlendBones;
+    private Quaternion[] scratchNeutralRotations;
+    private Vector3[] scratchNeutralPositions;
+    private bool[] scratchBlendTranslations;
+    private bool scratchBlendActive;
+    private float scratchSourceBlend;
 
     public bool IsActive => (owner != null && owner.IsRunning) ||
         (sleepOwner != null && sleepOwner.IsSleeping);
@@ -108,6 +114,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
 
     public void SetPose(CatActivityPose value, Transform contactSurface = null)
     {
+        scratchBlendActive = false;
         nativeJump = false;
         supportedPivot = false;
         scriptedPhase = false;
@@ -115,6 +122,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
         walkMetresPerSecond = -1f;
         var area = contactSurface != null ? contactSurface.GetComponent<CatActivitySurface>() : null;
         if (area != null) value = area.ResolvePose(value);
+        if (value != CatActivityPose.Scratch) ClearScratchBlend();
         needsState |= pose != value || stateHash == 0;
         pose = value;
         support = contactSurface;
@@ -123,6 +131,48 @@ public sealed class CatActivityAnimation : MonoBehaviour
     public void SetTimedPose(CatActivityPose value, float normalizedTime, Transform contactSurface = null)
     {
         SetPose(value,contactSurface); scriptedPhase=true; phase=Mathf.Clamp01(normalizedTime);
+    }
+
+    // ToyScratch starts upright. Its source time cannot by itself provide a
+    // standing-to-scratch transition; blend the captured pose before grounding
+    // the sampled skin. Only the scratch reach explicitly opts into this path.
+    public void SetTimedPoseBlended(CatActivityPose value, float normalizedTime, float blend)
+    {
+        if (value != CatActivityPose.Scratch) { SetTimedPose(value, normalizedTime); return; }
+        ResolveVisual();
+        if (scratchBlendBones == null && skin != null)
+        {
+            var unique = new HashSet<Transform>();
+            var bones = new List<Transform>();
+            foreach (var bone in skin.bones)
+                for (var current = bone; current != null && current != visual; current = current.parent)
+                    if (unique.Add(current)) bones.Add(current);
+            scratchBlendBones = bones.ToArray();
+            scratchNeutralRotations = new Quaternion[bones.Count];
+            scratchNeutralPositions = new Vector3[bones.Count];
+            scratchBlendTranslations = new bool[bones.Count];
+            for (int i = 0; i < bones.Count; i++)
+            {
+                var bone = bones[i];
+                scratchNeutralRotations[i] = bone.localRotation;
+                scratchNeutralPositions[i] = bone.localPosition;
+                // Blend authored body-root travel only. Limb offsets and
+                // scales stay sampled so no bone is shortened or stretched.
+                scratchBlendTranslations[i] = bone.name == "root" || bone.name == "DEF-spine";
+            }
+        }
+        SetTimedPose(value, normalizedTime);
+        scratchSourceBlend = Mathf.Clamp01(blend);
+        scratchBlendActive = scratchBlendBones != null;
+    }
+
+    private void ClearScratchBlend()
+    {
+        scratchBlendActive = false;
+        scratchBlendBones = null;
+        scratchNeutralRotations = null;
+        scratchNeutralPositions = null;
+        scratchBlendTranslations = null;
     }
 
     public void SetWalkSpeed(float metresPerSecond, Transform contactSurface)
@@ -240,6 +290,15 @@ public sealed class CatActivityAnimation : MonoBehaviour
             animator.Play(Animator.StringToHash("Base Layer." + StateFor(pose)), 0, phase);
             animator.Update(0f);
         }
+        if (scratchBlendActive && pose == CatActivityPose.Scratch)
+            for (int i = 0; i < scratchBlendBones.Length; i++)
+            {
+                var bone = scratchBlendBones[i];
+                if (bone == null) continue;
+                bone.localRotation = Quaternion.Slerp(scratchNeutralRotations[i], bone.localRotation, scratchSourceBlend);
+                if (scratchBlendTranslations[i])
+                    bone.localPosition = Vector3.Lerp(scratchNeutralPositions[i], bone.localPosition, scratchSourceBlend);
+            }
         visual.localPosition = visualPosition;
         visual.localScale = visualScale;
         visual.localRotation = visualRotation;
@@ -301,6 +360,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
     {
         Animator current = GetComponentInChildren<Animator>();
         if (current == animator) return;
+        ClearScratchBlend();
         RestoreVisual();
         animator = current;
         visual = animator != null ? animator.transform : null;
@@ -327,6 +387,7 @@ public sealed class CatActivityAnimation : MonoBehaviour
 
     public void End()
     {
+        bool settledScratch = scratchBlendActive && scratchSourceBlend < .01f;
         GetComponent<CatMeasuredSupportMotion>()?.Clear();
         GetComponent<CatSurfaceTurnMotion>()?.Clear();
         RestoreAnimatorSpeed();
@@ -337,9 +398,25 @@ public sealed class CatActivityAnimation : MonoBehaviour
             if (animator != null && animator.isActiveAndEnabled)
             {
                 animator.SetFloat("Speed", 0f);
-                animator.CrossFadeInFixedTime("Idle", .12f);
+                if (settledScratch)
+                {
+                    // The visible pose already returned to standing. A fade
+                    // from the animator's unblended ToyScratch state would
+                    // briefly raise the body again at the next evaluation.
+                    animator.Play("Base Layer.Idle", 0, 0f);
+                    animator.Update(0f);
+                    for (int i = 0; i < scratchBlendBones.Length; i++)
+                    {
+                        var bone = scratchBlendBones[i];
+                        if (bone == null) continue;
+                        bone.localRotation = scratchNeutralRotations[i];
+                        if (scratchBlendTranslations[i]) bone.localPosition = scratchNeutralPositions[i];
+                    }
+                }
+                else animator.CrossFadeInFixedTime("Idle", .12f);
             }
         }
+        ClearScratchBlend();
         supportedPivot = false;
         owner = null;
         sleepOwner = null;

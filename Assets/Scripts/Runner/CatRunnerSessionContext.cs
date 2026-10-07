@@ -32,7 +32,8 @@ public static class CatRunnerSessionContext
         // Reject a missing/disabled build scene before reserving the transition
         // or cancelling the cat's current care activity.
         if ((sceneName != CatRunnerLauncher.RunnerSceneName &&
-             sceneName != CatCatchLauncher.CatchSceneName) ||
+             sceneName != CatCatchLauncher.CatchSceneName &&
+             sceneName != CozyMiniGame.YarnScene && sceneName != CozyMiniGame.PondScene) ||
             !Application.CanStreamedLevelBeLoaded(sceneName))
             return false;
         LevelLoader loader = Object.FindAnyObjectByType<LevelLoader>(FindObjectsInactive.Include);
@@ -42,7 +43,9 @@ public static class CatRunnerSessionContext
         // additive scene is loaded and visible to HomeUiFlow.
         if (IsLaunching ||
             SceneManager.GetSceneByName(CatRunnerLauncher.RunnerSceneName).IsValid() ||
-            SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).IsValid())
+            SceneManager.GetSceneByName(CatCatchLauncher.CatchSceneName).IsValid() ||
+            SceneManager.GetSceneByName(CozyMiniGame.YarnScene).IsValid() ||
+            SceneManager.GetSceneByName(CozyMiniGame.PondScene).IsValid())
             return false;
         launchingScene = sceneName;
         returnToGames = false;

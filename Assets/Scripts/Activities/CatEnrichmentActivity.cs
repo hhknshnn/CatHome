@@ -38,6 +38,8 @@ public sealed class CatEnrichmentActivity : CatActivity
     CatMeshContactSurface.Hit springHit;
     float lastImpact=-100f;
     bool reverseTunnel;
+    LivingTunnelPassage.Plan tunnelPlan;
+    bool LivingTunnel=>mode==CatEnrichmentMode.Tunnel&&gameObject.scene.path==HomeRoomService.LivingRoomScenePath;
     Vector3 workPoint, touchPosition;
     Vector3 mealReleasePoint;
     Quaternion mealHeading;
@@ -52,6 +54,7 @@ public sealed class CatEnrichmentActivity : CatActivity
     {
         start = default;
         if (actor == null || contactPoint == null || exitPoint == null || RoutineEntryPoint == null) return false;
+        if(LivingTunnel)return LivingTunnelPassage.Resolve(this,actor,out start,out tunnelPlan);
         if(IsMouse) return CatMouseToyMotion.Resolve(actor,movingPart,RoutineEntryPoint.position.y,ref mouseSurfaces,out start,out mouseHit);
         if(mode==CatEnrichmentMode.Spring)
             return CatSpringGeometry.Resolve(actor,movingPart,RoutineEntryPoint.position.y,ref springSurfaces,out start,out springHit);
@@ -197,9 +200,14 @@ public sealed class CatEnrichmentActivity : CatActivity
     {
         Vector3 entry = AcceptedStart.Position;
         bool enter = mode == CatEnrichmentMode.Nap || mode == CatEnrichmentMode.Hide || mode == CatEnrichmentMode.Tunnel;
-        if (enter) yield return Walk(contactPoint.position, CatActivityPose.Crawl, true);
+        if (enter&&!LivingTunnel) yield return Walk(contactPoint.position, CatActivityPose.Crawl, true);
 
-        if(mode==CatEnrichmentMode.Tunnel)
+        if(LivingTunnel)
+        {
+            yield return LivingTunnelPassage.Play(this,Cat,tunnelPlan);
+            if(!IsRunning)yield break;
+        }
+        else if(mode==CatEnrichmentMode.Tunnel)
         {
             // Stay low inside the arch; a standing paw-swat would put the head
             // through the fabric even after a safe walk-in.
@@ -476,6 +484,7 @@ public sealed class CatEnrichmentActivity : CatActivity
         IsResting=false;
         toyContact?.Clear();
         springMotion?.Clear();mouseMotion?.Clear();
+        if(LivingTunnel&&Cat!=null){var gaze=Cat.GetComponent<CatFurnitureGaze>();if(gaze!=null)gaze.Clear();var crouch=Cat.GetComponent<LivingTunnelCrouch>();if(crouch!=null)crouch.Clear();}
         RestoreTail();tailBones=null;
         if(!captured)return;captured=false;
         if(movingPart!=null&&(!IsMouse||cancelled)){movingPart.localPosition=movingPosition;movingPart.localRotation=movingRotation;}

@@ -54,7 +54,8 @@ public static class HomeRoomArrangementBuilder
                     size = raw.Footprint * scale, height = raw.Height * scale, scale = scale,
                     hungHeight = raw.HungHeight, originalPosition = new Vector3(raw.DefaultPosition.x, raw.HungHeight, raw.DefaultPosition.z),
                     originalYaw = raw.DefaultYaw, entry = entry * scale, wallEdge = raw.PlacementKind == HomeProductPlacementKind.WallEdge };
-                item.hasActivity = !KitchenBedroomArrangementProfile.IsDecoration(raw.ProductId) && !OutdoorArrangementProfile.IsDecoration(raw.ProductId);
+                item.hasActivity = raw.ProductId != HomeStoreService.BathroomMirrorId &&
+                    !KitchenBedroomArrangementProfile.IsDecoration(raw.ProductId) && !OutdoorArrangementProfile.IsDecoration(raw.ProductId);
                 if (activity != null && item.hasActivity)
                 {
                     if (activity is CartNudgeActivity cart)

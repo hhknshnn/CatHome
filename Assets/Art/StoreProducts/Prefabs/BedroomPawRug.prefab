@@ -362,27 +362,27 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 62a13641c06873d4196c4d819e65a916, type: 2}
+      objectReference: {fileID: 2100000, guid: 79d39c4fdbd6501408bc1ac06be25f8d, type: 2}
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 2100000, guid: c5d67fcfdf183be4da87497c6442f18f, type: 2}
+      objectReference: {fileID: 2100000, guid: f7064ebb0e80c7c44bc552f12a080eea, type: 2}
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 2100000, guid: ca8f44cc424ff6f4e83ec32fb3778d47, type: 2}
+      objectReference: {fileID: 2100000, guid: 4c15a0df9e0241e44ab2349b1364ed63, type: 2}
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 2100000, guid: 4063e0e89760d1945a7e18aea92d5f3f, type: 2}
+      objectReference: {fileID: 2100000, guid: f0d7d09ec5d05e34282025248404cb5f, type: 2}
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[4]'
       value: 
-      objectReference: {fileID: 2100000, guid: 63876a9ca83454543811ddb5f4af0515, type: 2}
+      objectReference: {fileID: 2100000, guid: 0e6b1b9e851840e40b67c0d07c8cc75a, type: 2}
     - target: {fileID: -7511558181221131132, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: 'm_Materials.Array.data[5]'
       value: 
-      objectReference: {fileID: 2100000, guid: 2265460983ad51345a3446ab10229283, type: 2}
+      objectReference: {fileID: 2100000, guid: 81b9892eb16402b49b1e0d00cd5f0680, type: 2}
     - target: {fileID: 919132149155446097, guid: 407ced61e6f3f82458b01b344524a386, type: 3}
       propertyPath: m_Name
       value: BedroomPawRug_PremiumModel

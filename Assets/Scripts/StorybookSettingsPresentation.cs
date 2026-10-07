@@ -10,10 +10,10 @@ public static class StorybookSettingsPresentation
         if (root == null) return;
         var panel = root.Find("SafeArea/SettingsPanelVisual");
         if (panel == null) return;
-        StorybookScreenStyle.Shell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
+        StorybookScreenStyle.RoomShell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
         foreach (string name in new[] { "Title", "SoundSection", "AccessSection", "AccountSection" })
-            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Cream);
-        StorybookScreenStyle.Text(panel, "Subtitle", StorybookScreenStyle.Mint);
+            StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Ink);
+        StorybookScreenStyle.Text(panel, "Subtitle", StorybookScreenStyle.Muted);
         foreach (var surface in panel.GetComponentsInChildren<LowPolyPanelGraphic>(true))
         {
             if (!surface.name.StartsWith("Row_", System.StringComparison.Ordinal)) continue;
@@ -32,10 +32,10 @@ public static class StorybookSettingsPresentation
         var panel = root.Find("SafeArea/PrivacyDataCard");
         if (panel != null)
         {
-            StorybookScreenStyle.Shell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
-            StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Cream);
+            StorybookScreenStyle.RoomShell(panel.GetComponent<LowPolyPanelGraphic>(), 34f);
+            StorybookScreenStyle.Text(panel, "Title", StorybookScreenStyle.Ink);
             foreach (string name in new[] { "DeleteNote", "UnityPortal" })
-                StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Mint);
+                StorybookScreenStyle.Text(panel, name, StorybookScreenStyle.Muted);
             var status = panel.Find("CloudStatusWell");
             if (status != null)
             {
@@ -50,9 +50,9 @@ public static class StorybookSettingsPresentation
         var confirmation = root.Find("SafeArea/DeleteConfirmation");
         if (confirmation != null)
         {
-            StorybookScreenStyle.Shell(confirmation.GetComponent<LowPolyPanelGraphic>(), 32f);
-            StorybookScreenStyle.Text(confirmation, "Title", StorybookScreenStyle.Cream);
-            StorybookScreenStyle.Text(confirmation, "Consequences", StorybookScreenStyle.Cream);
+            StorybookScreenStyle.RoomShell(confirmation.GetComponent<LowPolyPanelGraphic>(), 32f, true);
+            StorybookScreenStyle.Text(confirmation, "Title", StorybookScreenStyle.Ink);
+            StorybookScreenStyle.Text(confirmation, "Consequences", StorybookScreenStyle.Ink);
             Action(confirmation, "CancelDelete");
             Action(confirmation, "ConfirmDelete", false, true);
         }
@@ -65,8 +65,8 @@ public static class StorybookSettingsPresentation
         StorybookScreenStyle.Action(button, !on);
         var face = button.targetGraphic as LowPolyPanelGraphic;
         if (face == null) return;
-        face.ConfigureScreenStyle(on ? new Color32(111, 221, 197, 255) : new Color32(79, 102, 133, 255),
-            on ? StorybookScreenStyle.Teal : new Color32(55, 75, 108, 255), 27f, false, false);
+        face.ConfigureGlassStyle(on ? StorybookScreenStyle.CoralTop : StorybookScreenStyle.CardTop,
+            on ? StorybookScreenStyle.Coral : StorybookScreenStyle.Teal, 27f, false, false);
         var knob = face.transform.Find("SwitchKnob") as RectTransform;
         if (knob == null)
         {
@@ -78,7 +78,7 @@ public static class StorybookSettingsPresentation
         knob.pivot = new Vector2(.5f, .5f);
         knob.sizeDelta = new Vector2(38f, 38f);
         knob.anchoredPosition = new Vector2(on ? -27f : 27f, 0f);
-        knob.GetComponent<LowPolyPanelGraphic>().ConfigureScreenStyle(Color.white, StorybookScreenStyle.Cream, 19f, false, true);
+        knob.GetComponent<LowPolyPanelGraphic>().ConfigureGlassStyle(StorybookScreenStyle.Cream, new Color32(213, 233, 212, 255), 19f, false, true);
         state.rectTransform.anchorMin = Vector2.zero;
         state.rectTransform.anchorMax = Vector2.one;
         state.rectTransform.offsetMin = new Vector2(on ? 10f : 49f, 7f);
